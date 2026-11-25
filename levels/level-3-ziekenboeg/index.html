@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="nl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ruimtestation Orion · Level 3: De medische ziekenboeg</title>
+<link rel="stylesheet" href="../../assets/css/vcsw-brand.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="vcsw">
+<div class="vcsw-brandbar"></div>
+<div class="vcsw-container">
+  <header class="vcsw-header compact top-bar">
+    <span>
+      <img class="vcsw-wordmark vcsw-wordmark-on-light" src="../../assets/img/vcsw-wordmark-on-light.png" alt="VCSW">
+      <img class="vcsw-wordmark vcsw-wordmark-on-dark" src="../../assets/img/vcsw-wordmark-on-dark.png" alt="VCSW">
+    </span>
+    <div class="vcsw-segmented" role="group" aria-label="Weergave">
+      <button type="button" data-theme-btn="light" aria-pressed="false">Licht</button>
+      <button type="button" data-theme-btn="dark" aria-pressed="true">Donker</button>
+    </div>
+  </header>
+
+  <main class="game-main" id="main">
+    <div class="vcsw-page-title">
+      <p class="vcsw-overline">AVG-game Ruimtestation Orion</p>
+      <h1>Level 3: De medische ziekenboeg</h1>
+    </div>
+
+    <section class="vcsw-card flush" aria-label="Status">
+      <div class="hud" id="hud"></div>
+    </section>
+
+    <div id="screen" class="screen"></div>
+    <div id="live" class="sr-live" aria-live="polite"></div>
+  </main>
+
+  <footer class="vcsw-footer">
+    <span>VCSW B.V. · Den Haag · vcsw.nl</span>
+    <span>Prototype · alle namen en gegevens zijn fictief</span>
+  </footer>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

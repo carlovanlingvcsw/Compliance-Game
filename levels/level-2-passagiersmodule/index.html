@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Orion level 2: De passagiersmodule</title>
+<link rel="stylesheet" href="../../assets/css/vcsw-brand.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="vcsw">
+  <div class="game">
+    <header class="vcsw-header">
+      <span>
+        <img class="vcsw-wordmark vcsw-wordmark-on-light" src="../../assets/img/vcsw-wordmark-on-light.png" alt="VCSW">
+        <img class="vcsw-wordmark vcsw-wordmark-on-dark" src="../../assets/img/vcsw-wordmark-on-dark.png" alt="VCSW">
+      </span>
+      <span class="vcsw-header-meta">AVG-game Ruimtestation Orion<br>Prototype level 2</span>
+    </header>
+
+    <main class="vcsw-stack" style="gap:16px">
+      <div class="vcsw-alert" role="note">
+        <svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <div>
+          <p class="vcsw-alert-title">Prototype met fictieve gegevens</p>
+          <p class="vcsw-alert-text">Alle namen en dossiers zijn verzonnen. De goede antwoorden wachten nog op goedkeuring van de Privacy Officer.</p>
+        </div>
+      </div>
+
+      <section class="hud" aria-label="Status">
+        <div>
+          <div class="vcsw-progress">
+            <div class="vcsw-progress-label"><span>Schildsterkte</span><span class="value" id="shieldText">100%</span></div>
+            <div class="vcsw-progress-track"><div class="vcsw-progress-fill" id="shieldFill" style="width:100%"></div></div>
+          </div>
+        </div>
+        <div><span class="hud-label">Punten</span><span class="hud-value" id="scoreText">0</span></div>
+        <div><span class="hud-label">Hints</span><span class="hud-value" id="hintText">3</span></div>
+        <div><span class="hud-label">Kristallen</span><span class="hud-value" id="crystalText">0</span></div>
+      </section>
+
+      <nav aria-label="Voortgang"><ol class="steps" id="steps"></ol></nav>
+
+      <section class="vcsw-card" id="stage" aria-live="polite"></section>
+    </main>
+
+    <footer class="vcsw-footer">
+      <span>VCSW B.V. · Den Haag · vcsw.nl</span>
+      <span>Rang bij start: Vaandrig</span>
+    </footer>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
