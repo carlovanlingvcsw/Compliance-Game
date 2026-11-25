@@ -150,6 +150,30 @@ function lamp(parent, pos, color, size) {
 }
 const blinkers = [];
 
+/* Near-scale detail: vents, hatches and handrails, so modules hold up in close-up */
+const ventMat = new THREE.MeshStandardMaterial({ color: 0x1d293d, metalness: 0.5, roughness: 0.6 });
+function vents(parent, x, y, z, n, ry) {
+  const g = new THREE.Group(); parent.add(g); g.position.set(x, y, z); g.rotation.y = ry || 0;
+  mesh(new THREE.BoxGeometry(0.06 * n + 0.08, 0.2, 0.012), MAT.hullDark, g);
+  for (let i = 0; i < n; i++) mesh(new THREE.BoxGeometry(0.03, 0.15, 0.02), ventMat, g, [-(n - 1) * 0.03 + i * 0.06, 0, 0.008]);
+  return g;
+}
+function hatch(parent, x, y, z, ry) {
+  const g = new THREE.Group(); parent.add(g); g.position.set(x, y, z); g.rotation.y = ry || 0;
+  mesh(new THREE.BoxGeometry(0.32, 0.42, 0.014), MAT.hullDark, g);
+  mesh(new THREE.BoxGeometry(0.26, 0.36, 0.02), MAT.hullMid, g, [0, 0, 0.006]);
+  mesh(new THREE.BoxGeometry(0.1, 0.03, 0.03), MAT.gold, g, [0.06, -0.06, 0.018]);
+  return g;
+}
+function rail(parent, x0, x1, y, z) { strut(parent, [x0, y, z], [x1, y, z], 0.012, MAT.gold); for (let x = x0; x <= x1 + 1e-6; x += (x1 - x0) / 3) strut(parent, [x, y, z - 0.05], [x, y, z], 0.01, MAT.gold); }
+function stripeTexture() {
+  const c = document.createElement("canvas"); c.width = 256; c.height = 32; const g = c.getContext("2d");
+  g.fillStyle = "#1d293d"; g.fillRect(0, 0, 256, 32); g.fillStyle = "#ffb900";
+  for (let x = -32; x < 288; x += 32) { g.beginPath(); g.moveTo(x, 32); g.lineTo(x + 16, 32); g.lineTo(x + 32, 0); g.lineTo(x + 16, 0); g.fill(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; return t;
+}
+const stripeTex = stripeTexture();
+
 /* ---------- Station ---------- */
 const station = new THREE.Group();
 scene.add(station);
@@ -228,6 +252,8 @@ function moduleFrame(angleDeg, name) {
   mesh(cyl(0.16, 0.2, 16), MAT.hullDark, ship, [-0.25, 0, 0], [0, 0, Math.PI / 2]);
   lamp(ship, [0.6, -0.06, 0.76], 0x05df72, 0.04); lamp(ship, [0.6, -0.06, -0.76], 0xff6467, 0.04);
   for (let i = 0; i < 5; i++) lamp(g, [1.2 + i * 0.4, -0.58, 0.66], 0xa1deff, 0.035);
+  hatch(g, 1.6, 0.05, 0.66); vents(g, 2.25, 0.25, 0.66, 5); rail(g, 1.2, 2.6, -0.3, 0.7);
+  [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(([a, b]) => mesh(new THREE.BoxGeometry(0.16, 0.12, 0.12), MAT.gold, g, [3.12, a * 0.42, b * 0.42]));
   MODULES.push({ id: 0, group: g, anchor: new THREE.Vector3(3.2, 0.8, 0), cam: new THREE.Vector3(5.5, 2.4, 4.2) });
 })();
 
@@ -241,6 +267,9 @@ function moduleFrame(angleDeg, name) {
   [1.2, 4.6].forEach((x) => mesh(new THREE.SphereGeometry(0.7, 32, 16), MAT.hullMid, g, [x, 0, 0]).scale.set(0.35, 1, 1));
   [2.2, 3.6].forEach((x) => mesh(new THREE.TorusGeometry(0.74, 0.06, 8, 48), MAT.hullDark, g, [x, 0, 0], [0, Math.PI / 2, 0]));
   lamp(g, [4.85, 0, 0], 0xffd230, 0.05);
+  rail(g, 1.7, 4.1, 0.55, 0.5); rail(g, 1.7, 4.1, -0.55, 0.5);
+  vents(g, 2.9, 0.72, 0, 6, 0).rotation.x = -Math.PI / 2;
+  mesh(cyl(0.015, 0.6, 6), MAT.truss, g, [4.2, 0.95, 0]); lamp(g, [4.2, 1.26, 0], 0xff6467, 0.03);
   MODULES.push({ id: 1, group: g, anchor: new THREE.Vector3(3.0, 1.0, 0), cam: new THREE.Vector3(4.8, 2.6, 4.6) });
 })();
 
@@ -260,6 +289,7 @@ function moduleFrame(angleDeg, name) {
     mesh(new THREE.BoxGeometry(0.1, 0.34, 0.02), crossMat, c, [0, 0, 0.01]);
   });
   mesh(cyl(0.02, 0.7, 6), MAT.truss, g, [1.6, 1.0, -0.4]); lamp(g, [1.6, 1.36, -0.4], 0x67caff, 0.035);
+  hatch(g, 2.35, -0.2, 0.81); vents(g, 1.5, 0.45, 0.81, 4); rail(g, 1.3, 3.3, -0.5, 0.86);
   MODULES.push({ id: 2, group: g, anchor: new THREE.Vector3(2.4, 1.2, 0), cam: new THREE.Vector3(4.6, 2.2, 4.2) });
 })();
 
@@ -310,11 +340,13 @@ const breach = { lights: [], embers: null, plates: [] };
     breach.lights.push(s);
   }
   breach.beacon = lamp(g, [2.4, 0.86, 0], 0xffb900, 0.07);
+  [1.45, 3.35].forEach((x) => { const b = mesh(new THREE.CylinderGeometry(0.815, 0.815, 0.14, 8, 1, true, Math.PI / 8), new THREE.MeshStandardMaterial({ map: stripeTex, roughness: 0.6, metalness: 0.2 }), g, [x, 0, 0], [0, 0, Math.PI / 2]); b.material.map.repeat.set(4, 1); });
+  vents(g, 3.2, 0.42, face + 0.002, 4); hatch(g, 1.85, -0.2, face + 0.002);
   MODULES.push({ id: 4, group: g, anchor: new THREE.Vector3(2.5, 1.1, 0), cam: new THREE.Vector3(4.8, 2.0, 4.6) });
 })();
 
 // 6. Eindmissie: the comms array on top of the spine (registered for the camera)
-MODULES.push({ id: 5, group: comms, anchor: new THREE.Vector3(0, 2.4, 0), cam: new THREE.Vector3(4.6, 3.0, 5.6), fixed: true });
+MODULES.push({ id: 5, group: comms, anchor: new THREE.Vector3(0, 2.4, 0), cam: new THREE.Vector3(6.8, 3.4, 7.8), fixed: true });
 
 // Extra greebles on the ring between modules
 for (let i = 0; i < 18; i++) {
@@ -441,6 +473,8 @@ station.traverse((o) => { if (o.isMesh && o.material && !o.material.transparent 
 scene.add(new THREE.HemisphereLight(0x67caff, 0x020814, 0.22));
 const rimLight = new THREE.DirectionalLight(0x67caff, 1.2); rimLight.position.set(20, -30, -20); scene.add(rimLight);
 const alarmLight = new THREE.PointLight(0xff4a3b, 0, 10, 2); scene.add(alarmLight);
+const pulseLight = new THREE.PointLight(0x67caff, 0, 6, 2); scene.add(pulseLight);
+let pulseLevel = 0;
 
 /* ---------- Camera rig ---------- */
 const HOME = { pos: new THREE.Vector3(19.5, 8.5, 22), target: new THREE.Vector3(0, 0.2, 0) };
@@ -549,6 +583,8 @@ function tick() {
   aria.userData.eye.material.emissive.setHex(alarm ? 0xff6467 : 0x15aaff);
 
   frameNo++; renderer.shadowMap.needsUpdate = !lowPower || frameNo % 4 === 0;
+  pulseLevel *= Math.pow(0.02, dt); pulseLight.intensity = pulseLevel; pulseLight.position.copy(aria.position);
+  if (pulseLevel > 0.05) aria.userData.eye.material.emissiveIntensity = 3.5 + pulseLevel; else aria.userData.eye.material.emissiveIntensity = 3.5;
   renderer.render(scene, camera);
   if (labelsCb) labelsCb();
 }
@@ -566,6 +602,8 @@ window.OrionStation = {
     offsetTarget = side === "left" ? -w * 0.28 : side === "right" ? w * 0.2 : 0;
   },
   alarm(on) { alarm = !!on; },
+  /* A short flash of light at ARIA when the player answers: blue for good, red for wrong. */
+  pulse(kind) { pulseLight.color.setHex(kind === "bad" ? 0xff6467 : kind === "gold" ? 0xffd230 : 0x67caff); pulseLevel = kind === "gold" ? 14 : 9; if (lowPower) acc = 1; },
   lowPower(on) { lowPower = !!on; },
   /* Screen positions of the module labels, for the HTML buttons on the overview. */
   project() {

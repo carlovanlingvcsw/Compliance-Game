@@ -192,3 +192,19 @@ html.in-orion .vcsw-page-title { display: none; }
 #stage::before, .stage::before, .game-main > #screen::before { display: none !important; }
 .vcsw-overline::before, .overline::before, .stage .ov::before, .hud::before { display: none !important; }
 html.orion-level body *:not(h1):not(h2):not(kbd) { text-transform: none !important; letter-spacing: normal !important; }
+
+/* Inside the game: one layer less. The shell panel is the frame, so the stage drops its own box. */
+html.in-orion #stage, html.in-orion .stage, html.in-orion .game-main > #screen {
+  background: transparent !important; border-color: transparent !important; box-shadow: none !important; backdrop-filter: none; padding: 8px 4px !important;
+}
+html.in-orion #stage h1 { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: #fff !important; }
+/* Mission steps stay on one line and scroll sideways */
+.steps { flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px !important; }
+.steps::-webkit-scrollbar { display: none; }
+.steps li { flex: none; }
+/* The alarm in brand-compatible tones: clearly an alert, not a red slab */
+html.in-orion .alarm:not(.off) { background: color-mix(in srgb, var(--vcsw-red-900) 45%, transparent) !important; border: 1px solid color-mix(in srgb, var(--vcsw-red-400) 70%, transparent); color: var(--vcsw-red-100) !important; }
+html.in-orion .alarm:not(.off) strong { color: #fff; }
+html.in-orion .alarm:not(.off) .alarm-dot { background: var(--vcsw-red-400); }
+/* No labels above titles inside the game; the steps strip and the shell already say where you are */
+html.in-orion #stage .vcsw-overline, html.in-orion #screen .vcsw-overline, html.in-orion #stage .ov, html.in-orion .stage .ov { display: none !important; }

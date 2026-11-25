@@ -114,6 +114,7 @@
   function mult() { return streak >= 8 ? 4 : streak >= 5 ? 3 : streak >= 3 ? 2 : 1; }
   var stageEl = document.getElementById("stage"), fx = document.getElementById("fx"), vig = document.getElementById("vig");
   function flash(kind) {
+    if (window.OrionStation && window.OrionStation.pulse) window.OrionStation.pulse(kind);
     vig.className = "vignette " + kind + " show";
     clearTimeout(flash.t); flash.t = setTimeout(function () { vig.className = "vignette " + kind; }, kind === "gold" ? 450 : 260);
   }
