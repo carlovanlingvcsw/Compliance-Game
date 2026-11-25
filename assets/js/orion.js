@@ -182,7 +182,7 @@
       var i = routeIndexOfLevel(n), s = P.levelStars[n] || 0, b = bonusFor(n);
       if (s > 0) done++;
       return '<li><button type="button" class="stop" data-i="' + i + '" data-m="' + L.module + '"><span class="num">' + (n === 5 ? "E" : n + 1) + '</span><span class="txt"><b>' + esc(L.name) + "</b><small>" + esc(L.place) +
-        (b >= 0 ? " · met bonusronde" : "") + '</small></span>' + (P.opened[n] || s ? '<span class="stars" role="img" aria-label="' + s + ' van 3 sterren">' + stars(s) + "</span>" : '<span class="new">Nieuw</span>') + "</button></li>";
+        (b >= 0 ? " · met bonusronde" : "") + '</small></span>' + (P.opened[n] || s ? '<span class="stars" role="img" aria-label="' + s + ' van 3 sterren">' + stars(s) + "</span>" : "") + "</button></li>";
     }).join("");
     hotEl.innerHTML = LEVELS.map(function (L, n) {
       return '<button type="button" class="hot" data-i="' + routeIndexOfLevel(n) + '" data-m="' + L.module + '" tabindex="-1" aria-hidden="true"><span class="dot"></span><span class="lead"></span><span class="tag">' + (n === 5 ? "E" : n + 1) + " · " + esc(L.place) + "</span></button>";
@@ -426,7 +426,7 @@
     newG("sprint", 40);
     var deck = shuffle(CARDS), idx = 0, lock = false;
     arcade.innerHTML = '<div class="ar-wrap"><section class="ar-panel">' + hudHtml() +
-      '<div class="sprint"><button class="bin-btn no" id="b-no">' + icon("x") + 'Geen persoonsgegeven<kbd>←</kbd></button><div class="holo-wrap"><div class="holo" id="holo"></div><p class="ar-feed" id="g-feed" aria-live="polite">Is dit een persoonsgegeven?</p></div><button class="bin-btn yes" id="b-yes">' + icon("user") + 'Wel persoonsgegeven<kbd>→</kbd></button></div>' +
+      '<p class="ar-brief">Is dit een persoonsgegeven? Sorteer zo snel mogelijk met de pijltjestoetsen of klik op een vak.</p><div class="sprint"><button class="bin-btn no" id="b-no">' + icon("x") + 'Geen persoonsgegeven<kbd>←</kbd></button><div class="holo-wrap"><div class="holo" id="holo"></div><p class="ar-feed" id="g-feed" aria-live="polite"></p></div><button class="bin-btn yes" id="b-yes">' + icon("user") + 'Wel persoonsgegeven<kbd>→</kbd></button></div>' +
       '</section></div>';
     var holo = document.getElementById("holo");
     function show() { if (idx >= deck.length) { deck = shuffle(CARDS); idx = 0; } holo.className = "holo"; holo.innerHTML = "<p>" + esc(deck[idx][0]) + "</p>"; }
@@ -511,7 +511,7 @@
   function playInvaders() {
     newG("invaders", 60);
     arcade.innerHTML = '<div class="ar-wrap"><section class="ar-panel">' + hudHtml() +
-      '<div class="sky" id="sky"><div class="base" aria-hidden="true"><i></i><i></i><i></i><span class="turret"></span></div></div><div class="legend"><span>Klik op een <b>nepbericht</b> om het neer te schieten.</span><span>Laat <b>echte berichten</b> landen op de basis.</span></div>' +
+      '<p class="ar-brief">Klik op een <b>nepbericht</b> om het neer te schieten. Laat <b>echte berichten</b> landen op de basis.</p><div class="sky" id="sky"><div class="base" aria-hidden="true"><i></i><i></i><i></i><svg class="turret" viewBox="0 0 64 40" aria-hidden="true"><path d="M32 2 L40 22 L60 30 L60 36 L40 33 L36 38 L28 38 L24 33 L4 36 L4 30 L24 22 Z" fill="#e2e8f0"/><path d="M32 8 L36 22 L28 22 Z" fill="#15aaff"/><path d="M4 30 L24 22 L24 33 L4 36 Z M60 30 L40 22 L40 33 L60 36 Z" fill="#90a1b9"/></svg></div></div>' +
       '<p class="ar-feed" id="g-feed" aria-live="polite"></p></section></div>';
     var sky = document.getElementById("sky"), live = [], spawnIn = 0.1, wave = 3, lanes = [0, 1, 2], lastLane = -1;
     function beam(x, y, cls) {
@@ -533,7 +533,7 @@
       el.innerHTML = '<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><small>Van: ' + esc(m[0]) + " · " + esc(m[1]) + "</small><b>" + esc(m[2]) + "</b></span>";
       el.setAttribute("aria-label", "Bericht van " + m[0] + ", " + m[1] + ": " + m[2] + ". Klik om neer te schieten.");
       el.style.left = (2 + lane * 33) + "%";
-      var o = { el: el, y: -80, fake: m[3] === 1, v: 52 + (60 - G.left) * 1.6 + Math.random() * 14 };
+      var o = { el: el, y: 10, fake: m[3] === 1, v: 52 + (60 - G.left) * 1.6 + Math.random() * 14 };
       el.onclick = function (e) {
         if (!G || G.over) return;
         var r = el.getBoundingClientRect(), sr = sky.getBoundingClientRect(), x = r.left - sr.left + r.width / 2, y = r.top - sr.top + r.height / 2;

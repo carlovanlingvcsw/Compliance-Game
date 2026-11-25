@@ -69,6 +69,7 @@ function hullTexture(base, opts = {}) {
       g.fillStyle = v > 0 ? `rgba(255,255,255,${v / 255})` : `rgba(0,0,0,${-v / 255})`; g.fillRect(px, py, cw, ph);
       const rv = 80 + Math.floor(rnd() * 80); r.fillStyle = `rgb(${rv},${rv},${rv})`; r.fillRect(px, py, cw, ph);
       b.fillStyle = "#5a5a5a"; b.fillRect(px, py, cw, 2); b.fillRect(px, py, 2, ph);
+      g.fillStyle = "rgba(10,20,35,.22)"; g.fillRect(px, py, cw, 1.5); g.fillRect(px, py, 1.5, ph);
       b.fillStyle = "#a0a0a0"; b.fillRect(px + 2, py + 2, cw - 2, 1);
       for (let k = 0; k < 4; k++) { b.fillStyle = "#b8b8b8"; b.fillRect(px + 6 + k * (cw - 12) / 3, py + 5, 2, 2); }
       if (rnd() < 0.2) { g.fillStyle = "rgba(0,0,0,.12)"; g.fillRect(px + cw * 0.15, py + ph * 0.3, cw * 0.5, ph * 0.12); b.fillStyle = "#6c6c6c"; b.fillRect(px + cw * 0.15, py + ph * 0.3, cw * 0.5, ph * 0.12); }
@@ -81,7 +82,7 @@ function hullTexture(base, opts = {}) {
   return map;
 }
 function hullMat(map, metalness, roughness, repeat) {
-  const m = new THREE.MeshStandardMaterial({ map, metalness, roughness, bumpMap: map.userData.bump, bumpScale: 1.2, roughnessMap: map.userData.rough });
+  const m = new THREE.MeshStandardMaterial({ map, metalness, roughness, bumpMap: map.userData.bump, bumpScale: 2.6, roughnessMap: map.userData.rough });
   if (repeat) { ["map", "bumpMap", "roughnessMap"].forEach((k) => { m[k] = m[k].clone(); m[k].repeat.set(repeat[0], repeat[1]); m[k].needsUpdate = true; }); }
   return m;
 }
@@ -159,7 +160,7 @@ function trussBox(parent, w, h, d, r) {
   [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7], [0, 6], [1, 7]].forEach(([i, j]) => strut(parent, P[i], P[j], r));
 }
 function lamp(parent, pos, color, size) {
-  const m = mesh(new THREE.SphereGeometry(size || 0.05, 10, 8), emissive(color, 3), parent, pos);
+  const m = mesh(new THREE.SphereGeometry((size || 0.05) * 0.6, 10, 8), emissive(color, 3), parent, pos);
   m.userData.blink = rnd() * 6;
   blinkers.push(m); return m;
 }
@@ -226,6 +227,8 @@ function solarWing(y, flip) {
     const p = mesh(new THREE.BoxGeometry(5.6, 0.03, 1.5), MAT.solar, g, [4.4 * flip, 0, (k ? 1 : -1) * 0.95]);
     p.material = MAT.solar.clone(); p.material.map = MAT.solar.map.clone(); p.material.map.repeat.set(4, 1); p.material.map.needsUpdate = true;
     mesh(new THREE.BoxGeometry(5.7, 0.05, 0.05), MAT.truss, g, [4.4 * flip, 0, (k ? 1 : -1) * 1.72]);
+    mesh(new THREE.BoxGeometry(5.7, 0.05, 0.05), MAT.truss, g, [4.4 * flip, 0, (k ? 1 : -1) * 0.18]);
+    for (let q = 0; q < 5; q++) mesh(new THREE.BoxGeometry(0.04, 0.05, 1.55), MAT.truss, g, [4.4 * flip + (q - 2) * 1.4, 0, (k ? 1 : -1) * 0.95]);
   }
   return g;
 }
@@ -281,8 +284,7 @@ function moduleFrame(angleDeg, name) {
   const g = moduleFrame(80, "passagiers");
   const hab = mesh(cyl(0.7, 3.4, 48), MAT.hull, g, [2.9, 0, 0], [0, 0, Math.PI / 2]);
   hab.material = hullMat(TEX.light, 0.4, 0.75, [4, 2]);
-  const wt = windowTexture(24, 3, 0.7, "#ffe2a8"); wt.repeat.set(2, 1);
-  mesh(new THREE.CylinderGeometry(0.705, 0.705, 3.2, 48, 1, true), new THREE.MeshStandardMaterial({ color: 0, emissive: 0xffffff, emissiveMap: wt, emissiveIntensity: 1.6, transparent: true, alphaMap: wt, depthWrite: false }), g, [2.9, 0, 0], [0, 0, Math.PI / 2]);
+  // windows are the lit portholes further down
   [1.2, 4.6].forEach((x) => mesh(new THREE.SphereGeometry(0.7, 32, 16), MAT.hullMid, g, [x, 0, 0]).scale.set(0.35, 1, 1));
   [2.2, 3.6].forEach((x) => mesh(new THREE.TorusGeometry(0.74, 0.06, 8, 48), MAT.hullDark, g, [x, 0, 0], [0, Math.PI / 2, 0]));
   lamp(g, [4.85, 0, 0], 0xffd230, 0.05);
@@ -300,7 +302,8 @@ function moduleFrame(angleDeg, name) {
   const box = mesh(new THREE.BoxGeometry(2.4, 1.3, 1.6), MAT.white, g, [2.3, 0, 0]);
   box.material = hullMat(TEX.white, 0.2, 0.7, [2, 1]);
   mesh(new THREE.BoxGeometry(2.42, 0.08, 1.62), emissive(0x67caff, 2.4), g, [2.3, 0.2, 0]);
-  mesh(new THREE.SphereGeometry(0.75, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), MAT.glass, g, [2.3, 0.65, 0]).scale.set(1, 0.5, 0.8);
+  mesh(new THREE.SphereGeometry(0.75, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x1c3d66, metalness: 0.6, roughness: 0.12, emissive: 0x0c2f5f, emissiveIntensity: 0.6 }), g, [2.3, 0.65, 0]).scale.set(1, 0.5, 0.8);
+  mesh(new THREE.TorusGeometry(0.75, 0.04, 8, 48), MAT.hullDark, g, [2.3, 0.65, 0], [Math.PI / 2, 0, 0]).scale.set(1, 0.8, 1);
   for (let i = 0; i < 2; i++) mesh(new THREE.BoxGeometry(0.42, 0.22, 0.02), emissive(0xd3efff, 1.4), g, [1.5 + i * 0.6, -0.15, 0.81]);
   const crossMat = emissive(0x67e8d0, 2.6);
   [[3.05, -0.1, 0.815, 0], [3.505, -0.1, 0, Math.PI / 2]].forEach(([x, y, z, ry]) => {
@@ -319,7 +322,7 @@ function moduleFrame(angleDeg, name) {
   const g = moduleFrame(200, "vrachtdok");
   const t = new THREE.Group(); g.add(t); t.position.set(2.6, 0, 0);
   trussBox(t, 3.2, 1.6, 1.8, 0.03);
-  const cols = [0x0a6dbe, 0x15aaff, 0xc9d3df, 0xffb900, 0x113e78, 0x62748e];
+  const cols = [0x2f6fa8, 0x8a96a8, 0xc9d3df, 0xd9a22b, 0x3b5578, 0x62748e, 0xa1876a];
   for (let x = 0; x < 4; x++) for (let y = 0; y < 2; y++) for (let z = 0; z < 2; z++) {
     if (rnd() < 0.22) continue;
     const c = new THREE.MeshStandardMaterial({ color: pick(cols), metalness: 0.3, roughness: 0.6, map: TEX.container });
@@ -329,6 +332,8 @@ function moduleFrame(angleDeg, name) {
   mesh(new THREE.BoxGeometry(3.4, 0.08, 0.12), MAT.hullDark, crane);
   const hook = mesh(new THREE.BoxGeometry(0.2, 0.3, 0.2), MAT.gold, crane, [0.6, -0.2, 0]);
   lamp(t, [1.6, 0.85, 0.9], 0xffb900, 0.05); lamp(t, [-1.6, 0.85, -0.9], 0xffb900, 0.05);
+  [[-0.8, 0.9], [-0.8, -0.9]].forEach(([y, z]) => strut(g, [1.0, y, z], [0.4, y * 0.3, z * 0.4], 0.035, MAT.hullDark));
+  [[-1.6, -0.8, 0.9], [-1.6, -0.8, -0.9], [-1.6, 0.8, 0.9], [-1.6, 0.8, -0.9]].forEach((p) => mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), MAT.gold, t, p));
   MODULES.push({ id: 3, group: g, anchor: new THREE.Vector3(2.6, 1.3, 0), cam: new THREE.Vector3(5.2, 2.8, 4.4), crane: hook });
 })();
 
@@ -347,6 +352,7 @@ const breach = { lights: [], embers: null, plates: [] };
   const ember = new THREE.Shape(), E = [[-0.3, 0.02], [-0.1, 0.12], [0.08, 0.04], [0.28, 0.1], [0.2, -0.06], [0.0, -0.12], [-0.18, -0.06]];
   ember.moveTo(E[0][0], E[0][1]); E.slice(1).forEach((p) => ember.lineTo(p[0], p[1]));
   breach.embers = mesh(new THREE.ShapeGeometry(ember), new THREE.MeshBasicMaterial({ color: 0xff7a2e, transparent: true, opacity: 0.35 }), g, [hx, hy, face + 0.002]);
+  breach.embers.scale.setScalar(1.35);
   for (let i = 0; i < 3; i++) { const r = mesh(cyl(0.018, 0.6, 6), MAT.hullDark, g, [hx - 0.25 + i * 0.25, hy, face + 0.004]); r.rotation.z = 0.2 * (i - 1); }
   // bent plates hinged at the edge of the hole, peeled outward
   [[-0.5, 0.12, 0.5, 1], [0.44, 0.16, -0.6, 1], [0.05, 0.32, 0.1, 0], [-0.1, -0.28, -0.2, 0], [0.4, -0.16, 0.9, 1]].forEach(([dx, dy, rz, side]) => {
