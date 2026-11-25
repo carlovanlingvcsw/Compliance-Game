@@ -60,7 +60,7 @@ function makeEnvironment() {
 scene.environment = makeEnvironment();
 scene.environmentIntensity = 0.85;
 /* The studio HDRI replaces the code-built environment as soon as it has loaded. Space itself stays dark. */
-loadEnv(renderer, "env_studio").then((t) => { scene.environment = t; scene.environmentIntensity = 0.5; scene.environmentRotation.y = 1.2; }, () => {});
+loadEnv(renderer, "env_studio").then((t) => { scene.environment = t; scene.environmentIntensity = 0.3; scene.environmentRotation.y = 1.2; }, () => {});
 
 /* ---------- Materials ---------- */
 function hullMat(kind, repeat) {
@@ -99,7 +99,7 @@ const MAT = {
 };
 const heatMat = pbr("heat_shield", { repeat: [2, 2], color: 0xb9c6d8, metalness: 0.35, roughness: 0.9, ao: true });
 const containerMats = {};
-function containerMat(hex) { return containerMats[hex] || (containerMats[hex] = pbr("container", { color: hex, metalness: 0.45, roughness: 0.95, ao: true })); }
+function containerMat(hex) { return containerMats[hex] || (containerMats[hex] = pbr("container", { repeat: [0.5, 1], color: hex, metalness: 0.4, roughness: 0.9, normalScale: 0.55, ao: true })); }
 function emissive(color, intensity) { return new THREE.MeshStandardMaterial({ color: 0x000000, emissive: color, emissiveIntensity: intensity, roughness: 0.6 }); }
 
 /* ---------- Helpers ---------- */
@@ -212,14 +212,14 @@ const comms = new THREE.Group(); station.add(comms); comms.position.y = 4.5;
 mesh(cyl(0.12, 1.8, 12), MAT.truss, comms, [0, 0.9, 0]);
 mesh(cyl(0.34, 0.5, 16), FOIL.gold, comms, [0, 0.25, 0]);
 const dishPts = []; for (let i = 0; i <= 16; i++) { const t = i / 16; dishPts.push(new THREE.Vector2(t * 1.3, t * t * 0.55)); }
-const dish = mesh(new THREE.LatheGeometry(dishPts, 48), Object.assign(pbr("hull_white", { repeat: [8, 2], color: 0xd4dce6, metalness: 0.3, roughness: 0.8 }), { side: THREE.DoubleSide }), comms, [0, 1.9, 0]);
+const dish = mesh(new THREE.LatheGeometry(dishPts, 48), new THREE.MeshStandardMaterial({ color: 0xc9d3df, metalness: 0.75, roughness: 0.42, side: THREE.DoubleSide }), comms, [0, 1.9, 0]);
 dish.rotation.set(-0.9, 0, 0.3);
 for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; strut(dish, [Math.cos(a) * 0.15, 0.012, Math.sin(a) * 0.15], [Math.cos(a) * 1.28, 0.56, Math.sin(a) * 1.28], 0.012, MAT.hullDark); }
 mesh(new THREE.TorusGeometry(1.3, 0.025, 6, 64), MAT.hullDark, dish, [0, 0.55, 0], [Math.PI / 2, 0, 0]);
 [0, 2.1, 4.2].forEach((a) => strut(dish, [Math.cos(a) * 1.2, 0.5, Math.sin(a) * 1.2], [0, 0.86, 0], 0.012, MAT.truss));
 mesh(new THREE.CylinderGeometry(0.05, 0.09, 0.16, 16), MAT.hullDark, dish, [0, 0.86, 0]);
-lamp(comms, [0, 1.85, 0], 0x15aaff, 0.06);
-const dishLamp = lamp(dish, [0, 0.92, 0], 0x67caff, 0.07);
+lamp(comms, [0, 1.85, 0], 0x15aaff, 0.03);
+const dishLamp = lamp(dish, [0, 0.92, 0], 0x67caff, 0.03);
 
 /* ---------- The six modules on the ring ---------- */
 const MODULES = [];
@@ -318,7 +318,7 @@ function moduleFrame(angleDeg, name) {
   const g = moduleFrame(200, "vrachtdok");
   const t = new THREE.Group(); g.add(t); t.position.set(2.6, 0, 0);
   trussBox(t, 3.2, 1.6, 1.8, 0.03);
-  const cols = [0x3a78b8, 0xa9b4c2, 0xd9dfe7, 0xc99a3a, 0x48648a, 0x7487a0, 0xa9b4c2];
+  const cols = [0x0a6dbe, 0xd9dfe7, 0x0a6dbe, 0xffb900, 0x1f4f85, 0xd9dfe7, 0x8fa0b8];
   for (let x = 0; x < 4; x++) for (let y = 0; y < 2; y++) for (let z = 0; z < 2; z++) {
     if (rnd() < 0.22) continue;
     const c = containerMat(pick(cols));
@@ -369,7 +369,7 @@ const breach = { lights: [], embers: null, plates: [] };
 })();
 
 // 6. Eindmissie: the comms array on top of the spine (registered for the camera)
-MODULES.push({ id: 5, group: comms, anchor: new THREE.Vector3(0, 2.4, 0), cam: new THREE.Vector3(6.8, 3.4, 7.8), fixed: true });
+MODULES.push({ id: 5, group: comms, anchor: new THREE.Vector3(0, 2.4, 0), cam: new THREE.Vector3(3.2, 5.6, 11.5), fixed: true });
 
 // Extra greebles on the ring between modules
 for (let i = 0; i < 18; i++) {
@@ -499,7 +499,7 @@ mesh(new THREE.SphereGeometry(94, 64, 48), haloMat, scene, [-170, -150, -135]);
 })();
 
 /* ---------- Lights ---------- */
-const sun = new THREE.DirectionalLight(0xffe8c8, 4.2);
+const sun = new THREE.DirectionalLight(0xffe8c8, 5.4);
 sun.position.copy(planetMat.uniforms.uLight.value).multiplyScalar(50);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);

@@ -254,3 +254,10 @@ html.calm .timer, html.calm #timer { display: none !important; }
 html.asking .hud, html.asking .vcsw-stats, html.asking .vcsw-card.flush:has(> .hud), html.asking :has(> .alarm-dot),
 html.asking .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) { display: none !important; }
 html.asking .options { margin-top: 8px; }
+
+/* ---------- Fewer boxes in the mission panel: rule cards as one open row, the prototype note as a footer line ---------- */
+html.in-orion .vcsw-card:not(#stage):not(.flush), html.in-orion .info-card { background: none !important; padding-left: 0 !important; padding-right: 20px !important; }
+html.in-orion .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) { border: 0 !important; background: none !important; padding: 8px 0 0 !important; font-size: .8125rem; opacity: .8; }
+html.in-orion .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) .vcsw-alert-title { display: inline; font-weight: 600; } 
+html.in-orion .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) .vcsw-alert-text { display: inline; }
+html.in-orion .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) > .vcsw-icon { display: none; }

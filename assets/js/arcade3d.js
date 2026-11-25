@@ -97,7 +97,7 @@ function invaders(S) {
       edge.scale.set(W * 1.2, 1, 1); edge.position.set(0, fy - 21, 96);
       lamps.forEach((l, i) => { const s = i % 2 ? 1 : -1, k = Math.floor(i / 2); l.position.set(s * W * 0.47, fy - 13, 40 - k * 190); });
       pylons.forEach((p) => p.position.set(p.userData.s * (W * 0.9 + 260), fy + 430, -1500));
-      glowBand.scale.set(W * 12, 900, 1); glowBand.position.set(0, 60, -5200);
+      glowBand.visible = false;
       turret.position.set(0, fy - 12, -70); turret.scale.setScalar(1.45);
       globe.scale.setScalar(2600); globe.position.set(0, -2740, -3600);
       shields.forEach((s, i) => s.position.set((i - 1) * 62, fy - 12, 110));
@@ -146,9 +146,17 @@ function invaders(S) {
 /* ---------- Holokaarten-sprint: a holo table in the arrival hall with a sorting chute on each side ---------- */
 function sprint(S) {
   const g = S.scene;
-  const wall = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_light", { repeat: [2.5, 1.5], color: 0x3c4a63, metalness: 0.5, normalScale: 1.6 }), g);
+  stars(g, 400);
+  const globe = earth(g);
+  const wallMat = pbr("hull_light", { repeat: [1.2, 1.2], color: 0x566884, metalness: 0.5, normalScale: 1.8 });
+  const wallParts = [0, 1, 2, 3].map(() => mesh(box(1, 1, 40), wallMat, g));          // left, right, top, sill around the window
+  const mullions = [-1, 1].map(() => mesh(box(14, 1, 46), pbr("hull_dark", { metalness: 0.7 }), g));
+  const wall = mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 }), g);
+  const blob = (function () { const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d"), gr = x.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, "rgba(0,0,0,.6)"); gr.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = gr; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
+  const shadow = mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blob, transparent: true, depthWrite: false }), g); shadow.rotation.x = -Math.PI / 2;
+  const spot = new THREE.SpotLight(0xfff1dc, 0, 0, 0.5, 0.6, 0); g.add(spot); g.add(spot.target);
   const strip = mesh(box(1, 5, 6), glow(SKYBLUE, 1.0), g);
-  const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("rubber_floor", { repeat: [5, 3], color: 0x8fa0b8, metalness: 0.2, roughness: 0.9, ao: true }), g); table.rotation.x = -Math.PI / 2;
+  const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("rubber_floor", { repeat: [5, 3], color: 0x3b4d6e, metalness: 0.35, roughness: 0.8, ao: true }), g); table.rotation.x = -Math.PI / 2;
   const rim = mesh(box(1, 16, 30), pbr("hull_light", { repeat: [8, 1], color: 0x8fa0b8, metalness: 0.5 }), g);
   // a matte landing pad with painted markings, where the next card arrives
   const pc = document.createElement("canvas"); pc.width = pc.height = 256; const pg = pc.getContext("2d");
@@ -158,7 +166,7 @@ function sprint(S) {
   const pt = new THREE.CanvasTexture(pc); pt.colorSpace = THREE.SRGBColorSpace; pt.anisotropy = 4;
   const padMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, metalness: 0.2 });
   const pad = mesh(new THREE.CylinderGeometry(1, 1, 6, 48), [padMat, new THREE.MeshStandardMaterial({ map: pt, roughness: 0.85, metalness: 0.2 }), padMat], g);
-  const ringMat = glow(BLUE, 0.6), ring = mesh(new THREE.TorusGeometry(1, 0.008, 8, 64), ringMat, g); ring.rotation.x = Math.PI / 2;
+  const ringMat = new THREE.MeshStandardMaterial({ color: 0x15aaff, emissive: 0x15aaff, emissiveIntensity: 0, roughness: 0.6 }), ring = mesh(new THREE.TorusGeometry(1, 0.008, 8, 64), ringMat, g); ring.rotation.x = Math.PI / 2;
   const frameMat = pbr("hull_light", { color: 0xd3dce8, metalness: 0.5, normalScale: 1.4 }), darkMat = new THREE.MeshBasicMaterial({ color: 0x0a2244 });
   const chutes = [".bin-btn.no", ".bin-btn.yes"].map((sel) => {
     const c = new THREE.Group(); g.add(c);
@@ -170,7 +178,15 @@ function sprint(S) {
   let last = "", ringHeat = 0, ringHex = BLUE;
   return {
     layout(W, H) {
-      wall.scale.set(W * 3, H * 2.4, 1); wall.position.set(0, H * 0.25, -620);
+      const wz = -620, winW = W * 0.9, winTop = H * 0.72, winBot = H * 0.02;
+      wallParts[0].scale.set(W * 1.4, H * 2.6, 1); wallParts[0].position.set(-winW / 2 - W * 0.7, H * 0.2, wz);
+      wallParts[1].scale.set(W * 1.4, H * 2.6, 1); wallParts[1].position.set(winW / 2 + W * 0.7, H * 0.2, wz);
+      wallParts[2].scale.set(winW, H, 1); wallParts[2].position.set(0, winTop + H / 2, wz);
+      wallParts[3].scale.set(winW, H, 1); wallParts[3].position.set(0, winBot - H / 2, wz);
+      mullions.forEach((m, i) => { m.scale.set(1, winTop - winBot, 1); m.position.set((i ? 1 : -1) * winW / 6, (winTop + winBot) / 2, wz); });
+      globe.scale.setScalar(2400); globe.position.set(0, -2080, -4200);
+      shadow.scale.set(W * 0.55, 260, 1); shadow.position.set(0, -H * 0.36 + 1, -70);
+      spot.position.set(-W * 0.2, H * 1.1, 500); spot.target.position.set(0, -H * 0.3, -80); spot.intensity = 3.2;
       strip.scale.set(W * 1.5, 1, 1); strip.position.set(0, H * 0.62, -600);
       table.scale.set(W * 2.2, 900, 1); table.position.set(0, -H * 0.36, -300);
       rim.scale.set(W * 2.2, 1, 1); rim.position.set(0, -H * 0.36 - 8, 150);
@@ -190,7 +206,7 @@ function sprint(S) {
         }
       }
       ringHeat *= Math.pow(0.02, dt);
-      ringMat.color.set(BLUE).lerp(new THREE.Color(ringHex), ringHeat).multiplyScalar(0.6 + ringHeat * 2.4);
+      ringMat.emissive.setHex(ringHex); ringMat.color.setHex(ringHeat > 0.05 ? ringHex : 0xd3e6ff); ringMat.emissiveIntensity = ringHeat * 2.2;
       chutes.forEach((c) => {
         const n = S.el.querySelector(c.sel); if (!n) return;
         const r = S.rect(n), w = r.w + 18, h = r.h + 18, d = 70;

@@ -498,3 +498,8 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .ad-table tbody th { color: #fff; font-weight: 600; }
 .ad-table td:nth-child(5), .ad-table td:nth-child(6) { font-variant-numeric: tabular-nums; }
 @media (max-width: 800px) { .ad-sum { grid-template-columns: 1fr; } .ad-head { flex-direction: column; } }
+
+/* ---------- Top bar as one quiet strip ---------- */
+.bar .icon-btn { border-color: transparent; background: none; }
+.bar .icon-btn:hover, .bar .icon-btn[aria-pressed="true"] { background: color-mix(in srgb, var(--vcsw-blue-700) 40%, transparent); }
+.bar .meters { gap: 2px; }
