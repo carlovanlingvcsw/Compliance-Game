@@ -281,7 +281,7 @@
     document.getElementById("next").disabled = i === ROUTE.length - 1;
     document.title = label(r).title + " · AVG-game Ruimtestation Orion";
     renderRoute(); syncStation();
-    var node = routeEl.querySelector('[data-i="' + i + '"]'); if (node) node.scrollIntoView({ block: "nearest", inline: "nearest" });
+    var node = routeEl.querySelector('[data-i="' + i + '"]'); if (node) node.scrollIntoView({ block: "nearest", inline: "center" });
     if (first) missionEl.focus({ preventScroll: true });
   }
   document.getElementById("prev").onclick = function () { go(cur - 1); };
@@ -426,13 +426,14 @@
     newG("sprint", 40);
     var deck = shuffle(CARDS), idx = 0, lock = false;
     arcade.innerHTML = '<div class="ar-wrap"><section class="ar-panel">' + hudHtml() +
-      '<p class="ar-brief">Persoonsgegeven of niet? Gebruik de pijltjes of klik op een vak.</p><div class="sprint"><button class="bin-btn no" id="b-no">' + icon("x") + 'Geen persoonsgegeven<kbd>←</kbd></button><div class="holo-wrap"><div class="holo" id="holo"></div><p class="ar-feed" id="g-feed" aria-live="polite"></p></div><button class="bin-btn yes" id="b-yes">' + icon("user") + 'Wel persoonsgegeven<kbd>→</kbd></button></div>' +
+      '<p class="ar-brief">Persoonsgegeven of niet? Gebruik de pijltjes of klik op een vak.</p><div class="sprint"><button class="bin-btn no" id="b-no">' + icon("x") + 'Geen persoonsgegeven<kbd>←</kbd></button><div class="holo-wrap"><div class="holo" id="holo"></div><p class="ar-feed" id="g-feed" aria-live="polite"></p><div class="trail" id="trail" aria-hidden="true"></div></div><button class="bin-btn yes" id="b-yes">' + icon("user") + 'Wel persoonsgegeven<kbd>→</kbd></button></div>' +
       '</section></div>';
     var holo = document.getElementById("holo");
     function show() { if (idx >= deck.length) { deck = shuffle(CARDS); idx = 0; } holo.className = "holo"; holo.innerHTML = "<p>" + esc(deck[idx][0]) + "</p>"; }
     function answer(yes) {
       if (lock || !G || G.over) return;
       var c = deck[idx], ok = (c[1] === 1) === yes;
+      var tr = document.getElementById("trail"); if (tr) { var d = document.createElement("i"); d.className = ok ? "ok" : "nok"; tr.appendChild(d); while (tr.children.length > 14) tr.firstChild.remove(); }
       if (ok) { var pts = gGood(10); feed("+" + pts, "good"); lock = true; if (!reduce) holo.className = "holo " + (yes ? "fly-r" : "fly-l"); later(function () { idx++; lock = false; show(); }, reduce ? 0 : 230); }
       else { gBad(false); feed("Fout. Dit is " + (c[1] ? "wel" : "geen") + " persoonsgegeven.", "bad"); holo.className = "holo wrong"; lock = true; G.left -= 2; later(function () { idx++; lock = false; show(); }, 650); }
     }
@@ -526,16 +527,16 @@
       if (text) { var f = document.createElement("div"); f.className = "float " + cls; f.textContent = text; f.style.left = (x - 20) + "px"; f.style.top = (y - 20) + "px"; sky.appendChild(f); later(function () { f.remove(); }, 820); }
     }
     function spawn() {
-      var m = MSGS[Math.floor(Math.random() * MSGS.length)], lane;
+      var pool = MSGS.filter(function (x) { return !live.some(function (q) { return q.m === x; }); }), m = pool[Math.floor(Math.random() * pool.length)], lane;
       var free = lanes.filter(function (l) { return !live.some(function (q) { return q.lane === l && q.y < 150; }); });
       if (!free.length) { spawnIn = 0.25; return; }
       lane = free[Math.floor(Math.random() * free.length)];
       lastLane = lane;
       var el = document.createElement("button"); el.type = "button"; el.className = "inv";
-      el.innerHTML = '<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><small>Van: ' + esc(m[0]) + " · " + esc(m[1]) + "</small><b>" + esc(m[2]) + "</b></span>";
+      el.innerHTML = '<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><small>Van: ' + esc(m[0]) + '</small><small class="dom">' + esc(m[1]) + "</small><b>" + esc(m[2]) + "</b></span>";
       el.setAttribute("aria-label", "Bericht van " + m[0] + ", " + m[1] + ": " + m[2] + ". Klik om neer te schieten.");
       el.style.left = (2 + lane * 33) + "%";
-      var o = { el: el, lane: lane, y: 10, fake: m[3] === 1, v: 52 + (60 - G.left) * 1.6 + Math.random() * 14 };
+      var o = { el: el, m: m, lane: lane, y: 10, fake: m[3] === 1, v: 52 + (60 - G.left) * 1.6 + Math.random() * 14 };
       el.onclick = function (e) {
         if (!G || G.over) return;
         var r = el.getBoundingClientRect(), sr = sky.getBoundingClientRect(), x = r.left - sr.left + r.width / 2, y = r.top - sr.top + r.height / 2;

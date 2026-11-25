@@ -122,10 +122,10 @@ function containerTexture() {
 /* Crinkled insulation foil, like the gold and silver blankets on real spacecraft */
 function foilTexture(tone) {
   const S = 256, c = document.createElement("canvas"); c.width = c.height = S; const g = c.getContext("2d");
-  const base = tone === "gold" ? [196, 152, 72] : [196, 204, 214];
+  const base = tone === "gold" ? [200, 156, 84] : [178, 184, 192];
   g.fillStyle = `rgb(${base})`; g.fillRect(0, 0, S, S);
-  for (let i = 0; i < 260; i++) {
-    const x = rnd() * S, y = rnd() * S, r = 6 + rnd() * 22, k = 0.7 + rnd() * 0.6;
+  for (let i = 0; i < 120; i++) {
+    const x = rnd() * S, y = rnd() * S, r = 10 + rnd() * 26, k = 0.86 + rnd() * 0.28;
     g.fillStyle = `rgb(${base.map((v) => Math.min(255, Math.round(v * k))).join(",")})`;
     g.beginPath(); g.moveTo(x, y);
     for (let j = 0; j < 4; j++) g.lineTo(x + (rnd() - 0.5) * r * 2, y + (rnd() - 0.5) * r * 2);
@@ -135,7 +135,7 @@ function foilTexture(tone) {
   for (let i = 0; i < 4; i++) { g.beginPath(); g.moveTo(0, i * 64 + 2); g.lineTo(S, i * 64 + 2); g.stroke(); }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
   const b = new THREE.CanvasTexture(c); b.wrapS = b.wrapT = THREE.RepeatWrapping;
-  return new THREE.MeshStandardMaterial({ map: t, bumpMap: b, bumpScale: 3, metalness: 0.55, roughness: 0.38 });
+  return new THREE.MeshStandardMaterial({ map: t, bumpMap: b, bumpScale: 1.6, metalness: 0.5, roughness: 0.45 });
 }
 const TEX = {
   container: containerTexture(),
