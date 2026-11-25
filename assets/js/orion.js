@@ -42,7 +42,12 @@
     user: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>', clip: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
     cross: '<path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"/>',
     map: '<path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/>',
-    check: '<path d="M20 6 9 17l-5-5"/>'
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    aleft: '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>', aright: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+    door: '<path d="M11 20H2"/><path d="M11 4.562v16.157a1 1 0 0 0 1.242.97L19 20V5.562a2 2 0 0 0-1.515-1.94l-4-1A2 2 0 0 0 11 4.561z"/><path d="M11 4H8a2 2 0 0 0-2 2v14"/><path d="M14 12h.01"/><path d="M22 20h-3"/>',
+    mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+    alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>'
   };
   function icon(n) { return '<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true">' + IC[n] + "</svg>"; }
   var STAR = '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>';
@@ -436,15 +441,39 @@
     if (A3) station(function (S) { S.lowPower(2); });
   }
 
+  /* Start card of a practice round: what you see, what you do, what it costs. */
+  var INTRO = {
+    sprint: { time: "40 seconden", lead: "Elke kaart noemt een gegeven. Jij beslist of je er een persoon mee kunt aanwijzen.",
+      score: [["check", "Goed gesorteerd levert punten op"], ["zap", "Elke drie goed op rij telt zwaarder, tot keer 4"], ["clock", "Fout gesorteerd kost twee seconden en je combo"]],
+      calm: "Staat Tijdsdruk uit, dan speel je 20 kaarten zonder klok.",
+      demo: function () { return '<div class="gi-side">' + icon("x") + "<b>Geen persoonsgegeven</b><kbd>" + icon("aleft") + 'Pijl links</kbd></div><span class="gi-arrow">' + icon("aleft") + '</span><div class="gi-card">Loonstrook van de vorige bewoner</div><span class="gi-arrow">' + icon("aright") + '</span><div class="gi-side yes">' + icon("user") + "<b>Wel persoonsgegeven</b><kbd>" + icon("aright") + "Pijl rechts</kbd></div>"; } },
+    poort: { time: "14 pakketjes", lead: "Informatie over zieke crewleden rolt over de band. Jij stuurt elk pakketje door het juiste luik.",
+      score: [["check", "Het juiste luik levert punten op"], ["zap", "Elke drie goed op rij telt zwaarder, tot keer 4"], ["shield", "Verkeerd luik of te laat kost een schildcel"]],
+      calm: "Staat Tijdsdruk uit, dan wacht het pakketje tot je kiest.",
+      demo: function () { return '<div class="gi-card">Diagnose: rugblessure</div><span class="gi-arrow">' + icon("aright") + '</span><div class="gi-doors">' + DOORS.map(function (d, i) { return '<div class="gi-side' + (i === 2 ? " yes" : "") + '">' + icon(d[1]) + "<b>" + d[0].replace("Crewadmin", "Crew\u00adadmin") + "</b><kbd>Toets " + (i + 1) + "</kbd></div>"; }).join("") + "</div>"; } },
+    invaders: { time: "60 seconden", lead: "Er vallen berichten naar het vrachtdok. Nepberichten schiet je neer, echte berichten laat je landen.",
+      score: [["check", "Een nepbericht neerschieten levert punten op"], ["zap", "Elke drie goed op rij telt zwaarder, tot keer 4"], ["shield", "Een echt bericht raken of een nepbericht doorlaten kost een schildcel"]],
+      calm: "Staat Tijdsdruk uit, dan vallen er 16 berichten in een rustig tempo.",
+      demo: function () { return '<div class="gi-msg bad">' + icon("mail") + "<span><small>Van: “Kapitein Vega”, onbekend kanaal</small><b>Stuur met spoed de loonstrook</b></span><kbd>" + icon("target") + 'Klik: neerschieten</kbd></div><div class="gi-msg ok">' + icon("mail") + "<span><small>Van: Crewadministratie, crew@orion.space</small><b>Uitnodiging voor het oogstfeest</b></span><kbd>" + icon("check") + "Laat landen</kbd></div>"; } },
+    lekken: { time: "45 seconden", lead: "In negen modules gaan alarmen af. Jij meldt elk datalek voordat de balk leeg is.",
+      score: [["check", "Een datalek melden levert punten op"], ["zap", "Elke drie goed op rij telt zwaarder, tot keer 4"], ["shield", "Een gemist datalek kost een schildcel"]],
+      calm: "Staat Tijdsdruk uit, dan krijg je 14 alarmen en loopt de balk niet af.",
+      demo: function () { return '<div class="gi-msg bad">' + icon("alert") + "<span><small>Alarm in Crewadministratie</small><b>Loonstroken als bijlage naar de hele crew gestuurd</b></span><kbd>" + icon("target") + 'Klik: melden</kbd></div><div class="gi-msg ok">' + icon("alert") + "<span><small>Alarm in Kantine</small><b>Menu van de kantine gedeeld met de crew</b></span><kbd>" + icon("x") + "Geen datalek: laat gaan</kbd></div>"; } }
+  };
   function gameIntro(id) {
-    var g = GAMES[id], best = P.games[id] || {};
-    arcade.innerHTML = '<div class="ar-wrap"><section class="ar-panel">' +
-      '<h1 class="ar-title">' + esc(g.title) + '</h1><p class="ar-meta">' + esc(g.level) + '</p><p class="ar-lead">' + esc(g.lead) + "</p>" +
-      '<div class="ar-rules">' + g.rules.map(function (r) { return '<div class="ar-rule"><b>' + esc(r[0]) + "</b><span>" + esc(r[1]) + "</span></div>"; }).join("") + "</div>" +
-      '<div class="ar-actions"><button class="btn-go" id="g-start">' + icon("play") + "Start de ronde</button>" +
-      '<span class="ar-best">' + (best.score != null ? "Je record: <b>" + best.score + " " + g.unit + "</b> " + '<span class="stars" style="display:inline-flex;vertical-align:-2px">' + stars(best.stars || 0) + "</span>" : "Nog niet gespeeld. Drie sterren bij " + g.thresholds[2] + " " + g.unit + ".") + "</span></div>" +
+    var g = GAMES[id], best = P.games[id] || {}, n = INTRO[id];
+    function rows(list) { return list.map(function (r) { return "<li>" + icon(r[0]) + "<span>" + esc(r[1]) + "</span></li>"; }).join(""); }
+    arcade.innerHTML = '<div class="ar-wrap"><section class="ar-panel gi">' +
+      '<p class="gi-chips"><span>' + icon("zap") + "Oefenronde</span><span>" + icon("clock") + esc(n.time) + "</span><span>Hoort bij level " + (g.after + 1) + "</span></p>" +
+      '<h1 class="ar-title">' + esc(g.title) + '</h1><p class="ar-lead">' + esc(n.lead) + "</p>" +
+      '<div class="gi-demo d-' + id + '" aria-hidden="true">' + n.demo() + "</div>" +
+      '<div class="gi-cols"><div class="gi-box"><h2>Zo scoor je</h2><ul>' + rows(n.score) + '</ul></div><div class="gi-box"><h2>Goed om te weten</h2><ul>' +
+      rows([["trophy", "De ronde telt voor je score en je prestaties."], ["door", "Je hoeft hem niet te halen om door te gaan."], ["clock", n.calm]]) + "</ul></div></div>" +
+      '<div class="ar-actions"><button class="btn-go" id="g-start">Start de ronde' + icon("aright") + '</button><button class="btn-ghost" id="g-skip">Sla over</button>' +
+      '<span class="ar-best">' + (best.score != null ? "Je record: <b>" + best.score + " " + g.unit + "</b> " + '<span class="stars" style="display:inline-flex;vertical-align:-2px">' + stars(best.stars || 0) + "</span>" : "Drie sterren bij " + g.thresholds[2] + " " + g.unit + ".") + "</span></div>" +
       "</section></div>";
     document.getElementById("g-start").onclick = function () { startGame(id); };
+    document.getElementById("g-skip").onclick = function () { go(cur + 1); };
     document.getElementById("g-start").focus({ preventScroll: true });
   }
 
@@ -648,7 +677,7 @@
       el.innerHTML = '<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><small>Van: ' + esc(m[0]) + '</small><small class="dom">' + esc(m[1]) + "</small><b>" + esc(m[2]) + "</b></span>";
       el.setAttribute("aria-label", "Bericht van " + m[0] + ", " + m[1] + ": " + m[2] + ". Klik om neer te schieten.");
       el.style.left = (2 + lane * 33) + "%";
-      var o = { el: el, m: m, lane: lane, y: 0, fake: m[3] === 1, v: (52 + (60 - G.left) * 1.6 + Math.random() * 14) * (P.calm ? 0.45 : 1) };
+      var o = { el: el, m: m, lane: lane, y: 0, fake: m[3] === 1, v: (52 + (60 - G.left) * 1.6 + Math.random() * 14) * 0.9 * (P.calm ? 0.45 : 1) };
       el.onclick = function (e) {
         if (!G || G.over) return;
         var r = el.getBoundingClientRect(), sr = sky.getBoundingClientRect(), x = r.left - sr.left + r.width / 2, y = r.top - sr.top + r.height / 2;
@@ -661,7 +690,7 @@
     gHud();
     clock(function (dt) {
       spawnIn -= dt;
-      if (spawnIn <= 0) { spawn(); if (wave > 0) { wave--; spawnIn = 0.35; } else spawnIn = Math.max(0.6, 1.5 - (60 - G.left) * 0.016) + Math.random() * 0.35; }
+      if (spawnIn <= 0) { spawn(); if (wave > 0) { wave--; spawnIn = 0.35; } else spawnIn = (Math.max(0.6, 1.5 - (60 - G.left) * 0.016) + Math.random() * 0.35) * 1.1; }
       var floor = sky.clientHeight - 46;
       live.slice().forEach(function (o) {
         if (!G || G.over) return;
@@ -688,20 +717,20 @@
   function playLekken() {
     newG("lekken", 45);
     arcade.innerHTML = '<div class="ar-wrap"><section class="ar-panel">' + hudHtml() +
-      '<div class="grid9" id="grid">' + MODS.map(function (m, i) { return '<div class="mod" data-m="' + i + '"><span class="mname">' + esc(m) + "</span></div>"; }).join("") + "</div>" +
+      '<div class="grid9" id="grid">' + MODS.map(function (m, i) { return '<div class="mod" data-m="' + i + '"><span class="mname"><i aria-hidden="true"></i>' + esc(m) + '</span><span class="mstate"></span></div>'; }).join("") + "</div>" +
       '<p class="ar-feed" id="g-feed" aria-live="polite">Klik op een alarm om het lek te melden.</p></section></div>';
     var grid = document.getElementById("grid"), active = {}, spawnIn = 0.3;
     playfield("#grid", "lekken");
     function clear(i, cls) {
-      var mod = grid.querySelector('[data-m="' + i + '"]'), ev = mod.querySelector(".ev"); if (ev) ev.remove(); delete active[i];
-      if (cls) { mod.classList.add(cls); later(function () { mod.classList.remove(cls); }, 420); }
+      var mod = grid.querySelector('[data-m="' + i + '"]'), ev = mod.querySelector(".ev"); if (ev) ev.remove(); delete active[i]; mod.classList.remove("ringing"); mod.querySelector(".mstate").textContent = cls === "sealed" ? "Gemeld" : cls === "breach" ? "Gemist" : "";
+      if (cls) { mod.classList.add(cls); later(function () { mod.classList.remove(cls); if (!active[i]) mod.querySelector(".mstate").textContent = ""; }, 900); }
     }
     function spawn() {
       var free = MODS.map(function (_, i) { return i; }).filter(function (i) { return !active[i]; }); if (!free.length) return;
       var i = free[Math.floor(Math.random() * free.length)], e = EVENTS[Math.floor(Math.random() * EVENTS.length)];
       var life = Math.max(3.0, 4.2 - (45 - G.left) * 0.03);
       var b = document.createElement("button"); b.type = "button"; b.className = "ev";
-      b.innerHTML = '<span class="tag">Alarm</span>' + esc(e[0]) + '<span class="bar2"><i></i></span>';
+      b.innerHTML = '<span class="etext">' + esc(e[0]) + '</span><span class="bar2"><i></i></span>';
       b.setAttribute("aria-label", "Alarm in " + MODS[i] + ": " + e[0] + ". Klik om te melden.");
       active[i] = { leak: e[1] === 1, t: life, life: life, el: b, text: e[0] };
       b.onclick = function () {
@@ -710,7 +739,7 @@
         if (a.leak) { var pts = gGood(10); clear(i, "sealed"); feed("+" + pts + " · Gemeld: " + a.text + ".", "good"); }
         else { note("Lekken dichten", a.text, "Gemeld als lek", "Dit is geen datalek. Er zijn geen persoonsgegevens bij iemand terechtgekomen die ze niet mag zien.", "half"); G.streak = 0; SFX.half(); clear(i); feed("Geen datalek. Melden bij twijfel is altijd goed, maar dit was duidelijk geen lek.", ""); gHud(); }
       };
-      grid.querySelector('[data-m="' + i + '"]').appendChild(b);
+      var mod = grid.querySelector('[data-m="' + i + '"]'); mod.classList.add("ringing"); mod.querySelector(".mstate").textContent = "Alarm"; mod.appendChild(b);
     }
     gHud();
     clock(function (dt) {

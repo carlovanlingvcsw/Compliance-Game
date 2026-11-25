@@ -605,3 +605,70 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .route li.egroup { gap: 0; padding: 1px 3px; margin: 0 3px; }
 .node.flag .num .vcsw-icon { width: 18px; height: 18px; }
 @media (max-width: 1300px) { .brand-name { display: none; } .bar .meters { gap: 0; } .bar .icon-btn { padding-left: 10px; padding-right: 10px; } }
+
+/* ---------- Ronde 23: startkaart van een oefenronde ---------- */
+.gi-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.gi-chips span { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font: 600 .8125rem/1.2 var(--vcsw-font-body); color: var(--vcsw-blue-200); background: color-mix(in srgb, var(--vcsw-blue-700) 38%, transparent); }
+.gi-chips .vcsw-icon { width: 14px; height: 14px; }
+.ar-panel.gi .ar-title { font-size: clamp(1.75rem, 3.2vw, 2.375rem); }
+.ar-panel.gi .ar-lead { margin-top: 10px; font-size: 1.0625rem; }
+.gi-demo { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 20px 0 16px; padding: 20px; border-radius: 14px; border: 1px solid var(--o-edge); background: linear-gradient(180deg, color-mix(in srgb, var(--vcsw-blue-900) 55%, transparent), color-mix(in srgb, var(--vcsw-blue-950) 70%, transparent)); }
+.gi-side { display: grid; justify-items: center; gap: 8px; min-width: 168px; padding: 16px 14px; border-radius: 12px; text-align: center; border: 1px solid var(--o-edge); background: color-mix(in srgb, var(--vcsw-blue-800) 40%, transparent); color: #fff; }
+.gi-side > .vcsw-icon { width: 22px; height: 22px; color: var(--vcsw-red-300); }
+.gi-side.yes > .vcsw-icon { color: var(--vcsw-green-300); }
+.gi-side b { font: 600 1rem/1.2 var(--vcsw-font-heading); max-width: 14ch; }
+.gi-demo kbd { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font: 600 .8125rem/1.2 var(--vcsw-font-body); color: var(--vcsw-blue-200); background: color-mix(in srgb, var(--vcsw-blue-600) 30%, transparent); border: 0; white-space: nowrap; }
+.gi-demo kbd .vcsw-icon { width: 14px; height: 14px; }
+.gi-card { min-width: 220px; max-width: 280px; padding: 22px 20px; border-radius: 12px; text-align: center; font: 700 1.1875rem/1.25 var(--vcsw-font-heading); color: #fff; border: 1px solid var(--vcsw-blue-400); background: linear-gradient(180deg, var(--vcsw-blue-700), var(--vcsw-blue-800)); box-shadow: 0 10px 30px -14px var(--vcsw-blue-400); }
+.gi-arrow { color: var(--vcsw-blue-200); display: inline-flex; }
+.gi-arrow .vcsw-icon { width: 22px; height: 22px; }
+.gi-doors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.gi-doors .gi-side { min-width: 0; padding: 12px 10px; }
+.gi-doors .gi-side > .vcsw-icon, .gi-doors .gi-side.yes > .vcsw-icon { color: var(--vcsw-blue-200); }
+.gi-doors .gi-side.yes { border-color: var(--vcsw-green-400); }
+.gi-doors .gi-side.yes > .vcsw-icon { color: var(--vcsw-green-300); }
+.gi-demo.d-invaders, .gi-demo.d-lekken { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+.gi-msg { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 6px 12px; align-items: start; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--o-edge); background: color-mix(in srgb, var(--vcsw-blue-800) 40%, transparent); color: #fff; }
+.gi-msg > .vcsw-icon { width: 22px; height: 22px; margin-top: 2px; }
+.gi-msg.bad { border-color: color-mix(in srgb, var(--vcsw-red-300) 70%, transparent); } .gi-msg.bad > .vcsw-icon { color: var(--vcsw-red-300); }
+.gi-msg.ok { border-color: color-mix(in srgb, var(--vcsw-green-400) 70%, transparent); } .gi-msg.ok > .vcsw-icon { color: var(--vcsw-green-300); }
+.gi-msg small { display: block; font-size: .8125rem; color: var(--vcsw-gray-300); }
+.gi-msg b { display: block; font: 600 1rem/1.3 var(--vcsw-font-heading); margin-top: 2px; }
+.gi-msg kbd { grid-column: 2; justify-self: start; }
+.gi-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+.gi-box { padding: 16px 18px; border-radius: 14px; border: 1px solid var(--o-edge); background: var(--o-glass-2); }
+.gi-box h2 { margin: 0 0 10px; font: 700 1.0625rem/1.2 var(--vcsw-font-heading); color: #fff; }
+.gi-box ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.gi-box li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; align-items: start; font-size: .9375rem; line-height: 1.4; color: var(--vcsw-gray-100); }
+.gi-box li .vcsw-icon { width: 18px; height: 18px; margin-top: 1px; color: var(--vcsw-blue-300); }
+.gi-box:first-child li:nth-child(1) .vcsw-icon { color: var(--vcsw-green-300); }
+.gi-box:first-child li:nth-child(2) .vcsw-icon { color: var(--vcsw-amber-300); }
+.gi-box:first-child li:nth-child(3) .vcsw-icon { color: var(--vcsw-red-300); }
+@media (max-width: 760px) {
+  .gi-demo, .gi-demo.d-invaders, .gi-demo.d-lekken { display: grid; grid-template-columns: 1fr; justify-items: stretch; }
+  .gi-arrow { justify-self: center; transform: rotate(90deg); } .gi-cols { grid-template-columns: 1fr; } .gi-card { max-width: none; }
+}
+
+/* ---------- Ronde 23: Lekken dichten, vaste kop per module ---------- */
+.mod { display: grid; grid-template-rows: auto 1fr; gap: 8px; }
+.mod .mname { display: inline-flex; align-items: center; gap: 8px; font: 600 .875rem/1.2 var(--vcsw-font-heading); color: #fff; min-width: 0; }
+.mod .mname i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--vcsw-green-400); }
+.mod .mstate { position: absolute; top: 12px; right: 14px; font: 600 .75rem/1.3 var(--vcsw-font-body); color: var(--vcsw-gray-300); }
+.mod.ringing { border-color: var(--vcsw-red-300); background: color-mix(in srgb, var(--vcsw-red-700) 22%, var(--o-glass-2)); }
+.mod.ringing .mname i { background: var(--vcsw-red-300); } .mod.ringing .mstate { color: var(--vcsw-red-200); }
+.mod.sealed .mstate { color: var(--vcsw-green-300); } .mod.breach .mstate { color: var(--vcsw-red-200); }
+.mod .ev { position: static; inset: auto; display: grid; grid-template-rows: 1fr auto; gap: 8px; width: 100%; min-height: 78px; align-self: stretch; }
+.mod .ev .etext { align-self: center; }
+.grid9.pf3d .mod { background: color-mix(in srgb, var(--vcsw-blue-950) 62%, transparent); border-color: var(--o-edge); }
+.grid9.pf3d .mod.ringing { background: color-mix(in srgb, var(--vcsw-red-700) 30%, var(--vcsw-blue-950)); border-color: var(--vcsw-red-300); }
+.grid9.pf3d .mname { background: none; padding: 0; border-radius: 0; }
+
+.ar-panel.gi .ar-lead { max-width: none; margin-top: 8px; }
+.gi-demo { margin: 16px 0 14px; padding: 16px; gap: 14px; }
+.gi-demo.d-poort .gi-card { min-width: 170px; max-width: 200px; font-size: 1.0625rem; padding: 18px 14px; }
+.gi-demo.d-poort .gi-doors { flex: 1; gap: 8px; }
+.gi-doors .gi-side b { font-size: .875rem; hyphens: manual; overflow-wrap: anywhere; }
+.gi-doors .gi-side { padding: 12px 6px; }
+.gi-box { padding: 14px 16px; } .gi-box ul { gap: 6px; } .gi-cols { margin-bottom: 16px; gap: 14px; }
+.arcade .ar-wrap:has(.gi) { padding-top: 22px; padding-bottom: 22px; }
+@media (max-height: 780px) { .mod { min-height: 108px; } .mod .ev { min-height: 64px; } .grid9.pf3d { gap: 12px; padding: 16px; } }
