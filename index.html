@@ -80,6 +80,8 @@
     var s = document.createElement("script"); s.type = "module"; s.src = "assets/js/station.js";
     s.onerror = function () { document.documentElement.classList.add("no-3d"); };
     document.body.appendChild(s);
+    /* If the station has not started after ten seconds, play on without it. */
+    setTimeout(function () { if (!window.OrionStation) document.documentElement.classList.add("no-3d"); }, 10000);
   })();
 </script>
 </body>
