@@ -190,6 +190,15 @@ function stripeTexture() {
 }
 const stripeTex = stripeTexture();
 
+function trims(parent, cx, cy, cz, w, h, d, mat) {
+  const t = 0.05, m = mat || MAT.hullDark, X = w / 2, Y = h / 2, Z = d / 2;
+  [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([a, b]) => {
+    mesh(new THREE.BoxGeometry(w + t, t, t), m, parent, [cx, cy + a * Y, cz + b * Z]);
+    mesh(new THREE.BoxGeometry(t, h + t, t), m, parent, [cx + a * X, cy, cz + b * Z]);
+    mesh(new THREE.BoxGeometry(t, t, d + t), m, parent, [cx + a * X, cy + b * Y, cz]);
+  });
+}
+
 /* ---------- Station ---------- */
 const station = new THREE.Group();
 scene.add(station);
@@ -216,6 +225,8 @@ for (let i = 0; i < 4; i++) {
   const sp = mesh(cyl(0.16, RING_R - 1.2, 16), MAT.hullMid, ring, [Math.cos(a) * (RING_R / 2 + 0.6), 0, Math.sin(a) * (RING_R / 2 + 0.6)]);
   sp.rotation.set(0, -a, Math.PI / 2);
 }
+const livery = new THREE.MeshStandardMaterial({ color: 0x0a6dbe, metalness: 0.3, roughness: 0.5 });
+for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2 + 0.26; mesh(new THREE.TorusGeometry(0.515, 0.06, 8, 32), livery, ring, [Math.cos(a) * RING_R, 0, Math.sin(a) * RING_R], [0, -a, 0]); }
 for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; mesh(new THREE.TorusGeometry(0.56, 0.05, 8, 24), MAT.hullDark, ring, [Math.cos(a) * RING_R, 0, Math.sin(a) * RING_R], [0, -a, 0]); }
 
 // Solar arrays on the spine
@@ -263,7 +274,8 @@ function moduleFrame(angleDeg, name) {
 // 1. Aankomst: docking port with a shuttle
 (function () {
   const g = moduleFrame(20, "aankomst");
-  mesh(new THREE.BoxGeometry(1.6, 1.1, 1.3), MAT.hull, g, [1.9, 0, 0]);
+  mesh(new THREE.BoxGeometry(1.6, 1.1, 1.3), MAT.hull, g, [1.9, 0, 0]); trims(g, 1.9, 0, 0, 1.6, 1.1, 1.3);
+  mesh(new THREE.BoxGeometry(1.0, 0.3, 1.0), MAT.hullMid, g, [1.9, 0.7, 0]); trims(g, 1.9, 0.7, 0, 1.0, 0.3, 1.0);
   mesh(cyl(0.45, 0.4, 32), MAT.hullMid, g, [2.9, 0, 0], [0, 0, Math.PI / 2]);
   const ship = new THREE.Group(); g.add(ship); ship.position.set(3.8, 0, 0);
   const body = mesh(new THREE.CapsuleGeometry(0.32, 1.1, 8, 24), MAT.white, ship, [0.5, 0, 0], [0, 0, Math.PI / 2]);
@@ -299,7 +311,7 @@ function moduleFrame(angleDeg, name) {
 // 3. Ziekenboeg: clean white module with a soft cyan light band
 (function () {
   const g = moduleFrame(140, "ziekenboeg");
-  const box = mesh(new THREE.BoxGeometry(2.4, 1.3, 1.6), MAT.white, g, [2.3, 0, 0]);
+  const box = mesh(new THREE.BoxGeometry(2.4, 1.3, 1.6), MAT.white, g, [2.3, 0, 0]); trims(g, 2.3, 0, 0, 2.4, 1.3, 1.6, MAT.hullMid);
   box.material = hullMat(TEX.white, 0.2, 0.7, [2, 1]);
   mesh(new THREE.BoxGeometry(2.42, 0.08, 1.62), emissive(0x67caff, 2.4), g, [2.3, 0.2, 0]);
   mesh(new THREE.SphereGeometry(0.75, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x1c3d66, metalness: 0.6, roughness: 0.12, emissive: 0x0c2f5f, emissiveIntensity: 0.6 }), g, [2.3, 0.65, 0]).scale.set(1, 0.5, 0.8);
@@ -501,7 +513,7 @@ scene.add(new THREE.HemisphereLight(0x67caff, 0x020814, 0.22));
 const rimLight = new THREE.DirectionalLight(0x67caff, 1.6); rimLight.position.set(-30, -26, -30); scene.add(rimLight);
 const fill = new THREE.DirectionalLight(0xbcd9ff, 0.45); fill.position.set(30, 10, 25); scene.add(fill);
 scene.fog = new THREE.FogExp2(0x061a36, 0.0085);
-const alarmLight = new THREE.PointLight(0xff5a3b, 0, 4.5, 2); scene.add(alarmLight);
+const alarmLight = new THREE.PointLight(0xff8a2e, 0, 3.4, 2); scene.add(alarmLight);
 const pulseLight = new THREE.PointLight(0x67caff, 0, 6, 2); scene.add(pulseLight);
 let pulseLevel = 0;
 
@@ -516,11 +528,11 @@ function moduleWorld(m, local) {
   const v = local.clone();
   return m.group.localToWorld(v);
 }
-const VIEW = new THREE.Vector3(8.4, 1.7, 5.4); // outward, up, along the ring: below the solar wings, outside the ring
+const VIEW = new THREE.Vector3(9.6, 1.9, 6.2); // outward, up, along the ring: below the solar wings, outside the ring
 function focusGoal(i) {
   if (i < 0) return { pos: HOME.pos.clone(), target: HOME.target.clone() };
   const m = MODULES[i];
-  const target = moduleWorld(m, m.anchor.clone().setY(m.anchor.y - (m.fixed ? 1.0 : 1.9)));
+  const target = moduleWorld(m, m.anchor.clone().setY(m.anchor.y - (m.fixed ? 1.0 : 1.6)));
   // camera sits outside the module, measured in the module's own frame so it follows the ring
   // the preset is measured in the module's own frame; pull it back so the module reads well beside the panel
   const pos = moduleWorld(m, m.fixed ? m.cam : m.anchor.clone().add(VIEW));

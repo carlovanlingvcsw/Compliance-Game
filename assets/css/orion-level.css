@@ -48,3 +48,10 @@ html.in-orion .hud .hud-value, html.in-orion .hud .vcsw-stat-value { font-size: 
 html.in-orion .wrap main { display: flex; flex-direction: column; gap: 20px; }
 html.in-orion .wrap main > .vcsw-alert.notice { order: 99; padding: 10px 14px; background: transparent !important; }
 html.in-orion .vcsw-button { box-shadow: none !important; }
+
+/* Briefing rules as three cards, the start button right under them */
+html.in-orion #stage .vcsw-dl, html.in-orion #screen .vcsw-dl { gap: 12px !important; }
+html.in-orion #stage .vcsw-dl > div, html.in-orion #screen .vcsw-dl > div { padding: 14px 16px; border-radius: 12px; border: 1px solid var(--o-edge); background: color-mix(in srgb, var(--vcsw-blue-900) 45%, transparent); }
+html.in-orion #stage .vcsw-dl dt, html.in-orion #screen .vcsw-dl dt { color: #fff !important; font-size: 1rem !important; }
+html.in-orion #stage .vcsw-dl dd, html.in-orion #screen .vcsw-dl dd { color: var(--vcsw-gray-200) !important; font-size: .9375rem !important; }
+html.in-orion #stage .actions, html.in-orion #screen .actions { justify-content: flex-start !important; }

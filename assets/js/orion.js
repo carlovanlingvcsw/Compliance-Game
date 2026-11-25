@@ -181,8 +181,7 @@
     mapEl.innerHTML = LEVELS.map(function (L, n) {
       var i = routeIndexOfLevel(n), s = P.levelStars[n] || 0, b = bonusFor(n);
       if (s > 0) done++;
-      return '<li><button type="button" class="stop" data-i="' + i + '" data-m="' + L.module + '"><span class="num">' + (n === 5 ? "E" : n + 1) + '</span><span class="txt"><b>' + esc(L.name) + "</b><small>" + esc(L.place) +
-        (b >= 0 ? " · met bonusronde" : "") + '</small></span>' + (P.opened[n] || s ? '<span class="stars" role="img" aria-label="' + s + ' van 3 sterren">' + stars(s) + "</span>" : "") + "</button></li>";
+      return '<li><button type="button" class="stop" data-i="' + i + '" data-m="' + L.module + '"><span class="num">' + (n === 5 ? "E" : n + 1) + '</span><span class="txt"><b>' + esc(L.name) + "</b>" + (b >= 0 ? "<small>Met bonusronde</small>" : "") + '</span>' + (P.opened[n] || s ? '<span class="stars" role="img" aria-label="' + s + ' van 3 sterren">' + stars(s) + "</span>" : "") + "</button></li>";
     }).join("");
     hotEl.innerHTML = LEVELS.map(function (L, n) {
       return '<button type="button" class="hot" data-i="' + routeIndexOfLevel(n) + '" data-m="' + L.module + '" tabindex="-1" aria-hidden="true"><span class="dot"></span><span class="lead"></span><span class="tag">' + (n === 5 ? "E" : n + 1) + " · " + esc(L.place) + "</span></button>";
@@ -426,7 +425,7 @@
     newG("sprint", 40);
     var deck = shuffle(CARDS), idx = 0, lock = false;
     arcade.innerHTML = '<div class="ar-wrap"><section class="ar-panel">' + hudHtml() +
-      '<p class="ar-brief">Is dit een persoonsgegeven? Sorteer zo snel mogelijk met de pijltjestoetsen of klik op een vak.</p><div class="sprint"><button class="bin-btn no" id="b-no">' + icon("x") + 'Geen persoonsgegeven<kbd>←</kbd></button><div class="holo-wrap"><div class="holo" id="holo"></div><p class="ar-feed" id="g-feed" aria-live="polite"></p></div><button class="bin-btn yes" id="b-yes">' + icon("user") + 'Wel persoonsgegeven<kbd>→</kbd></button></div>' +
+      '<p class="ar-brief">Persoonsgegeven of niet? Gebruik de pijltjes of klik op een vak.</p><div class="sprint"><button class="bin-btn no" id="b-no">' + icon("x") + 'Geen persoonsgegeven<kbd>←</kbd></button><div class="holo-wrap"><div class="holo" id="holo"></div><p class="ar-feed" id="g-feed" aria-live="polite"></p></div><button class="bin-btn yes" id="b-yes">' + icon("user") + 'Wel persoonsgegeven<kbd>→</kbd></button></div>' +
       '</section></div>';
     var holo = document.getElementById("holo");
     function show() { if (idx >= deck.length) { deck = shuffle(CARDS); idx = 0; } holo.className = "holo"; holo.innerHTML = "<p>" + esc(deck[idx][0]) + "</p>"; }
