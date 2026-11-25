@@ -703,7 +703,14 @@
     if (name === "dienst") { screenSickReport(); return true; }
     if (/^situatie[234]$/.test(name)) { demo(low); screenChoice(+name.slice(-1) - 2); return true; }
     if (name === "luchtsluis") { demo(low); screenLockIntro(); return true; }
-    if (name === "sluis") { demo(low); screenLock(); return true; }
+    if (name === "sluis") {
+      demo(low); screenLock();
+      /* &gekozen=5 legt de eerste vijf stukjes alvast bij een luik, voor een voorbeeldbeeld. */
+      var pre = Math.min(LOCK_ITEMS.length, +q.get("gekozen") || 0);
+      for (var k = 0; k < pre; k++) S.lock.place[k] = LOCK_ITEMS[k].a;
+      if (pre) paintLock();
+      return true;
+    }
     if (name === "sluisopen") { demo(low, true); S.screen = "luchtsluis"; screenLockOpen(); return true; }
     if (name === "resultaat") { demo(low, true); screenDebrief(); return true; }
     if (name === "aarde") { demo(low, true); S.passed = pctNow() >= 70; if (S.passed) S.rank = "Commandeur"; screenEarth(); return true; }

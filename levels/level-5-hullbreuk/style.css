@@ -248,3 +248,6 @@ html.orion-level .ox-clock.timer.low { color: #ffc978 !important; }
 @media (max-width: 600px) { .aarde .ox-two { grid-template-columns: minmax(0, 1fr); } }
 @media (max-height: 720px) { .aarde .ox-lead { display: none; } }
 @media (prefers-reduced-motion: reduce) { .ox-btn, .track .fill { transition: none; } }
+
+/* Ronde 24: labels staan onder de kop, niet erboven. */
+.screen-head:not(.rij) { flex-direction: column-reverse; }

@@ -251,7 +251,7 @@ html.calm .timer, html.calm #timer { display: none !important; }
 @media (prefers-reduced-motion: reduce) { html.in-orion *, html.in-orion *::before, html.in-orion *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 
 /* ---------- While a question waits for an answer, the level shows only the question ---------- */
-html.asking .hud, html.asking .vcsw-stats, html.asking .vcsw-card.flush:has(> .hud), html.asking :has(> .alarm-dot),
+/* Score en schild blijven tijdens een vraag zichtbaar. Alleen de losse prototypemelding wijkt. */
 html.asking .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) { display: none !important; }
 html.asking .options { margin-top: 8px; }
 
@@ -273,3 +273,6 @@ html.in-orion #stage .vcsw-dl dd, html.in-orion #screen .vcsw-dl dd { margin: 0 
 
 /* ---------- The shell shows score, shield, crystals and steps: the level's own bar is hidden there ---------- */
 html.in-orion .own-status { display: none !important; }
+
+/* In de schil bepaalt de inhoud de hoogte, niet het venster: anders scrolt elk level een paar pixels. */
+html.in-orion body { min-height: 0 !important; margin: 0 !important; }

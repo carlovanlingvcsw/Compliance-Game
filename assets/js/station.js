@@ -554,9 +554,9 @@ scene.add(nevel.light);
     glow.scale.set(2.2, 1.4, 1); glow.renderOrder = 6; grp.add(glow);
     const puffs = [];
     for (let k = 0; k < 18; k++) {
-      const core = k < 4, mat = new THREE.SpriteMaterial({ map: tex, color: core ? 0x0b0e17 : k % 3 ? 0x222a3d : 0x5d6b8c, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false });
+      const core = k < 4, mat = new THREE.SpriteMaterial({ map: tex, color: core ? 0x1a2030 : k % 3 ? 0x2c3550 : 0x7a8ab0, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false });
       const sp = new THREE.Sprite(mat); const a = rnd() * 6.283, r = core ? rnd() * 0.7 : 0.9 + rnd() * 1.9;
-      sp.userData = { base: new THREE.Vector3(Math.cos(a) * r, (rnd() - 0.5) * (m.fixed ? 3.2 : 1.6), Math.sin(a) * r), size: (core ? 3.0 : 2.2) + rnd() * 1.6, ph: rnd() * 6.283, sp: 0.25 + rnd() * 0.4, rot: (rnd() - 0.5) * 0.3, rim: !core && k % 3 === 0 };
+      sp.userData = { base: new THREE.Vector3(Math.cos(a) * r, (rnd() - 0.5) * (m.fixed ? 3.2 : 1.6), Math.sin(a) * r), size: (core ? 3.0 : 2.2) + rnd() * 1.6, ph: rnd() * 6.283, sp: 0.25 + rnd() * 0.4, rot: (rnd() - 0.5) * 0.3, rim: !core && k % 3 === 0, core: core };
       sp.renderOrder = core ? 7 : 5; grp.add(sp); puffs.push(sp);
     }
     nevel.clouds.push({ group: grp, puffs, glow, level: 0, blow: 0, mod: m, index: mi });
@@ -584,7 +584,7 @@ function nevelTick(t, dt) {
       p.position.set(u.base.x * (1 + c.blow * 1.8) + w * 0.18, u.base.y * (1 + c.blow * 1.2) + Math.cos(t * u.sp * 0.8 + u.ph) * (reduce ? 0 : 0.14) + c.blow * 0.8, u.base.z * (1 + c.blow * 1.8) + w * 0.12);
       const sz = u.size * (0.55 + c.level * 0.55) * (1 + c.blow * 0.9) * (1 + w * 0.05); if (u.rim) p.scale.set(sz * 1.7, sz * 0.5, 1); else p.scale.set(sz, sz, 1);
       p.material.rotation = u.ph + (reduce ? 0 : t * u.rot);
-      p.material.opacity = Math.min(1, c.level * 1.05) * (1 - c.blow * 0.6) * (u.rim ? 0.42 : 0.9);
+      p.material.opacity = Math.min(1, c.level * 1.05) * (1 - c.blow * 0.6) * (u.rim ? 0.3 : u.core ? 0.62 : 0.5);
       if (isHot && !reduce) c.glow.position.set(Math.sin(t * 3.1) * 0.5, Math.sin(t * 2.3) * 0.35, Math.cos(t * 2.7) * 0.5);
     });
   });

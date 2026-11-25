@@ -257,3 +257,16 @@ html.in-orion #schildChip { display: none; }
 .luik-pil > .vcsw-icon { width: 20px; height: 20px; padding: 4px; }
 .luik-pil > span:not(.vcsw-sr-only) { overflow: visible; }
 .luik-open { padding: 0 9px; font-size: 13px; gap: 5px; }
+
+/* Ronde 24: labels staan onder de kop, niet erboven. */
+.screen-head:not(.rij) { flex-direction: column-reverse; }
+
+/* Ronde 25: compactere kaarten, zodat de knoppen onderaan in beeld blijven. */
+.luik-grid { gap: 8px; }
+.luik-card { padding: 6px 10px 8px; gap: 5px; }
+.luik-btn { min-height: 40px; }
+
+/* Ronde 26: elk luik als rond luikje met een gekleurde ring en een tellamp. */
+.luik-pil { min-height: 60px; }
+.luik-pil > .vcsw-icon { width: 22px; height: 22px; padding: 8px; border: 3px solid var(--luik); background: radial-gradient(circle at 35% 30%, #173a6c, #04122a 70%); box-shadow: 0 0 0 2px #04122a, 0 2px 6px rgb(0 0 0 / .5); color: #fff; }
+.luik-pil b { min-width: 34px; text-align: center; padding: 4px 8px; border-radius: 8px; background: #04122a; border: 1px solid #1f4f85; color: var(--luik); box-shadow: inset 0 1px 3px rgb(0 0 0 / .6); }

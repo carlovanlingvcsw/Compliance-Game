@@ -398,3 +398,18 @@ p { margin: 0; }
 .nr-naam { font-size: 0.9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nr-naam { font-size: 0.8125rem; text-overflow: clip; letter-spacing: -0.01em; }
 #stage .nevel-rij li { padding: 8px 8px; } #stage .nevel-rij li.is-nu { padding: 7px 7px; }
+
+/* Ronde 24: labels staan onder de kop, niet erboven. */
+.kop { flex-direction: column-reverse; }
+.nevel-kop .kop { flex-direction: column; }
+
+/* Ronde 25: de aanval in amber, rood alleen bij fout. De deur toont de voortgang van de sluis, de rij erboven vervalt in beeld. */
+.nevel-kaart { border-color: var(--vcsw-amber-300); }
+.nevel-kaart.is-fout { border-color: var(--vcsw-red-300); }
+.ring-arc, .ring-mark { stroke: var(--vcsw-amber-300); }
+.ring.low .ring-arc { stroke: var(--vcsw-red-300); }
+.nevel-kaart.is-fout .ring-arc, .nevel-kaart.is-fout .ring-mark { stroke: var(--vcsw-red-300); }
+#stage .nevel-sub { color: var(--vcsw-amber-200); }
+#stage .nevel-rij li.is-nu { border-color: var(--vcsw-amber-300); color: var(--vcsw-amber-200); }
+.grendels { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.nevel { padding-bottom: 14px; }

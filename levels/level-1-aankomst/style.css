@@ -286,3 +286,6 @@ html.in-orion .title-screen { min-height: 360px; }
   .speaking .aria-ring, .speaking .aria-pupil, .speaking .bram-mouth, .hut .hot.pointed .hit { animation: none; }
   .door .l, .door .r, .opt, .bin { transition: none; }
 }
+
+/* Ronde 24: labels staan onder de kop, niet erboven. */
+.head { flex-direction: column-reverse; }

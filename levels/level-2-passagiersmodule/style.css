@@ -240,3 +240,6 @@ body[data-screen="earth"] .screen { gap: 12px; }
 .lade-id { padding: 1px 6px; border-radius: 3px; background: #e6ecf4; color: #0a2247; font-weight: 700; font-size: 0.75rem; }
 .lade-what { min-height: 2.36em; display: flex; align-items: center; }
 .lade-grond { font-size: 0.78125rem; }
+
+/* Ronde 24: labels staan onder de kop, niet erboven. */
+.titled { flex-direction: column-reverse; }
