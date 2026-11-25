@@ -868,3 +868,4 @@ body.booting header.bar { visibility: hidden; }
   .boot { background: linear-gradient(90deg, rgb(2 8 20 / .9) 0 36%, rgb(2 8 20 / .64) 62%, rgb(2 8 20 / .74)); }
   .no-3d .boot { background: var(--o-space); }
 }
+.inv { width: 29%; margin-left: 1%; }

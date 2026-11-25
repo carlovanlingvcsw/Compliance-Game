@@ -536,7 +536,7 @@ const pulseLight = new THREE.PointLight(0x67caff, 0, 6, 2); scene.add(pulseLight
 let pulseLevel = 0;
 
 /* ---------- The Zwarte Nevel: smoke over the modules during the attack in the final mission ---------- */
-const nevel = { on: false, i: 0, results: [], clouds: [], light: new THREE.PointLight(0xff3b3b, 0, 7, 2) };
+const nevel = { on: false, i: 0, results: [], clouds: [], light: new THREE.PointLight(0xff3b3b, 0, 9, 2) };
 scene.add(nevel.light);
 (function () {
   const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
@@ -555,7 +555,7 @@ scene.add(nevel.light);
     const puffs = [];
     for (let k = 0; k < 18; k++) {
       const core = k < 4, mat = new THREE.SpriteMaterial({ map: tex, color: core ? 0x1a2030 : k % 3 ? 0x2c3550 : 0x7a8ab0, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false });
-      const sp = new THREE.Sprite(mat); const a = rnd() * 6.283, r = core ? rnd() * 0.7 : 0.9 + rnd() * 1.9;
+      const sp = new THREE.Sprite(mat); const a = rnd() * 6.283, r = core ? rnd() * 0.8 : 0.9 + rnd() * 2.3;
       sp.userData = { base: new THREE.Vector3(Math.cos(a) * r, (rnd() - 0.5) * (m.fixed ? 3.2 : 1.6), Math.sin(a) * r), size: (core ? 3.0 : 2.2) + rnd() * 1.6, ph: rnd() * 6.283, sp: 0.25 + rnd() * 0.4, rot: (rnd() - 0.5) * 0.3, rim: !core && k % 3 === 0, core: core };
       sp.renderOrder = core ? 7 : 5; grp.add(sp); puffs.push(sp);
     }
@@ -584,11 +584,12 @@ function nevelTick(t, dt) {
       p.position.set(u.base.x * (1 + c.blow * 1.8) + w * 0.18, u.base.y * (1 + c.blow * 1.2) + Math.cos(t * u.sp * 0.8 + u.ph) * (reduce ? 0 : 0.14) + c.blow * 0.8, u.base.z * (1 + c.blow * 1.8) + w * 0.12);
       const sz = u.size * (0.55 + c.level * 0.55) * (1 + c.blow * 0.9) * (1 + w * 0.05); if (u.rim) p.scale.set(sz * 1.7, sz * 0.5, 1); else p.scale.set(sz, sz, 1);
       p.material.rotation = u.ph + (reduce ? 0 : t * u.rot);
-      p.material.opacity = Math.min(1, c.level * 1.05) * (1 - c.blow * 0.6) * (u.rim ? 0.3 : u.core ? 0.62 : 0.5);
+      p.material.opacity = Math.min(1, c.level * 1.05) * (1 - c.blow * 0.6) * (u.rim ? 0.42 : u.core ? 0.82 : 0.66);
+      if (u.rim) p.material.color.setHex(isHot ? 0xa83a3a : 0x7a8ab0);
       if (isHot && !reduce) c.glow.position.set(Math.sin(t * 3.1) * 0.5, Math.sin(t * 2.3) * 0.35, Math.cos(t * 2.7) * 0.5);
     });
   });
-  if (hot) { nevel.light.position.copy(moduleWorld(hot.mod, hot.mod.anchor)); nevel.light.intensity = 5 + (reduce ? 2 : (Math.sin(t * 7) + Math.sin(t * 17.3)) * 2.4 + 2.4); }
+  if (hot) { nevel.light.position.copy(moduleWorld(hot.mod, hot.mod.anchor)); nevel.light.intensity = 10 + (reduce ? 3 : (Math.sin(t * 7) + Math.sin(t * 17.3)) * 3.2 + 3.2); }
   else nevel.light.intensity += (0 - nevel.light.intensity) * Math.min(1, dt * 3);
 }
 

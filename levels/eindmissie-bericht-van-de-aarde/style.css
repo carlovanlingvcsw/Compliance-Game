@@ -413,3 +413,6 @@ p { margin: 0; }
 #stage .nevel-rij li.is-nu { border-color: var(--vcsw-amber-300); color: var(--vcsw-amber-200); }
 .grendels { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .nevel { padding-bottom: 14px; }
+
+/* Ronde 26: op de aanval en de hoofdsluis wijkt de prototypemelding. Ze staat op de briefing en op het startscherm. */
+html.in-orion[data-screen="lock"] main > .vcsw-alert, html.in-orion[data-screen="boss"] main > .vcsw-alert { display: none; }

@@ -398,9 +398,7 @@
     }).join("");
     var pil = HATCHES.map(function (h) {
       var base = icon(h.icon) + '<span>' + h.name + '</span><b id="cnt-' + h.id + '">0</b><span class="vcsw-sr-only"> stukjes</span>';
-      if (h.id !== "arts") return '<span class="luik-pil h-' + h.id + '">' + base + '</span>';
-      return '<span class="luik-pil h-arts slot">' + base +
-        '<button type="button" class="luik-open" id="openArts" title="Extra slot. Alleen inschuiven.">' + icon("lock") + '<span>Luik zelf openen</span><span class="vcsw-sr-only">. Het luik van de scheepsarts heeft een extra slot.</span></button></span>';
+      return '<span class="luik-pil h-' + h.id + '">' + base + '</span>';
     }).join("");
     show("luchtsluis",
       '<div class="luik">' +
@@ -413,6 +411,7 @@
       '<div class="luik-acts" id="act">' +
       '<button type="button" class="ox-btn" id="check" aria-disabled="true">Verdeling controleren' + icon("tick") + '</button>' +
       '<button type="button" class="ox-btn ghost" id="hint">Vraag ARIA om een aanwijzing' + icon("bulb") + '</button>' +
+      '<button type="button" class="luik-open" id="openArts" title="Extra slot. Alleen inschuiven.">' + icon("lock") + '<span>Luik van de scheepsarts zelf openen</span><span class="vcsw-sr-only">. Dat luik heeft een extra slot.</span></button>' +
       '<div class="aw-meta"><span class="aw-gems" id="gems"></span><span class="aw-cost" id="hintCost"></span></div>' +
       '</div>' +
       '<div class="aw-list" id="msg"></div>' +

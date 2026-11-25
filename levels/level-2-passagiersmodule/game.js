@@ -463,8 +463,8 @@
 
     var a = L.assign[cur.id], curWrong = !done && L.wrong[cur.id];
     html += '<section class="open-lade" id="openLade" tabindex="-1" aria-labelledby="openTitle">' +
-      '<p class="open-meta">Lade ' + cur.id + ", " + esc(cur.name) + "</p>" +
       '<h3 id="openTitle">' + esc(cur.what) + "</h3>" +
+      '<p class="open-meta">Lade ' + cur.id + ", " + esc(cur.name) + "</p>" +
       '<p class="open-ctx">' + esc(cur.ctx) + ".</p>";
     if (!done) {
       html += curWrong ? '<p class="open-kies bad">' + icon("bad") + "Deze grond klopt niet. Kies een andere.</p>" : '<p class="open-kies">Kies de grond</p>';

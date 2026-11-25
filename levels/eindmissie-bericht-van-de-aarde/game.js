@@ -843,6 +843,7 @@
 
   function render() {
     var s = S.screen;
+    document.documentElement.setAttribute("data-screen", s);
     if (s === "brief") renderBrief();
     else if (s === "f1") renderChoice(F1, "Fase 1", "f2");
     else if (s === "f2") renderChoice(F2, "Fase 2", "f3");

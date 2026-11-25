@@ -270,3 +270,17 @@ html.in-orion #schildChip { display: none; }
 .luik-pil { min-height: 60px; }
 .luik-pil > .vcsw-icon { width: 22px; height: 22px; padding: 8px; border: 3px solid var(--luik); background: radial-gradient(circle at 35% 30%, #173a6c, #04122a 70%); box-shadow: 0 0 0 2px #04122a, 0 2px 6px rgb(0 0 0 / .5); color: #fff; }
 .luik-pil b { min-width: 34px; text-align: center; padding: 4px 8px; border-radius: 8px; background: #04122a; border: 1px solid #1f4f85; color: var(--luik); box-shadow: inset 0 1px 3px rgb(0 0 0 / .6); }
+
+/* Ronde 27: drie gelijke luiken als ronde luikdeuren, de extra knop staat bij de acties. */
+.luik-pills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.luik-pil { min-height: 72px; padding: 8px 14px 8px 10px; gap: 12px; }
+.luik-pil > .vcsw-icon { width: 26px; height: 26px; padding: 11px; border: 4px solid var(--luik);
+  background: radial-gradient(circle at 50% 50%, transparent 0 60%, #04122a 61%), radial-gradient(circle at 35% 30%, #1d4680, #04122a 72%);
+  box-shadow: 0 0 0 3px #04122a, 0 0 0 4px #37577f, 0 3px 8px rgb(0 0 0 / .55); }
+.luik-pil > span:not(.vcsw-sr-only) { font: 700 1rem/1.2 var(--vcsw-font-heading); }
+.luik-pil b { margin-left: auto; font-size: 22px; min-width: 40px; }
+.luik-acts .luik-open { margin-left: 0; height: 44px; padding: 0 14px; font-size: 14px; border-radius: 8px; background: transparent; }
+.luik-pil { white-space: normal; gap: 10px; padding-right: 10px; }
+.luik-pil > span:not(.vcsw-sr-only) { font-size: 0.9375rem; overflow-wrap: anywhere; hyphens: auto; min-width: 0; }
+.luik-pil > .vcsw-icon { padding: 9px; }
+.luik-pil b { min-width: 36px; flex: none; }
