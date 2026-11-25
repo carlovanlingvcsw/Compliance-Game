@@ -270,7 +270,3 @@ html.in-orion #stage .vcsw-dl, html.in-orion #screen .vcsw-dl { grid-template-co
 html.in-orion #stage .vcsw-dl > div, html.in-orion #screen .vcsw-dl > div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 2px 0 2px 14px !important; }
 html.in-orion #stage .vcsw-dl dd, html.in-orion #screen .vcsw-dl dd { margin: 0 !important; }
 @media (max-width: 560px) { html.in-orion #stage .vcsw-dl > div, html.in-orion #screen .vcsw-dl > div { grid-template-columns: 1fr; gap: 2px; } }
-
-/* ---------- One surface: the status row and ARIA's line lose their boxes ---------- */
-html.in-orion .hud { border-color: transparent !important; background: none !important; backdrop-filter: none !important; box-shadow: none !important; }
-html.in-orion .speech > div:has(.speech-who), html.in-orion .speech .bubble, html.in-orion .speaker .bubble { border-top-color: transparent !important; border-right-color: transparent !important; border-bottom-color: transparent !important; background: none !important; box-shadow: none !important; }

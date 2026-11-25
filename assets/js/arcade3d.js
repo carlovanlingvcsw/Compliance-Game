@@ -55,7 +55,7 @@ function invaders(S) {
   stars(g, 700);
   const glowBand = horizon(g);
   g.fog = new THREE.Fog(0x030a1a, 2200, 8200); // the far end of the dock sinks into the dark
-  const deck = mesh(new THREE.PlaneGeometry(1, 1), pbr("rubber_floor", { repeat: [7, 16], color: 0x5d7299, metalness: 0.45, roughness: 0.75, normalScale: 1.2, ao: true }), g); deck.rotation.x = -Math.PI / 2;
+  const deck = mesh(new THREE.PlaneGeometry(1, 1), pbr("rubber_floor", { repeat: [7, 16], color: 0x32456a, metalness: 0.45, roughness: 0.75, normalScale: 1.2, ao: true }), g); deck.rotation.x = -Math.PI / 2;
   const turretShadow = contact(g);
   const lane = (function () { const c = document.createElement("canvas"); c.width = 256; c.height = 16; const x = c.getContext("2d"); x.fillStyle = "#ffb900"; x.fillRect(0, 0, 256, 16); x.fillStyle = "#1b2740"; for (let i = -1; i < 17; i++) { x.beginPath(); x.moveTo(i * 16, 16); x.lineTo(i * 16 + 8, 16); x.lineTo(i * 16 + 16, 0); x.lineTo(i * 16 + 8, 0); x.fill(); } const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.repeat.set(6, 1); t.anisotropy = 8; const m = mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ map: t, roughness: 0.8, metalness: 0.1 }), g); m.rotation.x = -Math.PI / 2; return m; })();
   // the far end of the dock: stacked containers in the station colours and a gantry across
@@ -63,7 +63,7 @@ function invaders(S) {
   const boxCols = [0x0a6dbe, 0xb9c3d1, 0xe0a300, 0x1f4f85, 0x7f8da3], boxMats = boxCols.map((c) => pbr("container", { repeat: [0.5, 1], color: c, metalness: 0.4, roughness: 0.9, normalScale: 0.55, ao: true }));
   const rimL = new THREE.PointLight(0x15aaff, 0, 520, 0); g.add(rimL);
   // the back wall of the dock, so the containers stand somewhere: plating, a light strip and a closed bay door
-  const backWall = mesh(box(1, 1, 60), pbr("hull_light", { color: 0x31456b, metalness: 0.55, roughness: 0.85, normalScale: 0.9, ao: true }), far);
+  const backWall = mesh(box(1, 1, 60), pbr("hull_light", { color: 0x16223a, metalness: 0.55, roughness: 0.85, normalScale: 0.9, ao: true }), far);
   const bayDoor = mesh(box(1, 1, 30), pbr("hull_dark", { repeat: [3, 2], color: 0x9fb0cc, metalness: 0.7 }), far), bayFrame = mesh(box(1, 1, 50), pbr("heat_shield", { repeat: [6, 1], color: 0x7f8fa8, metalness: 0.4 }), far);
   const wallStrip = mesh(box(1, 10, 12), glow(0xfff1dc, 1.3), far), crateShadow = contact(far);
   const dockLight = new THREE.SpotLight(0xfff1dc, 0, 0, 0.9, 0.8, 0); g.add(dockLight); g.add(dockLight.target);
@@ -131,7 +131,7 @@ function invaders(S) {
       bayFrame.scale.set(span * 0.68, 60, 1); bayFrame.position.set(0, fy - 16 + 930, wallZ + 50);
       wallStrip.scale.set(span * 2.6, 1, 1); wallStrip.position.set(0, fy + 1010, wallZ + 40);
       crateShadow.scale.set(span * 2.5, 900, 1); crateShadow.position.set(0, fy - 15, fz + 40); crateShadow.material.opacity = 0.8;
-      dockLight.position.set(0, fy + 1500, fz + 900); dockLight.target.position.set(0, fy + 200, fz - 200); dockLight.intensity = 3.4;
+      dockLight.position.set(0, fy + 1500, fz + 900); dockLight.target.position.set(0, fy + 200, fz - 200); dockLight.intensity = 1.8;
       far.traverse((o) => { o.frustumCulled = false; });
       beam.scale.set(span * 2.4, 1, 1); beam.position.set(0, fy + 900, fz + 200);
       legs.forEach((l, i) => { l.scale.set(1, 920, 1); l.position.set((i ? 1 : -1) * span * 0.98, fy + 430, fz + 200); });
@@ -194,7 +194,7 @@ function sprint(S) {
   const shadow = contact(g);
   const spot = new THREE.SpotLight(0xdfeaff, 0, 0, 0.5, 0.6, 0); g.add(spot); g.add(spot.target);
   const strip = mesh(box(1, 5, 6), glow(SKYBLUE, 1.0), g);
-  const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("rubber_floor", { repeat: [5, 3], color: 0x4a6594, metalness: 0.45, roughness: 0.75, normalScale: 1.2, ao: true }), g); table.rotation.x = -Math.PI / 2; table.material.envMapIntensity = 0.3;
+  const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("rubber_floor", { repeat: [5, 3], color: 0x2c4068, metalness: 0.45, roughness: 0.75, normalScale: 1.2, ao: true }), g); table.rotation.x = -Math.PI / 2; table.material.envMapIntensity = 0.3;
   const rim = mesh(box(1, 16, 30), pbr("hull_light", { repeat: [8, 1], color: 0x8fa0b8, metalness: 0.5 }), g);
   // a matte landing pad with painted markings, where the next card arrives
   const pc = document.createElement("canvas"); pc.width = pc.height = 256; const pg = pc.getContext("2d");

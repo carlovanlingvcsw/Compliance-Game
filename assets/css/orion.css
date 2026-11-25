@@ -532,3 +532,9 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .sprint.pf3d { min-height: max(320px, calc(100vh - 256px)); }
 .sprint.pf3d .bin-btn { font-size: .8125rem; padding-left: 16px; padding-right: 16px; }
 #m-place { color: #e8eef6 !important; font-size: 1rem; }
+
+/* ---------- Round 22: the sender of a message is the clue, so it reads at body size; wider bins ---------- */
+.inv small.dom { font-size: 1rem; font-weight: 600; color: #fff; }
+.inv small { font-size: .9375rem; }
+.sprint.pf3d { grid-template-columns: 1fr minmax(240px, 350px) 1fr; }
+.sprint.pf3d .bin-btn { font-size: .9375rem; padding-left: 10px; padding-right: 10px; }

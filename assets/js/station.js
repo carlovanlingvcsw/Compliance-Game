@@ -60,13 +60,13 @@ function makeEnvironment() {
 scene.environment = makeEnvironment();
 scene.environmentIntensity = 0.85;
 /* The studio HDRI replaces the code-built environment as soon as it has loaded. Space itself stays dark. */
-loadEnv(renderer, "env_studio").then((t) => { scene.environment = t; scene.environmentIntensity = 0.2; scene.environmentRotation.y = 1.2; }, () => {});
+loadEnv(renderer, "env_studio").then((t) => { scene.environment = t; scene.environmentIntensity = 0.3; scene.environmentRotation.y = 1.2; }, () => {});
 
 /* ---------- Materials ---------- */
 function hullMat(kind, repeat) {
   if (kind === "white") return pbr("plastic_white", { repeat, color: 0xe6ecf3, metalness: 0.15, roughness: 0.75 });
   if (kind === "dark") return pbr("hull_dark", { repeat, metalness: 0.7, roughness: 0.95 });
-  return pbr("hull_light", { repeat, color: kind === "mid" ? 0xb4c1d4 : 0xf2f6fb, metalness: 0.4, roughness: 1, normalScale: 0.9 });
+  return pbr("hull_light", { repeat, color: kind === "mid" ? 0xb4c1d4 : 0xf2f6fb, metalness: 0.4, roughness: 1, normalScale: 2.0 });
 }
 function windowTexture(cols, rows, lit, color) {
   const W = 512, H = 128, c = document.createElement("canvas"); c.width = W; c.height = H;
@@ -305,7 +305,7 @@ function moduleFrame(angleDeg, name) {
   mesh(new THREE.SphereGeometry(0.75, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x1c3d66, metalness: 0.6, roughness: 0.12, emissive: 0x0c2f5f, emissiveIntensity: 0.6 }), g, [2.3, 0.65, 0]).scale.set(1, 0.5, 0.8);
   mesh(new THREE.TorusGeometry(0.75, 0.04, 8, 48), MAT.hullDark, g, [2.3, 0.65, 0], [Math.PI / 2, 0, 0]).scale.set(1, 0.8, 1);
   for (let i = 0; i < 2; i++) mesh(new THREE.BoxGeometry(0.42, 0.22, 0.02), emissive(0xd3efff, 1.4), g, [1.5 + i * 0.6, -0.15, 0.81]);
-  const crossMat = emissive(0x67e8d0, 2.6);
+  const crossMat = emissive(0x67e8d0, 1.3);
   [[3.05, -0.1, 0.815, 0], [3.505, -0.1, 0, Math.PI / 2]].forEach(([x, y, z, ry]) => {
     const c = new THREE.Group(); g.add(c); c.position.set(x, y, z); c.rotation.y = ry;
     mesh(new THREE.BoxGeometry(0.5, 0.5, 0.012), new THREE.MeshStandardMaterial({ color: 0x0c2f5f, roughness: 0.4 }), c);
@@ -342,7 +342,7 @@ const breach = { lights: [], embers: null, plates: [] };
 (function () {
   const g = moduleFrame(260, "hullbreuk");
   const hull = mesh(new THREE.CylinderGeometry(0.8, 0.8, 2.6, 8, 1, false, Math.PI / 8), MAT.hullMid, g, [2.4, 0, 0], [0, 0, Math.PI / 2]);
-  hull.material = hullMat("mid", [0.6, 0.6]);
+  hull.material = hullMat("mid", [0.45, 0.45]); hull.material.normalScale.set(1.1, 1.1);
   [1.1, 3.7].forEach((x) => mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.18, 8, 1, false, Math.PI / 8), heatMat, g, [x, 0, 0], [0, 0, Math.PI / 2]));
   const face = 0.8 * Math.cos(Math.PI / 8) + 0.004;
   const hole = new THREE.Shape(), H = [[-0.5, 0.05], [-0.34, 0.24], [-0.12, 0.2], [0.02, 0.34], [0.2, 0.22], [0.42, 0.26], [0.5, 0.02], [0.36, -0.18], [0.16, -0.12], [0.0, -0.3], [-0.18, -0.16], [-0.38, -0.22]];
@@ -382,7 +382,7 @@ const breach = { lights: [], embers: null, plates: [] };
 })();
 
 // 6. Eindmissie: the comms array on top of the spine (registered for the camera)
-MODULES.push({ id: 5, group: comms, anchor: new THREE.Vector3(0, 2.4, 0), cam: new THREE.Vector3(2.6, 10.5, 12.5), fixed: true, drop: 0.5 });
+MODULES.push({ id: 5, group: comms, anchor: new THREE.Vector3(0, 2.4, 0), cam: new THREE.Vector3(1.0, 5.2, 17.5), fixed: true, drop: 1.6 });
 
 // Extra greebles on the ring between modules
 for (let i = 0; i < 18; i++) {
@@ -422,7 +422,7 @@ const planetMat = new THREE.ShaderMaterial({
     float fbm(vec3 p){ float a=0.5, s=0.0; for(int i=0;i<5;i++){ s+=a*n(p); p*=2.03; a*=0.5; } return s; }
     void main(){
       vec3 p = normalize(vP);
-      vec3 col = texture2D(uDay, vUv).rgb * 1.25;
+      vec3 col = texture2D(uDay, vUv).rgb * 1.25 * mix(0.22, 1.0, smoothstep(-0.97, -0.70, p.y));
       float sea = texture2D(uOcean, vUv).r;
       vec3 q = p*3.6 + vec3(uTime*0.003, 0.0, uTime*0.002);
       float cl = fbm(q + fbm(q*2.0)*0.6)*0.56 + fbm(p*13.0 - vec3(uTime*0.004,0.0,0.0))*0.30 + fbm(p*31.0)*0.14;
@@ -435,8 +435,8 @@ const planetMat = new THREE.ShaderMaterial({
       vec3 V = vec3(0.0,0.0,1.0);
       float rim = pow(1.0 - max(dot(N, V), 0.0), 3.6);
       vec3 atmo = vec3(0.28,0.60,1.0) * rim * (0.12 + 1.5*smoothstep(-0.25, 0.45, d));
-      float glint = pow(max(dot(reflect(-L, N), V), 0.0), 60.0) * sea * (1.0 - cloud) * 0.45;
-      vec3 night = texture2D(uNight, vUv).rgb * (1.0 - lit) * (1.0 - cloud*0.8) * 1.6;
+      float glint = pow(max(dot(reflect(-L, N), V), 0.0), 260.0) * sea * (1.0 - cloud) * 0.10 * lit; // a faint, small sun glint: the wide one read as a white orb
+      vec3 night = max(texture2D(uNight, vUv).rgb - 0.06, 0.0) * (1.0 - lit) * (1.0 - cloud*0.8) * 1.7 * smoothstep(0.96, 0.62, abs(p.y)); // ice caps are grey in the night image: keep only the city lights
       gl_FragColor = vec4(col*(lit*0.98 + 0.01) + atmo*0.9 + vec3(glint) + night, 1.0);
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
@@ -512,7 +512,7 @@ mesh(new THREE.SphereGeometry(94, 64, 48), haloMat, scene, [-170, -150, -135]);
 })();
 
 /* ---------- Lights ---------- */
-const sun = new THREE.DirectionalLight(0xffe8c8, 4.7);
+const sun = new THREE.DirectionalLight(0xffe8c8, 5.2);
 sun.position.copy(planetMat.uniforms.uLight.value).multiplyScalar(50);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -527,9 +527,9 @@ station.traverse((o) => {
   const sc = o.getWorldScale(new THREE.Vector3());
   o.castShadow = o.geometry.boundingSphere.radius * Math.max(sc.x, sc.y, sc.z) > 0.3;
 });
-scene.add(new THREE.HemisphereLight(0x67caff, 0x0a2a55, 0.22));
+scene.add(new THREE.HemisphereLight(0x67caff, 0x0a2a55, 0.32));
 const rimLight = new THREE.DirectionalLight(0x67caff, 2.1); rimLight.position.set(-30, -26, -30); scene.add(rimLight);
-const fill = new THREE.DirectionalLight(0xbcd9ff, 0.28); fill.position.set(30, 10, 25); scene.add(fill);
+const fill = new THREE.DirectionalLight(0xbcd9ff, 0.45); fill.position.set(30, 10, 25); scene.add(fill);
 scene.fog = new THREE.FogExp2(0x061a36, 0.0085);
 const alarmLight = new THREE.PointLight(0xff8a2e, 0, 3.4, 2); scene.add(alarmLight);
 const pulseLight = new THREE.PointLight(0x67caff, 0, 6, 2); scene.add(pulseLight);
