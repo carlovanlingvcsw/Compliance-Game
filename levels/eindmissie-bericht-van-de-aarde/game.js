@@ -260,7 +260,7 @@
     var f = S.flags;
     function cb(id, txt) { return '<label><input type="checkbox" data-flag="' + id + '"' + (f[id] ? " checked" : "") + "> " + txt + "</label>"; }
     show(
-      '<div class="kop title-screen">' + chips(["Eindmissie", "Briefing"]) + "<h1>Een bericht van de aarde</h1></div>" +
+      '<div class="kop title-screen"><div class="alleen-los">' + chips(["Eindmissie", "Briefing"]) + "</div><h1>Een bericht van de aarde</h1></div>" +
       '<p class="lead">Alles komt samen. Je handelt een inzageverzoek af en hebt daarvoor kennis en datakristallen uit alle vorige levels nodig.</p>' +
       speech("aria", "Er komt een bericht binnen van de aarde. Lyra Jansen meldde zich vorig jaar aan als kolonist voor Nova Terra, maar werd niet geselecteerd. Nu wil ze weten welke gegevens wij van haar hebben. Daar heeft ze recht op. Dit is je laatste missie. Gebruik je datakristallen.") +
       '<p class="muted">Lyra Jansen is een fictieve kandidaat. Haar dossier lag ook in het cryo-archief van level 2.</p>' +

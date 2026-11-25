@@ -82,3 +82,6 @@ html.in-orion .own-status { display: none !important; }
 
 /* In de schil bepaalt de inhoud de hoogte, niet het venster: anders scrolt elk level een paar pixels. */
 html.in-orion body { min-height: 0 !important; margin: 0 !important; }
+
+/* In de schil staat de stap al in de statusbalk. */
+html.in-orion .alleen-los { display: none !important; }

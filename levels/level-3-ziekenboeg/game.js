@@ -238,7 +238,7 @@
   function screenBriefing() {
     show("briefing",
       '<div class="title-screen ox-stack">' +
-      head("Opdracht van ARIA", chip("Briefing")) +
+      head("Opdracht van ARIA", '<span class="alleen-los">' + chip("Briefing") + "</span>") +
       say("aria", "Welkom in de ziekenboeg, het gevoeligste deel van het station. Bij ziekte wil iedereen alles weten. De sectorchef, de collega’s, soms zelfs de kapitein van de kolonie. Medische details zijn voor de scheepsarts, niet voor de rest.") +
       say("aria", "Vandaag val je in bij de crewadministratie. Ik kijk mee. Ik kijk altijd mee.") +
       '<div class="actions">' + nextBtn("Begin je dienst", "go") + '</div></div>'

@@ -358,7 +358,7 @@
   /* ---------- Schermen ---------- */
   function renderBrief() {
     show(
-      '<div class="screen-head"><div class="ox-chips">' + chip("Level 5") + chip("Briefing", "neutral") + "</div><h1>Alarm in module Kepler</h1></div>" +
+      '<div class="screen-head"><div class="ox-chips alleen-los">' + chip("Level 5") + chip("Briefing", "neutral") + "</div><h1>Alarm in module Kepler</h1></div>" +
       '<p class="lead">Je leert een datalek direct te melden, de schade te beperken en de feiten vast te leggen, omdat er een harde deadline van 72 uur geldt.</p>' +
       speech("aria", "Alarm. Er is een lek in onze datasystemen. Gevoelige gegevens lekken het station uit. Vanaf nu loopt de klok. Binnen 72 uur moet de Galactische Toezichtraad het weten als er risico is. Elke minuut die je wacht, maakt het erger.") +
       '<dl class="vcsw-dl" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">' +
