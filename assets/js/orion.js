@@ -211,8 +211,9 @@
       var p = pts[L.module], b = btns[n]; if (!p || !b) return;
       var left = p.x < mid.x - 20;
       var low = left && cr && p.y > cr.top - 30 && p.x - b.offsetWidth < cr.right + 24; // not across the title: hang it below the module
+      if (low) left = false;
       b.classList.toggle("left", left);
-      b.style.transform = "translate(" + Math.round(p.x) + "px," + Math.round(p.y) + "px)" + (left ? " translateX(-100%)" : "") + (low ? " translateY(46px)" : "");
+      b.style.transform = "translate(" + Math.round(p.x) + "px," + Math.round(p.y) + "px)" + (left ? " translateX(-100%)" : "") + (low ? " translateY(54px)" : "");
       b.classList.toggle("behind", !p.front);
     });
     var et = document.getElementById("earth-tag");
@@ -256,6 +257,8 @@
   function fitPanel() {
     var r = ROUTE[cur], h = view === "mission" && r && r.type === "level" ? fitH[r.n] : 0;
     if (!h || window.innerWidth < 900) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; }
+    var room = window.innerHeight - stageEl.getBoundingClientRect().top - 12;
+    if (h + 30 > room - 110) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; } // nearly full: keep one baseline with the module card
     stageEl.classList.add("fit"); stageEl.style.height = Math.max(420, h + 30) + "px";
   }
   window.addEventListener("message", function (e) {

@@ -213,11 +213,15 @@ mesh(cyl(0.12, 1.8, 12), MAT.truss, comms, [0, 0.9, 0]);
 mesh(cyl(0.34, 0.5, 16), FOIL.gold, comms, [0, 0.25, 0]);
 const dishPts = []; for (let i = 0; i <= 16; i++) { const t = i / 16; dishPts.push(new THREE.Vector2(t * 1.3, t * t * 0.55)); }
 const dish = mesh(new THREE.LatheGeometry(dishPts, 48), new THREE.MeshStandardMaterial({ color: 0x9fb4cf, metalness: 0.8, roughness: 0.38, side: THREE.DoubleSide }), comms, [0, 1.9, 0]);
-dish.rotation.set(-0.9, 0, 0.3);
-for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; strut(dish, [Math.cos(a) * 0.15, 0.012, Math.sin(a) * 0.15], [Math.cos(a) * 1.28, 0.56, Math.sin(a) * 1.28], 0.012, MAT.hullDark); }
+dish.rotation.set(0.95, 0, 0.25);
+mesh(new THREE.CylinderGeometry(0.2, 0.3, 0.3, 16), MAT.hullDark, dish, [0, -0.13, 0]);
+mesh(new THREE.BoxGeometry(0.5, 0.16, 0.24), MAT.truss, comms, [0, 1.78, 0]);
+[[-0.22, 2.3], [0.26, 2.05]].forEach(([x, h]) => mesh(cyl(0.012, h, 6), MAT.hullDark, comms, [x, 0.5 + h / 2, -0.2]));
+lamp(comms, [-0.22, 2.82, -0.2], 0xffb900, 0.035);
+for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; strut(dish, [Math.cos(a) * 0.15, 0.012, Math.sin(a) * 0.15], [Math.cos(a) * 1.28, 0.56, Math.sin(a) * 1.28], 0.018, MAT.hullDark); }
 mesh(new THREE.TorusGeometry(1.3, 0.025, 6, 64), MAT.hullDark, dish, [0, 0.55, 0], [Math.PI / 2, 0, 0]);
-[0, 2.1, 4.2].forEach((a) => strut(dish, [Math.cos(a) * 1.2, 0.5, Math.sin(a) * 1.2], [0, 0.86, 0], 0.012, MAT.truss));
-mesh(new THREE.CylinderGeometry(0.05, 0.09, 0.16, 16), MAT.hullDark, dish, [0, 0.86, 0]);
+[0, 2.1, 4.2].forEach((a) => strut(dish, [Math.cos(a) * 1.2, 0.5, Math.sin(a) * 1.2], [0, 0.86, 0], 0.02, MAT.truss));
+mesh(new THREE.CylinderGeometry(0.07, 0.13, 0.24, 16), MAT.hullDark, dish, [0, 0.86, 0]);
 lamp(comms, [0, 1.85, 0], 0x15aaff, 0.03);
 const dishLamp = lamp(dish, [0, 0.92, 0], 0x67caff, 0.03);
 
@@ -338,7 +342,7 @@ const breach = { lights: [], embers: null, plates: [] };
 (function () {
   const g = moduleFrame(260, "hullbreuk");
   const hull = mesh(new THREE.CylinderGeometry(0.8, 0.8, 2.6, 8, 1, false, Math.PI / 8), MAT.hullMid, g, [2.4, 0, 0], [0, 0, Math.PI / 2]);
-  hull.material = hullMat("mid", [1, 1]);
+  hull.material = hullMat("mid", [0.6, 0.6]);
   [1.1, 3.7].forEach((x) => mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.18, 8, 1, false, Math.PI / 8), heatMat, g, [x, 0, 0], [0, 0, Math.PI / 2]));
   const face = 0.8 * Math.cos(Math.PI / 8) + 0.004;
   const hole = new THREE.Shape(), H = [[-0.5, 0.05], [-0.34, 0.24], [-0.12, 0.2], [0.02, 0.34], [0.2, 0.22], [0.42, 0.26], [0.5, 0.02], [0.36, -0.18], [0.16, -0.12], [0.0, -0.3], [-0.18, -0.16], [-0.38, -0.22]];
@@ -347,12 +351,18 @@ const breach = { lights: [], embers: null, plates: [] };
   const BW = 1.7;
   const scorch = (function () { const c = document.createElement("canvas"); c.width = 256; c.height = 128; const x = c.getContext("2d"); x.translate(128, 64); x.scale(2, 1); const gr = x.createRadialGradient(0, 0, 8, 0, 0, 62); gr.addColorStop(0, "rgba(6,5,6,.95)"); gr.addColorStop(0.55, "rgba(14,10,8,.7)"); gr.addColorStop(1, "rgba(14,10,8,0)"); x.fillStyle = gr; x.fillRect(-64, -64, 128, 128); return new THREE.CanvasTexture(c); })();
   mesh(new THREE.PlaneGeometry(2.3, 0.6), new THREE.MeshBasicMaterial({ map: scorch, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }), g, [hx, hy, face - 0.003]);
-  mesh(new THREE.ShapeGeometry(hole), new THREE.MeshBasicMaterial({ color: 0x010309, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }), g, [hx, hy, face]).scale.set(BW, 0.9, 1);
+  const inside = (function () { const c = document.createElement("canvas"); c.width = 256; c.height = 128; const x = c.getContext("2d"); x.fillStyle = "#04060b"; x.fillRect(0, 0, 256, 128);
+    const gr = x.createRadialGradient(128, 150, 6, 128, 150, 120); gr.addColorStop(0, "rgba(255,138,52,.75)"); gr.addColorStop(1, "rgba(255,138,52,0)"); x.fillStyle = gr; x.fillRect(0, 0, 256, 128);
+    for (let i = 0; i < 7; i++) { const px = 14 + i * 38; x.fillStyle = "#141b28"; x.fillRect(px, 0, 12, 128); x.fillStyle = "#34425a"; x.fillRect(px, 0, 2, 128); }
+    x.fillStyle = "#101622"; x.fillRect(0, 40, 256, 9); x.fillStyle = "#2b3850"; x.fillRect(0, 40, 256, 2); x.fillStyle = "#101622"; x.fillRect(0, 88, 256, 7);
+    x.strokeStyle = "#5a2a12"; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 20); x.bezierCurveTo(70, 70, 150, 10, 256, 60); x.stroke();
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.repeat.set(1, 1.4); t.offset.set(0.5, 0.5); return t; })();
+  mesh(new THREE.ShapeGeometry(hole), new THREE.MeshBasicMaterial({ map: inside, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }), g, [hx, hy, face]).scale.set(BW, 0.9, 1);
   const ember = new THREE.Shape(), E = [[-0.3, 0.02], [-0.1, 0.12], [0.08, 0.04], [0.28, 0.1], [0.2, -0.06], [0.0, -0.12], [-0.18, -0.06]];
   ember.moveTo(E[0][0], E[0][1]); E.slice(1).forEach((p) => ember.lineTo(p[0], p[1]));
   breach.embers = mesh(new THREE.ShapeGeometry(ember), new THREE.MeshBasicMaterial({ color: 0xff7a2e, transparent: true, opacity: 0.35 }), g, [hx, hy, face + 0.002]);
   breach.embers.scale.set(1.35 * BW, 1.3, 1);
-  for (let i = 0; i < 5; i++) { const r = mesh(cyl(0.018, 0.56, 6), MAT.hullDark, g, [hx - 0.5 + i * 0.25, hy, face + 0.004]); r.rotation.z = 0.2 * ((i % 3) - 1); }
+  for (let i = 0; i < 5; i++) { const r = mesh(cyl(0.02, 0.56, 6), new THREE.MeshStandardMaterial({ color: 0x8b99ae, metalness: 0.7, roughness: 0.45 }), g, [hx - 0.5 + i * 0.25, hy, face + 0.004]); r.rotation.z = 0.2 * ((i % 3) - 1); }
   // bent plates hinged at the edge of the hole, peeled outward
   [[-0.5, 0.12, 0.5, 1], [0.44, 0.16, -0.6, 1], [0.05, 0.32, 0.1, 0], [-0.1, -0.28, -0.2, 0], [0.4, -0.16, 0.9, 1]].forEach(([dx, dy, rz, side]) => {
     const pivot = new THREE.Group(); g.add(pivot); pivot.position.set(hx + dx * BW, hy + dy * 0.9, face);
@@ -401,7 +411,7 @@ aria.scale.setScalar(1.0);
 const dayTex = tex("earth", "color", null, true), nightTex = tex("earth", "night", null, true), oceanTex = tex("earth", "ocean");
 dayTex.anisotropy = 8;
 const planetMat = new THREE.ShaderMaterial({
-  uniforms: { uLight: { value: new THREE.Vector3(0.10, 0.55, 0.83).normalize() }, uTime: { value: 0 }, uDay: { value: dayTex }, uNight: { value: nightTex }, uOcean: { value: oceanTex } },
+  uniforms: { uLight: { value: new THREE.Vector3(0.55, 0.5, 0.67).normalize() }, uTime: { value: 0 }, uDay: { value: dayTex }, uNight: { value: nightTex }, uOcean: { value: oceanTex } },
   vertexShader: `varying vec3 vN; varying vec3 vP; varying vec2 vUv;
     void main(){ vN = normalize(normalMatrix * normal); vP = position; vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
   fragmentShader: `uniform vec3 uLight; uniform float uTime; uniform sampler2D uDay; uniform sampler2D uNight; uniform sampler2D uOcean; varying vec3 vN; varying vec3 vP; varying vec2 vUv;

@@ -70,3 +70,9 @@ html.asking .hud, html.asking .vcsw-alert:not(#stage .vcsw-alert):not(#screen .v
 
 /* ---------- Rules of a level as one open row with a blue rule, not three boxes ---------- */
 html.in-orion #stage .vcsw-dl > div, html.in-orion #screen .vcsw-dl > div { padding: 2px 16px 2px 14px !important; border: 0 !important; border-left: 2px solid var(--vcsw-blue-400, #15aaff) !important; border-radius: 0 !important; background: none !important; }
+
+/* ---------- Rules of a level as a short list, one row per rule ---------- */
+html.in-orion #stage .vcsw-dl, html.in-orion #screen .vcsw-dl { grid-template-columns: 1fr !important; gap: 6px !important; }
+html.in-orion #stage .vcsw-dl > div, html.in-orion #screen .vcsw-dl > div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 2px 0 2px 14px !important; }
+html.in-orion #stage .vcsw-dl dd, html.in-orion #screen .vcsw-dl dd { margin: 0 !important; }
+@media (max-width: 560px) { html.in-orion #stage .vcsw-dl > div, html.in-orion #screen .vcsw-dl > div { grid-template-columns: 1fr; gap: 2px; } }

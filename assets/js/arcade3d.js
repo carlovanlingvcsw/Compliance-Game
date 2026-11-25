@@ -55,12 +55,13 @@ function invaders(S) {
   stars(g, 700);
   const glowBand = horizon(g);
   g.fog = new THREE.Fog(0x030a1a, 1700, 6200); // the far end of the dock sinks into the dark
-  const deck = mesh(new THREE.PlaneGeometry(1, 1), pbr("scifi_panel", { repeat: [6, 12], color: 0x55668a, metalness: 0.55, roughness: 0.8, normalScale: 1.2, ao: true }), g); deck.rotation.x = -Math.PI / 2;
+  const deck = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_light", { repeat: [9, 10], color: 0x4d5f80, metalness: 0.55, roughness: 0.85, normalScale: 2.0, ao: true }), g); deck.rotation.x = -Math.PI / 2;
   const turretShadow = contact(g);
   const lane = (function () { const c = document.createElement("canvas"); c.width = 256; c.height = 16; const x = c.getContext("2d"); x.fillStyle = "#ffb900"; x.fillRect(0, 0, 256, 16); x.fillStyle = "#1b2740"; for (let i = -1; i < 17; i++) { x.beginPath(); x.moveTo(i * 16, 16); x.lineTo(i * 16 + 8, 16); x.lineTo(i * 16 + 16, 0); x.lineTo(i * 16 + 8, 0); x.fill(); } const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.repeat.set(6, 1); t.anisotropy = 8; const m = mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ map: t, roughness: 0.8, metalness: 0.1 }), g); m.rotation.x = -Math.PI / 2; return m; })();
   // the far end of the dock: stacked containers in the station colours and a gantry across
   const far = new THREE.Group(); g.add(far);
-  const boxCols = [0x084f8c, 0x8d98a8, 0xb58400, 0x173a63, 0x5f6d82], boxMats = boxCols.map((c) => pbr("container", { repeat: [1, 1], color: c, metalness: 0.4, roughness: 0.9, normalScale: 0.7, ao: true }));
+  const boxCols = [0x084f8c, 0x8d98a8, 0xb58400, 0x173a63, 0x5f6d82], boxMats = boxCols.map((c) => pbr("container", { repeat: [0.5, 1], color: c, metalness: 0.4, roughness: 0.9, normalScale: 0.55, ao: true }));
+  const rimL = new THREE.PointLight(0x15aaff, 0, 520, 0); g.add(rimL);
   const crates = []; for (let i = 0; i < 9; i++) crates.push(mesh(box(250, 250, 560), boxMats[(i * 3 + (i >> 1)) % 5], far));
   const gantryMat = pbr("hull_dark", { repeat: [10, 1], metalness: 0.75 });
   const beam = mesh(box(1, 46, 60), gantryMat, far), legs = [-1, 1].map(() => mesh(box(70, 1, 70), gantryMat, far));
@@ -112,8 +113,10 @@ function invaders(S) {
       lamps.forEach((l, i) => { const s = i % 2 ? 1 : -1, k = Math.floor(i / 2); l.position.set(s * W * 0.47, fy - 13, 40 - k * 190); });
       pylons.forEach((p) => p.position.set(p.userData.s * (W * 0.9 + 260), fy + 430, -1500));
       glowBand.visible = false;
-      turret.position.set(0, fy - 12, -70); turret.scale.setScalar(1.45);
-      turretShadow.scale.set(330, 250, 1); turretShadow.position.set(18, fy - 15, -62);
+      turret.position.set(0, fy - 12, -70); turret.scale.setScalar(1.7);
+      beam.visible = false; legs.forEach((l) => (l.visible = false)); beamLamps.forEach((l) => (l.visible = false));
+      rimL.position.set(150, fy + 150, -230); rimL.intensity = 4;
+      turretShadow.scale.set(390, 290, 1); turretShadow.position.set(18, fy - 15, -62);
       lane.scale.set(W * 1.1, 26, 1); lane.position.set(0, fy - 15.5, 62);
       const fz = -2900, span = W * 2.1;
       crates.forEach((c, i) => { const col = i % 7, row = i >= 7 ? 1 : 0, gap = col >= 3 ? 1 : 0; if (row) { c.position.set(-span + (i === 7 ? 0.5 : 5.5) * (span * 2 / 6.4) + (i === 7 ? 0 : span * 0.12), fy - 16 + 125 + 252, fz - 30); return; } c.position.set(-span + col * (span * 2 / 6.4) + gap * span * 0.12, fy - 16 + 125 + row * 252, fz - (col % 2) * 60); });
@@ -177,9 +180,9 @@ function sprint(S) {
   const mullions = [-1, 1].map(() => mesh(box(14, 1, 46), pbr("hull_dark", { metalness: 0.7 }), g));
   const wall = mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 }), g);
   const shadow = contact(g);
-  const spot = new THREE.SpotLight(0xfff1dc, 0, 0, 0.5, 0.6, 0); g.add(spot); g.add(spot.target);
+  const spot = new THREE.SpotLight(0xdfeaff, 0, 0, 0.5, 0.6, 0); g.add(spot); g.add(spot.target);
   const strip = mesh(box(1, 5, 6), glow(SKYBLUE, 1.0), g);
-  const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("scifi_panel", { repeat: [8, 4], color: 0x24314a, metalness: 0.5, roughness: 0.75, normalScale: 1.2, ao: true }), g); table.rotation.x = -Math.PI / 2; table.material.envMapIntensity = 0.3;
+  const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_light", { repeat: [6, 3], color: 0x46587a, metalness: 0.55, roughness: 0.85, normalScale: 2.0, ao: true }), g); table.rotation.x = -Math.PI / 2; table.material.envMapIntensity = 0.35;
   const rim = mesh(box(1, 16, 30), pbr("hull_light", { repeat: [8, 1], color: 0x8fa0b8, metalness: 0.5 }), g);
   // a matte landing pad with painted markings, where the next card arrives
   const pc = document.createElement("canvas"); pc.width = pc.height = 256; const pg = pc.getContext("2d");
