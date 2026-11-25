@@ -50,7 +50,22 @@ const station = read("assets/js/station.js");
 let index = read("index.html");
 index = swap(index, '<link rel="stylesheet" href="assets/css/vcsw-brand.css">\n<link rel="stylesheet" href="assets/css/orion.css">',
   "<style>\n" + brand + "\n" + read("assets/css/orion.css") + "\n</style>");
-index = swap(index, '{ "imports": { "three": "./assets/vendor/three.module.js" } }', JSON.stringify({ imports: { three } }));
+// Addons and the game's own modules also go in through the import map. Relative imports inside the addons
+// become bare names, because a data URL has no folder to resolve them against.
+const js64 = (code) => "data:text/javascript;base64," + Buffer.from(code, "utf8").toString("base64");
+const imports = { three };
+const addonRoot = path.join(root, "assets/vendor/addons");
+for (const dir of fs.readdirSync(addonRoot)) for (const file of fs.readdirSync(path.join(addonRoot, dir))) {
+  const code = fs.readFileSync(path.join(addonRoot, dir, file), "utf8")
+    .replace(/from '(\.\.?\/[^']+)'/g, (m, rel) => `from 'three/addons/${path.posix.join(dir, rel)}'`);
+  imports[`three/addons/${dir}/${file}`] = js64(code);
+}
+for (const mod of ["tex.js", "arcade3d.js"]) imports[`orion/${mod}`] = js64(read(`assets/js/${mod}`));
+const texRoot = path.join(root, "assets/textures"), tex = {};
+for (const set of fs.readdirSync(texRoot)) if (fs.statSync(path.join(texRoot, set)).isDirectory())
+  for (const file of fs.readdirSync(path.join(texRoot, set))) tex[`${set}/${file.replace(".jpg", "")}`] = dataUri(`assets/textures/${set}/${file}`, "image/jpeg");
+index = swap(index, '{ "imports": { "three": "./assets/vendor/three.module.js", "three/addons/": "./assets/vendor/addons/", "orion/": "./assets/js/" } }', JSON.stringify({ imports }));
+index = swap(index, '<script src="assets/js/orion.js"></script>', "<script>window.ORION_TEX = " + JSON.stringify(tex) + ";</script>\n" + '<script src="assets/js/orion.js"></script>');
 index = swap(index, '<script src="assets/js/orion.js"></script>', "<script>\n" + safeScript(js) + "\n</script>");
 index = swap(index, 'var s = document.createElement("script"); s.type = "module"; s.src = "assets/js/station.js";',
   'var s = document.createElement("script"); s.type = "module"; s.textContent = document.getElementById("station-src").textContent;');

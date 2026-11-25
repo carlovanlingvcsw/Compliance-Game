@@ -1,7 +1,16 @@
-/* Ruimtestation Orion: the station, built entirely in code with three.js.
-   No models, textures or images are loaded. Everything below is generated.
+/* Ruimtestation Orion: the station, built in code with three.js.
+   The geometry is generated here. The surface textures are CC0 images (see tex.js),
+   and bloom comes from the three.js post-processing addons.
    The shell talks to it through window.OrionStation (see the bottom of this file). */
 import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { loadTextures, pbr } from "orion/tex.js";
+import "orion/arcade3d.js";
+
+await loadTextures();
 
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canvas = document.getElementById("world");
@@ -48,43 +57,13 @@ function makeEnvironment() {
   return tex;
 }
 scene.environment = makeEnvironment();
-scene.environmentIntensity = 0.55;
+scene.environmentIntensity = 0.85;
 
-/* ---------- Procedural hull textures ---------- */
-/* Hull panels: colour with subtle tone shifts, a bump map for the seams and rivets, and a roughness map,
-   so panels read through light rather than through drawn lines. */
-function hullTexture(base, opts = {}) {
-  const S = 512, cols = opts.cols || 6, rows = opts.rows || 4, cw = S / cols, rh = S / rows;
-  const mk = () => { const c = document.createElement("canvas"); c.width = c.height = S; return [c, c.getContext("2d")]; };
-  const [cc, g] = mk(), [bc, b] = mk(), [rc, r] = mk();
-  g.fillStyle = base; g.fillRect(0, 0, S, S);
-  b.fillStyle = "#808080"; b.fillRect(0, 0, S, S);
-  r.fillStyle = "#8a8a8a"; r.fillRect(0, 0, S, S);
-  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
-    // panels are split unevenly, like real hull plating
-    const split = rnd() < 0.35, parts = split ? [[0, 0.5], [0.5, 1]] : [[0, 1]];
-    parts.forEach(([a0, a1]) => {
-      const px = x * cw, py = y * rh + a0 * rh, ph = (a1 - a0) * rh;
-      const v = (rnd() - 0.5) * (opts.vary || 14);
-      g.fillStyle = v > 0 ? `rgba(255,255,255,${v / 255})` : `rgba(0,0,0,${-v / 255})`; g.fillRect(px, py, cw, ph);
-      const rv = 80 + Math.floor(rnd() * 80); r.fillStyle = `rgb(${rv},${rv},${rv})`; r.fillRect(px, py, cw, ph);
-      b.fillStyle = "#5a5a5a"; b.fillRect(px, py, cw, 2); b.fillRect(px, py, 2, ph);
-      g.fillStyle = "rgba(10,20,35,.22)"; g.fillRect(px, py, cw, 1.5); g.fillRect(px, py, 1.5, ph);
-      b.fillStyle = "#a0a0a0"; b.fillRect(px + 2, py + 2, cw - 2, 1);
-      for (let k = 0; k < 4; k++) { b.fillStyle = "#b8b8b8"; b.fillRect(px + 6 + k * (cw - 12) / 3, py + 5, 2, 2); }
-      if (rnd() < 0.2) { g.fillStyle = "rgba(0,0,0,.12)"; g.fillRect(px + cw * 0.15, py + ph * 0.3, cw * 0.5, ph * 0.12); b.fillStyle = "#6c6c6c"; b.fillRect(px + cw * 0.15, py + ph * 0.3, cw * 0.5, ph * 0.12); }
-    });
-  }
-  // a little grime along the lower edges
-  const grad = g.createLinearGradient(0, 0, 0, S); grad.addColorStop(0, "rgba(0,0,0,0)"); grad.addColorStop(1, "rgba(10,20,40,.10)"); g.fillStyle = grad; g.fillRect(0, 0, S, S);
-  const tex = (c, srgb) => { const t = new THREE.CanvasTexture(c); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return t; };
-  const map = tex(cc, true); map.userData = { bump: tex(bc), rough: tex(rc) };
-  return map;
-}
-function hullMat(map, metalness, roughness, repeat) {
-  const m = new THREE.MeshStandardMaterial({ map, metalness, roughness, bumpMap: map.userData.bump, bumpScale: 2.6, roughnessMap: map.userData.rough });
-  if (repeat) { ["map", "bumpMap", "roughnessMap"].forEach((k) => { m[k] = m[k].clone(); m[k].repeat.set(repeat[0], repeat[1]); m[k].needsUpdate = true; }); }
-  return m;
+/* ---------- Materials ---------- */
+function hullMat(kind, repeat) {
+  if (kind === "white") return pbr("hull_white", { repeat, metalness: 0.25, roughness: 0.9, normalScale: 0.8 });
+  if (kind === "dark") return pbr("hull_dark", { repeat, metalness: 0.7, roughness: 0.95 });
+  return pbr("hull_light", { repeat, color: kind === "mid" ? 0xb4c1d4 : 0xf2f6fb, metalness: 0.4, roughness: 1, normalScale: 2.2 });
 }
 function windowTexture(cols, rows, lit, color) {
   const W = 512, H = 128, c = document.createElement("canvas"); c.width = W; c.height = H;
@@ -99,63 +78,24 @@ function windowTexture(cols, rows, lit, color) {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
   return t;
 }
-function solarTexture() {
-  const S = 256, c = document.createElement("canvas"); c.width = c.height = S;
-  const g = c.getContext("2d"); g.fillStyle = "#0b2a5c"; g.fillRect(0, 0, S, S);
-  for (let y = 0; y < 8; y++) for (let x = 0; x < 4; x++) {
-    const l = 26 + rnd() * 10;
-    g.fillStyle = `hsl(212 70% ${l}%)`; g.fillRect(x * 64 + 3, y * 32 + 3, 58, 26);
-    g.fillStyle = "rgba(255,255,255,.06)"; g.fillRect(x * 64 + 3, y * 32 + 3, 58, 4);
-  }
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
-  return t;
-}
-
-function containerTexture() {
-  const W = 256, H = 256, c = document.createElement("canvas"); c.width = W; c.height = H;
-  const g = c.getContext("2d"); g.fillStyle = "#d8dde3"; g.fillRect(0, 0, W, H);
-  for (let x = 0; x < W; x += 16) { g.fillStyle = "rgba(0,0,0,.16)"; g.fillRect(x, 0, 5, H); g.fillStyle = "rgba(255,255,255,.18)"; g.fillRect(x + 7, 0, 3, H); }
-  g.fillStyle = "rgba(0,0,0,.35)"; g.fillRect(0, 0, W, 10); g.fillRect(0, H - 10, W, 10); g.fillRect(0, 0, 10, H); g.fillRect(W - 10, 0, 10, H);
-  g.fillStyle = "rgba(255,255,255,.55)"; g.fillRect(28, 30, 60, 10); g.fillRect(28, 46, 36, 6);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
-}
-/* Crinkled insulation foil, like the gold and silver blankets on real spacecraft */
-function foilTexture(tone) {
-  const S = 256, c = document.createElement("canvas"); c.width = c.height = S; const g = c.getContext("2d");
-  const base = tone === "gold" ? [200, 156, 84] : [178, 184, 192];
-  g.fillStyle = `rgb(${base})`; g.fillRect(0, 0, S, S);
-  for (let i = 0; i < 120; i++) {
-    const x = rnd() * S, y = rnd() * S, r = 10 + rnd() * 26, k = 0.86 + rnd() * 0.28;
-    g.fillStyle = `rgb(${base.map((v) => Math.min(255, Math.round(v * k))).join(",")})`;
-    g.beginPath(); g.moveTo(x, y);
-    for (let j = 0; j < 4; j++) g.lineTo(x + (rnd() - 0.5) * r * 2, y + (rnd() - 0.5) * r * 2);
-    g.closePath(); g.fill();
-  }
-  g.strokeStyle = "rgba(0,0,0,.18)"; g.lineWidth = 1;
-  for (let i = 0; i < 4; i++) { g.beginPath(); g.moveTo(0, i * 64 + 2); g.lineTo(S, i * 64 + 2); g.stroke(); }
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
-  const b = new THREE.CanvasTexture(c); b.wrapS = b.wrapT = THREE.RepeatWrapping;
-  return new THREE.MeshStandardMaterial({ map: t, bumpMap: b, bumpScale: 1.6, metalness: 0.5, roughness: 0.45 });
-}
-const TEX = {
-  container: containerTexture(),
-  light: hullTexture("#a9b4c2", { cols: 6, rows: 3 }),
-  mid: hullTexture("#7f8ea4", { cols: 5, rows: 4 }),
-  dark: hullTexture("#34445c", { cols: 4, rows: 4, vary: 20 }),
-  white: hullTexture("#d2dae4", { cols: 4, rows: 3, vary: 10 }),
+const FOIL = {
+  gold: pbr("foil", { repeat: [1, 1], orm: false, color: 0xe2ab4c, metalness: 0.8, roughness: 0.42, normalScale: 0.7 }),
+  silver: pbr("foil", { repeat: [1, 1], map: false, orm: false, color: 0x9aa3ae, metalness: 0.6, roughness: 0.65, normalScale: 0.25 }),
 };
-const FOIL = { gold: foilTexture("gold"), silver: foilTexture("silver") };
 const MAT = {
-  hull: hullMat(TEX.light, 0.4, 0.75),
-  hullMid: hullMat(TEX.mid, 0.5, 0.7),
-  hullDark: hullMat(TEX.dark, 0.6, 0.65),
-  white: hullMat(TEX.white, 0.2, 0.7),
-  truss: new THREE.MeshStandardMaterial({ color: 0x8a96a8, metalness: 0.85, roughness: 0.3 }),
+  hull: hullMat("light", [0.5, 0.5]),
+  hullMid: hullMat("mid", [0.5, 0.5]),
+  hullDark: hullMat("dark", [1, 1]),
+  white: hullMat("white", [1, 1]),
+  truss: pbr("truss", { normal: false, color: 0xc0cad8, metalness: 0.9, roughness: 0.8 }),
+  grate: pbr("grate", { repeat: [1, 1], color: 0x9fadbf, metalness: 0.8, roughness: 0.9 }),
   gold: new THREE.MeshStandardMaterial({ color: 0xc8a65a, metalness: 1, roughness: 0.32 }),
-  solar: new THREE.MeshStandardMaterial({ map: solarTexture(), metalness: 0.4, roughness: 0.25, color: 0xffffff }),
+  solar: pbr("solar", { repeat: [4, 1], metalness: 0.6, roughness: 0.75 }),
   blue: new THREE.MeshStandardMaterial({ color: 0x0a6dbe, metalness: 0.4, roughness: 0.35 }),
   glass: new THREE.MeshStandardMaterial({ color: 0x0c2f5f, metalness: 0.9, roughness: 0.08 }),
 };
+const containerMats = {};
+function containerMat(hex) { return containerMats[hex] || (containerMats[hex] = pbr("container", { color: hex, metalness: 0.45, roughness: 0.95, ao: true })); }
 function emissive(color, intensity) { return new THREE.MeshStandardMaterial({ color: 0x000000, emissive: color, emissiveIntensity: intensity, roughness: 0.6 }); }
 
 /* ---------- Helpers ---------- */
@@ -196,7 +136,7 @@ function vents(parent, x, y, z, n, ry) {
 function hatch(parent, x, y, z, ry) {
   const g = new THREE.Group(); parent.add(g); g.position.set(x, y, z); g.rotation.y = ry || 0;
   mesh(new THREE.BoxGeometry(0.32, 0.42, 0.014), MAT.hullDark, g);
-  mesh(new THREE.BoxGeometry(0.26, 0.36, 0.02), MAT.hullMid, g, [0, 0, 0.006]);
+  mesh(new THREE.BoxGeometry(0.26, 0.36, 0.02), MAT.grate, g, [0, 0, 0.006]);
   mesh(new THREE.BoxGeometry(0.1, 0.03, 0.03), MAT.gold, g, [0.06, -0.06, 0.018]);
   return g;
 }
@@ -224,7 +164,7 @@ scene.add(station);
 station.rotation.x = 0.08;
 
 // Central spine and hub
-mesh(cyl(1.25, 3.2, 48), MAT.hull, station);
+mesh(cyl(1.25, 3.2, 48), hullMat("light", [2, 1]), station);
 mesh(new THREE.SphereGeometry(1.25, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), FOIL.silver, station, [0, 1.6, 0]);
 mesh(new THREE.SphereGeometry(1.25, 48, 24, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), FOIL.silver, station, [0, -1.6, 0]);
 mesh(cyl(0.42, 9, 24), MAT.hullDark, station);
@@ -235,8 +175,7 @@ for (let i = 0; i < 32; i++) { const a = (i / 32) * Math.PI * 2; if (i % 5 === 1
 const ring = new THREE.Group(); station.add(ring);
 const RING_R = 6.2;
 const ringMesh = mesh(new THREE.TorusGeometry(RING_R, 0.5, 24, 160), MAT.hull, ring, null, [Math.PI / 2, 0, 0]);
-TEX.light.repeat.set(1, 1);
-ringMesh.material = hullMat(TEX.light, 0.4, 0.75, [28, 1]);
+ringMesh.material = hullMat("light", [10, 1]);
 const winTex = windowTexture(32, 2, 0.6, "#ffe9b8"); winTex.repeat.set(10, 1);
 mesh(new THREE.TorusGeometry(RING_R, 0.505, 6, 160, Math.PI * 2), new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveMap: winTex, emissiveIntensity: 1.4, transparent: true, opacity: 1, alphaMap: winTex, depthWrite: false }), ring, null, [Math.PI / 2, 0, 0]).scale.set(1, 1, 0.22);
 for (let i = 0; i < 4; i++) {
@@ -255,7 +194,6 @@ function solarWing(y, flip) {
   mesh(cyl(0.08, 7, 12), MAT.truss, g, [3.8 * flip, 0, 0], [0, 0, Math.PI / 2]);
   for (let k = 0; k < 2; k++) {
     const p = mesh(new THREE.BoxGeometry(5.6, 0.03, 1.5), MAT.solar, g, [4.4 * flip, 0, (k ? 1 : -1) * 0.95]);
-    p.material = MAT.solar.clone(); p.material.map = MAT.solar.map.clone(); p.material.map.repeat.set(4, 1); p.material.map.needsUpdate = true;
     mesh(new THREE.BoxGeometry(5.7, 0.05, 0.05), MAT.truss, g, [4.4 * flip, 0, (k ? 1 : -1) * 1.72]);
     mesh(new THREE.BoxGeometry(5.7, 0.05, 0.05), MAT.truss, g, [4.4 * flip, 0, (k ? 1 : -1) * 0.18]);
     for (let q = 0; q < 5; q++) mesh(new THREE.BoxGeometry(0.04, 0.05, 1.55), MAT.truss, g, [4.4 * flip + (q - 2) * 1.4, 0, (k ? 1 : -1) * 0.95]);
@@ -270,7 +208,7 @@ const comms = new THREE.Group(); station.add(comms); comms.position.y = 4.5;
 mesh(cyl(0.12, 1.8, 12), MAT.truss, comms, [0, 0.9, 0]);
 mesh(cyl(0.34, 0.5, 16), FOIL.gold, comms, [0, 0.25, 0]);
 const dishPts = []; for (let i = 0; i <= 16; i++) { const t = i / 16; dishPts.push(new THREE.Vector2(t * 1.3, t * t * 0.55)); }
-const dish = mesh(new THREE.LatheGeometry(dishPts, 48), new THREE.MeshStandardMaterial({ color: 0xc9d3df, metalness: 0.25, roughness: 0.62, side: THREE.DoubleSide }), comms, [0, 1.9, 0]);
+const dish = mesh(new THREE.LatheGeometry(dishPts, 48), Object.assign(pbr("hull_white", { repeat: [8, 2], color: 0xd4dce6, metalness: 0.3, roughness: 0.8 }), { side: THREE.DoubleSide }), comms, [0, 1.9, 0]);
 dish.rotation.set(-0.9, 0, 0.3);
 for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; strut(dish, [Math.cos(a) * 0.15, 0.012, Math.sin(a) * 0.15], [Math.cos(a) * 1.28, 0.56, Math.sin(a) * 1.28], 0.012, MAT.hullDark); }
 mesh(new THREE.TorusGeometry(1.3, 0.025, 6, 64), MAT.hullDark, dish, [0, 0.55, 0], [Math.PI / 2, 0, 0]);
@@ -315,7 +253,7 @@ function moduleFrame(angleDeg, name) {
 (function () {
   const g = moduleFrame(80, "passagiers");
   const hab = mesh(cyl(0.7, 3.4, 48), MAT.hull, g, [2.9, 0, 0], [0, 0, Math.PI / 2]);
-  hab.material = hullMat(TEX.light, 0.4, 0.75, [4, 2]);
+  hab.material = hullMat("light", [1, 1]);
   // windows are the lit portholes further down
   [1.2, 4.6].forEach((x) => mesh(new THREE.SphereGeometry(0.7, 32, 16), x > 2 ? FOIL.gold : MAT.hullMid, g, [x, 0, 0]).scale.set(0.35, 1, 1));
   [2.2, 3.6].forEach((x) => mesh(new THREE.TorusGeometry(0.74, 0.06, 8, 48), MAT.hullDark, g, [x, 0, 0], [0, Math.PI / 2, 0]));
@@ -332,7 +270,7 @@ function moduleFrame(angleDeg, name) {
 (function () {
   const g = moduleFrame(140, "ziekenboeg");
   const box = mesh(new THREE.BoxGeometry(2.4, 1.3, 1.6), MAT.white, g, [2.3, 0, 0]); trims(g, 2.3, 0, 0, 2.4, 1.3, 1.6, MAT.hullMid);
-  box.material = hullMat(TEX.white, 0.2, 0.7, [2, 1]);
+  box.material = hullMat("white", [2, 1]);
   mesh(new THREE.BoxGeometry(2.42, 0.08, 1.62), emissive(0x67caff, 2.4), g, [2.3, 0.2, 0]);
   mesh(new THREE.SphereGeometry(0.75, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x1c3d66, metalness: 0.6, roughness: 0.12, emissive: 0x0c2f5f, emissiveIntensity: 0.6 }), g, [2.3, 0.65, 0]).scale.set(1, 0.5, 0.8);
   mesh(new THREE.TorusGeometry(0.75, 0.04, 8, 48), MAT.hullDark, g, [2.3, 0.65, 0], [Math.PI / 2, 0, 0]).scale.set(1, 0.8, 1);
@@ -354,10 +292,10 @@ function moduleFrame(angleDeg, name) {
   const g = moduleFrame(200, "vrachtdok");
   const t = new THREE.Group(); g.add(t); t.position.set(2.6, 0, 0);
   trussBox(t, 3.2, 1.6, 1.8, 0.03);
-  const cols = [0x2f6fa8, 0x8a96a8, 0xc9d3df, 0xd9a22b, 0x3b5578, 0x62748e, 0xa1876a];
+  const cols = [0x3f8fd8, 0xb4bfcc, 0xe6ebf2, 0xf2b530, 0x4d6f9c, 0x7f93ad, 0xc9a983];
   for (let x = 0; x < 4; x++) for (let y = 0; y < 2; y++) for (let z = 0; z < 2; z++) {
     if (rnd() < 0.22) continue;
-    const c = new THREE.MeshStandardMaterial({ color: pick(cols), metalness: 0.3, roughness: 0.6, map: TEX.container });
+    const c = containerMat(pick(cols));
     mesh(new THREE.BoxGeometry(0.68, 0.66, 0.78), c, t, [-1.15 + x * 0.76, -0.38 + y * 0.74, -0.42 + z * 0.86]);
   }
   const crane = new THREE.Group(); t.add(crane); crane.position.set(0, 0.86, -0.82);
@@ -374,7 +312,7 @@ const breach = { lights: [], embers: null, plates: [] };
 (function () {
   const g = moduleFrame(260, "hullbreuk");
   const hull = mesh(new THREE.CylinderGeometry(0.8, 0.8, 2.6, 8, 1, false, Math.PI / 8), MAT.hullMid, g, [2.4, 0, 0], [0, 0, Math.PI / 2]);
-  hull.material = hullMat(TEX.mid, 0.5, 0.7, [3, 1]);
+  hull.material = hullMat("mid", [1, 1]);
   [1.1, 3.7].forEach((x) => mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.18, 8, 1, false, Math.PI / 8), FOIL.silver, g, [x, 0, 0], [0, 0, Math.PI / 2]));
   const face = 0.8 * Math.cos(Math.PI / 8) + 0.004;
   const hole = new THREE.Shape(), H = [[-0.5, 0.05], [-0.34, 0.24], [-0.12, 0.2], [0.02, 0.34], [0.2, 0.22], [0.42, 0.26], [0.5, 0.02], [0.36, -0.18], [0.16, -0.12], [0.0, -0.3], [-0.18, -0.16], [-0.38, -0.22]];
@@ -566,10 +504,12 @@ function setGoal(i, instant) {
 }
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
+let composer = null;
 /* ---------- Resize with a view offset, so the station can sit beside a panel ---------- */
 function resize() {
   const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
   renderer.setSize(w, h, false);
+  if (composer) { composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
 }
@@ -581,9 +521,30 @@ function applyOffset() {
   else camera.setViewOffset(w, h, -offsetX, 0, w, h);
 }
 
+/* ---------- Bloom: lamps, windows and the planet rim glow a little. Add ?fx=uit to switch it off. ---------- */
+const fxMode = (/[?&]fx=(uit|aan)/.exec(location.search) || [])[1];
+if (fxMode !== "uit") {
+  try {
+    composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: 4 }));
+    composer.addPass(new RenderPass(scene, camera));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(4, 4), 0.34, 0.5, 1.3));
+    composer.addPass(new OutputPass());
+    resize();
+  } catch (e) { composer = null; }
+}
+/* On a slow machine the bloom goes first: measured over two seconds of frames. */
+let slowT = 0, slowN = 0;
+function watchSpeed(dt) {
+  if (!composer || fxMode === "aan") return;
+  slowT += dt; slowN++;
+  if (slowN < 60) return;
+  if (slowT / slowN > (lowPower ? 1 / 18 : 1 / 24)) { composer.dispose(); composer = null; }
+  slowT = 0; slowN = 0;
+}
+
 /* ---------- Loop ---------- */
 const clock = new THREE.Clock();
-let running = true, lowPower = false, acc = 0, frameNo = 0;
+let running = true, lowPower = 0, acc = 0, frameNo = 0;
 renderer.shadowMap.autoUpdate = false;
 document.addEventListener("visibilitychange", () => { running = !document.hidden; if (running) clock.getDelta(); });
 const tmp = new THREE.Vector3();
@@ -591,7 +552,8 @@ function tick() {
   requestAnimationFrame(tick);
   if (!running) return;
   let dt = Math.min(clock.getDelta(), 0.1);
-  if (lowPower) { acc += dt; if (acc < 1 / 30) return; dt = acc; acc = 0; }
+  if (lowPower) { acc += dt; if (acc < (lowPower > 1 ? 1 / 8 : 1 / 30)) return; dt = acc; acc = 0; }
+  if (lowPower < 2) watchSpeed(dt);
   const t = clock.elapsedTime;
 
   if (!reduce) {
@@ -646,7 +608,7 @@ function tick() {
   frameNo++; renderer.shadowMap.needsUpdate = !lowPower || frameNo % 4 === 0;
   pulseLevel *= Math.pow(0.02, dt); pulseLight.intensity = pulseLevel; pulseLight.position.copy(aria.position);
   if (pulseLevel > 0.05) aria.userData.eye.material.emissiveIntensity = 1.6 + pulseLevel * 0.3; else aria.userData.eye.material.emissiveIntensity = 1.6;
-  renderer.render(scene, camera);
+  if (composer) composer.render(dt); else renderer.render(scene, camera);
   if (labelsCb) labelsCb();
 }
 
@@ -667,7 +629,8 @@ window.OrionStation = {
   snap() { const g = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex); cam.t = 1; camera.position.copy(g.pos); cam.target.copy(g.target); offsetX = offsetTarget; ariaPos.copy(aria.position); },
   /* A short flash of light at ARIA when the player answers: blue for good, red for wrong. */
   pulse(kind) { pulseLight.color.setHex(kind === "bad" ? 0xff6467 : kind === "gold" ? 0xffd230 : 0x67caff); pulseLevel = kind === "gold" ? 14 : 9; if (lowPower) acc = 1; },
-  lowPower(on) { lowPower = !!on; },
+  /* 0 = full speed, 1 = thirty frames a second, 2 = a slow idle while an arcade round has the screen. */
+  lowPower(on) { lowPower = on === 2 ? 2 : on ? 1 : 0; },
   /* Screen positions of the module labels, for the HTML buttons on the overview. */
   project() {
     const w = canvas.clientWidth, h = canvas.clientHeight;

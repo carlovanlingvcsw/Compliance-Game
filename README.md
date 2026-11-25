@@ -36,7 +36,10 @@ assets/
   css/orion-level.css        Aanpassingen voor level 1, dat zijn eigen thema in style.css heeft
   js/orion.js                Route, combo's, sterren, badges, de vier arcaderondes en de koppeling met het station
   js/orion-bridge.js         Staat in elk level: meldt elk gekozen antwoord aan het spel, voor combo's en sterren
-  js/station.js              Het 3D-station, volledig in code gebouwd met three.js
+  js/station.js              Het 3D-station, in code gebouwd met three.js, met CC0-texturen en bloom
+  js/arcade3d.js             De 3D-speelvelden achter de vier arcaderondes
+  js/tex.js                  Laadt de texturen voor station en arcade
+  textures/                  Texturen van ambientCG (CC0), zie CREDITS.md in die map
   vendor/three.module.js     three.js r170 (MIT-licentie), zonder internet bruikbaar
   img/                       VCSW-woordmerk voor lichte en donkere achtergrond
 levels/<level>/
@@ -82,6 +85,8 @@ Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 2,6 MB
 
 ## Wijzigingen
 
+- Ronde 12: echte texturen op het station, bloom, de vier arcaderondes in een 3D-speelveld, antwoorden in level 2, level 5 en de eindmissie per poging in een andere volgorde. Met `?fx=uit` zet je de bloom uit, met `?3d=uit` speel je zonder 3D.
+
 Wijzigingen gaan via een branch en een pull request met review door een collega. Een Pages-site is standaard voor iedereen te bezoeken, ook als de repository privé is. Zet GitHub Pages dus alleen aan als dat de bedoeling is.
 
 ## Gebruikte bronnen
@@ -89,4 +94,7 @@ Wijzigingen gaan via een branch en een pull request met review door een collega.
 - three.js r170, MIT-licentie, zie `assets/vendor/LICENSE-three.txt`.
 - Lettertypen Figtree en Source Sans 3 via Google Fonts (SIL Open Font License).
 - Iconen in de stijl van Lucide (ISC-licentie), als inline SVG in de code.
-- Het station, ARIA, de planeet en de sterren zijn volledig in code gemaakt. Er worden geen modellen, foto's of texturen geladen.
+- De vormen van het station, ARIA, de planeet en de sterren zijn in code gemaakt. Er worden geen modellen of foto's geladen.
+- De oppervlakken gebruiken acht texturen van ambientCG onder CC0 1.0. Bron, ID en bewerking per textuur staan in `assets/textures/CREDITS.md`.
+- De bloom komt uit de three.js addons (r170, MIT), in `assets/vendor/addons/`.
+- Het spel en de teksten zijn gemaakt met hulp van AI (Claude). De inhoud wacht op goedkeuring van de Privacy Officer.

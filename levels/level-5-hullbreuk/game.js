@@ -217,6 +217,12 @@
     "Eerst schade beperken en feiten vastleggen, daarna pas oordelen.",
     "Wees eerlijk tegen opdrachtgevers en laat de beoordeling over aan het meldpunt."
   ];
+  /* Antwoorden staan per poging in een andere volgorde. De letter volgt de plek op het scherm, niet het antwoord. */
+  function ordered(id, opts) {
+    S.ord = S.ord || {};
+    if (!S.ord[id]) { var a = opts.map(function (_, i) { return i; }); for (var k = a.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), t = a[k]; a[k] = a[j]; a[j] = t; } S.ord[id] = a; }
+    return S.ord[id].map(function (i) { return opts[i]; });
+  }
   var POINTS = { goed: 10, half: 5, fout: 0 };
   var SHIELD_HIT = { goed: 0, half: 5, fout: 10 };
 
@@ -344,10 +350,10 @@
     if (s.intro) html += '<p class="muted">' + esc(s.intro) + "</p>";
     html += speech(who, val(s.say));
     html += '<div class="options" role="group" aria-label="Kies je antwoord">';
-    opts.forEach(function (o) {
+    ordered(s.id, opts).forEach(function (o, n) {
       var cls = "option" + (pick ? (pick.k === o.k ? " picked" : " dim") : "");
       var extra = pick && pick.k === o.k ? '<span class="vcsw-badge neutral">' + icon("clock") + "−" + pick.cost + " uur</span>" + (pick.fast ? '<span class="vcsw-badge">' + icon("zap") + "Snel, +" + FAST_BONUS + " bonus</span>" : "") : "";
-      html += '<button class="' + cls + '" data-k="' + o.k + '"' + (pick ? " disabled" : "") + '><span class="key" aria-hidden="true">' + o.k + '</span><span><span class="vcsw-sr-only">Optie ' + o.k + ". </span>" + esc(val(o.t)) +
+      html += '<button class="' + cls + '" data-k="' + o.k + '"' + (pick ? " disabled" : "") + '><span class="key" aria-hidden="true">' + "ABC"[n] + '</span><span><span class="vcsw-sr-only">Optie ' + "ABC"[n] + ". </span>" + esc(val(o.t)) +
         (pick && pick.k === o.k ? '<span class="verdict">' + verdictBadge(o.r, extra) + "</span>" : "") + "</span></button>";
     });
     html += "</div>";

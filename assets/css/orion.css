@@ -346,3 +346,23 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
   .panel.shake, .pop, .toast, .holo.fly-l, .holo.fly-r, .holo.wrong, .boom, .float, .res .bigstars svg.star-on { animation: none !important; }
   .pop { display: none; }
 }
+
+/* ---------- Arcade playfields in 3D (arcade3d.js). The HTML controls stay on top of the scene. ---------- */
+.pf3d { position: relative; overflow: hidden; background: #030a1a !important; }
+.pf3d > canvas.pf { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; pointer-events: none; border-radius: inherit; }
+.pf3d > :not(canvas) { z-index: 1; }
+.sprint.pf3d > *, .grid9.pf3d > * { position: relative; }
+.ar-panel .sky.pf3d::before, .ar-panel .sky.pf3d::after, .belt.pf3d::before, .belt.pf3d::after { display: none; }
+.sky.pf3d .turret, .sky.pf3d .base, .sky.pf3d .beam, .sky.pf3d .boom { visibility: hidden; }
+.sky.pf3d .inv { background: color-mix(in srgb, var(--vcsw-blue-950) 88%, transparent) !important; border-color: var(--vcsw-blue-300); }
+.sprint.pf3d { min-height: max(360px, calc(100vh - 380px)); }
+.sprint.pf3d .bin-btn { background: color-mix(in srgb, var(--vcsw-blue-950) 62%, transparent); }
+.sprint.pf3d .bin-btn:hover { background: color-mix(in srgb, var(--vcsw-blue-800) 62%, transparent); }
+.sprint.pf3d .holo { background: color-mix(in srgb, var(--vcsw-blue-900) 78%, transparent); }
+.belt.pf3d { height: 230px; }
+.belt.pf3d .packet { top: 62px; background: #f8fafc; color: var(--vcsw-gray-900); border: 0; border-radius: 6px; box-shadow: 0 6px 14px -6px #000; }
+.belt.pf3d .packet small { color: var(--vcsw-gray-600); }
+.grid9.pf3d { gap: 16px; padding: 24px; }
+.grid9.pf3d .mod { background: none; border-color: transparent; }
+.grid9.pf3d .mod .mname { color: #fff; text-shadow: 0 1px 3px #000; }
+.belt.pf3d .packet b { color: var(--vcsw-gray-900); }

@@ -331,7 +331,13 @@
 
   var G = null, loop = null, timers = [];
   function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
-  function stopGame() { if (loop) cancelAnimationFrame(loop); loop = null; timers.forEach(clearTimeout); timers = []; document.onkeydown = null; G = null; }
+  function stopGame() { if (loop) cancelAnimationFrame(loop); loop = null; timers.forEach(clearTimeout); timers = []; document.onkeydown = null; G = null; if (A3) { A3 = null; if (window.OrionArcade) window.OrionArcade.unmount(); station(function (S) { S.lowPower(view === "home" ? 0 : 1); }); } }
+  /* The 3D playfield behind an arcade round. Without WebGL the round plays on its flat background. */
+  var A3 = null;
+  function playfield(sel, id) {
+    A3 = window.OrionArcade ? window.OrionArcade.mount(document.querySelector(sel), id) : null;
+    if (A3) station(function (S) { S.lowPower(2); });
+  }
 
   function gameIntro(id) {
     var g = GAMES[id], best = P.games[id] || {};
@@ -353,8 +359,8 @@
     if (!G) return;
     document.getElementById("g-score").textContent = G.score;
     document.getElementById("g-mult").textContent = "×" + G.mult();
-    document.getElementById("g-time").textContent = Math.max(0, Math.ceil(G.left));
-    document.getElementById("g-tbar").style.width = Math.max(0, G.left / G.total * 100) + "%";
+    document.getElementById("g-time").textContent = G.count || Math.max(0, Math.ceil(G.left));
+    document.getElementById("g-tbar").style.width = (G.bar != null ? G.bar : Math.max(0, G.left / G.total)) * 100 + "%";
     document.getElementById("g-lives").innerHTML = [0, 1, 2].map(function (i) { return '<i class="' + (i < G.lives ? "" : "off") + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></i>'; }).join("");
     var cells = document.querySelectorAll(".sky .base i"); for (var c = 0; c < cells.length; c++) cells[c].className = c < G.lives ? "" : "off";
   }
@@ -440,6 +446,7 @@
     document.getElementById("b-no").onclick = function () { answer(false); };
     document.getElementById("b-yes").onclick = function () { answer(true); };
     document.onkeydown = function (e) { if (e.key === "ArrowLeft") { e.preventDefault(); answer(false); } if (e.key === "ArrowRight") { e.preventDefault(); answer(true); } };
+    playfield(".sprint", "sprint");
     show(); gHud(); clock();
   }
 
@@ -463,7 +470,7 @@
       if (idx >= list.length) { endGame(); return; }
       beltW = belt.clientWidth; x = -300;
       active = document.createElement("div"); active.className = "packet"; active.innerHTML = "<small>Over een ziek crewlid</small><b>" + esc(list[idx][0]) + "</b>";
-      belt.innerHTML = ""; belt.appendChild(active); feed("Pakketje " + (idx + 1) + " van " + list.length + ": " + list[idx][0]);
+      var old = belt.querySelector(".packet"); if (old) old.remove(); belt.appendChild(active); feed("Pakketje " + (idx + 1) + " van " + list.length + ": " + list[idx][0]);
     }
     function decide(d) {
       if (!active || !G || G.over) return;
@@ -476,12 +483,13 @@
     }
     document.querySelectorAll(".door").forEach(function (b) { b.onclick = function () { decide(+b.getAttribute("data-d")); }; });
     document.onkeydown = function (e) { if (e.key === "1" || e.key === "2" || e.key === "3") decide(+e.key - 1); };
+    playfield("#belt", "poort");
     next();
     G.left = 999; G.total = 999;
+    G.count = "1/" + list.length; G.bar = 0;
     clock(function (dt) {
       G.left = 999;
-      document.getElementById("g-time").textContent = Math.min(idx + 1, list.length) + "/" + list.length;
-      document.getElementById("g-tbar").style.width = (idx / list.length * 100) + "%";
+      G.count = Math.min(idx + 1, list.length) + "/" + list.length; G.bar = idx / list.length;
       if (!active) return;
       x += speed * dt; active.style.transform = "translateX(" + x + "px)";
       if (x > beltW - 60) {
@@ -515,6 +523,8 @@
       '<p class="ar-brief">Klik op een <b>nepbericht</b> om het neer te schieten. Laat <b>echte berichten</b> landen op de basis.</p><div class="sky" id="sky"><div class="base" aria-hidden="true"><i></i><i></i><i></i><svg class="turret" viewBox="0 0 64 40" aria-hidden="true"><path d="M32 2 L40 22 L60 30 L60 36 L40 33 L36 38 L28 38 L24 33 L4 36 L4 30 L24 22 Z" fill="#e2e8f0"/><path d="M32 8 L36 22 L28 22 Z" fill="#15aaff"/><path d="M4 30 L24 22 L24 33 L4 36 Z M60 30 L40 22 L40 33 L60 36 Z" fill="#90a1b9"/></svg></div></div>' +
       '<p class="ar-feed" id="g-feed" aria-live="polite"></p></section></div>';
     var sky = document.getElementById("sky"), live = [], spawnIn = 0.1, wave = 3, lanes = [0, 1, 2], lastLane = -1;
+    playfield("#sky", "invaders");
+    function shot(x, y, kind) { if (A3) A3.fire(x, y, kind); }
     function beam(x, y, cls) {
       if (reduce) return;
       var b = document.createElement("div"), bx = sky.clientWidth / 2, by = sky.clientHeight - 40, dx = x - bx, dy = y - by;
@@ -541,8 +551,8 @@
         if (!G || G.over) return;
         var r = el.getBoundingClientRect(), sr = sky.getBoundingClientRect(), x = r.left - sr.left + r.width / 2, y = r.top - sr.top + r.height / 2;
         el.remove(); live = live.filter(function (q) { return q !== o; });
-        if (o.fake) { var pts = gGood(15); SFX.zap(); fx2("", x, y, "+" + pts); feed("Raak. Dat was een aanval.", "good"); }
-        else { fx2("red", x, y, "Echt bericht"); feed("Dat was een echt bericht van " + m[0] + ".", "bad"); gBad(true); }
+        if (o.fake) { shot(x, y, "hit"); var pts = gGood(15); SFX.zap(); fx2("", x, y, "+" + pts); feed("Raak. Dat was een aanval.", "good"); }
+        else { shot(x, y, "wrong"); fx2("red", x, y, "Echt bericht"); feed("Dat was een echt bericht van " + m[0] + ".", "bad"); gBad(true); }
       };
       sky.appendChild(el); live.push(o);
     }
@@ -557,8 +567,8 @@
         if (o.y + o.el.offsetHeight >= floor) {
           o.el.remove(); live = live.filter(function (q) { return q !== o; });
           var x = o.el.offsetLeft + o.el.offsetWidth / 2;
-          if (o.fake) { fx2("red", x, floor, "Aanval binnen"); feed("Een aanval kwam binnen.", "bad"); gBad(true); }
-          else { G.score += 5; fx2("blue", x, floor, "+5"); gHud(); }
+          if (o.fake) { shot(x, floor, "impact"); fx2("red", x, floor, "Aanval binnen"); feed("Een aanval kwam binnen.", "bad"); gBad(true); }
+          else { shot(x, floor, "land"); G.score += 5; fx2("blue", x, floor, "+5"); gHud(); }
         }
       });
     });
@@ -579,6 +589,7 @@
       '<div class="grid9" id="grid">' + MODS.map(function (m, i) { return '<div class="mod" data-m="' + i + '"><span class="mname">' + esc(m) + "</span></div>"; }).join("") + "</div>" +
       '<p class="ar-feed" id="g-feed" aria-live="polite">Klik op een alarm om het lek te melden.</p></section></div>';
     var grid = document.getElementById("grid"), active = {}, spawnIn = 0.3;
+    playfield("#grid", "lekken");
     function clear(i, cls) {
       var mod = grid.querySelector('[data-m="' + i + '"]'), ev = mod.querySelector(".ev"); if (ev) ev.remove(); delete active[i];
       if (cls) { mod.classList.add(cls); later(function () { mod.classList.remove(cls); }, 420); }
