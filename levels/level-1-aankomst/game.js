@@ -62,7 +62,7 @@ const SITS = [
   { id: 's3', type: 'sort', title: 'Is dit een persoonsgegeven?', speaker: 'ARIA',
     text: 'Sorteer de twaalf holokaarten. Sleep elke kaart naar een bak, of gebruik de knoppen op de kaart.' },
   { id: 's4', type: 'mc', title: 'Spullen van de vorige bewoner', speaker: 'ARIA',
-    text: 'In het kastje van je hut vind je het soldijoverzicht van het crewlid dat hier eerder sliep. Wat doe je?',
+    text: 'In het kastje van je hut vind je de loonstrook van het crewlid dat hier eerder sliep. Wat doe je?',
     opts: [
       { t: 'In de afvalschacht gooien.', v: 'fout', why: 'Afval wordt aan boord gesorteerd en kan worden doorzocht.', r: ['ARIA', 'De afvalsortering leest mee, cadet.'] },
       { t: 'Teruggeven aan de crewadministratie en melden bij ARIA, zodat beoordeeld kan worden of het een datalek is.', v: 'goed', why: 'Door te melden kan iemand beoordelen of er sprake is van een datalek.', r: ['ARIA', 'Melding ontvangen. Ik laat het beoordelen.'], crystal: 'Melden bij twijfel' },

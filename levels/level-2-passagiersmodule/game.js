@@ -45,12 +45,12 @@
           uitleg: "Het BSN gebruik je alleen waar de wet dat voorschrijft. Een inlogcode hoort daar niet bij, ook niet als Sanne het goed vindt.",
           reactie: "Ingesteld. Wie over haar schouder meekijkt, ziet nu haar BSN.",
           memo: "BSN van Sanne als inlogcode in het stationssysteem" },
-        { k: "B", t: "“Het BSN en de paspoortkopie gaan alleen in de soldijadministratie, omdat de wet dat eist. Voor het systeem krijgt ze een eigen inlogcode.”", r: "goed",
-          uitleg: "De wet verplicht het station om een nieuw crewlid te identificeren en het BSN te gebruiken voor de soldijaangifte. Daarbuiten gebruik je het BSN niet.",
-          reactie: "Dan maak ik een gewone inlogcode aan en bewaar ik de kopie beveiligd in de soldijadministratie." },
-        { k: "C", t: "“Haar BSN en paspoortkopie leggen we helemaal niet vast. Dat is te gevoelig, ook voor de soldijadministratie.”", r: "half",
-          uitleg: "Voorzichtig, maar de wet verplicht het station juist om ze vast te leggen in de soldijadministratie.",
-          reactie: "Dan kan de soldijadministratie haar niet aanmelden. Krijgt ze dan wel betaald?" }
+        { k: "B", t: "“Het BSN en de paspoortkopie gaan alleen in de loonadministratie, omdat de wet dat eist. Voor het systeem krijgt ze een eigen inlogcode.”", r: "goed",
+          uitleg: "De wet verplicht het station om een nieuw crewlid te identificeren en het BSN te gebruiken voor de loonaangifte. Daarbuiten gebruik je het BSN niet.",
+          reactie: "Dan maak ik een gewone inlogcode aan en bewaar ik de kopie beveiligd in de loonadministratie." },
+        { k: "C", t: "“Haar BSN en paspoortkopie leggen we helemaal niet vast. Dat is te gevoelig, ook voor de loonadministratie.”", r: "half",
+          uitleg: "Voorzichtig, maar de wet verplicht het station juist om ze vast te leggen in de loonadministratie.",
+          reactie: "Dan kan de loonadministratie haar niet aanmelden. Krijgt ze dan wel betaald?" }
       ],
       crystal: { on: "B", name: "BSN-regel", desc: "Het BSN alleen waar de wet het voorschrijft. Toestemming verandert dat niet." }
     },
@@ -63,21 +63,21 @@
           uitleg: "De diagnose is medische informatie. Die legt het station niet vast en deelt het zeker niet met het team.",
           reactie: "Gedaan. Het hele team ziet nu wat hij heeft.",
           memo: "Diagnose van Kai in het rooster" },
-        { k: "B", t: "Alleen vastleggen wat nodig is voor zijn soldij en begeleiding: bereikbaarheid, verpleegadres, verwachte duur en lopende taken. Het team hoort alleen dat hij er niet is en wie zijn taken overneemt.", r: "goed",
-          uitleg: "De wet verplicht het station om soldij door te betalen en een ziek crewlid te begeleiden. Daarom mag het de gegevens verwerken die daarvoor nodig zijn. Meer niet.",
+        { k: "B", t: "Alleen vastleggen wat nodig is voor zijn loon en begeleiding: bereikbaarheid, verpleegadres, verwachte duur en lopende taken. Het team hoort alleen dat hij er niet is en wie zijn taken overneemt.", r: "goed",
+          uitleg: "De wet verplicht het station om loon door te betalen en een ziek crewlid te begeleiden. Daarom mag het de gegevens verwerken die daarvoor nodig zijn. Meer niet.",
           reactie: "Dan noteer ik zijn verpleegadres en de verwachte duur. De rest is voor de scheepsarts." },
         { k: "C", t: "Kai om toestemming vragen om zijn diagnose vast te leggen. Als hij ja zegt, mag alles in het dossier en kan de teamleider het inzien.", r: "fout",
           uitleg: "Een crewlid zegt moeilijk nee tegen zijn werkgever, dus die toestemming is niet vrij. En de diagnose legt het station ook mét toestemming niet vast.",
           reactie: "Hij zei ja, maar hij klonk niet alsof hij durfde te weigeren." }
       ],
-      crystal: { on: "B", name: "Wettelijke plicht", desc: "Bij ziekte alleen wat nodig is voor soldij en begeleiding. De diagnose blijft bij de scheepsarts." }
+      crystal: { on: "B", name: "Wettelijke plicht", desc: "Bij ziekte alleen wat nodig is voor loon en begeleiding. De diagnose blijft bij de scheepsarts." }
     },
     {
       title: "Bloemen voor Kai", who: "bram",
       say: "Kai is al twee weken ziek. Geef me even zijn adres uit de administratie, dan stuur ik namens het team bloemen. Ik zet het meteen op de verjaardagslijst.",
       opts: [
         { k: "A", t: "Het adres uit de administratie doorgeven. Het is goed bedoeld en het blijft binnen het eigen team. Bloemen sturen is geen verwerking waar regels voor gelden.", r: "fout",
-          uitleg: "Het adres staat in de administratie voor de soldij en de verzuimbegeleiding. Doorgeven aan een collega is een ander doel.",
+          uitleg: "Het adres staat in de administratie voor het loon en de verzuimbegeleiding. Doorgeven aan een collega is een ander doel.",
           reactie: "Top. Dan staat het straks ook op de verjaardagslijst, heeft iedereen het.",
           memo: "Adres van Kai doorgegeven aan Bram en op de verjaardagslijst" },
         { k: "B", t: "Kai zelf laten weten of hij bloemen of bezoek wil, en waar dat heen kan. Het adres uit de administratie geef je niet door.", r: "goed",
@@ -95,7 +95,7 @@
       say: "Stuur me het verzuimoverzicht van Kai. Ik wil weten of hij vaak ziek is voordat hij bij ons begint.",
       opts: [
         { k: "A", t: "Het volledige verzuimoverzicht sturen. Vega wordt zijn leidinggevende en mag dat weten voordat Kai begint.", r: "fout",
-          uitleg: "Verzuimgegevens zijn er voor de soldij en de begeleiding bij ziekte. Nova Terra heeft er geen grondslag voor.",
+          uitleg: "Verzuimgegevens zijn er voor het loon en de begeleiding bij ziekte. Nova Terra heeft er geen grondslag voor.",
           reactie: "Mooi. Dan weet ik genoeg.",
           memo: "Verzuimoverzicht van Kai verstuurd naar Kapitein Vega" },
         { k: "B", t: "Niets van zijn verzuim delen en uitleggen waarom. Over zijn overstap kan Vega met Kai zelf praten.", r: "goed",
@@ -116,11 +116,11 @@
         { k: "A", t: "“We houden alles wat we van je hebben. Je weet nooit waar het later nog goed voor is, en zo kunnen we je snel weer inschrijven als je terugkomt naar Orion.”", r: "fout",
           uitleg: "Wat geen grondslag meer heeft, moet weg. En hij heeft recht op een duidelijk antwoord.",
           reactie: "Dus mijn paspoortkopie zwerft hier nog jaren rond? Dan dien ik een klacht in." },
-        { k: "B", t: "Uitleggen dat de wet het station verplicht de soldijadministratie met die gegevens nog een aantal jaren te bewaren, beveiligd en alleen daarvoor. De rest is gewist. Wil hij precies weten wat we hebben, dan zet je dat door als inzageverzoek.", r: "goed",
+        { k: "B", t: "Uitleggen dat de wet het station verplicht de loonadministratie met die gegevens nog een aantal jaren te bewaren, beveiligd en alleen daarvoor. De rest is gewist. Wil hij precies weten wat we hebben, dan zet je dat door als inzageverzoek.", r: "goed",
           uitleg: "Een bewaarplicht uit de wet is ook een grondslag. Je legt dat open uit, en een vraag naar al zijn gegevens loopt via het meldpunt.",
           reactie: "Helder. Dan weet ik waar ik aan toe ben." },
-        { k: "C", t: "“Ik wis vandaag nog alles wat we van je hebben, ook uit de soldijadministratie. Dat beloof ik je, dan hoef je je nergens meer zorgen over te maken.”", r: "fout",
-          uitleg: "Dat kun je niet beloven. De wet verplicht het station de soldijadministratie nog te bewaren.",
+        { k: "C", t: "“Ik wis vandaag nog alles wat we van je hebben, ook uit de loonadministratie. Dat beloof ik je, dan hoef je je nergens meer zorgen over te maken.”", r: "fout",
+          uitleg: "Dat kun je niet beloven. De wet verplicht het station de loonadministratie nog te bewaren.",
           reactie: "Fijn. Maar mag jij dat eigenlijk zelf beslissen?" }
       ],
       crystal: { on: "B", name: "Bewaarplicht", desc: "Wat de wet je laat bewaren, houd je. Wat geen grondslag meer heeft, gaat weg." }
@@ -135,22 +135,22 @@
     { id: "geen", label: "Geen grondslag", art: "wissen", desc: "Er is geen reden die de wet erkent. Het moet weg." }
   ];
   var DOSSIERS = [
-    { id: "C-1182", name: "Sanne Vrij", what: "BSN", ctx: "In de soldijadministratie, voor de soldijaangifte", ans: "wet", why: "De wet schrijft het BSN voor bij de soldijaangifte." },
-    { id: "C-1183", name: "Sanne Vrij", what: "Kopie van haar paspoort", ctx: "In de soldijadministratie, na controle bij indiensttreding", ans: "wet", why: "De wet verplicht het station een nieuw crewlid te identificeren en de kopie te bewaren." },
+    { id: "C-1182", name: "Sanne Vrij", what: "BSN", ctx: "In de loonadministratie, voor de loonaangifte", ans: "wet", why: "De wet schrijft het BSN voor bij de loonaangifte." },
+    { id: "C-1183", name: "Sanne Vrij", what: "Kopie van haar paspoort", ctx: "In de loonadministratie, na controle bij indiensttreding", ans: "wet", why: "De wet verplicht het station een nieuw crewlid te identificeren en de kopie te bewaren." },
     { id: "C-1184", name: "Sanne Vrij", what: "BSN als inlogcode", ctx: "Voor het stationssysteem. Ze gaf er zelf toestemming voor", ans: "geen", trap: true, why: "Strikvraag. Het BSN mag alleen waar de wet het voorschrijft. Toestemming maakt dat niet anders." },
     { id: "C-1175", name: "Kai Lindqvist", what: "Verpleegadres en telefoonnummer", ctx: "Vastgelegd bij zijn ziekmelding", ans: "wet", why: "Nodig om hem te bereiken en te begeleiden tijdens zijn ziekte." },
     { id: "C-1176", name: "Kai Lindqvist", what: "BSN", ctx: "Doorgegeven aan de scheepsarts voor zijn re-integratie", ans: "wet", why: "Voor de re-integratie van dit crewlid mag het BSN naar de scheepsarts." },
     { id: "C-1177", name: "Kai Lindqvist", what: "Zijn diagnose", ctx: "Stond in een chatbericht aan zijn teamleider", ans: "geen", trap: true, why: "Strikvraag. Ook als hij het zelf vertelt, legt het station de diagnose niet vast. Die is voor de scheepsarts." },
-    { id: "C-1190", name: "Milan Osei", what: "Rekeningnummer", ctx: "Om zijn soldij over te maken", ans: "ovk", why: "Nodig om de afspraken uit zijn arbeidsovereenkomst na te komen." },
+    { id: "C-1190", name: "Milan Osei", what: "Rekeningnummer", ctx: "Om zijn loon over te maken", ans: "ovk", why: "Nodig om de afspraken uit zijn arbeidsovereenkomst na te komen." },
     { id: "C-1201", name: "Juno Achterberg", what: "Thuisadres", ctx: "Door een collega op de verjaardagslijst gezet, zonder het Juno te vragen", ans: "geen", why: "Het adres staat in de administratie voor een ander doel. Voor deze lijst is er geen grondslag." },
     { id: "S-0007", name: "Toegangssluis crewverblijven", what: "Camerabeelden van gisteren", ctx: "Voor de beveiliging van de verblijven", ans: "bel", why: "Beveiliging is een belang van het station, zolang de beelden kort bewaard blijven." },
     { id: "K-0417", name: "Lyra Jansen", what: "Cv en aanmelding", ctx: "Afgewezen 8 maanden geleden, wilde zelf in de talentenpool", ans: "toe", why: "Zij koos er zelf voor. Na maximaal een jaar wis je." }
   ];
   var CLUES = [
-    { crystal: "BSN-regel", title: "Het BSN", text: "Alleen waar de wet het voorschrijft, zoals de soldijaangifte of de re-integratie bij de scheepsarts. Toestemming verandert dat niet." },
-    { crystal: "Wettelijke plicht", title: "Bij ziekte", text: "Alleen wat nodig is voor soldij en begeleiding, zoals een verpleegadres. De diagnose niet." },
+    { crystal: "BSN-regel", title: "Het BSN", text: "Alleen waar de wet het voorschrijft, zoals de loonaangifte of de re-integratie bij de scheepsarts. Toestemming verandert dat niet." },
+    { crystal: "Wettelijke plicht", title: "Bij ziekte", text: "Alleen wat nodig is voor loon en begeleiding, zoals een verpleegadres. De diagnose niet." },
     { crystal: "Doelbinding", title: "Een ander doel", text: "Een adres uit de administratie gebruik je niet voor een lijst van het team." },
-    { crystal: "Dataminimalisatie", title: "Alleen het nodige", text: "Wat niemand nodig heeft voor de soldij, de begeleiding of het werk, heeft geen grondslag." },
+    { crystal: "Dataminimalisatie", title: "Alleen het nodige", text: "Wat niemand nodig heeft voor het loon, de begeleiding of het werk, heeft geen grondslag." },
     { crystal: "Bewaarplicht", title: "Bewaren", text: "Wat de wet je laat bewaren, houd je. Een cv in de talentenpool alleen als iemand dat zelf wil." }
   ];
   var RULES = [

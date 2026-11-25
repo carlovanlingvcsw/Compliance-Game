@@ -1,4 +1,4 @@
-/* Level 5: Hullbreuk! Alarmfase. Game logic and content of this level. */
+/* Level 5: Alarm in module Kepler. Game logic and content of this level. */
 (function () {
   "use strict";
 
@@ -262,8 +262,8 @@
     var sealed = S.lock.solved || S.lock.revealed;
     a.className = "alarm" + (sealed ? " off" : "");
     a.innerHTML = sealed
-      ? icon("shield") + "<span><strong>Hullbreuk gedicht.</strong> Het alarm is uit.</span>"
-      : '<span class="alarm-dot" aria-hidden="true"></span>' + icon("siren") + "<span><strong>Alarmfase.</strong> Hullbreuk in de datasystemen van Orion.</span>";
+      ? icon("shield") + "<span><strong>Lek gedicht.</strong> Het alarm is uit.</span>"
+      : '<span class="alarm-dot" aria-hidden="true"></span>' + icon("siren") + "<span><strong>Alarmfase.</strong> Er is een lek in de datasystemen van Orion.</span>";
   }
 
   function hud() {
@@ -308,13 +308,13 @@
   /* ---------- Schermen ---------- */
   function renderBrief() {
     show(
-      '<div><p class="vcsw-overline">Level 5 · Briefing</p><h1>Hullbreuk! Alarmfase</h1></div>' +
+      '<div><p class="vcsw-overline">Level 5 · Briefing</p><h1>Alarm in module Kepler</h1></div>' +
       '<p class="lead">Je leert een datalek direct te melden, de schade te beperken en de feiten vast te leggen, omdat er een harde deadline van 72 uur geldt.</p>' +
-      speech("aria", "Alarm. Er is een hullbreuk in onze datasystemen. Gevoelige gegevens lekken het station uit. Vanaf nu loopt de klok. Binnen 72 uur moet de Galactische Toezichtraad het weten als er risico is. Elke minuut die je wacht, maakt het erger.") +
+      speech("aria", "Alarm. Er is een lek in onze datasystemen. Gevoelige gegevens lekken het station uit. Vanaf nu loopt de klok. Binnen 72 uur moet de Galactische Toezichtraad het weten als er risico is. Elke minuut die je wacht, maakt het erger.") +
       '<dl class="vcsw-dl" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">' +
       "<div><dt>De klok</dt><dd>Bovenin loopt een klok van 72 uur. Elke keuze kost speltijd, een foute keuze veel meer dan een goede.</dd></div>" +
       "<div><dt>Snel en goed</dt><dd>Kies je binnen " + FAST + " seconden het goede antwoord, dan krijg je " + FAST_BONUS + " bonuspunten.</dd></div>" +
-      "<div><dt>Gehaald</dt><dd>Bij minimaal 70 procent van de punten blijf je Kapitein en verdien je de badge Hullbreukbestendig.</dd></div></dl>" +
+      "<div><dt>Gehaald</dt><dd>Bij minimaal 70 procent van de punten blijf je Kapitein en verdien je de badge Lekbestendig.</dd></div></dl>" +
       '<div class="setup"><p class="muted">Alleen voor dit prototype. In de echte game onthoudt het spel je keuzes uit eerdere levels en wisselt het de rol van Orion bij herspelen.</p>' +
       '<fieldset><legend>Doorwerking uit eerdere levels</legend>' +
       '<label><input type="checkbox" id="fConsole"' + (S.flags.console ? " checked" : "") + '> In level 1 liet ik mijn console ontgrendeld achter</label>' +
@@ -501,7 +501,7 @@
   function renderLock() {
     var L = S.lock, done = L.solved || L.revealed;
     var html = '<div><p class="vcsw-overline">Luchtsluis</p><h2>Tegen de klok</h2></div>' +
-      speech("aria", "Acht stappen zweven door elkaar. Zet ze zo snel mogelijk in de juiste volgorde om de hullbreuk te dichten. Hoe meer tijd er over is, hoe hoger je bonus.");
+      speech("aria", "Acht stappen zweven door elkaar. Zet ze zo snel mogelijk in de juiste volgorde om het lek te dichten. Hoe meer tijd er over is, hoe hoger je bonus.");
     html += '<div class="lockbar"><span class="muted">Verplaats een kaart met de pijlen.</span><div class="timer' + (L.left <= 60 ? " low" : "") + '" id="timer" aria-label="Resterende tijd">' + icon("clock") + "<span>" + fmt(L.left) + "</span></div></div>";
 
     html += '<div><h3>Aanwijzingen</h3><p class="muted">Een datakristal opent de aanwijzing gratis. Zonder kristal kost hij een hint, en zonder hints 10 procent schild.</p></div><div class="clues">';
@@ -535,13 +535,13 @@
       var n = Object.keys(L.wrong).length;
       html += alertBox("error", "bad", n + (n === 1 ? " stap staat" : " stappen staan") + " niet op de goede plek", "Een nieuwe poging kost 5 procent schild. Kijk nog eens naar de aanwijzingen.");
     }
-    if (L.solved) html += alertBox("success", "ok", "De hullbreuk is gedicht. De sluis gaat open.", "Tijdbonus " + L.timeBonus + " punten voor de resterende tijd van " + fmt(L.left) + ".");
+    if (L.solved) html += alertBox("success", "ok", "Het lek is gedicht. De sluis gaat open.", "Tijdbonus " + L.timeBonus + " punten voor de resterende tijd van " + fmt(L.left) + ".");
     if (L.revealed) html += alertBox("info", "eye", "Oplossing getoond", "De stappen staan in de juiste volgorde. De sluis is handmatig geopend, zonder tijdbonus.");
 
     html += '<div class="actions">';
     if (!done) {
       if (L.attempts >= 2) html += '<button class="vcsw-button outline lg" id="reveal">' + icon("eye") + "Toon de oplossing</button>";
-      html += '<button class="vcsw-button lg" id="check">' + icon("unlock") + "Hullbreuk dichten</button>";
+      html += '<button class="vcsw-button lg" id="check">' + icon("unlock") + "Lek dichten</button>";
     } else {
       html += '<button class="vcsw-button lg" id="toDebrief">Naar de debriefing' + icon("next") + "</button>";
     }
@@ -591,7 +591,7 @@
   function renderDebrief() {
     var MAX = maxBase(), pct = Math.round(S.score / MAX * 100), passed = pct >= 70;
     var html = '<div><p class="vcsw-overline">Debriefing</p><h2>' + (passed ? "Level gehaald. Je blijft Kapitein." : "Nog niet gehaald") + "</h2></div>";
-    if (passed) html += '<div class="reward">' + icon("shield") + "<div><strong>Badge Hullbreukbestendig</strong><br><span>Je weet wat je doet als er gegevens het station uit lekken.</span></div></div>";
+    if (passed) html += '<div class="reward">' + icon("shield") + "<div><strong>Badge Lekbestendig</strong><br><span>Je weet wat je doet als er gegevens het station uit lekken.</span></div></div>";
     html += '<div class="vcsw-stats cols-4"><div class="vcsw-stat"><span class="vcsw-stat-label">Score</span><span class="vcsw-stat-value">' + pct + '%</span><span class="vcsw-stat-note">' + S.score + " van " + MAX + ' punten</span></div>' +
       '<div class="vcsw-stat"><span class="vcsw-stat-label">Bonus</span><span class="vcsw-stat-value">+' + S.bonus + '</span><span class="vcsw-stat-note">voor snelheid en tijd</span></div>' +
       '<div class="vcsw-stat"><span class="vcsw-stat-label">Klok</span><span class="vcsw-stat-value">' + S.hours + ' uur</span><span class="vcsw-stat-note">over van de 72</span></div>' +

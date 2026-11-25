@@ -15,7 +15,7 @@
       aria: "In de ziekenboeg gaat het over de gezondheid van de crew. Hier let je extra goed op." },
     { title: "Level 4: Het vrachtdok", name: "Het vrachtdok", short: "Vrachtdok", place: "Vrachtdok", src: "levels/level-4-vrachtdok/index.html", module: 3,
       aria: "In het vrachtdok komen gegevens binnen en gaan ze weer weg. Niet alles wat binnenkomt, is wat het lijkt." },
-    { title: "Level 5: Hullbreuk! Alarmfase", name: "Hullbreuk! Alarmfase", short: "Hullbreuk", place: "Module Kepler", src: "levels/level-5-hullbreuk/index.html", module: 4, alarm: true,
+    { title: "Level 5: Alarm in module Kepler", name: "Alarm in module Kepler", short: "Alarm", place: "Module Kepler", src: "levels/level-5-hullbreuk/index.html", module: 4, alarm: true,
       aria: "Alarm. Er lekken gegevens weg uit module Kepler. Nu telt elke minuut." },
     { title: "Eindmissie: Een bericht van de aarde", name: "Een bericht van de aarde", short: "Eindmissie", place: "Communicatietoren", src: "levels/eindmissie-bericht-van-de-aarde/index.html", module: 5,
       aria: "Er komt een bericht van de aarde binnen. Dit is je laatste missie als Kapitein van de Datawacht." }
@@ -445,7 +445,7 @@
     ["Locatiesignaal van iemands polsband", 1], ["Shuttleregistratie van een crewlid", 1], ["Schipregistratie van een zelfstandige handelaar", 1],
     ["Zuurstofverbruik van een module met drie bewoners", 1], ["Communicatornummer van een kolonist", 1], ["Stemopname van een crewlid", 1],
     ["Cv van een kandidaat", 1], ["Ziektedagen van een technicus", 1], ["Geboortedatum van een kolonist", 1], ["Vingerafdruk voor de toegangssluis", 1],
-    ["Inlognaam van een crewlid", 1], ["Soldijoverzicht van de vorige bewoner", 1],
+    ["Inlognaam van een crewlid", 1], ["Loonstrook van de vorige bewoner", 1],
     ["Algemeen kanaal brug@orion.space", 0], ["Vrachtschip van een handelsmaatschappij", 0], ["Gemiddeld zuurstofverbruik van het hele station", 0],
     ["Totale brandstofkosten van de kolonie", 0], ["Openingstijden van de kantine", 0], ["Menukaart van de kantine", 0], ["Stationsplattegrond", 0],
     ["Omzet van het Handelsgilde", 0], ["Weersverwachting voor Nova Terra", 0], ["Nieuwsbrief van de Datawacht", 0], ["Vertrektijden van de shuttles", 0]
@@ -526,7 +526,7 @@
   /* ---------- 3. Phishing Invaders ---------- */
   var MSGS = [
     ["“Stationstechniek”", "orion-support.net", "Reset je toegangscode via deze link", 1],
-    ["“Kapitein Vega”", "onbekend kanaal", "Stuur met spoed het soldijoverzicht", 1],
+    ["“Kapitein Vega”", "onbekend kanaal", "Stuur met spoed de loonstrook", 1],
     ["Onbekende handelaar", "handel-x7.void", "Factuur in bijgevoegd datapakket", 1],
     ["“Centrale opslag”", "opslag-orion.co", "Je geheugen is vol, log hier in", 1],
     ["“Admiraliteit”", "admiraliteit.mail", "Koop in het geheim brandstofbonnen", 1],

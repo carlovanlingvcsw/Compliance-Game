@@ -166,7 +166,7 @@
       { pre: "Ontvang en deel persoonsgegevens alleen via de", post: "weg, nooit als losse bijlage.", b: "beveiligde", x: ["snelste", "gebruikelijke"] },
       { pre: "Gebruik gegevens alleen voor het doel waarvoor je ze kreeg, en alleen in", post: "systemen.", b: "goedgekeurde", x: ["gratis", "snelle"] },
       { pre: "Afwijkende afzender, spoed of geheimhouding? Stop en controleer via", post: ".", b: "een andere weg", x: ["een antwoord op het bericht", "de link in het bericht"] } ] },
-    { lvl: "Level 5: Hullbreuk! Alarmfase", rules: [
+    { lvl: "Level 5: Alarm in module Kepler", rules: [
       { pre: "Een datalek meld je", post: ", ook aan het eind van je dienst.", b: "direct", x: ["binnen 72 uur", "na overleg met je team"] },
       { pre: "Eerst schade beperken en", post: "vastleggen, daarna pas oordelen.", b: "feiten", x: ["schuld", "namen"] },
       { pre: "Wees eerlijk tegen opdrachtgevers en laat de beoordeling over aan", post: ".", b: "het meldpunt", x: ["de opdrachtgever", "jezelf"] } ] }
@@ -558,7 +558,7 @@
     html += speech("aria", passed
       ? "Admiraal. Je hebt het station door vijf modules en een eindmissie geloodst. De gegevens aan boord zijn veilig, en iedereen weet dat ze bij jou in goede handen zijn."
       : "Je hebt minder dan 70 procent. Speel de eindmissie opnieuw. In de echte game krijg je dan andere situaties.");
-    if (passed) html += '<div class="reward">' + icon("award") + "<div><strong>Benoemd tot Admiraal van de Datawacht</strong><br><span>Badges: Hullbreukbestendig. Rangen: Cadet, Vaandrig, Luitenant, Commandeur, Kapitein, Admiraal.</span></div></div>";
+    if (passed) html += '<div class="reward">' + icon("award") + "<div><strong>Benoemd tot Admiraal van de Datawacht</strong><br><span>Badges: Lekbestendig. Rangen: Cadet, Vaandrig, Luitenant, Commandeur, Kapitein, Admiraal.</span></div></div>";
     html += '<div class="vcsw-stats cols-3"><div class="vcsw-stat"><span class="vcsw-stat-label">Score</span><span class="vcsw-stat-value">' + pct + '%</span><span class="vcsw-stat-note">' + S.score + " van " + MAX + ' punten</span></div>' +
       '<div class="vcsw-stat"><span class="vcsw-stat-label">Schildsterkte</span><span class="vcsw-stat-value">' + S.shield + '%</span><span class="vcsw-stat-note">vertrouwen aan boord</span></div>' +
       '<div class="vcsw-stat"><span class="vcsw-stat-label">Datakristallen</span><span class="vcsw-stat-value">' + S.inv.length + '</span><span class="vcsw-stat-note">in je inventaris</span></div></div>';

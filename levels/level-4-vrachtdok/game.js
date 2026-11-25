@@ -45,7 +45,7 @@
   var SITUATIONS = [
     {
       title: "Het open datapakket",
-      intro: "Kapitein Vega stuurt via een open kanaal een bestand met namen, identiteitsnummers en soldij van al haar crewleden, voor een kostencontrole.",
+      intro: "Kapitein Vega stuurt via een open kanaal een bestand met namen, identiteitsnummers en loon van al haar crewleden, voor een kostencontrole.",
       speaker: "Vega",
       line: "Hier is het crewbestand voor de kostencontrole. Ik heb het even snel via het open kanaal gestuurd, dan kun je meteen aan de slag.",
       options: [
@@ -77,8 +77,8 @@
           ["Crewlid met grootste besparing", "Joran Kel"],
           ["Identiteitsnummer", "{id2}"],
           ["Reden halve diensten", "{diag2}"],
-          ["Soldij per maand", "{sol}"],
-          ["Rekeningnummer soldij", "{iban}"],
+          ["Loon per maand", "{sol}"],
+          ["Rekeningnummer loon", "{iban}"],
           ["Inhoudingen", "{beslag}"]
         ]
       },
@@ -101,10 +101,10 @@
         id2:    { text: "7731 0094 2", r1: true, r2: false, why1: "Ook in een bijlage gaat een identiteitsnummer nooit via een gewone mail." },
         diag2:  { text: "rugklachten na een hernia, volgens de scheepsarts", r1: true, r2: true, why1: "Een diagnose blijft een medisch gegeven, ook in een bijlage. Nooit via een gewone mail.",
                   why2: "Ook via Kluispost hoort een diagnose niet bij Vega. Medische details zijn alleen voor de scheepsarts." },
-        sol:    { text: "4.200 credits", r1: true, r2: false, why1: "De soldij van één crewlid is een gevoelig financieel gegeven en gaat niet via een gewone mail." },
+        sol:    { text: "4.200 credits", r1: true, r2: false, why1: "Het loon van één crewlid is een gevoelig financieel gegeven en gaat niet via een gewone mail." },
         iban:   { text: "OR77 STB 0041 2290 18", r1: true, r2: true, why1: "Een persoonlijk rekeningnummer is een gevoelig financieel gegeven en gaat niet via een gewone mail.",
                   why2: "Een veilig kanaal maakt het kanaal veilig, maar niet elk gegeven nodig. Voor de kostencontrole heeft Vega Jorans rekeningnummer niet nodig." },
-        beslag: { text: "beslag op soldij, 650 credits per maand", r1: true, r2: true, why1: "Beslag op soldij zegt iets over iemands financiële situatie. Gevoelig, dus niet via een gewone mail.",
+        beslag: { text: "beslag op loon, 650 credits per maand", r1: true, r2: true, why1: "Beslag op loon zegt iets over iemands financiële situatie. Gevoelig, dus niet via een gewone mail.",
                   why2: "Voor de kostencontrole is het beslag niet nodig. Deel alleen wat de ontvanger echt nodig heeft." }
       },
       why2ok: "Via Kluispost of aangetekend verzenden mag dit, omdat Kapitein Vega het nodig heeft voor de kostencontrole.",
@@ -113,7 +113,7 @@
         half: { who: "Bram", say: "Bijna goed dus. Ik loop de mail en de bijlage nog een keer na voordat hij de deur uit gaat." },
         bad:  { who: "Bram", say: "Ai. Goed dat hij nog niet verstuurd was." }
       },
-      goodText: "Het identiteitsnummer, de diagnose, verzuim, de vangnetregeling, het register, de soldij, het rekeningnummer, het beslag en privézaken niet via de gewone stationsmail. Via Kluispost mag wat Vega nodig heeft, maar de diagnose, het rekeningnummer, het beslag en privézaken laat je ook dan weg.",
+      goodText: "Het identiteitsnummer, de diagnose, verzuim, de vangnetregeling, het register, het loon, het rekeningnummer, het beslag en privézaken niet via de gewone stationsmail. Via Kluispost mag wat Vega nodig heeft, maar de diagnose, het rekeningnummer, het beslag en privézaken laat je ook dan weg.",
       goodWhy: "Een gewone mail is als een ansichtkaart. Een beveiligd kanaal lost dat op, maar je deelt nog steeds alleen wat de ontvanger echt nodig heeft, en medische details blijven bij de scheepsarts. Kijk ook altijd in de bijlage.",
       crystal: { name: "Veilig verzenden", text: "Gevoelige gegevens verstuur je nooit via een gewone mail, ook niet in een bijlage. Via Kluispost of aangetekend verzenden mag het wel, maar alleen wat de ontvanger echt nodig heeft." },
       clue: "Een bijlage die je niet verwacht, open je niet. Controleer eerst wie de afzender is."
@@ -188,7 +188,7 @@
     { id: "m2", real: false,
       from: "Kapitein Vega", addr: "privékanaal NT 7731", channel: "Onbekend kanaal",
       subject: "Dringend",
-      body: "Ik zit in een overleg en kan niet oproepen. Stuur me nu meteen het soldijoverzicht van mijn crew. Dit kan echt niet wachten.",
+      body: "Ik zit in een overleg en kan niet oproepen. Stuur me nu meteen de loonstrook van mijn crew. Dit kan echt niet wachten.",
       signal: "Ander kanaal dan normaal, met druk en spoed. Controleer via haar vaste kanaal.",
       hint: "Vega heeft een vast kanaal. Is dit dat kanaal?" },
     { id: "m3", real: true,
