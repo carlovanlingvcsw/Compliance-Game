@@ -258,7 +258,7 @@
     var r = ROUTE[cur], h = view === "mission" && r && r.type === "level" ? fitH[r.n] : 0;
     if (!h || window.innerWidth < 900) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; }
     var room = window.innerHeight - stageEl.getBoundingClientRect().top - 12;
-    if (h + 30 > room - 110) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; } // nearly full: keep one baseline with the module card
+    if (h + 30 > room - 24) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; } // nearly full: keep one baseline with the module card
     stageEl.classList.add("fit"); stageEl.style.height = Math.max(420, h + 30) + "px";
   }
   window.addEventListener("message", function (e) {

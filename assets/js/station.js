@@ -60,13 +60,13 @@ function makeEnvironment() {
 scene.environment = makeEnvironment();
 scene.environmentIntensity = 0.85;
 /* The studio HDRI replaces the code-built environment as soon as it has loaded. Space itself stays dark. */
-loadEnv(renderer, "env_studio").then((t) => { scene.environment = t; scene.environmentIntensity = 0.3; scene.environmentRotation.y = 1.2; }, () => {});
+loadEnv(renderer, "env_studio").then((t) => { scene.environment = t; scene.environmentIntensity = 0.2; scene.environmentRotation.y = 1.2; }, () => {});
 
 /* ---------- Materials ---------- */
 function hullMat(kind, repeat) {
   if (kind === "white") return pbr("plastic_white", { repeat, color: 0xe6ecf3, metalness: 0.15, roughness: 0.75 });
   if (kind === "dark") return pbr("hull_dark", { repeat, metalness: 0.7, roughness: 0.95 });
-  return pbr("hull_light", { repeat, color: kind === "mid" ? 0xb4c1d4 : 0xf2f6fb, metalness: 0.4, roughness: 1, normalScale: 2.2 });
+  return pbr("hull_light", { repeat, color: kind === "mid" ? 0xb4c1d4 : 0xf2f6fb, metalness: 0.4, roughness: 1, normalScale: 0.9 });
 }
 function windowTexture(cols, rows, lit, color) {
   const W = 512, H = 128, c = document.createElement("canvas"); c.width = W; c.height = H;
@@ -382,7 +382,7 @@ const breach = { lights: [], embers: null, plates: [] };
 })();
 
 // 6. Eindmissie: the comms array on top of the spine (registered for the camera)
-MODULES.push({ id: 5, group: comms, anchor: new THREE.Vector3(0, 2.4, 0), cam: new THREE.Vector3(1.0, 4.8, 15.5), fixed: true, drop: 1.1 });
+MODULES.push({ id: 5, group: comms, anchor: new THREE.Vector3(0, 2.4, 0), cam: new THREE.Vector3(2.6, 10.5, 12.5), fixed: true, drop: 0.5 });
 
 // Extra greebles on the ring between modules
 for (let i = 0; i < 18; i++) {
@@ -426,9 +426,9 @@ const planetMat = new THREE.ShaderMaterial({
       float sea = texture2D(uOcean, vUv).r;
       vec3 q = p*3.6 + vec3(uTime*0.003, 0.0, uTime*0.002);
       float cl = fbm(q + fbm(q*2.0)*0.6)*0.56 + fbm(p*13.0 - vec3(uTime*0.004,0.0,0.0))*0.30 + fbm(p*31.0)*0.14;
-      float cloud = smoothstep(0.50, 0.80, cl);
+      float cloud = smoothstep(0.56, 0.84, cl);
       float shade = smoothstep(0.52, 0.76, fbm(q + fbm(q*2.0)*0.6 + vec3(0.02))*0.66 + 0.17);
-      col = mix(col * (1.0 - 0.25*shade), vec3(0.92,0.95,0.98), cloud*0.72);
+      col = mix(col * (1.0 - 0.25*shade), vec3(0.92,0.95,0.98), cloud*0.5);
       vec3 N = normalize(vN);
       vec3 L = normalize((viewMatrix * vec4(uLight,0.0)).xyz);
       float d = dot(N, L), lit = smoothstep(-0.12, 0.38, d);
@@ -512,7 +512,7 @@ mesh(new THREE.SphereGeometry(94, 64, 48), haloMat, scene, [-170, -150, -135]);
 })();
 
 /* ---------- Lights ---------- */
-const sun = new THREE.DirectionalLight(0xffe8c8, 5.4);
+const sun = new THREE.DirectionalLight(0xffe8c8, 4.7);
 sun.position.copy(planetMat.uniforms.uLight.value).multiplyScalar(50);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -527,9 +527,9 @@ station.traverse((o) => {
   const sc = o.getWorldScale(new THREE.Vector3());
   o.castShadow = o.geometry.boundingSphere.radius * Math.max(sc.x, sc.y, sc.z) > 0.3;
 });
-scene.add(new THREE.HemisphereLight(0x67caff, 0x0a2a55, 0.32));
+scene.add(new THREE.HemisphereLight(0x67caff, 0x0a2a55, 0.22));
 const rimLight = new THREE.DirectionalLight(0x67caff, 2.1); rimLight.position.set(-30, -26, -30); scene.add(rimLight);
-const fill = new THREE.DirectionalLight(0xbcd9ff, 0.45); fill.position.set(30, 10, 25); scene.add(fill);
+const fill = new THREE.DirectionalLight(0xbcd9ff, 0.28); fill.position.set(30, 10, 25); scene.add(fill);
 scene.fog = new THREE.FogExp2(0x061a36, 0.0085);
 const alarmLight = new THREE.PointLight(0xff8a2e, 0, 3.4, 2); scene.add(alarmLight);
 const pulseLight = new THREE.PointLight(0x67caff, 0, 6, 2); scene.add(pulseLight);
