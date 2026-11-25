@@ -296,3 +296,6 @@ html.in-orion #schildChip { display: none; }
 .luik-acts .ox-btn { min-height: 46px; }
 .luik-acts .aw-meta { margin-left: auto; }
 .luik-grid { gap: 6px; } .luik-card { padding: 5px 10px 7px; } .luik-pil { min-height: 64px; padding-top: 5px; padding-bottom: 5px; }
+/* Alleen omkeren als de kop het laatste kind is, dus als er labels voor staan. Een zin onder de kop blijft eronder. */
+.screen-head:not(.rij) { flex-direction: column; }
+.screen-head:not(.rij):has(> h1:last-child), .screen-head:not(.rij):has(> h2:last-child) { flex-direction: column-reverse; }

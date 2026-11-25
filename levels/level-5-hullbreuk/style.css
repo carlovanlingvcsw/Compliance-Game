@@ -254,3 +254,6 @@ html.orion-level .ox-clock.timer.low { color: #ffc978 !important; }
 
 /* Ronde 27: ARIA spreekt in hetzelfde kader als in de andere levels. */
 .title-screen .ox-say:has(> .ox-face), .ox-stack > .ox-say:has(> .ox-face) { padding: 12px 16px; border-radius: 12px; background: linear-gradient(180deg, #0b2548, #081b38); border: 1px solid #1f4f85; border-left: 3px solid var(--vcsw-blue-400); }
+/* Alleen omkeren als de kop het laatste kind is, dus als er labels voor staan. Een zin onder de kop blijft eronder. */
+.screen-head:not(.rij) { flex-direction: column; }
+.screen-head:not(.rij):has(> h1:last-child), .screen-head:not(.rij):has(> h2:last-child) { flex-direction: column-reverse; }

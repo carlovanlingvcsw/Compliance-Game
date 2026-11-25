@@ -243,3 +243,6 @@ body[data-screen="earth"] .screen { gap: 12px; }
 
 /* Ronde 24: labels staan onder de kop, niet erboven. */
 .titled { flex-direction: column-reverse; }
+/* Alleen omkeren als de kop het laatste kind is, dus als er labels voor staan. Een zin onder de kop blijft eronder. */
+.titled { flex-direction: column; }
+.titled:has(> h1:last-child), .titled:has(> h2:last-child) { flex-direction: column-reverse; }
