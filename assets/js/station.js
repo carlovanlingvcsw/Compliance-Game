@@ -51,24 +51,39 @@ scene.environment = makeEnvironment();
 scene.environmentIntensity = 0.55;
 
 /* ---------- Procedural hull textures ---------- */
+/* Hull panels: colour with subtle tone shifts, a bump map for the seams and rivets, and a roughness map,
+   so panels read through light rather than through drawn lines. */
 function hullTexture(base, opts = {}) {
-  const S = 512, c = document.createElement("canvas"); c.width = c.height = S;
-  const g = c.getContext("2d");
+  const S = 512, cols = opts.cols || 6, rows = opts.rows || 4, cw = S / cols, rh = S / rows;
+  const mk = () => { const c = document.createElement("canvas"); c.width = c.height = S; return [c, c.getContext("2d")]; };
+  const [cc, g] = mk(), [bc, b] = mk(), [rc, r] = mk();
   g.fillStyle = base; g.fillRect(0, 0, S, S);
-  const cols = opts.cols || 8, rows = opts.rows || 8, cw = S / cols, rh = S / rows;
+  b.fillStyle = "#808080"; b.fillRect(0, 0, S, S);
+  r.fillStyle = "#8a8a8a"; r.fillRect(0, 0, S, S);
   for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
-    const v = (rnd() - 0.5) * (opts.vary || 18);
-    g.fillStyle = `rgba(${v > 0 ? 255 : 0},${v > 0 ? 255 : 0},${v > 0 ? 255 : 0},${Math.abs(v) / 255})`;
-    g.fillRect(x * cw, y * rh, cw, rh);
-    if (rnd() < 0.18) { g.fillStyle = "rgba(0,0,0,.18)"; g.fillRect(x * cw + cw * 0.2, y * rh + rh * 0.25, cw * 0.6, rh * 0.18); }
-    if (rnd() < 0.08) { g.fillStyle = "rgba(255,255,255,.10)"; g.fillRect(x * cw + 6, y * rh + 6, cw * 0.3, rh * 0.3); }
+    // panels are split unevenly, like real hull plating
+    const split = rnd() < 0.35, parts = split ? [[0, 0.5], [0.5, 1]] : [[0, 1]];
+    parts.forEach(([a0, a1]) => {
+      const px = x * cw, py = y * rh + a0 * rh, ph = (a1 - a0) * rh;
+      const v = (rnd() - 0.5) * (opts.vary || 14);
+      g.fillStyle = v > 0 ? `rgba(255,255,255,${v / 255})` : `rgba(0,0,0,${-v / 255})`; g.fillRect(px, py, cw, ph);
+      const rv = 110 + Math.floor(rnd() * 60); r.fillStyle = `rgb(${rv},${rv},${rv})`; r.fillRect(px, py, cw, ph);
+      b.fillStyle = "#5a5a5a"; b.fillRect(px, py, cw, 2); b.fillRect(px, py, 2, ph);
+      b.fillStyle = "#a0a0a0"; b.fillRect(px + 2, py + 2, cw - 2, 1);
+      for (let k = 0; k < 4; k++) { b.fillStyle = "#b8b8b8"; b.fillRect(px + 6 + k * (cw - 12) / 3, py + 5, 2, 2); }
+      if (rnd() < 0.2) { g.fillStyle = "rgba(0,0,0,.12)"; g.fillRect(px + cw * 0.15, py + ph * 0.3, cw * 0.5, ph * 0.12); b.fillStyle = "#6c6c6c"; b.fillRect(px + cw * 0.15, py + ph * 0.3, cw * 0.5, ph * 0.12); }
+    });
   }
-  g.strokeStyle = "rgba(0,0,0,.35)"; g.lineWidth = 2;
-  for (let i = 0; i <= cols; i++) { g.beginPath(); g.moveTo(i * cw, 0); g.lineTo(i * cw, S); g.stroke(); }
-  for (let i = 0; i <= rows; i++) { g.beginPath(); g.moveTo(0, i * rh); g.lineTo(S, i * rh); g.stroke(); }
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
-  return t;
+  // a little grime along the lower edges
+  const grad = g.createLinearGradient(0, 0, 0, S); grad.addColorStop(0, "rgba(0,0,0,0)"); grad.addColorStop(1, "rgba(10,20,40,.10)"); g.fillStyle = grad; g.fillRect(0, 0, S, S);
+  const tex = (c, srgb) => { const t = new THREE.CanvasTexture(c); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return t; };
+  const map = tex(cc, true); map.userData = { bump: tex(bc), rough: tex(rc) };
+  return map;
+}
+function hullMat(map, metalness, roughness, repeat) {
+  const m = new THREE.MeshStandardMaterial({ map, metalness, roughness, bumpMap: map.userData.bump, bumpScale: 1.2, roughnessMap: map.userData.rough });
+  if (repeat) { ["map", "bumpMap", "roughnessMap"].forEach((k) => { m[k] = m[k].clone(); m[k].repeat.set(repeat[0], repeat[1]); m[k].needsUpdate = true; }); }
+  return m;
 }
 function windowTexture(cols, rows, lit, color) {
   const W = 512, H = 128, c = document.createElement("canvas"); c.width = W; c.height = H;
@@ -105,16 +120,16 @@ function containerTexture() {
 }
 const TEX = {
   container: containerTexture(),
-  light: hullTexture("#aeb9c7", { cols: 10, rows: 6 }),
-  mid: hullTexture("#8d9bb0", { cols: 8, rows: 8 }),
-  dark: hullTexture("#3a4a62", { cols: 6, rows: 10, vary: 24 }),
-  white: hullTexture("#d5dde7", { cols: 6, rows: 4, vary: 10 }),
+  light: hullTexture("#a9b4c2", { cols: 6, rows: 3 }),
+  mid: hullTexture("#7f8ea4", { cols: 5, rows: 4 }),
+  dark: hullTexture("#34445c", { cols: 4, rows: 4, vary: 20 }),
+  white: hullTexture("#d2dae4", { cols: 4, rows: 3, vary: 10 }),
 };
 const MAT = {
-  hull: new THREE.MeshStandardMaterial({ map: TEX.light, metalness: 0.35, roughness: 0.58 }),
-  hullMid: new THREE.MeshStandardMaterial({ map: TEX.mid, metalness: 0.45, roughness: 0.5 }),
-  hullDark: new THREE.MeshStandardMaterial({ map: TEX.dark, metalness: 0.6, roughness: 0.45 }),
-  white: new THREE.MeshStandardMaterial({ map: TEX.white, metalness: 0.25, roughness: 0.5 }),
+  hull: hullMat(TEX.light, 0.4, 0.75),
+  hullMid: hullMat(TEX.mid, 0.5, 0.7),
+  hullDark: hullMat(TEX.dark, 0.6, 0.65),
+  white: hullMat(TEX.white, 0.2, 0.7),
   truss: new THREE.MeshStandardMaterial({ color: 0x8a96a8, metalness: 0.85, roughness: 0.3 }),
   gold: new THREE.MeshStandardMaterial({ color: 0xc8a65a, metalness: 1, roughness: 0.32 }),
   solar: new THREE.MeshStandardMaterial({ map: solarTexture(), metalness: 0.4, roughness: 0.25, color: 0xffffff }),
@@ -192,7 +207,7 @@ const ring = new THREE.Group(); station.add(ring);
 const RING_R = 6.2;
 const ringMesh = mesh(new THREE.TorusGeometry(RING_R, 0.5, 24, 160), MAT.hull, ring, null, [Math.PI / 2, 0, 0]);
 TEX.light.repeat.set(1, 1);
-ringMesh.material = MAT.hull.clone(); ringMesh.material.map = TEX.light.clone(); ringMesh.material.map.repeat.set(24, 1); ringMesh.material.map.needsUpdate = true;
+ringMesh.material = hullMat(TEX.light, 0.4, 0.75, [28, 1]);
 const winTex = windowTexture(32, 2, 0.6, "#ffe9b8"); winTex.repeat.set(10, 1);
 mesh(new THREE.TorusGeometry(RING_R, 0.505, 6, 160, Math.PI * 2), new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveMap: winTex, emissiveIntensity: 1.4, transparent: true, opacity: 1, alphaMap: winTex, depthWrite: false }), ring, null, [Math.PI / 2, 0, 0]).scale.set(1, 1, 0.22);
 for (let i = 0; i < 4; i++) {
@@ -221,9 +236,12 @@ wings.forEach((w) => (w.rotation.y = 0.5));
 const comms = new THREE.Group(); station.add(comms); comms.position.y = 4.5;
 mesh(cyl(0.12, 1.8, 12), MAT.truss, comms, [0, 0.9, 0]);
 const dishPts = []; for (let i = 0; i <= 16; i++) { const t = i / 16; dishPts.push(new THREE.Vector2(t * 1.3, t * t * 0.55)); }
-const dish = mesh(new THREE.LatheGeometry(dishPts, 48), new THREE.MeshStandardMaterial({ color: 0xe8edf3, metalness: 0.5, roughness: 0.35, side: THREE.DoubleSide }), comms, [0, 1.9, 0]);
+const dish = mesh(new THREE.LatheGeometry(dishPts, 48), new THREE.MeshStandardMaterial({ color: 0xc9d3df, metalness: 0.25, roughness: 0.62, side: THREE.DoubleSide }), comms, [0, 1.9, 0]);
 dish.rotation.set(-0.9, 0, 0.3);
-mesh(cyl(0.025, 0.9, 6), MAT.truss, dish, [0, 0.45, 0]);
+for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; strut(dish, [Math.cos(a) * 0.15, 0.012, Math.sin(a) * 0.15], [Math.cos(a) * 1.28, 0.56, Math.sin(a) * 1.28], 0.012, MAT.hullDark); }
+mesh(new THREE.TorusGeometry(1.3, 0.025, 6, 64), MAT.hullDark, dish, [0, 0.55, 0], [Math.PI / 2, 0, 0]);
+[0, 2.1, 4.2].forEach((a) => strut(dish, [Math.cos(a) * 1.2, 0.5, Math.sin(a) * 1.2], [0, 0.86, 0], 0.012, MAT.truss));
+mesh(new THREE.CylinderGeometry(0.05, 0.09, 0.16, 16), MAT.hullDark, dish, [0, 0.86, 0]);
 lamp(comms, [0, 1.85, 0], 0x15aaff, 0.06);
 const dishLamp = lamp(dish, [0, 0.92, 0], 0x67caff, 0.07);
 
@@ -261,7 +279,7 @@ function moduleFrame(angleDeg, name) {
 (function () {
   const g = moduleFrame(80, "passagiers");
   const hab = mesh(cyl(0.7, 3.4, 48), MAT.hull, g, [2.9, 0, 0], [0, 0, Math.PI / 2]);
-  hab.material = MAT.hull.clone(); hab.material.map = TEX.light.clone(); hab.material.map.repeat.set(4, 2); hab.material.map.needsUpdate = true;
+  hab.material = hullMat(TEX.light, 0.4, 0.75, [4, 2]);
   const wt = windowTexture(24, 3, 0.7, "#ffe2a8"); wt.repeat.set(2, 1);
   mesh(new THREE.CylinderGeometry(0.705, 0.705, 3.2, 48, 1, true), new THREE.MeshStandardMaterial({ color: 0, emissive: 0xffffff, emissiveMap: wt, emissiveIntensity: 1.6, transparent: true, alphaMap: wt, depthWrite: false }), g, [2.9, 0, 0], [0, 0, Math.PI / 2]);
   [1.2, 4.6].forEach((x) => mesh(new THREE.SphereGeometry(0.7, 32, 16), MAT.hullMid, g, [x, 0, 0]).scale.set(0.35, 1, 1));
@@ -277,7 +295,7 @@ function moduleFrame(angleDeg, name) {
 (function () {
   const g = moduleFrame(140, "ziekenboeg");
   const box = mesh(new THREE.BoxGeometry(2.4, 1.3, 1.6), MAT.white, g, [2.3, 0, 0]);
-  box.material = MAT.white.clone(); box.material.map = TEX.white.clone(); box.material.map.repeat.set(2, 1); box.material.map.needsUpdate = true;
+  box.material = hullMat(TEX.white, 0.2, 0.7, [2, 1]);
   mesh(new THREE.BoxGeometry(2.42, 0.08, 1.62), emissive(0x67caff, 2.4), g, [2.3, 0.2, 0]);
   mesh(new THREE.SphereGeometry(0.75, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), MAT.glass, g, [2.3, 0.65, 0]).scale.set(1, 0.5, 0.8);
   for (let i = 0; i < 2; i++) mesh(new THREE.BoxGeometry(0.42, 0.22, 0.02), emissive(0xd3efff, 1.4), g, [1.5 + i * 0.6, -0.15, 0.81]);
@@ -316,7 +334,7 @@ const breach = { lights: [], embers: null, plates: [] };
 (function () {
   const g = moduleFrame(260, "hullbreuk");
   const hull = mesh(new THREE.CylinderGeometry(0.8, 0.8, 2.6, 8, 1, false, Math.PI / 8), MAT.hullMid, g, [2.4, 0, 0], [0, 0, Math.PI / 2]);
-  hull.material = MAT.hullMid.clone(); hull.material.map = TEX.mid.clone(); hull.material.map.repeat.set(3, 1); hull.material.map.needsUpdate = true;
+  hull.material = hullMat(TEX.mid, 0.5, 0.7, [3, 1]);
   [1.1, 3.7].forEach((x) => mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.18, 8, 1, false, Math.PI / 8), MAT.hullDark, g, [x, 0, 0], [0, 0, Math.PI / 2]));
   const face = 0.8 * Math.cos(Math.PI / 8) + 0.004;
   const hole = new THREE.Shape(), H = [[-0.5, 0.05], [-0.34, 0.24], [-0.12, 0.2], [0.02, 0.34], [0.2, 0.22], [0.42, 0.26], [0.5, 0.02], [0.36, -0.18], [0.16, -0.12], [0.0, -0.3], [-0.18, -0.16], [-0.38, -0.22]];
@@ -364,7 +382,7 @@ const aria = new THREE.Group(); scene.add(aria);
   const halo = mesh(new THREE.TorusGeometry(0.29, 0.025, 10, 48), MAT.hullDark, aria, null, [Math.PI / 2.4, 0, 0]);
   aria.userData.halo = halo;
   mesh(new THREE.CircleGeometry(0.11, 32), new THREE.MeshStandardMaterial({ color: 0x06224c, metalness: 0.9, roughness: 0.1 }), aria, [0, 0, 0.196]);
-  aria.userData.eye = mesh(new THREE.CircleGeometry(0.055, 32), emissive(0x15aaff, 3.5), aria, [0, 0, 0.2]);
+  aria.userData.eye = mesh(new THREE.CircleGeometry(0.055, 32), emissive(0x15aaff, 1.6), aria, [0, 0, 0.2]);
   mesh(cyl(0.008, 0.12, 6), MAT.truss, aria, [0, 0.25, 0]);
   lamp(aria, [0, 0.32, 0], 0x15aaff, 0.022);
 })();
@@ -471,8 +489,10 @@ sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
 scene.add(sun);
 station.traverse((o) => { if (o.isMesh && o.material && !o.material.transparent && !(o.material.emissiveIntensity > 1)) { o.castShadow = true; o.receiveShadow = true; } });
 scene.add(new THREE.HemisphereLight(0x67caff, 0x020814, 0.22));
-const rimLight = new THREE.DirectionalLight(0x67caff, 1.2); rimLight.position.set(20, -30, -20); scene.add(rimLight);
-const alarmLight = new THREE.PointLight(0xff4a3b, 0, 10, 2); scene.add(alarmLight);
+const rimLight = new THREE.DirectionalLight(0x67caff, 1.6); rimLight.position.set(-30, -26, -30); scene.add(rimLight);
+const fill = new THREE.DirectionalLight(0xbcd9ff, 0.45); fill.position.set(30, 10, 25); scene.add(fill);
+scene.fog = new THREE.FogExp2(0x061a36, 0.0085);
+const alarmLight = new THREE.PointLight(0xff5a3b, 0, 4.5, 2); scene.add(alarmLight);
 const pulseLight = new THREE.PointLight(0x67caff, 0, 6, 2); scene.add(pulseLight);
 let pulseLevel = 0;
 
@@ -539,7 +559,7 @@ function tick() {
     station.rotation.z = Math.sin(t * 0.07) * 0.02;
   }
   planetMat.uniforms.uTime.value = t;
-  blinkers.forEach((b) => { const k = (Math.sin((t + b.userData.blink) * 2.2) + 1) / 2; b.material.emissiveIntensity = 0.6 + k * k * 3.2; });
+  blinkers.forEach((b) => { const k = (Math.sin((t + b.userData.blink) * 2.2) + 1) / 2; b.material.emissiveIntensity = 0.4 + k * k * 1.8; });
 
   // Crane in the cargo dock
   const dock = MODULES[3]; if (dock.crane && !reduce) dock.crane.position.x = Math.sin(t * 0.4) * 1.1;
@@ -584,7 +604,7 @@ function tick() {
 
   frameNo++; renderer.shadowMap.needsUpdate = !lowPower || frameNo % 4 === 0;
   pulseLevel *= Math.pow(0.02, dt); pulseLight.intensity = pulseLevel; pulseLight.position.copy(aria.position);
-  if (pulseLevel > 0.05) aria.userData.eye.material.emissiveIntensity = 3.5 + pulseLevel; else aria.userData.eye.material.emissiveIntensity = 3.5;
+  if (pulseLevel > 0.05) aria.userData.eye.material.emissiveIntensity = 1.6 + pulseLevel * 0.3; else aria.userData.eye.material.emissiveIntensity = 1.6;
   renderer.render(scene, camera);
   if (labelsCb) labelsCb();
 }

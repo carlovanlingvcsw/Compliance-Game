@@ -274,6 +274,7 @@
       P.opened[r.n] = 1; if (Object.keys(P.opened).length >= 6) award("ontdekker");
     } else {
       arcade.hidden = false; arcade.scrollTop = 0; gameIntro(r.id);
+      document.body.setAttribute("data-view", "arcade");
     }
     save();
     document.getElementById("prev").disabled = i === 0;
@@ -355,6 +356,7 @@
     document.getElementById("g-time").textContent = Math.max(0, Math.ceil(G.left));
     document.getElementById("g-tbar").style.width = Math.max(0, G.left / G.total * 100) + "%";
     document.getElementById("g-lives").innerHTML = [0, 1, 2].map(function (i) { return '<i class="' + (i < G.lives ? "" : "off") + '"></i>'; }).join("");
+    var cells = document.querySelectorAll(".sky .base i"); for (var c = 0; c < cells.length; c++) cells[c].className = c < G.lives ? "" : "off";
   }
   function newG(id, seconds) {
     G = { id: id, score: 0, correct: 0, streak: 0, lives: 3, lostLife: false, left: seconds, total: seconds, over: false,
@@ -509,10 +511,17 @@
   function playInvaders() {
     newG("invaders", 60);
     arcade.innerHTML = '<div class="ar-wrap"><section class="ar-panel">' + hudHtml() +
-      '<div class="sky" id="sky"></div><div class="legend"><span>Klik op een <b>nepbericht</b> om het neer te schieten.</span><span>Laat <b>echte berichten</b> landen op de basis.</span></div>' +
+      '<div class="sky" id="sky"><div class="base" aria-hidden="true"><i></i><i></i><i></i><span class="turret"></span></div></div><div class="legend"><span>Klik op een <b>nepbericht</b> om het neer te schieten.</span><span>Laat <b>echte berichten</b> landen op de basis.</span></div>' +
       '<p class="ar-feed" id="g-feed" aria-live="polite"></p></section></div>';
-    var sky = document.getElementById("sky"), live = [], spawnIn = 0.4, lanes = [0, 1, 2], lastLane = -1;
+    var sky = document.getElementById("sky"), live = [], spawnIn = 0.1, lanes = [0, 1, 2], lastLane = -1;
+    function beam(x, y, cls) {
+      if (reduce) return;
+      var b = document.createElement("div"), bx = sky.clientWidth / 2, by = sky.clientHeight - 40, dx = x - bx, dy = y - by;
+      b.className = "beam " + (cls || ""); b.style.left = bx + "px"; b.style.top = by + "px"; b.style.width = Math.hypot(dx, dy) + "px";
+      b.style.transform = "rotate(" + Math.atan2(dy, dx) + "rad)"; sky.appendChild(b); later(function () { b.remove(); }, 220);
+    }
     function fx2(cls, x, y, text) {
+      if (cls !== "blue") beam(x, y, cls);
       var b = document.createElement("div"); b.className = "boom " + cls; b.style.left = x + "px"; b.style.top = y + "px"; sky.appendChild(b); later(function () { b.remove(); }, 450);
       if (text) { var f = document.createElement("div"); f.className = "float " + cls; f.textContent = text; f.style.left = (x - 20) + "px"; f.style.top = (y - 20) + "px"; sky.appendChild(f); later(function () { f.remove(); }, 820); }
     }
@@ -521,7 +530,7 @@
       do { lane = lanes[Math.floor(Math.random() * 3)]; } while (lane === lastLane && Math.random() < 0.7);
       lastLane = lane;
       var el = document.createElement("button"); el.type = "button"; el.className = "inv";
-      el.innerHTML = "<small>Van: " + esc(m[0]) + " · " + esc(m[1]) + "</small><b>" + esc(m[2]) + "</b>";
+      el.innerHTML = '<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><small>Van: ' + esc(m[0]) + " · " + esc(m[1]) + "</small><b>" + esc(m[2]) + "</b></span>";
       el.setAttribute("aria-label", "Bericht van " + m[0] + ", " + m[1] + ": " + m[2] + ". Klik om neer te schieten.");
       el.style.left = (2 + lane * 33) + "%";
       var o = { el: el, y: -80, fake: m[3] === 1, v: 52 + (60 - G.left) * 1.6 + Math.random() * 14 };
