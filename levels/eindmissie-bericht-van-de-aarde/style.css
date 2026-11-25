@@ -416,3 +416,4 @@ p { margin: 0; }
 
 /* Ronde 26: op de aanval en de hoofdsluis wijkt de prototypemelding. Ze staat op de briefing en op het startscherm. */
 html.in-orion[data-screen="lock"] main > .vcsw-alert, html.in-orion[data-screen="boss"] main > .vcsw-alert { display: none; }
+html.in-orion[data-screen="end"] main > .vcsw-alert { display: none; }
