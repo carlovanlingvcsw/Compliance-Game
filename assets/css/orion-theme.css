@@ -208,3 +208,20 @@ html.in-orion .alarm:not(.off) strong { color: #fff; }
 html.in-orion .alarm:not(.off) .alarm-dot { background: var(--vcsw-red-400); }
 /* No labels above titles inside the game; the steps strip and the shell already say where you are */
 html.in-orion #stage .vcsw-overline, html.in-orion #screen .vcsw-overline, html.in-orion #stage .ov, html.in-orion .stage .ov { display: none !important; }
+
+/* ---------- Round 6: the level reads as a game screen ---------- */
+/* One ARIA everywhere: the lens from the station, not a letter */
+.vcsw-avatar.av-aria { position: relative; color: transparent !important; background: radial-gradient(circle at 35% 30%, #fff, var(--vcsw-gray-300)) !important; box-shadow: none !important; }
+.vcsw-avatar.av-aria::after { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: radial-gradient(circle, var(--vcsw-blue-400) 0 32%, var(--vcsw-blue-950) 36%); }
+.speech-who::before, .speech .name::before, .speaker-name::before { box-shadow: none !important; }
+/* Readable body text on the dark glass */
+html.in-orion #stage p, html.in-orion #screen p, html.in-orion .muted, html.in-orion #stage li, html.in-orion #screen li { color: var(--vcsw-gray-200); }
+/* The prototype notice moves to the bottom as a quiet footnote */
+html.in-orion .vcsw-stack > .vcsw-alert[role="note"] { order: 99; padding: 10px 14px; background: transparent !important; border-color: var(--o-edge) !important; }
+html.in-orion .vcsw-stack > .vcsw-alert[role="note"] .vcsw-alert-title { display: inline; margin-right: 6px; }
+html.in-orion .vcsw-stack > .vcsw-alert[role="note"] .vcsw-alert-text { display: inline; color: var(--vcsw-gray-400) !important; }
+/* A slimmer status strip */
+html.in-orion .hud { box-shadow: none !important; }
+html.in-orion .hud > div { padding-block: 10px !important; }
+html.in-orion .hud .hud-value, html.in-orion .hud .vcsw-stat-value { font-size: 1.25rem !important; }
+html.in-orion .vcsw-button { box-shadow: none !important; }

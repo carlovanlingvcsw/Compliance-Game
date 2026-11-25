@@ -182,10 +182,10 @@
       var i = routeIndexOfLevel(n), s = P.levelStars[n] || 0, b = bonusFor(n);
       if (s > 0) done++;
       return '<li><button type="button" class="stop" data-i="' + i + '" data-m="' + L.module + '"><span class="num">' + (n === 5 ? "E" : n + 1) + '</span><span class="txt"><b>' + esc(L.name) + "</b><small>" + esc(L.place) +
-        (b >= 0 ? " · met bonusronde" : "") + '</small></span><span class="stars" role="img" aria-label="' + s + ' van 3 sterren">' + stars(s) + "</span></button></li>";
+        (b >= 0 ? " · met bonusronde" : "") + '</small></span>' + (P.opened[n] || s ? '<span class="stars" role="img" aria-label="' + s + ' van 3 sterren">' + stars(s) + "</span>" : '<span class="new">Nieuw</span>') + "</button></li>";
     }).join("");
     hotEl.innerHTML = LEVELS.map(function (L, n) {
-      return '<button type="button" class="hot" data-i="' + routeIndexOfLevel(n) + '" data-m="' + L.module + '" tabindex="-1" aria-hidden="true"><span class="dot"></span><span class="tag">' + (n === 5 ? "E" : n + 1) + " · " + esc(L.place) + "</span></button>";
+      return '<button type="button" class="hot" data-i="' + routeIndexOfLevel(n) + '" data-m="' + L.module + '" tabindex="-1" aria-hidden="true"><span class="dot"></span><span class="lead"></span><span class="tag">' + (n === 5 ? "E" : n + 1) + " · " + esc(L.place) + "</span></button>";
     }).join("");
     document.getElementById("progress").textContent = done + " van 6 missies gespeeld";
     var start = document.getElementById("start");
@@ -355,7 +355,7 @@
     document.getElementById("g-mult").textContent = "×" + G.mult();
     document.getElementById("g-time").textContent = Math.max(0, Math.ceil(G.left));
     document.getElementById("g-tbar").style.width = Math.max(0, G.left / G.total * 100) + "%";
-    document.getElementById("g-lives").innerHTML = [0, 1, 2].map(function (i) { return '<i class="' + (i < G.lives ? "" : "off") + '"></i>'; }).join("");
+    document.getElementById("g-lives").innerHTML = [0, 1, 2].map(function (i) { return '<i class="' + (i < G.lives ? "" : "off") + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></i>'; }).join("");
     var cells = document.querySelectorAll(".sky .base i"); for (var c = 0; c < cells.length; c++) cells[c].className = c < G.lives ? "" : "off";
   }
   function newG(id, seconds) {
@@ -363,7 +363,7 @@
       mult: function () { return this.streak >= 9 ? 4 : this.streak >= 6 ? 3 : this.streak >= 3 ? 2 : 1; } };
     return G;
   }
-  function gGood(base) { var before = G.mult(); G.streak++; G.correct++; var pts = base * G.mult(); G.score += pts; SFX.good(); if (G.mult() > before) { pop("Combo ×" + G.mult(), "gold"); SFX.combo(); flash("gold"); award("vonk"); } gHud(); return pts; }
+  function gGood(base) { if (window.OrionStation && window.OrionStation.pulse) window.OrionStation.pulse("good"); var before = G.mult(); G.streak++; G.correct++; var pts = base * G.mult(); G.score += pts; SFX.good(); if (G.mult() > before) { pop("Combo ×" + G.mult(), "gold"); SFX.combo(); flash("gold"); award("vonk"); } gHud(); return pts; }
   function gBad(loseLife) { G.streak = 0; SFX.bad(); flash("bad"); shake(); if (loseLife) { G.lives--; G.lostLife = true; } gHud(); if (G.lives <= 0) endGame(); }
   function feed(text, kind) { var f = document.getElementById("g-feed"); if (f) { f.textContent = text; f.className = "ar-feed " + (kind || ""); } }
   function clock(onTick) {
@@ -426,10 +426,10 @@
     newG("sprint", 40);
     var deck = shuffle(CARDS), idx = 0, lock = false;
     arcade.innerHTML = '<div class="ar-wrap"><section class="ar-panel">' + hudHtml() +
-      '<div class="sprint"><button class="bin-btn" id="b-no"><kbd>←</kbd>Geen persoonsgegeven</button><div class="holo" id="holo"></div><button class="bin-btn" id="b-yes"><kbd>→</kbd>Wel persoonsgegeven</button></div>' +
-      '<p class="ar-feed" id="g-feed" aria-live="polite">Sorteer de kaart.</p></section></div>';
+      '<div class="sprint"><button class="bin-btn no" id="b-no">' + icon("x") + 'Geen persoonsgegeven<kbd>←</kbd></button><div class="holo-wrap"><div class="holo" id="holo"></div><p class="ar-feed" id="g-feed" aria-live="polite">Is dit een persoonsgegeven?</p></div><button class="bin-btn yes" id="b-yes">' + icon("user") + 'Wel persoonsgegeven<kbd>→</kbd></button></div>' +
+      '</section></div>';
     var holo = document.getElementById("holo");
-    function show() { if (idx >= deck.length) { deck = shuffle(CARDS); idx = 0; } holo.className = "holo"; holo.innerHTML = "<small>Holokaart</small><p>" + esc(deck[idx][0]) + "</p>"; }
+    function show() { if (idx >= deck.length) { deck = shuffle(CARDS); idx = 0; } holo.className = "holo"; holo.innerHTML = "<p>" + esc(deck[idx][0]) + "</p>"; }
     function answer(yes) {
       if (lock || !G || G.over) return;
       var c = deck[idx], ok = (c[1] === 1) === yes;
@@ -513,7 +513,7 @@
     arcade.innerHTML = '<div class="ar-wrap"><section class="ar-panel">' + hudHtml() +
       '<div class="sky" id="sky"><div class="base" aria-hidden="true"><i></i><i></i><i></i><span class="turret"></span></div></div><div class="legend"><span>Klik op een <b>nepbericht</b> om het neer te schieten.</span><span>Laat <b>echte berichten</b> landen op de basis.</span></div>' +
       '<p class="ar-feed" id="g-feed" aria-live="polite"></p></section></div>';
-    var sky = document.getElementById("sky"), live = [], spawnIn = 0.1, lanes = [0, 1, 2], lastLane = -1;
+    var sky = document.getElementById("sky"), live = [], spawnIn = 0.1, wave = 3, lanes = [0, 1, 2], lastLane = -1;
     function beam(x, y, cls) {
       if (reduce) return;
       var b = document.createElement("div"), bx = sky.clientWidth / 2, by = sky.clientHeight - 40, dx = x - bx, dy = y - by;
@@ -546,7 +546,7 @@
     gHud();
     clock(function (dt) {
       spawnIn -= dt;
-      if (spawnIn <= 0) { spawn(); spawnIn = Math.max(0.75, 1.9 - (60 - G.left) * 0.018) + Math.random() * 0.4; }
+      if (spawnIn <= 0) { spawn(); if (wave > 0) { wave--; spawnIn = 0.35; } else spawnIn = Math.max(0.6, 1.5 - (60 - G.left) * 0.016) + Math.random() * 0.35; }
       var floor = sky.clientHeight - 46;
       live.slice().forEach(function (o) {
         if (!G || G.over) return;

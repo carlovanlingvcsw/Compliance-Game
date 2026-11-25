@@ -67,7 +67,7 @@ function hullTexture(base, opts = {}) {
       const px = x * cw, py = y * rh + a0 * rh, ph = (a1 - a0) * rh;
       const v = (rnd() - 0.5) * (opts.vary || 14);
       g.fillStyle = v > 0 ? `rgba(255,255,255,${v / 255})` : `rgba(0,0,0,${-v / 255})`; g.fillRect(px, py, cw, ph);
-      const rv = 110 + Math.floor(rnd() * 60); r.fillStyle = `rgb(${rv},${rv},${rv})`; r.fillRect(px, py, cw, ph);
+      const rv = 80 + Math.floor(rnd() * 80); r.fillStyle = `rgb(${rv},${rv},${rv})`; r.fillRect(px, py, cw, ph);
       b.fillStyle = "#5a5a5a"; b.fillRect(px, py, cw, 2); b.fillRect(px, py, 2, ph);
       b.fillStyle = "#a0a0a0"; b.fillRect(px + 2, py + 2, cw - 2, 1);
       for (let k = 0; k < 4; k++) { b.fillStyle = "#b8b8b8"; b.fillRect(px + 6 + k * (cw - 12) / 3, py + 5, 2, 2); }
@@ -200,7 +200,7 @@ mesh(new THREE.SphereGeometry(1.25, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), MAT
 mesh(new THREE.SphereGeometry(1.25, 48, 24, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), MAT.hullMid, station, [0, -1.6, 0]);
 mesh(cyl(0.42, 9, 24), MAT.hullDark, station);
 [-2.2, 2.2].forEach((y) => mesh(new THREE.TorusGeometry(1.3, 0.08, 12, 64), MAT.hullDark, station, [0, y * 0.72, 0], [Math.PI / 2, 0, 0]));
-for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; if (i % 4 === 1) continue; mesh(new THREE.BoxGeometry(0.1, 0.05, 0.02), emissive(0xffe2a8, 1.6), station, [Math.cos(a) * 1.255, 0.55, Math.sin(a) * 1.255], [0, -a + Math.PI / 2, 0]); }
+for (let i = 0; i < 32; i++) { const a = (i / 32) * Math.PI * 2; if (i % 5 === 1) continue; mesh(new THREE.BoxGeometry(0.1, 0.05, 0.02), emissive(0xffe2a8, 1.6), station, [Math.cos(a) * 1.255, 0.55, Math.sin(a) * 1.255], [0, -a + Math.PI / 2, 0]); }
 
 // Rotating habitat ring with spokes
 const ring = new THREE.Group(); station.add(ring);
@@ -270,7 +270,8 @@ function moduleFrame(angleDeg, name) {
   mesh(cyl(0.16, 0.2, 16), MAT.hullDark, ship, [-0.25, 0, 0], [0, 0, Math.PI / 2]);
   lamp(ship, [0.6, -0.06, 0.76], 0x05df72, 0.04); lamp(ship, [0.6, -0.06, -0.76], 0xff6467, 0.04);
   for (let i = 0; i < 5; i++) lamp(g, [1.2 + i * 0.4, -0.58, 0.66], 0xa1deff, 0.035);
-  hatch(g, 1.6, 0.05, 0.66); vents(g, 2.25, 0.25, 0.66, 5); rail(g, 1.2, 2.6, -0.3, 0.7);
+  hatch(g, 1.6, 0.05, 0.66); vents(g, 2.25, 0.25, 0.66, 5);
+  for (let i = 0; i < 4; i++) mesh(new THREE.BoxGeometry(0.22, 0.12, 0.01), emissive(0xd3efff, 1.2), g, [1.35 + i * 0.32, 0.38, 0.656]); rail(g, 1.2, 2.6, -0.3, 0.7);
   [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(([a, b]) => mesh(new THREE.BoxGeometry(0.16, 0.12, 0.12), MAT.gold, g, [3.12, a * 0.42, b * 0.42]));
   MODULES.push({ id: 0, group: g, anchor: new THREE.Vector3(3.2, 0.8, 0), cam: new THREE.Vector3(5.5, 2.4, 4.2) });
 })();
@@ -286,6 +287,8 @@ function moduleFrame(angleDeg, name) {
   [2.2, 3.6].forEach((x) => mesh(new THREE.TorusGeometry(0.74, 0.06, 8, 48), MAT.hullDark, g, [x, 0, 0], [0, Math.PI / 2, 0]));
   lamp(g, [4.85, 0, 0], 0xffd230, 0.05);
   rail(g, 1.7, 4.1, 0.55, 0.5); rail(g, 1.7, 4.1, -0.55, 0.5);
+  [2.0, 3.8].forEach((x) => mesh(new THREE.CylinderGeometry(0.712, 0.712, 0.16, 48, 1, true), new THREE.MeshStandardMaterial({ color: 0x0a6dbe, metalness: 0.3, roughness: 0.5 }), g, [x, 0, 0], [0, 0, Math.PI / 2]));
+  for (let i = 0; i < 6; i++) mesh(new THREE.CircleGeometry(0.07, 20), emissive(0xffe2a8, 1.3), g, [1.6 + i * 0.5, 0.15, 0.715]);
   vents(g, 2.9, 0.72, 0, 6, 0).rotation.x = -Math.PI / 2;
   mesh(cyl(0.015, 0.6, 6), MAT.truss, g, [4.2, 0.95, 0]); lamp(g, [4.2, 1.26, 0], 0xff6467, 0.03);
   MODULES.push({ id: 1, group: g, anchor: new THREE.Vector3(3.0, 1.0, 0), cam: new THREE.Vector3(4.8, 2.6, 4.6) });
@@ -322,7 +325,7 @@ function moduleFrame(angleDeg, name) {
     const c = new THREE.MeshStandardMaterial({ color: pick(cols), metalness: 0.3, roughness: 0.6, map: TEX.container });
     mesh(new THREE.BoxGeometry(0.68, 0.66, 0.78), c, t, [-1.15 + x * 0.76, -0.38 + y * 0.74, -0.42 + z * 0.86]);
   }
-  const crane = new THREE.Group(); t.add(crane); crane.position.set(0, 1.05, 0);
+  const crane = new THREE.Group(); t.add(crane); crane.position.set(0, 0.86, -0.82);
   mesh(new THREE.BoxGeometry(3.4, 0.08, 0.12), MAT.hullDark, crane);
   const hook = mesh(new THREE.BoxGeometry(0.2, 0.3, 0.2), MAT.gold, crane, [0.6, -0.2, 0]);
   lamp(t, [1.6, 0.85, 0.9], 0xffb900, 0.05); lamp(t, [-1.6, 0.85, -0.9], 0xffb900, 0.05);
@@ -424,7 +427,7 @@ const planet = mesh(new THREE.SphereGeometry(90, 96, 64), planetMat, scene, [-17
 const haloMat = new THREE.ShaderMaterial({
   uniforms: { uLight: planetMat.uniforms.uLight },
   vertexShader: `varying vec3 vN; void main(){ vN = normalize(normalMatrix*normal); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0);} `,
-  fragmentShader: `uniform vec3 uLight; varying vec3 vN; void main(){ float r = pow(0.72 - dot(vN, vec3(0,0,1.0)), 4.0); vec3 L = normalize((viewMatrix*vec4(uLight,0.0)).xyz); float s = smoothstep(-0.4,0.6,dot(vN,L)); gl_FragColor = vec4(vec3(0.35,0.7,1.0)*r*s*2.2, 1.0); }`,
+  fragmentShader: `uniform vec3 uLight; varying vec3 vN; void main(){ float r = pow(0.72 - dot(vN, vec3(0,0,1.0)), 4.0); vec3 L = normalize((viewMatrix*vec4(uLight,0.0)).xyz); float s = smoothstep(-0.4,0.6,dot(vN,L)); gl_FragColor = vec4(vec3(0.35,0.7,1.0)*r*s*3.0, 1.0); }`,
   side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
 });
 mesh(new THREE.SphereGeometry(94, 64, 48), haloMat, scene, [-170, -150, -135]);
@@ -480,7 +483,7 @@ mesh(new THREE.SphereGeometry(94, 64, 48), haloMat, scene, [-170, -150, -135]);
 })();
 
 /* ---------- Lights ---------- */
-const sun = new THREE.DirectionalLight(0xfff1dc, 3.8);
+const sun = new THREE.DirectionalLight(0xffe8c8, 4.2);
 sun.position.copy(planetMat.uniforms.uLight.value).multiplyScalar(50);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -511,7 +514,7 @@ const VIEW = new THREE.Vector3(8.4, 1.7, 5.4); // outward, up, along the ring: b
 function focusGoal(i) {
   if (i < 0) return { pos: HOME.pos.clone(), target: HOME.target.clone() };
   const m = MODULES[i];
-  const target = moduleWorld(m, m.anchor.clone().setY(m.anchor.y - (m.fixed ? 0.6 : 1.5)));
+  const target = moduleWorld(m, m.anchor.clone().setY(m.anchor.y - (m.fixed ? 1.0 : 1.9)));
   // camera sits outside the module, measured in the module's own frame so it follows the ring
   // the preset is measured in the module's own frame; pull it back so the module reads well beside the panel
   const pos = moduleWorld(m, m.fixed ? m.cam : m.anchor.clone().add(VIEW));
@@ -592,7 +595,7 @@ function tick() {
   let ag;
   if (focus >= 0) {
     const m = MODULES[focus];
-    ag = moduleWorld(m, m.anchor.clone().add(m.fixed ? new THREE.Vector3(1.2, 0.4, 1.4) : new THREE.Vector3(2.4, -0.5, 1.5)));
+    ag = moduleWorld(m, m.anchor.clone().add(m.fixed ? new THREE.Vector3(1.2, 0.4, 1.4) : new THREE.Vector3(0.8, 1.9, 1.0)));
   } else {
     ag = tmp.set(Math.cos(t * 0.25) * 9, 2.2 + Math.sin(t * 0.6) * 0.4, Math.sin(t * 0.25) * 9);
   }
@@ -622,6 +625,8 @@ window.OrionStation = {
     offsetTarget = side === "left" ? -w * 0.28 : side === "right" ? w * 0.2 : 0;
   },
   alarm(on) { alarm = !!on; },
+  /* Jump to the current goal without the flight (used for test stills). */
+  snap() { const g = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex); cam.t = 1; camera.position.copy(g.pos); cam.target.copy(g.target); offsetX = offsetTarget; ariaPos.copy(aria.position); },
   /* A short flash of light at ARIA when the player answers: blue for good, red for wrong. */
   pulse(kind) { pulseLight.color.setHex(kind === "bad" ? 0xff6467 : kind === "gold" ? 0xffd230 : 0x67caff); pulseLevel = kind === "gold" ? 14 : 9; if (lowPower) acc = 1; },
   lowPower(on) { lowPower = !!on; },
