@@ -1,0 +1,14 @@
+{
+  "name": "avg-game-ruimtestation-orion",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AVG-training van VCSW als game: Ruimtestation Orion, vijf levels en een eindmissie.",
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.mjs 8080",
+    "bundle": "node tools/bundle.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
