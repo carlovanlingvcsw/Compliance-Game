@@ -240,3 +240,12 @@ html.in-orion .steps li:not(.now):not([aria-current="step"]) .vcsw-icon { displa
 html.in-orion .steps li.done { background: var(--vcsw-blue-400) !important; border-color: var(--vcsw-blue-400) !important; }
 /* Readable status labels */
 html.in-orion .hud-label, html.in-orion .vcsw-progress-label span, html.in-orion .vcsw-stat-label { font-size: .875rem !important; color: var(--vcsw-gray-200) !important; }
+
+/* ---------- Inside the game: a mission panel with fewer boxes, and choices as large cards ---------- */
+html.in-orion .vcsw-card:not(#stage):not(.flush), html.in-orion .info-card, html.in-orion .vcsw-stats { border-color: transparent !important; box-shadow: none !important; background: color-mix(in srgb, var(--vcsw-blue-900) 34%, transparent) !important; }
+html.in-orion .hud { border-color: transparent !important; background: transparent !important; box-shadow: none !important; }
+html.in-orion .hud::before { display: none !important; }
+html.in-orion .options { display: grid; gap: 12px; }
+html.in-orion .option, html.in-orion .choice { padding: 16px 18px !important; font-size: 1.0625rem; line-height: 1.45; border-radius: 12px !important; border-bottom-width: 3px !important; }
+html.calm .timer, html.calm #timer { display: none !important; }
+@media (prefers-reduced-motion: reduce) { html.in-orion *, html.in-orion *::before, html.in-orion *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }

@@ -48,9 +48,9 @@
     id: "f1", title: "Het verzoek komt binnen", who: "lyra",
     say: "Ik wil graag weten welke persoonsgegevens jullie van mij hebben en wat jullie ermee doen.",
     opts: [
-      { k: "A", t: "Laten liggen tot het rustiger is aan boord.", r: "fout", uitleg: "Er geldt een vaste termijn. Die loopt vanaf de dag dat het verzoek binnenkomt.", reactie: "Ik hoor niets terug. Hebben jullie mijn bericht wel gekregen?" },
+      { k: "A", t: "Laten liggen tot het rustiger is aan boord. Voor zo'n verzoek geldt geen vaste termijn, dus het kan wachten.", r: "fout", uitleg: "Er geldt een vaste termijn. Die loopt vanaf de dag dat het verzoek binnenkomt.", reactie: "Ik hoor niets terug. Hebben jullie mijn bericht wel gekregen?" },
       { k: "B", t: "De ontvangst bevestigen, de datum noteren en het verzoek doorzetten naar het meldpunt.", r: "goed", uitleg: "Met de datum van ontvangst weet het meldpunt precies hoeveel tijd er is.", reactie: "Dank voor de bevestiging. Ik wacht jullie antwoord af." },
-      { k: "C", t: "Meteen alles terugsturen wat je in je eigen berichten vindt.", r: "fout", uitleg: "Eerst controleer je haar identiteit. Daarna antwoord je volledig en veilig, via het meldpunt.", reactie: "Dit is maar een deel, toch? En hoe weten jullie eigenlijk dat ik het ben?" }
+      { k: "C", t: "Meteen alles terugsturen wat je in je eigen berichten over haar vindt.", r: "fout", uitleg: "Eerst controleer je haar identiteit. Daarna antwoord je volledig en veilig, via het meldpunt.", reactie: "Dit is maar een deel, toch? En hoe weten jullie eigenlijk dat ik het ben?" }
     ],
     crystal: { on: "B", name: "Termijn inzageverzoek", desc: "Antwoorden binnen een maand na ontvangst, met mogelijkheid tot verlenging bij complexe verzoeken als je de betrokkene daar binnen die maand over informeert." }
   };
@@ -58,9 +58,9 @@
     id: "f2", title: "Is dit echt Lyra?", who: "aria",
     say: "Voordat we iets terugsturen, moeten we zeker weten dat dit bericht echt van Lyra Jansen komt. Hoe controleer je dat?",
     opts: [
-      { k: "A", t: "Een volledige identiteitsscan vragen, inclusief identiteitsnummer.", r: "fout", uitleg: "Je vraagt meer gegevens dan nodig is. Dat is precies wat je in deze game steeds hebt geleerd te vermijden.", reactie: "Nu hebben we haar identiteitsnummer erbij. Dat moeten we straks ook weer beveiligen." },
+      { k: "A", t: "Een volledige identiteitsscan vragen, inclusief identiteitsnummer. Dan weet je het helemaal zeker.", r: "fout", uitleg: "Je vraagt meer gegevens dan nodig is. Dat is precies wat je in deze game steeds hebt geleerd te vermijden.", reactie: "Nu hebben we haar identiteitsnummer erbij. Dat moeten we straks ook weer beveiligen." },
       { k: "B", t: "Controleren of het bericht komt van het adres waarmee ze zich aanmeldde, of een controlevraag stellen over haar aanmelding.", r: "goed", uitleg: "Zo controleer je haar identiteit met gegevens die je al hebt.", reactie: "Het adres klopt met haar aanmelding. Het is echt Lyra." },
-      { k: "C", t: "Geen controle, het zal wel kloppen.", r: "fout", uitleg: "Zo kunnen gegevens bij de Zwarte Nevel terechtkomen.", reactie: "Mijn sensoren zien dat de Zwarte Nevel vaker zulke verzoeken stuurt. Weet je het zeker?" }
+      { k: "C", t: "Geen controle doen. Het bericht staat op haar naam, dus het zal wel kloppen en je wilt haar niet laten wachten.", r: "fout", uitleg: "Zo kunnen gegevens bij de Zwarte Nevel terechtkomen.", reactie: "Mijn sensoren zien dat de Zwarte Nevel vaker zulke verzoeken stuurt. Weet je het zeker?" }
     ]
   };
 
@@ -102,9 +102,9 @@
     intro: "Doorwerking uit level 3. Je vertelde Kapitein Vega dat Joran overspannen was.",
     say: "Kapitein Vega wist dat ik overspannen was. Dat had ik alleen aan jou verteld. Ik wil dat er iets mee gebeurt.",
     opts: [
-      { k: "A", t: "Zelf je excuses aanbieden en het daarbij laten.", r: "fout", uitleg: "Excuses zijn goed, maar dit is een klacht over het delen van medische informatie. Die moet het meldpunt beoordelen, ook als mogelijk datalek." , reactie: "Fijn dat je sorry zegt. Maar wie zorgt dat het niet nog eens gebeurt?" },
+      { k: "A", t: "Zelf je excuses aanbieden aan Joran en het daarbij laten. Een klacht hoeft niet altijd naar het meldpunt.", r: "fout", uitleg: "Excuses zijn goed, maar dit is een klacht over het delen van medische informatie. Die moet het meldpunt beoordelen, ook als mogelijk datalek." , reactie: "Fijn dat je sorry zegt. Maar wie zorgt dat het niet nog eens gebeurt?" },
       { k: "B", t: "Je excuses aanbieden en zijn klacht met de datum van ontvangst doorzetten naar het meldpunt, net als het verzoek van Lyra.", r: "goed", uitleg: "Beide verzoeken gaan correct naar het meldpunt. Het meldpunt beoordeelt ook of hier sprake is van een datalek.", reactie: "Dank je. Dan weet ik dat er echt naar gekeken wordt." },
-      { k: "C", t: "Joran vragen zijn klacht in te trekken. Het was goed bedoeld.", r: "fout", uitleg: "Je zet niemand onder druk om een klacht in te trekken. Het meldpunt moet hem beoordelen.", reactie: "Goed bedoeld? Iedereen weet het nu." }
+      { k: "C", t: "Joran vragen zijn klacht in te trekken. Het was goed bedoeld, en Vega wilde alleen maar rekening met hem houden bij het rooster.", r: "fout", uitleg: "Je zet niemand onder druk om een klacht in te trekken. Het meldpunt moet hem beoordelen.", reactie: "Goed bedoeld? Iedereen weet het nu." }
     ]
   };
 

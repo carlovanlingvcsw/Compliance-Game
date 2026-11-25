@@ -4,7 +4,7 @@
    It follows the HTML elements every frame, so the game rules live in one place (orion.js).
    One unit in the scene is one CSS pixel at the depth of the controls. */
 import * as THREE from "three";
-import { loadTextures, pbr } from "orion/tex.js";
+import { loadTextures, pbr, tex } from "orion/tex.js";
 
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const FOV = 28;
@@ -37,25 +37,51 @@ function horizon(parent) {
   return mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false }), parent);
 }
 
+/* The earth below the deck: the same land mask as the station view, coloured on a canvas. */
+function earth(parent) {
+  const img = tex("earth", "land").image, c = document.createElement("canvas"); c.width = 512; c.height = 256;
+  const g = c.getContext("2d"); g.drawImage(img, 0, 0, 512, 256);
+  const d = g.getImageData(0, 0, 512, 256), px = d.data;
+  for (let i = 0; i < px.length; i += 4) {
+    const y = Math.floor(i / 4 / 512), lat = Math.abs(90 - (y / 256) * 180), m = px[i] / 255, k = (Math.sin(i * 0.37) + 1) * 6;
+    const dry = lat > 13 && lat < 33 ? 1 : 0, ice = lat > 72 ? 1 : 0;
+    const land = ice ? [220, 230, 240] : dry ? [150 + k, 122 + k, 78] : [52, 92 + k, 48];
+    const sea = ice ? [205, 222, 238] : [14, 60 + k, 128];
+    for (let j = 0; j < 3; j++) px[i + j] = sea[j] + (land[j] - sea[j]) * Math.min(1, Math.max(0, (m - 0.4) / 0.16));
+  }
+  g.putImageData(d, 0, 0);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  const m = mesh(new THREE.SphereGeometry(1, 96, 64), new THREE.MeshStandardMaterial({ map: t, roughness: 1, metalness: 0 }), parent);
+  const phi = ((4.34 + 180) / 360) * Math.PI * 2, th = THREE.MathUtils.degToRad(90 - 52.07);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(-Math.cos(phi) * Math.sin(th), Math.cos(th), Math.sin(phi) * Math.sin(th)), new THREE.Vector3(0.1, 0.86, 0.5).normalize());
+  return m;
+}
+
 /* ---------- Phishing Invaders: a landing deck with a turret, messages arrive under courier drones ---------- */
 function invaders(S) {
   const g = S.scene, drones = new Map(), fx = [];
   stars(g, 700);
-  const glowBand = horizon(g);
+  const glowBand = horizon(g), globe = earth(g);
   const deck = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_light", { repeat: [5, 4], color: 0x33415a, metalness: 0.6, roughness: 1, normalScale: 2.4 }), g); deck.rotation.x = -Math.PI / 2;
   const edge = mesh(box(1, 10, 26), pbr("hull_dark", { repeat: [8, 1], metalness: 0.7 }), g);
   const lamps = []; for (let i = 0; i < 16; i++) lamps.push(mesh(box(14, 4, 14), glow(SKYBLUE, 1.6), g));
   const pylonMat = pbr("heat_shield", { repeat: [1, 6], color: 0x8fa0ba, metalness: 0.3, ao: true });
   const pylons = [-1, 1].map((s) => { const p = new THREE.Group(); g.add(p); mesh(box(130, 1500, 130), pylonMat, p, 0, 300, 0); mesh(box(134, 12, 134), glow(BLUE, 1.2), p, 0, 120, 0); mesh(box(160, 40, 160), pbr("hull_dark", {}), p, 0, -440, 0); p.userData.s = s; return p; });
-  // turret
+  // turret: a turntable, two yoke arms and an armoured housing in station silver with a blue trim
+  const silver = pbr("hull_light", { color: 0xdfe7f1, metalness: 0.5, normalScale: 1.2 }), darkMetal = pbr("hull_dark", { metalness: 0.8 });
+  const barrelMat = new THREE.MeshStandardMaterial({ color: 0xb9c5d4, metalness: 0.7, roughness: 0.32 });
   const turret = new THREE.Group(); g.add(turret);
-  mesh(new THREE.CylinderGeometry(50, 58, 16, 32), pbr("hull_dark", { metalness: 0.8 }), turret, 0, 8, 0);
-  mesh(new THREE.CylinderGeometry(34, 44, 14, 32), pbr("hull_light", { color: 0xdfe7f1, metalness: 0.5 }), turret, 0, 22, 0);
-  const head = new THREE.Group(); turret.add(head); head.position.y = 44;
-  mesh(new THREE.SphereGeometry(24, 24, 16), pbr("hull_white", { metalness: 0.35, roughness: 0.7 }), head);
-  const barrelMat = pbr("truss", { normal: false, color: 0xcfd8e4, metalness: 0.9, roughness: 0.6 });
-  [-11, 11].forEach((x) => { mesh(new THREE.CylinderGeometry(4.5, 5.5, 58, 12), barrelMat, head, x, 44, 0); mesh(new THREE.CylinderGeometry(6.5, 6.5, 8, 12), pbr("hull_dark", {}), head, x, 70, 0); });
-  const core = mesh(box(12, 26, 30), glow(BLUE, 2.2), head, 0, 16, 0);
+  mesh(new THREE.CylinderGeometry(54, 62, 10, 40), darkMetal, turret, 0, 5, 0);
+  mesh(new THREE.CylinderGeometry(46, 52, 10, 40), silver, turret, 0, 15, 0);
+  mesh(new THREE.TorusGeometry(47, 1.6, 8, 48), glow(BLUE, 1.5), turret, 0, 21, 0).rotation.x = Math.PI / 2;
+  [-1, 1].forEach((s) => { mesh(box(10, 44, 30), silver, turret, s * 30, 40, 0); mesh(box(12, 6, 32), darkMetal, turret, s * 30, 63, 0); });
+  const head = new THREE.Group(); turret.add(head); head.position.y = 48;
+  mesh(box(48, 34, 40), silver, head, 0, 4, 0);
+  mesh(box(50, 5, 42), glow(BLUE, 1.3), head, 0, -8, 0);
+  mesh(box(40, 10, 34), darkMetal, head, 0, 24, 0);
+  mesh(new THREE.SphereGeometry(8, 16, 10), new THREE.MeshStandardMaterial({ color: 0x0c2f5f, metalness: 0.9, roughness: 0.1 }), head, 0, 8, 21);
+  [-12, 12].forEach((x) => { mesh(new THREE.CylinderGeometry(4.6, 5.6, 56, 14), barrelMat, head, x, 54, 0); mesh(new THREE.CylinderGeometry(6.6, 6.6, 7, 14), darkMetal, head, x, 80, 0); mesh(new THREE.CylinderGeometry(6, 6, 5, 14), darkMetal, head, x, 34, 0); });
+  const core = mesh(box(8, 22, 42), glow(BLUE, 2.2), head, 0, 4, 0);
   const shields = [-1, 0, 1].map((i) => mesh(box(44, 7, 16), glow(BLUE, 1.8), g));
   const flash = new THREE.PointLight(SKYBLUE, 0, 520, 0); g.add(flash);
   // one courier drone, cloned for every message. Real and fake messages get the same drone.
@@ -82,9 +108,10 @@ function invaders(S) {
       edge.scale.set(W * 1.2, 1, 1); edge.position.set(0, fy - 21, 96);
       lamps.forEach((l, i) => { const s = i % 2 ? 1 : -1, k = Math.floor(i / 2); l.position.set(s * W * 0.47, fy - 13, 40 - k * 190); });
       pylons.forEach((p) => p.position.set(p.userData.s * (W * 0.9 + 260), fy + 430, -1500));
-      glowBand.scale.set(W * 9, 1500, 1); glowBand.position.set(0, fy + 330, -3000);
-      turret.position.set(0, fy - 16, 0); turret.scale.setScalar(1.8);
-      shields.forEach((s, i) => s.position.set((i - 1) * 62, fy - 12, 128));
+      glowBand.scale.set(W * 12, 900, 1); glowBand.position.set(0, 60, -5200);
+      turret.position.set(0, fy - 12, -70); turret.scale.setScalar(1.45);
+      globe.scale.setScalar(2600); globe.position.set(0, -2740, -3600);
+      shields.forEach((s, i) => s.position.set((i - 1) * 62, fy - 12, 110));
     },
     tick(dt, t) {
       const seen = new Set();
@@ -114,7 +141,7 @@ function invaders(S) {
       const X = x - S.W / 2, Y = S.H / 2 - y, col = kind === "hit" ? SKYBLUE : kind === "land" ? BLUE : RED;
       flash.color.setHex(col); flash.position.set(X, Y, 120); flash.intensity = kind === "land" ? 2.5 : 7;
       if (kind === "hit" || kind === "wrong") {
-        const from = new THREE.Vector3(0, turret.position.y + 80, 0), to = new THREE.Vector3(X, Y, 0), len = from.distanceTo(to);
+        const from = new THREE.Vector3(0, turret.position.y + 150, -70), to = new THREE.Vector3(X, Y, 0), len = from.distanceTo(to);
         aimTo = Math.atan2(-(to.x - from.x), to.y - from.y); aim = aimTo; aimHold = 0.5;
         if (!reduce) {
           const b = mesh(new THREE.CylinderGeometry(3, 3, len, 8), glow(col, 3), g);
@@ -130,13 +157,20 @@ function invaders(S) {
 /* ---------- Holokaarten-sprint: a holo table in the arrival hall with a sorting chute on each side ---------- */
 function sprint(S) {
   const g = S.scene;
-  const wall = mesh(new THREE.PlaneGeometry(1, 1), pbr("scifi_panel", { repeat: [3, 1.5], color: 0x5d6f8c, metalness: 0.6, ao: true }), g);
-  const strip = mesh(box(1, 8, 6), glow(SKYBLUE, 1.5), g);
+  const wall = mesh(new THREE.PlaneGeometry(1, 1), pbr("scifi_panel", { repeat: [3, 1.5], color: 0x33415a, metalness: 0.6, normalScale: 0.5, ao: true }), g);
+  const strip = mesh(box(1, 5, 6), glow(SKYBLUE, 1.0), g);
   const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("rubber_floor", { repeat: [5, 3], color: 0x8fa0b8, metalness: 0.2, roughness: 0.9, ao: true }), g); table.rotation.x = -Math.PI / 2;
   const rim = mesh(box(1, 16, 30), pbr("hull_light", { repeat: [8, 1], color: 0x8fa0b8, metalness: 0.5 }), g);
-  const pad = mesh(new THREE.CylinderGeometry(1, 1, 6, 48), pbr("hull_dark", { repeat: [1, 1], color: 0xaebbd0, metalness: 0.8, roughness: 0.6 }), g);
-  const ringMat = glow(BLUE, 2), ring = mesh(new THREE.TorusGeometry(1, 0.016, 8, 64), ringMat, g); ring.rotation.x = Math.PI / 2;
-  const frameMat = pbr("hull_light", { color: 0x9aabc2, metalness: 0.5, normalScale: 1.6 }), darkMat = new THREE.MeshStandardMaterial({ color: 0x050d1c, roughness: 0.9 });
+  // a matte landing pad with painted markings, where the next card arrives
+  const pc = document.createElement("canvas"); pc.width = pc.height = 256; const pg = pc.getContext("2d");
+  pg.fillStyle = "#26334a"; pg.fillRect(0, 0, 256, 256); pg.strokeStyle = "#d3e6ff"; pg.lineWidth = 3;
+  pg.beginPath(); pg.arc(128, 128, 112, 0, 7); pg.stroke(); pg.lineWidth = 1.5; pg.beginPath(); pg.arc(128, 128, 70, 0, 7); pg.stroke();
+  for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; pg.beginPath(); pg.moveTo(128 + Math.cos(a) * 98, 128 + Math.sin(a) * 98); pg.lineTo(128 + Math.cos(a) * 112, 128 + Math.sin(a) * 112); pg.stroke(); }
+  const pt = new THREE.CanvasTexture(pc); pt.colorSpace = THREE.SRGBColorSpace; pt.anisotropy = 4;
+  const padMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, metalness: 0.2 });
+  const pad = mesh(new THREE.CylinderGeometry(1, 1, 6, 48), [padMat, new THREE.MeshStandardMaterial({ map: pt, roughness: 0.85, metalness: 0.2 }), padMat], g);
+  const ringMat = glow(BLUE, 0.6), ring = mesh(new THREE.TorusGeometry(1, 0.008, 8, 64), ringMat, g); ring.rotation.x = Math.PI / 2;
+  const frameMat = pbr("hull_light", { color: 0xd3dce8, metalness: 0.5, normalScale: 1.4 }), darkMat = new THREE.MeshBasicMaterial({ color: 0x0a2244 });
   const chutes = [".bin-btn.no", ".bin-btn.yes"].map((sel) => {
     const c = new THREE.Group(); g.add(c);
     const parts = [0, 1, 2, 3].map(() => mesh(box(1, 1, 1), frameMat, c));
@@ -167,19 +201,19 @@ function sprint(S) {
         }
       }
       ringHeat *= Math.pow(0.02, dt);
-      ringMat.color.set(BLUE).lerp(new THREE.Color(ringHex), ringHeat).multiplyScalar(1.8 + (reduce ? 0 : Math.sin(t * 2) * 0.3) + ringHeat * 2);
+      ringMat.color.set(BLUE).lerp(new THREE.Color(ringHex), ringHeat).multiplyScalar(0.6 + ringHeat * 2.4);
       chutes.forEach((c) => {
         const n = S.el.querySelector(c.sel); if (!n) return;
-        const r = S.rect(n), w = r.w + 26, h = r.h + 26, d = 60;
+        const r = S.rect(n), w = r.w + 18, h = r.h + 18, d = 70;
         c.c.position.set(r.x, r.y, -30);
-        c.parts[0].scale.set(w + 16, 16, d); c.parts[0].position.set(0, h / 2, 0);
-        c.parts[1].scale.set(w + 16, 16, d); c.parts[1].position.set(0, -h / 2, 0);
-        c.parts[2].scale.set(16, h, d); c.parts[2].position.set(-w / 2, 0, 0);
-        c.parts[3].scale.set(16, h, d); c.parts[3].position.set(w / 2, 0, 0);
+        c.parts[0].scale.set(w + 9, 9, d); c.parts[0].position.set(0, h / 2, 0);
+        c.parts[1].scale.set(w + 9, 9, d); c.parts[1].position.set(0, -h / 2, 0);
+        c.parts[2].scale.set(9, h, d); c.parts[2].position.set(-w / 2, 0, 0);
+        c.parts[3].scale.set(9, h, d); c.parts[3].position.set(w / 2, 0, 0);
         c.back.scale.set(w, h, 1);
-        c.lamp.scale.set(w * 0.6, 1, 1); c.lamp.position.set(0, h / 2 + 14, 26);
+        c.lamp.scale.set(w + 9, 0.7, 1); c.lamp.position.set(0, -h / 2 - 8, 30);
         c.heat *= Math.pow(0.02, dt);
-        c.lampMat.color.set(SKYBLUE).lerp(new THREE.Color(c.hex), c.heat).multiplyScalar(1.3 + c.heat * 2.2);
+        c.lampMat.color.set(BLUE).lerp(new THREE.Color(c.hex), c.heat).multiplyScalar(1.0 + c.heat * 2.4);
       });
     },
   };

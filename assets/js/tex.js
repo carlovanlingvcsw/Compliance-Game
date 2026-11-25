@@ -6,6 +6,7 @@ import * as THREE from "three";
 
 const SETS = ["hull_light", "hull_dark", "hull_white", "foil", "truss", "grate", "container", "solar", "scifi_panel", "rubber_floor", "heat_shield", "plastic_white"];
 const MAPS = ["color", "normal", "orm"];
+const EXTRA = ["earth/land"]; // single images: the land mask of the earth, drawn by tools/make-earth.py
 const DATA = window.ORION_TEX || null;
 const base = DATA ? "" : new URL("../textures/", import.meta.url).href;
 const images = {};
@@ -20,10 +21,11 @@ function flat(map) {
 export function loadTextures() {
   if (pending) return pending;
   const loader = new THREE.ImageLoader();
-  pending = Promise.all(SETS.flatMap((s) => MAPS.map((m) => {
-    const key = s + "/" + m;
-    return loader.loadAsync(DATA ? DATA[key] : base + key + ".jpg").then((img) => { images[key] = img; }, () => { images[key] = flat(m); });
-  })));
+  const keys = SETS.flatMap((s) => MAPS.map((m) => s + "/" + m)).concat(EXTRA);
+  let done = 0;
+  const step = () => { done++; window.dispatchEvent(new CustomEvent("orion-load", { detail: done / keys.length })); };
+  pending = Promise.all(keys.map((key) =>
+    loader.loadAsync(DATA ? DATA[key] : base + key + ".jpg").then((img) => { images[key] = img; step(); }, () => { images[key] = flat(key.split("/")[1]); step(); })));
   return pending;
 }
 export function tex(name, map, repeat, srgb) {

@@ -45,7 +45,7 @@
 
   /* ---------- Saved progress (this browser only) ---------- */
   var KEY = "orion-datawacht-v1";
-  var P = { xp: 0, best: 0, levelStars: {}, games: {}, badges: {}, opened: {}, sound: false, last: -1 };
+  var P = { xp: 0, best: 0, levelStars: {}, games: {}, badges: {}, opened: {}, sound: false, calm: false, last: -1 };
   try { var saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved) for (var k in saved) P[k] = saved[k]; } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
 
@@ -64,7 +64,7 @@
   var SFX = {
     good: function () { tone(660, 0.12, "triangle"); tone(990, 0.16, "triangle", 0.1, 0.07); },
     half: function () { tone(520, 0.16, "triangle", 0.08); },
-    bad: function () { tone(180, 0.28, "sawtooth", 0.08); tone(120, 0.3, "sawtooth", 0.06, 0.08); },
+    bad: function () { tone(196, 0.26, "triangle", 0.1); tone(147, 0.3, "triangle", 0.08, 0.08); },
     combo: function () { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, 0.14, "square", 0.06, i * 0.06); }); },
     badge: function () { [784, 988, 1175, 1568].forEach(function (f, i) { tone(f, 0.22, "sine", 0.1, i * 0.09); }); },
     zap: function () { tone(880, 0.08, "square", 0.05); tone(440, 0.1, "square", 0.04, 0.04); },
@@ -127,6 +127,11 @@
   function onAnswer(levelN, result) {
     var st = stats[levelN] = stats[levelN] || { goed: 0, half: 0, fout: 0 };
     st[result]++;
+    /* The station answers too: a blue flash at ARIA for a good choice, a short alarm for a wrong one. */
+    station(function (S) {
+      S.pulse(result === "fout" ? "bad" : "good");
+      if (result === "fout") { S.alarm(true); setTimeout(syncStation, 1300); }
+    });
     if (result === "goed") {
       var before = mult(); streak++; var m = mult(), gain = 100 * m;
       P.xp += gain; pop("+" + gain + (m > 1 ? "  ×" + m : "")); flash("good"); SFX.good();
@@ -185,7 +190,7 @@
     }).join("");
     hotEl.innerHTML = LEVELS.map(function (L, n) {
       return '<button type="button" class="hot" data-i="' + routeIndexOfLevel(n) + '" data-m="' + L.module + '" tabindex="-1" aria-hidden="true"><span class="dot"></span><span class="lead"></span><span class="tag">' + (n === 5 ? "E" : n + 1) + " · " + esc(L.place) + "</span></button>";
-    }).join("");
+    }).join("") + '<span class="earth-tag off" id="earth-tag" aria-hidden="true"><span class="lead"></span><span class="tag">VCSW, Den Haag</span></span>';
     document.getElementById("progress").textContent = done + " van 6 missies gespeeld";
     var start = document.getElementById("start");
     start.innerHTML = (P.last >= 0 ? "Verder met " + esc(label(ROUTE[P.last]).short) : "Start de missie") + icon("right");
@@ -209,6 +214,8 @@
       b.style.transform = "translate(" + Math.round(p.x) + "px," + Math.round(p.y) + "px)";
       b.classList.toggle("behind", !p.front);
     });
+    var et = document.getElementById("earth-tag");
+    if (et && S.earth) { var e = S.earth(); et.style.transform = "translate(" + Math.round(e.x) + "px," + Math.round(e.y) + "px)"; et.classList.toggle("off", !e.front); }
   }
 
   /* ---------- Station link ---------- */
@@ -365,7 +372,7 @@
     var cells = document.querySelectorAll(".sky .base i"); for (var c = 0; c < cells.length; c++) cells[c].className = c < G.lives ? "" : "off";
   }
   function newG(id, seconds) {
-    G = { id: id, score: 0, correct: 0, streak: 0, lives: 3, lostLife: false, left: seconds, total: seconds, over: false,
+    G = { id: id, done: 0, limit: ({ sprint: 20, invaders: 16, lekken: 14 })[id] || 0, score: 0, correct: 0, streak: 0, lives: 3, lostLife: false, left: seconds, total: seconds, over: false,
       mult: function () { return this.streak >= 9 ? 4 : this.streak >= 6 ? 3 : this.streak >= 3 ? 2 : 1; } };
     return G;
   }
@@ -377,7 +384,8 @@
     function frame(now) {
       if (!G || G.over) return;
       var dt = Math.min(0.1, (now - last) / 1000); last = now;
-      G.left -= dt; if (onTick) onTick(dt, now);
+      if (!P.calm) G.left -= dt; if (onTick) onTick(dt, now);
+      if (G && !G.over && P.calm && G.limit) { G.count = Math.min(G.done, G.limit) + "/" + G.limit; G.bar = G.done / G.limit; if (G.done >= G.limit) { gHud(); endGame(); return; } }
       if (!G || G.over) return;
       if (G.left <= 0) { G.left = 0; gHud(); endGame(); return; }
       gHud(); loop = requestAnimationFrame(frame);
@@ -438,7 +446,7 @@
     function show() { if (idx >= deck.length) { deck = shuffle(CARDS); idx = 0; } holo.className = "holo"; holo.innerHTML = "<p>" + esc(deck[idx][0]) + "</p>"; }
     function answer(yes) {
       if (lock || !G || G.over) return;
-      var c = deck[idx], ok = (c[1] === 1) === yes;
+      var c = deck[idx], ok = (c[1] === 1) === yes; G.done++;
       var tr = document.getElementById("trail"); if (tr) { var d = document.createElement("i"); d.className = ok ? "ok" : "nok"; tr.appendChild(d); while (tr.children.length > 14) tr.firstChild.remove(); }
       if (ok) { var pts = gGood(10); feed("+" + pts, "good"); lock = true; if (!reduce) holo.className = "holo " + (yes ? "fly-r" : "fly-l"); later(function () { idx++; lock = false; show(); }, reduce ? 0 : 230); }
       else { gBad(false); feed("Fout. Dit is " + (c[1] ? "wel" : "geen") + " persoonsgegeven.", "bad"); holo.className = "holo wrong"; lock = true; G.left -= 2; later(function () { idx++; lock = false; show(); }, 650); }
@@ -491,7 +499,7 @@
       G.left = 999;
       G.count = Math.min(idx + 1, list.length) + "/" + list.length; G.bar = idx / list.length;
       if (!active) return;
-      x += speed * dt; active.style.transform = "translateX(" + x + "px)";
+      x += speed * dt; if (P.calm) x = Math.min(x, beltW / 2 - 150); active.style.transform = "translateX(" + x + "px)";
       if (x > beltW - 60) {
         var p = list[idx]; active.remove(); active = null; idx++; speed += 14;
         feed("Te laat. Dit hoorde bij de " + DOORS[p[1]][0].toLowerCase() + ".", "bad"); gBad(true); later(next, 450);
@@ -546,11 +554,11 @@
       el.innerHTML = '<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><small>Van: ' + esc(m[0]) + '</small><small class="dom">' + esc(m[1]) + "</small><b>" + esc(m[2]) + "</b></span>";
       el.setAttribute("aria-label", "Bericht van " + m[0] + ", " + m[1] + ": " + m[2] + ". Klik om neer te schieten.");
       el.style.left = (2 + lane * 33) + "%";
-      var o = { el: el, m: m, lane: lane, y: 10, fake: m[3] === 1, v: 52 + (60 - G.left) * 1.6 + Math.random() * 14 };
+      var o = { el: el, m: m, lane: lane, y: 10, fake: m[3] === 1, v: (52 + (60 - G.left) * 1.6 + Math.random() * 14) * (P.calm ? 0.45 : 1) };
       el.onclick = function (e) {
         if (!G || G.over) return;
         var r = el.getBoundingClientRect(), sr = sky.getBoundingClientRect(), x = r.left - sr.left + r.width / 2, y = r.top - sr.top + r.height / 2;
-        el.remove(); live = live.filter(function (q) { return q !== o; });
+        el.remove(); live = live.filter(function (q) { return q !== o; }); G.done++;
         if (o.fake) { shot(x, y, "hit"); var pts = gGood(15); SFX.zap(); fx2("", x, y, "+" + pts); feed("Raak. Dat was een aanval.", "good"); }
         else { shot(x, y, "wrong"); fx2("red", x, y, "Echt bericht"); feed("Dat was een echt bericht van " + m[0] + ".", "bad"); gBad(true); }
       };
@@ -566,7 +574,7 @@
         o.y += o.v * dt; o.el.style.transform = "translateY(" + o.y + "px)";
         if (o.y + o.el.offsetHeight >= floor) {
           o.el.remove(); live = live.filter(function (q) { return q !== o; });
-          var x = o.el.offsetLeft + o.el.offsetWidth / 2;
+          var x = o.el.offsetLeft + o.el.offsetWidth / 2; G.done++;
           if (o.fake) { shot(x, floor, "impact"); fx2("red", x, floor, "Aanval binnen"); feed("Een aanval kwam binnen.", "bad"); gBad(true); }
           else { shot(x, floor, "land"); G.score += 5; fx2("blue", x, floor, "+5"); gHud(); }
         }
@@ -604,7 +612,7 @@
       active[i] = { leak: e[1] === 1, t: life, life: life, el: b, text: e[0] };
       b.onclick = function () {
         if (!G || G.over || !active[i]) return;
-        var a = active[i];
+        var a = active[i]; G.done++;
         if (a.leak) { var pts = gGood(10); clear(i, "sealed"); feed("+" + pts + " · Gemeld: " + a.text + ".", "good"); }
         else { G.streak = 0; SFX.half(); clear(i); feed("Geen datalek. Melden bij twijfel is altijd goed, maar dit was duidelijk geen lek.", ""); gHud(); }
       };
@@ -613,9 +621,9 @@
     gHud();
     clock(function (dt) {
       spawnIn -= dt;
-      if (spawnIn <= 0) { spawn(); spawnIn = Math.max(0.55, 1.3 - (45 - G.left) * 0.017); }
+      if (spawnIn <= 0) { if (!P.calm || Object.keys(active).length < 2) spawn(); spawnIn = Math.max(0.55, 1.3 - (45 - G.left) * 0.017); }
       Object.keys(active).forEach(function (k) {
-        if (!G || G.over) return; var a = active[k]; if (!a) return; a.t -= dt;
+        if (!G || G.over) return; var a = active[k]; if (!a) return; if (!P.calm) a.t -= dt;
         var bar = a.el.querySelector(".bar2 i"); if (bar) bar.style.transform = "scaleX(" + Math.max(0, a.t / a.life) + ")";
         if (a.t <= 0) {
           if (a.leak) { clear(k, "breach"); feed("Lek gemist: " + a.text + ".", "bad"); gBad(true); }
@@ -625,6 +633,43 @@
     });
   }
 
+
+  /* ---------- Tijdsdruk: one switch for every timer, in the arcade and in the levels (see orion-bridge.js) ---------- */
+  var calmBtn = document.getElementById("calm");
+  function paintCalm() { calmBtn.textContent = P.calm ? "Tijdsdruk uit" : "Tijdsdruk aan"; calmBtn.setAttribute("aria-pressed", P.calm ? "true" : "false"); document.documentElement.classList.toggle("calm", !!P.calm); }
+  calmBtn.onclick = function () { P.calm = !P.calm; save(); paintCalm(); pop(P.calm ? "Tijdsdruk uit. Timers staan stil." : "Tijdsdruk aan."); };
+  paintCalm();
+
+  /* ---------- A soft station hum while the sound is on ---------- */
+  var amb = null;
+  function ambient(on) {
+    try {
+      if (!on) { if (amb) { var a = amb; amb = null; a.g.gain.linearRampToValueAtTime(0.0001, ac.currentTime + 0.4); setTimeout(function () { a.o.forEach(function (o) { o.stop(); }); }, 600); } return; }
+      if (amb) return;
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      var g = ac.createGain(), f = ac.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 220;
+      g.gain.setValueAtTime(0.0001, ac.currentTime); g.gain.linearRampToValueAtTime(0.03, ac.currentTime + 1.5);
+      var os = [55, 82.5, 110.3].map(function (hz, i) { var o = ac.createOscillator(); o.type = i ? "sine" : "triangle"; o.frequency.value = hz; o.connect(f); o.start(); return o; });
+      f.connect(g); g.connect(ac.destination); amb = { g: g, o: os };
+    } catch (e) {}
+  }
+  document.getElementById("sound").addEventListener("click", function () { ambient(P.sound); });
+
+  /* ---------- Opening screen: explains the game while the station loads ---------- */
+  (function () {
+    var boot = document.getElementById("boot"); if (!boot) return;
+    var rest = [document.querySelector("header.bar"), document.querySelector("main")];
+    function close() { boot.hidden = true; rest.forEach(function (el) { if (el) el.inert = false; }); }
+    if (/[?&]boot=uit/.test(location.search)) { close(); return; }
+    var bar = document.getElementById("boot-bar"), st = document.getElementById("boot-status"), goBtn = document.getElementById("boot-go"), ready = false;
+    rest.forEach(function (el) { if (el) el.inert = true; });
+    function prog(f) { bar.firstElementChild.style.width = Math.round(f * 100) + "%"; bar.setAttribute("aria-valuenow", Math.round(f * 100)); }
+    function done(text) { if (ready) return; ready = true; prog(1); st.textContent = text; goBtn.disabled = false; goBtn.focus({ preventScroll: true }); }
+    window.addEventListener("orion-load", function (e) { if (!ready) prog(e.detail * 0.9); });
+    window.addEventListener("orion-station-ready", function () { done("Het station is klaar."); });
+    var iv = setInterval(function () { if (ready) { clearInterval(iv); return; } if (document.documentElement.classList.contains("no-3d")) done("Je speelt zonder 3D-beeld. Alles werkt verder hetzelfde."); }, 300);
+    goBtn.onclick = function () { close(); document.getElementById("start").focus({ preventScroll: true }); };
+  })();
 
   /* ---------- Start ---------- */
   hud(); showHome(true);

@@ -63,3 +63,6 @@ html.in-orion .steps li:not(.now):not([aria-current="step"]) .vcsw-icon { displa
 html.in-orion .steps li.done { background: var(--vcsw-blue-400) !important; border-color: var(--vcsw-blue-400) !important; }
 /* Readable status labels */
 html.in-orion .hud-label, html.in-orion .vcsw-progress-label span, html.in-orion .vcsw-stat-label { font-size: .875rem !important; color: var(--vcsw-gray-200) !important; }
+html.in-orion .hud { border-color: transparent !important; background: transparent !important; }
+html.in-orion .opt { padding: 16px 18px !important; font-size: 1.0625rem; border-radius: 12px !important; border-bottom-width: 3px !important; }
+html.calm .timer, html.calm #timer { display: none !important; }

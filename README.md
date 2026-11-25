@@ -85,6 +85,8 @@ Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 2,6 MB
 
 ## Wijzigingen
 
+- Ronde 14: beginscherm met uitleg tijdens het laden, de aarde met de plek van VCSW, een vaste camerastand per module, rijkere modellen (shuttle, ziekenboeg, passagiersmodule, geschut), contactschaduw, de knop Tijdsdruk die alle timers stilzet, een skiplink, en foute antwoorden die even concreet zijn als de goede.
+
 - Ronde 12: echte texturen op het station, bloom, de vier arcaderondes in een 3D-speelveld, antwoorden in level 2, level 5 en de eindmissie per poging in een andere volgorde. Met `?fx=uit` zet je de bloom uit, met `?3d=uit` speel je zonder 3D.
 
 Wijzigingen gaan via een branch en een pull request met review door een collega. Een Pages-site is standaard voor iedereen te bezoeken, ook als de repository privé is. Zet GitHub Pages dus alleen aan als dat de bedoeling is.
@@ -96,5 +98,6 @@ Wijzigingen gaan via een branch en een pull request met review door een collega.
 - Iconen in de stijl van Lucide (ISC-licentie), als inline SVG in de code.
 - De vormen van het station, ARIA, de planeet en de sterren zijn in code gemaakt. Er worden geen modellen of foto's geladen.
 - De oppervlakken gebruiken acht texturen van ambientCG onder CC0 1.0. Bron, ID en bewerking per textuur staan in `assets/textures/CREDITS.md`.
-- De bloom komt uit de three.js addons (r170, MIT), in `assets/vendor/addons/`.
+- De bloom en de contactschaduw (GTAO) komen uit de three.js addons (r170, MIT), in `assets/vendor/addons/`.
+- De aarde gebruikt een landmasker dat met de hand is ingevoerd in `tools/make-earth.py`. Het is een schets en geen kaartdata. De witte stip staat op Den Haag (52,07 noord, 4,34 oost).
 - Het spel en de teksten zijn gemaakt met hulp van AI (Claude). De inhoud wacht op goedkeuring van de Privacy Officer.

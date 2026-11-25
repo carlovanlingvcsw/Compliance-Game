@@ -7,7 +7,8 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-import { loadTextures, pbr } from "orion/tex.js";
+import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
+import { loadTextures, pbr, tex } from "orion/tex.js";
 import "orion/arcade3d.js";
 
 await loadTextures();
@@ -48,8 +49,8 @@ function makeEnvironment() {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(intensity), side: THREE.DoubleSide }));
     m.position.copy(pos); m.lookAt(look); env.add(m);
   };
-  panel(0xfff1dc, 6, 8, 5, new THREE.Vector3(-6, 7, 4), new THREE.Vector3(0, 0, 0));   // sun side
-  panel(0x67caff, 1.6, 12, 4, new THREE.Vector3(6, -6, -2), new THREE.Vector3(0, 0, 0)); // planet bounce
+  panel(0xfff1dc, 6, 8, 5, new THREE.Vector3(1, 6, 8), new THREE.Vector3(0, 0, 0));   // sun side
+  panel(0x4f9fe0, 2.2, 14, 8, new THREE.Vector3(-6, -6, -5), new THREE.Vector3(0, 0, 0)); // the earth below
   panel(0xd3efff, 1.2, 3, 10, new THREE.Vector3(0, 2, -9), new THREE.Vector3(0, 0, 0));
   const pm = new THREE.PMREMGenerator(renderer);
   const tex = pm.fromScene(env, 0.04).texture;
@@ -79,7 +80,7 @@ function windowTexture(cols, rows, lit, color) {
   return t;
 }
 const FOIL = {
-  gold: pbr("foil", { repeat: [1, 1], orm: false, color: 0xc29a52, metalness: 0.75, roughness: 0.5, normalScale: 0.35 }),
+  gold: pbr("foil", { repeat: [1, 1], orm: false, color: 0xc29a52, metalness: 0.75, roughness: 0.5, normalScale: 0.18 }),
   silver: pbr("foil", { repeat: [1, 1], map: false, orm: false, color: 0x9aa3ae, metalness: 0.6, roughness: 0.65, normalScale: 0.25 }),
 };
 const MAT = {
@@ -90,7 +91,7 @@ const MAT = {
   truss: pbr("truss", { normal: false, color: 0xc0cad8, metalness: 0.9, roughness: 0.8 }),
   grate: pbr("grate", { repeat: [1, 1], color: 0x9fadbf, metalness: 0.8, roughness: 0.9 }),
   gold: new THREE.MeshStandardMaterial({ color: 0xc8a65a, metalness: 1, roughness: 0.32 }),
-  solar: pbr("solar", { repeat: [4, 1], metalness: 0.6, roughness: 0.75 }),
+  solar: Object.assign(pbr("solar", { repeat: [4, 1], metalness: 0.75, roughness: 0.45 }), { envMapIntensity: 1.8 }),
   blue: new THREE.MeshStandardMaterial({ color: 0x0a6dbe, metalness: 0.4, roughness: 0.35 }),
   glass: new THREE.MeshStandardMaterial({ color: 0x0c2f5f, metalness: 0.9, roughness: 0.08 }),
 };
@@ -225,7 +226,7 @@ function moduleFrame(angleDeg, name) {
   const g = new THREE.Group(); ring.add(g);
   g.position.set(Math.cos(a) * RING_R, 0, Math.sin(a) * RING_R);
   g.rotation.y = -a; // local +x points outward
-  g.userData.name = name;
+  g.userData.name = name; g.userData.angle = a;
   mesh(cyl(0.38, 1.2, 24), MAT.hullDark, g, [0.75, 0, 0], [0, 0, Math.PI / 2]); // docking collar
   return g;
 }
@@ -237,9 +238,21 @@ function moduleFrame(angleDeg, name) {
   mesh(new THREE.BoxGeometry(1.0, 0.3, 1.0), FOIL.silver, g, [1.9, 0.7, 0]); trims(g, 1.9, 0.7, 0, 1.0, 0.3, 1.0);
   mesh(cyl(0.45, 0.4, 32), MAT.hullMid, g, [2.9, 0, 0], [0, 0, Math.PI / 2]);
   const ship = new THREE.Group(); g.add(ship); ship.position.set(3.8, 0, 0);
-  const body = mesh(new THREE.CapsuleGeometry(0.32, 1.1, 8, 24), MAT.white, ship, [0.5, 0, 0], [0, 0, Math.PI / 2]);
+  const shipMat = pbr("plastic_white", { color: 0xc3cdd9, metalness: 0.2, roughness: 0.6 });
+  const body = mesh(new THREE.CapsuleGeometry(0.32, 1.1, 8, 24), shipMat, ship, [0.5, 0, 0], [0, 0, Math.PI / 2]);
   body.scale.set(1, 1, 0.8);
-  mesh(new THREE.BoxGeometry(0.7, 0.04, 1.5), MAT.white, ship, [0.6, -0.08, 0]).rotation.y = 0;
+  mesh(new THREE.BoxGeometry(0.7, 0.04, 1.5), shipMat, ship, [0.6, -0.08, 0]);
+  mesh(new THREE.BoxGeometry(1.5, 0.1, 0.4), heatMat, ship, [0.5, -0.27, 0]);                               // dark heat tiles underneath
+  mesh(new THREE.BoxGeometry(0.05, 0.05, 1.52), MAT.hullDark, ship, [0.95, -0.08, 0]);                      // wing leading edge
+  [0.12, 0.5, 0.86].forEach((x) => mesh(new THREE.TorusGeometry(0.323, 0.01, 6, 40), MAT.hullDark, ship, [x, 0, 0], [0, Math.PI / 2, 0]).scale.set(0.8, 1, 1));
+  [-1, 1].forEach((s) => {
+    mesh(new THREE.BoxGeometry(1.0, 0.05, 0.012), MAT.blue, ship, [0.45, -0.02, s * 0.258]);                 // livery stripe
+    for (let i = 0; i < 4; i++) mesh(new THREE.BoxGeometry(0.1, 0.07, 0.012), MAT.glass, ship, [0.18 + i * 0.17, 0.13, s * 0.243]);
+    mesh(new THREE.BoxGeometry(0.3, 0.2, 0.03), MAT.blue, ship, [0.42, 0.03, s * 0.75]);                     // winglet
+    mesh(new THREE.CylinderGeometry(0.06, 0.09, 0.18, 14), MAT.hullDark, ship, [-0.2, -0.02, s * 0.15], [0, 0, Math.PI / 2]);
+    mesh(new THREE.CircleGeometry(0.05, 14), emissive(0x67caff, 2.2), ship, [-0.295, -0.02, s * 0.15], [0, -Math.PI / 2, 0]);
+  });
+  mesh(new THREE.BoxGeometry(0.42, 0.3, 0.03), shipMat, ship, [0.05, 0.36, 0], [0, 0, 0.5]);                 // tail fin
   mesh(new THREE.SphereGeometry(0.22, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), MAT.glass, ship, [0.95, 0.1, 0], [0, 0, -Math.PI / 2.4]);
   mesh(cyl(0.16, 0.2, 16), MAT.hullDark, ship, [-0.25, 0, 0], [0, 0, Math.PI / 2]);
   lamp(ship, [0.6, -0.06, 0.76], 0x05df72, 0.04); lamp(ship, [0.6, -0.06, -0.76], 0xff6467, 0.04);
@@ -256,9 +269,12 @@ function moduleFrame(angleDeg, name) {
   const hab = mesh(cyl(0.7, 3.4, 48), MAT.hull, g, [2.9, 0, 0], [0, 0, Math.PI / 2]);
   hab.material = hullMat("light", [1, 1]);
   // windows are the lit portholes further down
-  [1.2, 4.6].forEach((x) => mesh(new THREE.SphereGeometry(0.7, 32, 16), x > 2 ? FOIL.gold : MAT.hullMid, g, [x, 0, 0]).scale.set(0.35, 1, 1));
+  [1.2, 4.6].forEach((x) => mesh(new THREE.SphereGeometry(0.7, 32, 16), MAT.hullMid, g, [x, 0, 0]).scale.set(0.35, 1, 1));
+  mesh(new THREE.CylinderGeometry(0.712, 0.712, 0.34, 48, 1, true), FOIL.gold, g, [4.3, 0, 0], [0, 0, Math.PI / 2]);   // one smooth band of foil
+  mesh(cyl(0.34, 0.16, 28), MAT.hullDark, g, [4.88, 0, 0], [0, 0, Math.PI / 2]);                              // docking port
+  mesh(new THREE.TorusGeometry(0.36, 0.035, 10, 40), MAT.gold, g, [4.96, 0, 0], [0, Math.PI / 2, 0]);
   [2.2, 3.6].forEach((x) => mesh(new THREE.TorusGeometry(0.74, 0.06, 8, 48), MAT.hullDark, g, [x, 0, 0], [0, Math.PI / 2, 0]));
-  lamp(g, [4.85, 0, 0], 0xffd230, 0.05);
+  lamp(g, [4.97, 0, 0], 0xffd230, 0.05);
   rail(g, 1.7, 4.1, 0.55, 0.5); rail(g, 1.7, 4.1, -0.55, 0.5);
   [2.0, 3.8].forEach((x) => mesh(new THREE.CylinderGeometry(0.712, 0.712, 0.16, 48, 1, true), new THREE.MeshStandardMaterial({ color: 0x0a6dbe, metalness: 0.3, roughness: 0.5 }), g, [x, 0, 0], [0, 0, Math.PI / 2]));
   for (let i = 0; i < 6; i++) mesh(new THREE.CircleGeometry(0.07, 20), emissive(0xffe2a8, 1.3), g, [1.6 + i * 0.5, 0.15, 0.715]);
@@ -272,6 +288,13 @@ function moduleFrame(angleDeg, name) {
   const g = moduleFrame(140, "ziekenboeg");
   const box = mesh(new THREE.BoxGeometry(2.4, 1.3, 1.6), MAT.white, g, [2.3, 0, 0]); trims(g, 2.3, 0, 0, 2.4, 1.3, 1.6, MAT.hullMid);
   box.material = hullMat("white", [2, 1]);
+  mesh(new THREE.BoxGeometry(2.43, 0.07, 1.63), MAT.blue, g, [2.3, -0.5, 0]);                               // livery band
+  [1.72, 2.72].forEach((x) => mesh(new THREE.BoxGeometry(0.014, 1.26, 1.615), MAT.hullDark, g, [x, 0, 0])); // panel seams
+  mesh(new THREE.BoxGeometry(2.415, 0.014, 1.615), MAT.hullDark, g, [2.3, -0.36, 0]);
+  for (let i = 0; i < 4; i++) { mesh(new THREE.BoxGeometry(0.26, 0.17, 0.014), MAT.hullDark, g, [1.42 + i * 0.4, 0.44, 0.806]); mesh(new THREE.BoxGeometry(0.22, 0.13, 0.016), MAT.glass, g, [1.42 + i * 0.4, 0.44, 0.808]); }
+  mesh(new THREE.BoxGeometry(0.5, 0.16, 0.4), MAT.hullMid, g, [3.05, 0.73, -0.42]); vents(g, 3.05, 0.73, -0.215, 5);
+  mesh(cyl(0.11, 0.5, 20), FOIL.silver, g, [1.5, 0.76, 0.42], [Math.PI / 2, 0, 0]);
+  [[1.1, 0.8], [1.1, -0.8], [3.5, 0.8], [3.5, -0.8]].forEach(([x, z]) => mesh(cyl(0.05, 1.3, 12), MAT.hullMid, g, [x, 0, z]));
   mesh(new THREE.BoxGeometry(2.42, 0.08, 1.62), emissive(0x67caff, 2.4), g, [2.3, 0.2, 0]);
   mesh(new THREE.SphereGeometry(0.75, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x1c3d66, metalness: 0.6, roughness: 0.12, emissive: 0x0c2f5f, emissiveIntensity: 0.6 }), g, [2.3, 0.65, 0]).scale.set(1, 0.5, 0.8);
   mesh(new THREE.TorusGeometry(0.75, 0.04, 8, 48), MAT.hullDark, g, [2.3, 0.65, 0], [Math.PI / 2, 0, 0]).scale.set(1, 0.8, 1);
@@ -369,11 +392,12 @@ const aria = new THREE.Group(); scene.add(aria);
 aria.scale.setScalar(1.0);
 
 /* ---------- Planet and stars ---------- */
+/* The earth: land from a mask (tools/make-earth.py), everything else in the shader. */
 const planetMat = new THREE.ShaderMaterial({
-  uniforms: { uLight: { value: new THREE.Vector3(-0.7, 0.55, 0.45).normalize() }, uTime: { value: 0 } },
-  vertexShader: `varying vec3 vN; varying vec3 vP; varying vec3 vW;
-    void main(){ vN = normalize(normalMatrix * normal); vP = position; vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
-  fragmentShader: `uniform vec3 uLight; uniform float uTime; varying vec3 vN; varying vec3 vP; varying vec3 vW;
+  uniforms: { uLight: { value: new THREE.Vector3(0.10, 0.55, 0.83).normalize() }, uTime: { value: 0 }, uLand: { value: tex("earth", "land") } },
+  vertexShader: `varying vec3 vN; varying vec3 vP; varying vec2 vUv;
+    void main(){ vN = normalize(normalMatrix * normal); vP = position; vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+  fragmentShader: `uniform vec3 uLight; uniform float uTime; uniform sampler2D uLand; varying vec3 vN; varying vec3 vP; varying vec2 vUv;
     float h(vec3 p){ return fract(sin(dot(p, vec3(127.1,311.7,74.7))) * 43758.5453); }
     float n(vec3 p){ vec3 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
       return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),
@@ -381,26 +405,50 @@ const planetMat = new THREE.ShaderMaterial({
     float fbm(vec3 p){ float a=0.5, s=0.0; for(int i=0;i<5;i++){ s+=a*n(p); p*=2.03; a*=0.5; } return s; }
     void main(){
       vec3 p = normalize(vP);
-      float land = smoothstep(0.52, 0.58, fbm(p*2.6 + 3.0));
-      float cloud = smoothstep(0.62, 0.85, fbm(p*5.0 + vec3(uTime*0.004, 0.0, 0.0)));
-      vec3 ocean = mix(vec3(0.01,0.07,0.20), vec3(0.03,0.20,0.42), fbm(p*7.0));
-      vec3 ground = mix(vec3(0.05,0.16,0.22), vec3(0.16,0.27,0.30), fbm(p*9.0));
+      float lat = asin(clamp(p.y, -1.0, 1.0)), alat = abs(lat), lon = (vUv.x - 0.5) * 6.2831853;
+      vec2 wob = (vec2(fbm(p*16.0), fbm(p*16.0 + 9.0)) - 0.5) * 0.010;
+      float m = texture2D(uLand, vUv + wob).r;
+      float land = smoothstep(0.40, 0.56, m), shelf = smoothstep(0.08, 0.40, m) * (1.0 - land);
+      vec3 ocean = mix(vec3(0.010,0.055,0.17), vec3(0.025,0.16,0.36), fbm(p*6.0));
+      ocean = mix(ocean, vec3(0.05,0.30,0.42), shelf*0.6);
+      float dry = smoothstep(0.22, 0.33, alat) * (1.0 - smoothstep(0.52, 0.64, alat)) * (0.55 + 0.45*fbm(p*2.5));
+      vec3 green = mix(vec3(0.07,0.17,0.07), vec3(0.16,0.27,0.11), fbm(p*9.0));
+      vec3 sand = mix(vec3(0.42,0.33,0.19), vec3(0.55,0.45,0.28), fbm(p*8.0 + 4.0));
+      vec3 ground = mix(green, sand, dry);
+      float cold = smoothstep(1.02, 1.22, alat + (fbm(p*5.0) - 0.5)*0.12);
+      ground = mix(ground, vec3(0.34,0.37,0.36), cold*0.6);
+      float ice = smoothstep(1.24, 1.34, alat);
+      float greenland = step(-1.0, lon) * step(lon, -0.33) * smoothstep(1.06, 1.12, lat);
+      ground = mix(ground, vec3(0.86,0.90,0.94), max(ice, greenland*0.9));
+      ocean = mix(ocean, vec3(0.80,0.87,0.93), smoothstep(1.30, 1.40, alat)*0.8);
       vec3 col = mix(ocean, ground, land);
-      col = mix(col, vec3(0.80,0.88,0.96), cloud*0.45);
+      float cl = fbm(p*4.2 + vec3(uTime*0.004,0.0,0.0))*0.62 + fbm(p*12.0 - vec3(uTime*0.006,0.0,0.0))*0.38;
+      float cloud = smoothstep(0.50, 0.72, cl);
+      col = mix(col, vec3(0.86,0.90,0.95), cloud*0.6);
       vec3 N = normalize(vN);
       vec3 L = normalize((viewMatrix * vec4(uLight,0.0)).xyz);
-      float d = dot(N, L);
-      float lit = smoothstep(-0.15, 0.6, d);
+      float d = dot(N, L), lit = smoothstep(-0.10, 0.42, d);
       vec3 V = vec3(0.0,0.0,1.0);
-      float rim = pow(1.0 - max(dot(N, V), 0.0), 3.0);
-      vec3 atmo = vec3(0.30,0.65,1.0) * rim * (0.25 + 1.2*smoothstep(-0.3, 0.5, d));
-      vec3 night = vec3(0.0);
-      gl_FragColor = vec4(col*lit*0.9 + atmo*0.8 + night, 1.0);
+      float rim = pow(1.0 - max(dot(N, V), 0.0), 4.0);
+      vec3 atmo = vec3(0.30,0.62,1.0) * rim * (0.15 + 1.3*smoothstep(-0.25, 0.45, d));
+      float glint = pow(max(dot(reflect(-L, N), V), 0.0), 40.0) * (1.0 - land) * (1.0 - cloud) * 0.3;
+      float cities = land * (1.0 - max(ice, cold)) * smoothstep(0.86, 0.96, n(p*230.0)) * smoothstep(0.45, 0.62, fbm(p*6.0 + 1.0)) * (1.0 - lit) * (1.0 - cloud);
+      gl_FragColor = vec4(col*(lit*0.95 + 0.012) + atmo*0.85 + vec3(glint) + cities*vec3(1.0,0.72,0.38)*0.3, 1.0);
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
     }`,
 });
-const planet = mesh(new THREE.SphereGeometry(90, 96, 64), planetMat, scene, [-170, -150, -135]);
+const planet = mesh(new THREE.SphereGeometry(90, 128, 96), planetMat, scene, [-170, -150, -135]);
+/* Where VCSW is: Den Haag, 52.07 north, 4.34 east. A small white mark on the surface. */
+const EARTH_LOCAL = (function () {
+  const phi = ((4.34 + 180) / 360) * Math.PI * 2, theta = THREE.MathUtils.degToRad(90 - 52.07);
+  return new THREE.Vector3(-Math.cos(phi) * Math.sin(theta), Math.cos(theta), Math.sin(phi) * Math.sin(theta));
+})();
+const earthMark = new THREE.Group(); planet.add(earthMark);
+earthMark.position.copy(EARTH_LOCAL).multiplyScalar(90.35);
+earthMark.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), EARTH_LOCAL);
+mesh(new THREE.CircleGeometry(0.7, 24), new THREE.MeshBasicMaterial({ color: 0xffffff, fog: false }), earthMark);
+mesh(new THREE.RingGeometry(1.5, 1.72, 48), new THREE.MeshBasicMaterial({ color: 0xffffff, fog: false, transparent: true, opacity: 0.8 }), earthMark);
 const haloMat = new THREE.ShaderMaterial({
   uniforms: { uLight: planetMat.uniforms.uLight },
   vertexShader: `varying vec3 vN; void main(){ vN = normalize(normalMatrix*normal); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0);} `,
@@ -468,8 +516,8 @@ Object.assign(sun.shadow.camera, { left: -11, right: 11, top: 11, bottom: -11, n
 sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
 scene.add(sun);
 station.traverse((o) => { if (o.isMesh && o.material && !o.material.transparent && !(o.material.emissiveIntensity > 1)) { o.castShadow = true; o.receiveShadow = true; } });
-scene.add(new THREE.HemisphereLight(0x67caff, 0x020814, 0.22));
-const rimLight = new THREE.DirectionalLight(0x67caff, 1.6); rimLight.position.set(-30, -26, -30); scene.add(rimLight);
+scene.add(new THREE.HemisphereLight(0x67caff, 0x0a2a55, 0.32));
+const rimLight = new THREE.DirectionalLight(0x67caff, 2.1); rimLight.position.set(-30, -26, -30); scene.add(rimLight);
 const fill = new THREE.DirectionalLight(0xbcd9ff, 0.45); fill.position.set(30, 10, 25); scene.add(fill);
 scene.fog = new THREE.FogExp2(0x061a36, 0.0085);
 const alarmLight = new THREE.PointLight(0xff8a2e, 0, 3.4, 2); scene.add(alarmLight);
@@ -482,6 +530,18 @@ const cam = { pos: HOME.pos.clone(), target: HOME.target.clone(), fromPos: HOME.
 let focus = -1, alarm = false, frame = "home", offsetX = 0, offsetTarget = 0;
 const ariaPos = new THREE.Vector3(5, 3, 8);
 camera.position.copy(HOME.pos);
+/* Turn the earth so the Netherlands sits in clear view on the start screen, north up. */
+(function () {
+  const C = planet.position, cam0 = new THREE.PerspectiveCamera(38, 1.6, 0.1, 2000);
+  cam0.position.copy(HOME.pos); cam0.lookAt(HOME.target); cam0.updateMatrixWorld(); cam0.updateProjectionMatrix();
+  const rc = new THREE.Raycaster(); rc.setFromCamera(new THREE.Vector2(-0.42, -0.66), cam0);
+  const hit = rc.ray.intersectSphere(new THREE.Sphere(C, 90), new THREE.Vector3());
+  const D = (hit || cam0.position).clone().sub(C).normalize();
+  const q1 = new THREE.Quaternion().setFromUnitVectors(EARTH_LOCAL, D);
+  const flat = (v) => v.clone().sub(D.clone().multiplyScalar(v.dot(D))).normalize();
+  const a = flat(new THREE.Vector3(0, 1, 0).applyQuaternion(q1)), b = flat(new THREE.Vector3(0, 1, 0).applyQuaternion(cam0.quaternion));
+  planet.quaternion.copy(new THREE.Quaternion().setFromAxisAngle(D, Math.atan2(a.clone().cross(b).dot(D), a.dot(b))).multiply(q1));
+})();
 
 function moduleWorld(m, local) {
   const v = local.clone();
@@ -503,9 +563,12 @@ function setGoal(i, instant) {
   cam.goalIndex = i; cam.t = instant || reduce ? 1 : 0;
   if (cam.t === 1) { camera.position.copy(g.pos); cam.target.copy(g.target); }
 }
+const SHOW = 0.1, TAU = Math.PI * 2;
+function ringWant() { const m = focus >= 0 ? MODULES[focus] : null; return m && !m.fixed ? m.group.userData.angle - SHOW : null; }
+function turnTo(want) { return ((((want - ring.rotation.y + Math.PI) % TAU) + TAU) % TAU) - Math.PI; }
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
-let composer = null;
+let composer = null, gtao = null;
 /* ---------- Resize with a view offset, so the station can sit beside a panel ---------- */
 function resize() {
   const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
@@ -528,6 +591,11 @@ if (fxMode !== "uit") {
   try {
     composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: 4 }));
     composer.addPass(new RenderPass(scene, camera));
+    /* Contact shadow where parts meet: ambient occlusion from the depth of the scene. */
+    gtao = new GTAOPass(scene, camera, 4, 4);
+    gtao.updateGtaoMaterial({ radius: 0.45, distanceExponent: 1, thickness: 1, scale: 1.1, samples: 12 });
+    gtao.blendIntensity = 0.9;
+    composer.addPass(gtao);
     composer.addPass(new UnrealBloomPass(new THREE.Vector2(4, 4), 0.34, 0.5, 1.3));
     composer.addPass(new OutputPass());
     resize();
@@ -539,7 +607,7 @@ function watchSpeed(dt) {
   if (!composer || fxMode === "aan") return;
   slowT += dt; slowN++;
   if (slowN < 60) return;
-  if (slowT / slowN > (lowPower ? 1 / 18 : 1 / 24)) { composer.dispose(); composer = null; }
+  if (slowT / slowN > (lowPower ? 1 / 18 : 1 / 24)) { if (gtao && gtao.enabled) gtao.enabled = false; else { composer.dispose(); composer = null; } }
   slowT = 0; slowN = 0;
 }
 
@@ -557,8 +625,11 @@ function tick() {
   if (lowPower < 2) watchSpeed(dt);
   const t = clock.elapsedTime;
 
+  /* A focused module turns to one fixed spot, so every mission has the same framing with the earth behind it. */
+  const want = ringWant();
+  if (want !== null) ring.rotation.y += turnTo(want) * (reduce ? 1 : 1 - Math.pow(0.03, dt));
   if (!reduce) {
-    ring.rotation.y += dt * (focus < 0 ? 0.035 : 0.012);
+    if (ringWant() === null) ring.rotation.y += dt * (focus < 0 ? 0.035 : 0.012);
     wings.forEach((w, i) => (w.rotation.y = 0.5 + Math.sin(t * 0.05 + i) * 0.04));
     station.rotation.z = Math.sin(t * 0.07) * 0.02;
   }
@@ -596,7 +667,7 @@ function tick() {
   let ag;
   if (focus >= 0) {
     const m = MODULES[focus];
-    ag = moduleWorld(m, m.anchor.clone().add(m.fixed ? new THREE.Vector3(1.2, 0.4, 1.4) : new THREE.Vector3(-0.97, 0.2, 1.5)));
+    ag = moduleWorld(m, m.anchor.clone().add(m.fixed ? new THREE.Vector3(2.7, -0.7, 0.3) : new THREE.Vector3(-0.97, 0.2, 1.5)));
   } else {
     ag = tmp.set(Math.cos(t * 0.25) * 9, 2.2 + Math.sin(t * 0.6) * 0.4, Math.sin(t * 0.25) * 9);
   }
@@ -627,7 +698,7 @@ window.OrionStation = {
   },
   alarm(on) { alarm = !!on; },
   /* Jump to the current goal without the flight (used for test stills). */
-  snap() { const g = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex); cam.t = 1; camera.position.copy(g.pos); cam.target.copy(g.target); offsetX = offsetTarget; ariaPos.copy(aria.position); },
+  snap() { const w = ringWant(); if (w !== null) { ring.rotation.y = w; ring.updateMatrixWorld(true); } const g = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex); cam.t = 1; camera.position.copy(g.pos); cam.target.copy(g.target); offsetX = offsetTarget; ariaPos.copy(aria.position); },
   /* A short flash of light at ARIA when the player answers: blue for good, red for wrong. */
   pulse(kind) { pulseLight.color.setHex(kind === "bad" ? 0xff6467 : kind === "gold" ? 0xffd230 : 0x67caff); pulseLevel = kind === "gold" ? 14 : 9; if (lowPower) acc = 1; },
   /* 0 = full speed, 1 = thirty frames a second, 2 = a slow idle while an arcade round has the screen. */
@@ -636,12 +707,19 @@ window.OrionStation = {
   project() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     return MODULES.map((m) => {
-      v3.copy(moduleWorld(m, m.anchor.clone().add(new THREE.Vector3(0, 0.6, 0))));
+      v3.copy(moduleWorld(m, m.anchor.clone().add(new THREE.Vector3(0, m.fixed ? 0.6 : 1.1, 0))));
       const toCam = camera.position.clone().sub(v3).normalize();
       const out = m.fixed ? new THREE.Vector3(0, 1, 0) : m.group.localToWorld(new THREE.Vector3(1, 0, 0)).sub(m.group.getWorldPosition(new THREE.Vector3())).normalize();
       v3.project(camera);
       return { x: (v3.x * 0.5 + 0.5) * w, y: (-v3.y * 0.5 + 0.5) * h, front: v3.z < 1 && out.dot(toCam) > -0.35 };
     });
+  },
+  /* Screen position of the VCSW mark on the earth, and whether it faces the camera. */
+  earth() {
+    const w = canvas.clientWidth, h = canvas.clientHeight, wp = earthMark.getWorldPosition(new THREE.Vector3());
+    const out = wp.clone().sub(planet.position).normalize(), front = out.dot(camera.position.clone().sub(wp).normalize()) > 0.12;
+    wp.project(camera);
+    return { x: (wp.x * 0.5 + 0.5) * w, y: (-wp.y * 0.5 + 0.5) * h, front: front && wp.z < 1 };
   },
   onFrame(cb) { labelsCb = cb; },
 };

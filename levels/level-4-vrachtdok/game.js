@@ -332,7 +332,7 @@
     S.step = -1;
     show(
       '<p class="overline">Level 4</p>' +
-      "<h2>Het vrachtdok</h2>" +
+      "<h1>Het vrachtdok</h1>" +
       '<p class="lead">Je leert gegevens veilig te ontvangen en te delen, ze alleen te gebruiken waarvoor ze bedoeld zijn en valse berichten te herkennen.</p>' +
       alertBox("info", "Alles in dit spel is fictief", "Alle namen, planeten, adressen en gegevens zijn verzonnen. Gebruik nooit echte voorbeelden uit dossiers.") +
       '<h3>Zo werkt het</h3><ul>' +

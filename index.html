@@ -9,6 +9,25 @@
 <script type="importmap">{ "imports": { "three": "./assets/vendor/three.module.js", "three/addons/": "./assets/vendor/addons/", "orion/": "./assets/js/" } }</script>
 </head>
 <body class="vcsw orion" data-view="home">
+<a class="skip" href="#main">Naar de inhoud</a>
+<div class="boot" id="boot" role="dialog" aria-modal="true" aria-labelledby="boot-title">
+  <div class="boot-card">
+    <img class="wordmark" src="assets/img/vcsw-wordmark-on-dark.png" alt="VCSW">
+    <h1 id="boot-title">AVG-game Ruimtestation Orion</h1>
+    <p class="boot-lead">Het jaar is 2247. Jij bent Cadet van de Datawacht en beschermt alle gegevens aan boord. Wat je hier oefent, gebruik je in je werk bij VCSW.</p>
+    <ol class="boot-steps">
+      <li><b>Zes missies</b><span>Elke missie speelt in een module van het station. Je krijgt situaties uit het werk en kiest wat je doet.</span></li>
+      <li><b>Vier oefenrondes</b><span>Tussen de missies speel je een korte arcaderonde. Die telt alleen voor je score.</span></li>
+      <li><b>ARIA helpt</b><span>De boordcomputer legt bij elk antwoord uit waarom het goed of fout is.</span></li>
+      <li><b>Jouw tempo</b><span>Met de knop Tijdsdruk zet je alle timers uit. Alles werkt ook met het toetsenbord.</span></li>
+    </ol>
+    <p class="boot-note">De witte stip op de aarde onder het station is VCSW in Den Haag. Je voortgang blijft alleen in deze browser bewaard. Dit is een prototype met fictieve namen en gegevens. De inhoud wacht op goedkeuring van de Privacy Officer.</p>
+    <div class="boot-foot">
+      <div class="boot-load"><div class="boot-bar" id="boot-bar" role="progressbar" aria-label="Laden" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><p id="boot-status" aria-live="polite">Het station wordt opgebouwd</p></div>
+      <button type="button" class="go" id="boot-go" disabled>Naar het station</button>
+    </div>
+  </div>
+</div>
 <canvas id="world" aria-hidden="true"></canvas>
 <div class="sky-bg" aria-hidden="true"></div>
 
@@ -22,11 +41,12 @@
     <div class="meter"><span>XP</span><b id="xp">0</b></div>
     <div class="meter combo" id="combo"><span>Combo</span><b>×1</b><div class="pips" aria-hidden="true"></div></div>
     <button class="icon-btn" id="open-trophies" type="button"><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg><span class="lbl">Prestaties</span> <span class="count" id="badgecount">0/11</span></button>
+    <button class="icon-btn" id="calm" type="button" aria-pressed="false">Tijdsdruk aan</button>
     <button class="icon-btn" id="sound" type="button" aria-pressed="false">Geluid uit</button>
   </div>
 </header>
 
-<main>
+<main id="main" tabindex="-1">
   <section class="home" id="home" aria-labelledby="home-title">
     <div class="home-copy">
       <h1 id="home-title">Ruimtestation Orion</h1>

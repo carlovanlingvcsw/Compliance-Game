@@ -7,6 +7,15 @@
   root.classList.add("orion-level");
   if (window.parent === window) return;
   root.classList.add("in-orion");
+  /* Tijdsdruk uit: the shell stores the choice. Countdown timers of a level tick once a second, so those are held still. */
+  function calm() { try { return !!JSON.parse(localStorage.getItem("orion-datawacht-v1") || "{}").calm; } catch (e) { return false; } }
+  var realInterval = window.setInterval;
+  window.setInterval = function (fn, ms) {
+    if (ms !== 1000) return realInterval.apply(window, arguments);
+    return realInterval.call(window, function () { if (!calm()) fn(); }, 1000);
+  };
+  function markCalm() { root.classList.toggle("calm", calm()); }
+  markCalm(); window.addEventListener("storage", markCalm);
   var seen = {};
   function title() {
     var h = document.querySelector("#stage h2, #screen h2, #stage h1, main h2");

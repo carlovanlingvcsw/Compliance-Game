@@ -115,7 +115,7 @@ main { position: relative; z-index: 1; height: 100%; }
 .hot .tag { padding: 7px 12px; border-radius: 8px; backdrop-filter: blur(8px); background: color-mix(in srgb, var(--o-space) 78%, transparent); border: 1px solid var(--o-edge-strong); }
 .hot:hover .tag, .hot.lit .tag { background: var(--vcsw-blue-600); border-color: var(--vcsw-blue-300); }
 .hot.lit .dot { background: #fff; }
-.hot.behind { opacity: .6; }
+.hot.behind { opacity: 1; }
 
 /* ---------- Mission ---------- */
 .mission { position: absolute; inset: 0; outline: none; }
@@ -369,3 +369,52 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .sky.pf3d .inv { top: 40px; border-width: 1px 1px 4px; box-shadow: 0 18px 28px -10px #000; }
 .sprint.pf3d { min-height: max(360px, calc(100vh - 300px)); }
 .sprint.pf3d .bin-btn, .sprint.pf3d .holo { border-bottom-width: 4px; box-shadow: 0 18px 28px -10px #000; }
+
+/* ---------- Opening screen ---------- */
+.skip { position: fixed; left: 12px; top: -60px; z-index: 60; padding: 10px 14px; border-radius: 8px; background: #fff; color: var(--vcsw-blue-800); font: 600 .9375rem/1 var(--vcsw-font-heading); }
+.skip:focus { top: 12px; }
+.boot { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 24px; overflow: auto;
+  background: radial-gradient(ellipse 80% 60% at 70% 115%, color-mix(in srgb, var(--vcsw-blue-600) 50%, transparent), transparent 70%),
+    radial-gradient(1px 1px at 30px 40px, #fff, transparent), radial-gradient(1px 1px at 150px 120px, var(--vcsw-blue-200), transparent), radial-gradient(1.5px 1.5px at 260px 60px, #fff, transparent), var(--o-space);
+  background-size: auto, 320px 230px, 320px 230px, 320px 230px, auto; }
+.boot[hidden] { display: none; }
+.boot-card { width: min(760px, 100%); padding: 36px 40px 32px; border-radius: 20px; border: 1px solid var(--o-edge-strong); background: var(--o-glass); backdrop-filter: blur(10px); }
+.boot-card .wordmark { height: 22px; width: auto; display: block; margin-bottom: 20px; }
+.boot-card h1 { margin: 0 0 12px; font: 700 2.25rem/1.15 var(--vcsw-font-heading); color: #fff; }
+.boot-lead { margin: 0 0 24px; font-size: 1.125rem; line-height: 1.55; color: var(--vcsw-gray-200); max-width: 60ch; }
+.boot-steps { list-style: none; margin: 0 0 20px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; counter-reset: b; }
+.boot-steps li { display: grid; grid-template-columns: 34px 1fr; column-gap: 12px; margin: 0; counter-increment: b; }
+.boot-steps li::before { content: counter(b); grid-row: 1 / 3; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--vcsw-blue-600) 60%, transparent); color: #fff; font: 700 .9375rem/1 var(--vcsw-font-heading); }
+.boot-steps b { font: 600 1.0625rem/1.3 var(--vcsw-font-heading); color: #fff; }
+.boot-steps span { font-size: .9375rem; line-height: 1.5; color: var(--vcsw-gray-300); }
+.boot-note { margin: 0 0 24px; font-size: .875rem; line-height: 1.55; color: var(--vcsw-gray-300); }
+.boot-foot { display: flex; align-items: center; gap: 24px; }
+.boot-load { flex: 1 1 auto; min-width: 0; }
+.boot-bar { height: 6px; border-radius: 3px; background: color-mix(in srgb, #fff 14%, transparent); overflow: hidden; }
+.boot-bar i { display: block; height: 100%; width: 0; background: var(--vcsw-blue-400); border-radius: 3px; transition: width 300ms ease; }
+.boot-load p { margin: 8px 0 0; font-size: .875rem; color: var(--vcsw-gray-300); }
+.boot .go { flex: none; width: auto; padding: 0 28px; }
+.boot .go:disabled { opacity: .45; cursor: default; }
+@media (max-width: 640px) { .boot-card { padding: 24px 20px; } .boot-card h1 { font-size: 1.625rem; } .boot-steps { grid-template-columns: 1fr; } .boot-foot { flex-direction: column; align-items: stretch; } }
+@media (prefers-reduced-motion: reduce) { .boot-bar i { transition: none; } }
+
+/* ---------- VCSW on the earth ---------- */
+.earth-tag { position: absolute; left: 0; top: 0; display: flex; align-items: center; pointer-events: none; color: #fff; font: 600 .8125rem/1 var(--vcsw-font-heading); margin-top: -14px; }
+.earth-tag .lead { width: 28px; height: 1px; margin-left: 9px; background: #fff; opacity: .85; }
+.earth-tag .tag { padding: 7px 12px; border-radius: 8px; white-space: nowrap; backdrop-filter: blur(8px); background: color-mix(in srgb, var(--o-space) 78%, transparent); border: 1px solid color-mix(in srgb, #fff 55%, transparent); }
+.earth-tag.off, .no-3d .earth-tag { display: none; }
+
+/* ---------- Top bar: only the current stop shows its name, the others keep their number ---------- */
+.node:not([aria-current="step"]) { padding: 0 5px; gap: 0; }
+.node:not([aria-current="step"]) .nm { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.route ol { -webkit-mask-image: none; mask-image: none; gap: 6px; }
+.node .num { width: 28px; height: 28px; }
+.meter { flex-direction: row; align-items: baseline; gap: 8px; }
+.meter span { font-size: .875rem; color: var(--vcsw-gray-300); }
+.meter.combo { position: relative; } .meter.combo .pips { position: absolute; left: 12px; right: 12px; bottom: -6px; }
+
+/* ---------- During an arcade round the station steps back ---------- */
+#world { transition: filter 400ms ease; }
+[data-view="arcade"] #world { filter: saturate(.7) brightness(.7); }
+.sprint.pf3d .holo { background: var(--vcsw-blue-900); }
+@media (prefers-reduced-motion: reduce) { #world { transition: none; } }
