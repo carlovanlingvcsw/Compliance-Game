@@ -85,6 +85,8 @@ Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 2,6 MB
 
 ## Wijzigingen
 
+- Ronde 17: het station is het menu op het startscherm, een demo-inlog met verzonnen accounts, een beheerpagina met voortgang per label en afdeling (fictieve testgegevens), de aarde uit NASA-beelden die langzaam draait, een rustiger einde van Lekken dichten en een prestatiemeter via `?perf=1`.
+
 - Ronde 16: Nalezen. Elk half goed of fout antwoord, in de levels en in de arcade, komt met de uitleg in een lijst die je via de knop Nalezen waarom opent. Witte teksten boven de aarde staan op een donkere sluier en op dichtere kaarten.
 
 - Ronde 15: reflecties uit echte omgevingskaarten (vier HDRI's van Poly Haven, CC0, verkleind, zie `assets/hdri/CREDITS.md`) en een rustige vraagweergave. Zolang een vraag openstaat toont het level alleen de vraag, en een antwoord geeft één rustig signaal.
@@ -103,5 +105,5 @@ Wijzigingen gaan via een branch en een pull request met review door een collega.
 - De vormen van het station, ARIA, de planeet en de sterren zijn in code gemaakt. Er worden geen modellen of foto's geladen.
 - De oppervlakken gebruiken acht texturen van ambientCG onder CC0 1.0. Bron, ID en bewerking per textuur staan in `assets/textures/CREDITS.md`.
 - De bloom en de contactschaduw (GTAO) komen uit de three.js addons (r170, MIT), in `assets/vendor/addons/`.
-- De aarde gebruikt een landmasker dat met de hand is ingevoerd in `tools/make-earth.py`. Het is een schets en geen kaartdata. De witte stip staat op Den Haag (52,07 noord, 4,34 oost).
+- De aarde gebruikt beelden van NASA (publiek domein), zie `assets/textures/earth/CREDITS.md`. De witte stip staat op Den Haag (52,07 noord, 4,34 oost).
 - Het spel en de teksten zijn gemaakt met hulp van AI (Claude). De inhoud wacht op goedkeuring van de Privacy Officer.

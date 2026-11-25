@@ -43,4 +43,4 @@ De overige zes texturen uit die zip (scifi_vent, carbon, copper, brass_trim, chr
 
 De bestanden in deze map zijn webversies, gemaakt met `tools/prepare-textures.py`: verkleind naar 512 x 512, ruwheid, metaal en ambient occlusion samengevoegd in één bestand (`orm.jpg`), en de kleur van hull_light, hull_dark, hull_white, container en truss aangepast aan de kleuren van het station. CC0 staat bewerken toe. Van three.js r170 zijn alleen de addons meegenomen die het spel gebruikt (EffectComposer, RenderPass, ShaderPass, MaskPass, Pass, UnrealBloomPass, OutputPass, GTAOPass, SimplexNoise en de bijbehorende shaders).
 
-De map `earth` bevat geen textuur van derden. `land.jpg` is gemaakt met `tools/make-earth.py` uit kustlijnen die met de hand zijn ingevoerd.
+De map `earth` heeft een eigen CREDITS.md. De beelden komen van NASA en zijn publiek domein.

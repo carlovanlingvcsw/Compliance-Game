@@ -45,7 +45,7 @@
 
   /* ---------- Saved progress (this browser only) ---------- */
   var KEY = "orion-datawacht-v1";
-  var P = { xp: 0, best: 0, levelStars: {}, games: {}, badges: {}, opened: {}, sound: false, calm: false, review: [], last: -1 };
+  var P = { xp: 0, best: 0, levelStars: {}, games: {}, badges: {}, opened: {}, sound: false, calm: false, review: [], user: "", last: -1 };
   try { var saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved) for (var k in saved) P[k] = saved[k]; } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
 
@@ -185,7 +185,8 @@
       return '<li><button type="button" class="stop" data-i="' + i + '" data-m="' + L.module + '"><span class="num">' + (n === 5 ? "E" : n + 1) + '</span><span class="txt"><b>' + esc(L.name) + "</b>" + (b >= 0 ? "<small>Met bonusronde</small>" : "") + '</span>' + (P.opened[n] || s ? '<span class="stars" role="img" aria-label="' + s + ' van 3 sterren">' + stars(s) + "</span>" : "") + "</button></li>";
     }).join("");
     hotEl.innerHTML = LEVELS.map(function (L, n) {
-      return '<button type="button" class="hot" data-i="' + routeIndexOfLevel(n) + '" data-m="' + L.module + '" tabindex="-1" aria-hidden="true"><span class="dot"></span><span class="lead"></span><span class="tag">' + (n === 5 ? "E" : n + 1) + " · " + esc(L.place) + "</span></button>";
+      var st = P.levelStars[n] || 0, seen = P.opened[n];
+      return '<button type="button" class="hot' + (seen ? " seen" : "") + '" data-i="' + routeIndexOfLevel(n) + '" data-m="' + L.module + '" aria-label="' + esc(L.title) + (seen ? ", " + st + " van 3 sterren" : "") + '"><span class="dot"></span><span class="lead"></span><span class="tag">' + (n === 5 ? "E" : n + 1) + " · " + esc(L.place) + "</span></button>";
     }).join("") + '<span class="earth-tag off" id="earth-tag" aria-hidden="true"><span class="lead"></span><span class="tag">VCSW, Den Haag</span></span>';
     document.getElementById("progress").textContent = done + " van 6 missies gespeeld";
     var start = document.getElementById("start");
@@ -221,7 +222,7 @@
   });
   function syncStation() {
     station(function (S) {
-      if (view === "home") { S.focus(-1, window.innerWidth > 900 ? "right" : null); S.alarm(false); S.lowPower(false); return; }
+      if (view === "home" || view === "admin") { S.focus(-1, view === "home" && window.innerWidth > 900 ? "home" : null); S.alarm(false); S.lowPower(view === "admin" ? 2 : false); return; }
       var r = ROUTE[cur], L = r.type === "level" ? LEVELS[r.n] : LEVELS[GAMES[r.id].after];
       S.focus(L.module, window.innerWidth > 900 ? "left" : null);
       S.alarm(!!L.alarm || r.id === "lekken");
@@ -237,7 +238,7 @@
     stopGame();
     view = "home"; cur = -1;
     document.body.setAttribute("data-view", "home");
-    homeEl.hidden = false; missionEl.hidden = true;
+    homeEl.hidden = false; missionEl.hidden = true; document.getElementById("admin").hidden = true;
     frames.forEach(function (f) { if (f) f.hidden = true; });
     document.title = "AVG-game Ruimtestation Orion";
     renderRoute(); syncStation();
@@ -263,7 +264,7 @@
     var r = ROUTE[i], first = view !== "mission";
     cur = i; view = "mission"; P.last = i;
     document.body.setAttribute("data-view", "mission");
-    homeEl.hidden = true; missionEl.hidden = false;
+    homeEl.hidden = true; missionEl.hidden = false; document.getElementById("admin").hidden = true;
     frames.forEach(function (f) { if (f) f.hidden = true; });
     var L = r.type === "level" ? LEVELS[r.n] : LEVELS[GAMES[r.id].after];
     document.getElementById("m-title").textContent = L.place;
@@ -605,7 +606,7 @@
     function spawn() {
       var free = MODS.map(function (_, i) { return i; }).filter(function (i) { return !active[i]; }); if (!free.length) return;
       var i = free[Math.floor(Math.random() * free.length)], e = EVENTS[Math.floor(Math.random() * EVENTS.length)];
-      var life = Math.max(1.9, 3.6 - (45 - G.left) * 0.04);
+      var life = Math.max(3.0, 4.2 - (45 - G.left) * 0.03);
       var b = document.createElement("button"); b.type = "button"; b.className = "ev";
       b.innerHTML = '<span class="tag">Alarm</span>' + esc(e[0]) + '<span class="bar2"><i></i></span>';
       b.setAttribute("aria-label", "Alarm in " + MODS[i] + ": " + e[0] + ". Klik om te melden.");
@@ -621,7 +622,7 @@
     gHud();
     clock(function (dt) {
       spawnIn -= dt;
-      if (spawnIn <= 0) { if (!P.calm || Object.keys(active).length < 2) spawn(); spawnIn = Math.max(0.55, 1.3 - (45 - G.left) * 0.017); }
+      if (spawnIn <= 0) { if (!P.calm || Object.keys(active).length < 2) spawn(); spawnIn = Math.max(1.0, 1.5 - (45 - G.left) * 0.012); }
       Object.keys(active).forEach(function (k) {
         if (!G || G.over) return; var a = active[k]; if (!a) return; if (!P.calm) a.t -= dt;
         var bar = a.el.querySelector(".bar2 i"); if (bar) bar.style.transform = "scaleX(" + Math.max(0, a.t / a.life) + ")";
@@ -633,6 +634,64 @@
     });
   }
 
+
+  /* ---------- Demo login and the admin page. Every name and score here is made up. ---------- */
+  var LABELS = ["VCSW", "KijkOpVerzuim", "HR Navigator", "Pay-Check"], DEPTS = ["Advies", "Juridische Zaken", "Data en IT", "Klantenservice", "Sales", "Finance"];
+  var USERS = [
+    { id: "u1", name: "Mila Sterrenburg", label: "VCSW", dept: "Advies" }, { id: "u2", name: "Daan Komeet", label: "KijkOpVerzuim", dept: "Klantenservice" },
+    { id: "u3", name: "Noor van Orion", label: "HR Navigator", dept: "Sales" }, { id: "u4", name: "Sem Nevel", label: "Pay-Check", dept: "Finance" },
+    { id: "admin", name: "Beheerder (demo)", label: "VCSW", dept: "Juridische Zaken", admin: true }
+  ];
+  function me() { return USERS.filter(function (u) { return u.id === P.user; })[0] || USERS[0]; }
+  function paintUser() {
+    var u = me(); document.getElementById("user-btn").textContent = u.name;
+    document.getElementById("admin-btn").hidden = !u.admin;
+  }
+  /* Made-up colleagues, the same on every visit. */
+  var FIRST = ["Jip", "Lotte", "Bram", "Fenna", "Thijs", "Sara", "Ruben", "Yara", "Koen", "Evi", "Milan", "Tess", "Luuk", "Nina", "Stijn", "Roos", "Jesse", "Lieke", "Finn", "Maud", "Gijs", "Isa", "Hugo", "Zoë", "Tim", "Anna"];
+  var LAST = ["Maanzicht", "Sterrenveld", "van Kepler", "Zonneboog", "Meteoor", "van der Ring", "Poolster", "Nevelman", "Baanbreker", "van Sluis", "Lichtjaar", "Ruimte", "Dageraad"];
+  function people() {
+    var seed = 11, rnd = function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }, out = [];
+    FIRST.forEach(function (f, i) {
+      var r = rnd(), done = r < 0.58 ? 6 : r < 0.82 ? 1 + Math.floor(rnd() * 5) : 0;
+      out.push({ name: f + " " + LAST[i % LAST.length], label: LABELS[Math.floor(rnd() * 4)], dept: DEPTS[Math.floor(rnd() * 6)], done: done, score: done ? 55 + Math.floor(rnd() * 44) : null, days: done ? 1 + Math.floor(rnd() * 40) : null });
+    });
+    var u = me(), played = Object.keys(P.opened).length, stars = [0, 1, 2, 3, 4, 5].reduce(function (a, n) { return a + (P.levelStars[n] || 0); }, 0);
+    out.push({ name: u.name + " (jij)", label: u.label, dept: u.dept, done: played, score: played ? Math.round(stars / 18 * 100) : null, days: played ? 0 : null });
+    return out.sort(function (a, b) { return a.name.localeCompare(b.name, "nl"); });
+  }
+  function status(p) { return p.done >= 6 ? "Afgerond" : p.done > 0 ? "Bezig" : "Niet gestart"; }
+  function renderAdmin() {
+    var all = people(), fl = document.getElementById("ad-label").value, fd = document.getElementById("ad-dept").value, fs = document.getElementById("ad-status").value;
+    var rows = all.filter(function (p) { return (!fl || p.label === fl) && (!fd || p.dept === fd) && (!fs || status(p) === fs); });
+    function group(key, names) {
+      return names.map(function (nm) {
+        var g = all.filter(function (p) { return p[key] === nm; }), ok = g.filter(function (p) { return p.done >= 6; }).length, sc = g.filter(function (p) { return p.score != null; });
+        var pct = g.length ? Math.round(ok / g.length * 100) : 0, avg = sc.length ? Math.round(sc.reduce(function (a, p) { return a + p.score; }, 0) / sc.length) : null;
+        return '<div class="ad-row"><b>' + esc(nm) + "</b><span>" + ok + " van " + g.length + ' afgerond</span><div class="ad-bar" role="img" aria-label="' + pct + ' procent afgerond"><i style="width:' + pct + '%"></i></div><span class="ad-num">' + pct + "%</span><span>Gemiddelde kennisscore " + (avg == null ? "onbekend" : avg + "%") + "</span></div>";
+      }).join("");
+    }
+    document.getElementById("ad-by-label").innerHTML = group("label", LABELS);
+    document.getElementById("ad-by-dept").innerHTML = group("dept", DEPTS);
+    document.getElementById("ad-count").textContent = rows.length + " van " + all.length + " collega's";
+    document.getElementById("ad-rows").innerHTML = rows.map(function (p) {
+      var s = status(p);
+      return "<tr><th scope=\"row\">" + esc(p.name) + "</th><td>" + esc(p.label) + "</td><td>" + esc(p.dept) + '</td><td><span class="vcsw-badge ' + (s === "Afgerond" ? "success" : s === "Bezig" ? "warning" : "neutral") + '">' + s + "</span></td><td>" + p.done + " van 6</td><td>" + (p.score == null ? "Nog geen" : p.score + "%") + "</td><td>" + (p.days == null ? "Nog niet" : p.days === 0 ? "Vandaag" : p.days + " dagen geleden") + "</td></tr>";
+    }).join("") || '<tr><td colspan="7">Geen collega\'s met deze filters.</td></tr>';
+  }
+  var adminEl = document.getElementById("admin");
+  function showAdmin() {
+    stopGame(); view = "admin"; cur = -1; document.body.setAttribute("data-view", "admin");
+    homeEl.hidden = true; missionEl.hidden = true; adminEl.hidden = false; document.title = "Beheer · AVG-game Ruimtestation Orion";
+    renderAdmin(); syncStation(); adminEl.focus({ preventScroll: true });
+  }
+  (function () {
+    var opt = function (a) { return '<option value="">Alle</option>' + a.map(function (x) { return "<option>" + esc(x) + "</option>"; }).join(""); };
+    document.getElementById("ad-label").innerHTML = opt(LABELS); document.getElementById("ad-dept").innerHTML = opt(DEPTS);
+    ["ad-label", "ad-dept", "ad-status"].forEach(function (id) { document.getElementById(id).onchange = renderAdmin; });
+    document.getElementById("admin-btn").onclick = showAdmin;
+    document.getElementById("ad-close").onclick = function () { showHome(); };
+  })();
 
   /* ---------- Nalezen: every half good or wrong answer is kept with its explanation, to read again ---------- */
   var roundNotes = 0, revBtn = document.getElementById("review"), revDlg = document.getElementById("review-dlg");
@@ -684,7 +743,11 @@
     var boot = document.getElementById("boot"); if (!boot) return;
     var rest = [document.querySelector("header.bar"), document.querySelector("main")];
     function close() { boot.hidden = true; rest.forEach(function (el) { if (el) el.inert = false; }); }
-    if (/[?&]boot=uit/.test(location.search)) { close(); return; }
+    var sel = document.getElementById("boot-user");
+    sel.innerHTML = USERS.map(function (u) { return '<option value="' + u.id + '"' + (u.id === P.user ? " selected" : "") + ">" + esc(u.name) + " · " + esc(u.label) + ", " + esc(u.dept) + "</option>"; }).join("");
+    function login() { P.user = sel.value; save(); paintUser(); }
+    document.getElementById("user-btn").onclick = function () { boot.hidden = false; boot.classList.add("relog"); rest.forEach(function (el) { if (el) el.inert = true; }); sel.focus(); };
+    if (/[?&]boot=uit/.test(location.search)) { if (!P.user) P.user = USERS[0].id; paintUser(); close(); return; }
     var bar = document.getElementById("boot-bar"), st = document.getElementById("boot-status"), goBtn = document.getElementById("boot-go"), ready = false;
     rest.forEach(function (el) { if (el) el.inert = true; });
     function prog(f) { bar.firstElementChild.style.width = Math.round(f * 100) + "%"; bar.setAttribute("aria-valuenow", Math.round(f * 100)); }
@@ -692,7 +755,8 @@
     window.addEventListener("orion-load", function (e) { if (!ready) prog(e.detail * 0.9); });
     window.addEventListener("orion-station-ready", function () { done("Het station is klaar."); });
     var iv = setInterval(function () { if (ready) { clearInterval(iv); return; } if (document.documentElement.classList.contains("no-3d")) done("Je speelt zonder 3D-beeld. Alles werkt verder hetzelfde."); }, 300);
-    goBtn.onclick = function () { close(); document.getElementById("start").focus({ preventScroll: true }); };
+    goBtn.onclick = function () { login(); close(); if (view === "admin" && !me().admin) showHome(); document.getElementById("start").focus({ preventScroll: true }); };
+    paintUser();
   })();
 
   /* ---------- Start ---------- */

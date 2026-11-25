@@ -37,20 +37,9 @@ function horizon(parent) {
   return mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false }), parent);
 }
 
-/* The earth below the deck: the same land mask as the station view, coloured on a canvas. */
+/* The earth below the deck: the same NASA image as the station view. */
 function earth(parent) {
-  const img = tex("earth", "land").image, c = document.createElement("canvas"); c.width = 1024; c.height = 512;
-  const g = c.getContext("2d"); g.drawImage(img, 0, 0, 1024, 512);
-  const d = g.getImageData(0, 0, 1024, 512), px = d.data;
-  for (let i = 0; i < px.length; i += 4) {
-    const y = Math.floor(i / 4 / 1024), lat = Math.abs(90 - (y / 512) * 180), m = px[i] / 255, k = (Math.sin(i * 0.37) + 1) * 6;
-    const dry = lat > 13 && lat < 33 ? 1 : 0, ice = lat > 72 ? 1 : 0;
-    const land = ice ? [220, 230, 240] : dry ? [150 + k, 122 + k, 78] : [52, 92 + k, 48];
-    const sea = ice ? [205, 222, 238] : [14, 60 + k, 128];
-    for (let j = 0; j < 3; j++) px[i + j] = sea[j] + (land[j] - sea[j]) * Math.min(1, Math.max(0, (m - 0.4) / 0.16));
-  }
-  g.putImageData(d, 0, 0);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  const t = tex("earth", "color", null, true); t.anisotropy = 8;
   const m = mesh(new THREE.SphereGeometry(1, 96, 64), new THREE.MeshStandardMaterial({ map: t, roughness: 1, metalness: 0 }), parent);
   const phi = ((4.34 + 180) / 360) * Math.PI * 2, th = THREE.MathUtils.degToRad(90 - 52.07);
   m.quaternion.setFromUnitVectors(new THREE.Vector3(-Math.cos(phi) * Math.sin(th), Math.cos(th), Math.sin(phi) * Math.sin(th)), new THREE.Vector3(0.1, 0.86, 0.5).normalize());

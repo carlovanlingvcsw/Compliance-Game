@@ -394,12 +394,14 @@ const aria = new THREE.Group(); scene.add(aria);
 aria.scale.setScalar(1.0);
 
 /* ---------- Planet and stars ---------- */
-/* The earth: land from a mask (tools/make-earth.py), everything else in the shader. */
+/* The earth: day and night images from NASA (public domain), clouds drawn in the shader so they can drift. */
+const dayTex = tex("earth", "color", null, true), nightTex = tex("earth", "night", null, true), oceanTex = tex("earth", "ocean");
+dayTex.anisotropy = 8;
 const planetMat = new THREE.ShaderMaterial({
-  uniforms: { uLight: { value: new THREE.Vector3(0.10, 0.55, 0.83).normalize() }, uTime: { value: 0 }, uLand: { value: tex("earth", "land") } },
+  uniforms: { uLight: { value: new THREE.Vector3(0.10, 0.55, 0.83).normalize() }, uTime: { value: 0 }, uDay: { value: dayTex }, uNight: { value: nightTex }, uOcean: { value: oceanTex } },
   vertexShader: `varying vec3 vN; varying vec3 vP; varying vec2 vUv;
     void main(){ vN = normalize(normalMatrix * normal); vP = position; vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-  fragmentShader: `uniform vec3 uLight; uniform float uTime; uniform sampler2D uLand; varying vec3 vN; varying vec3 vP; varying vec2 vUv;
+  fragmentShader: `uniform vec3 uLight; uniform float uTime; uniform sampler2D uDay; uniform sampler2D uNight; uniform sampler2D uOcean; varying vec3 vN; varying vec3 vP; varying vec2 vUv;
     float h(vec3 p){ return fract(sin(dot(p, vec3(127.1,311.7,74.7))) * 43758.5453); }
     float n(vec3 p){ vec3 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
       return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),
@@ -407,35 +409,22 @@ const planetMat = new THREE.ShaderMaterial({
     float fbm(vec3 p){ float a=0.5, s=0.0; for(int i=0;i<5;i++){ s+=a*n(p); p*=2.03; a*=0.5; } return s; }
     void main(){
       vec3 p = normalize(vP);
-      float lat = asin(clamp(p.y, -1.0, 1.0)), alat = abs(lat), lon = (vUv.x - 0.5) * 6.2831853;
-      vec2 wob = (vec2(fbm(p*16.0), fbm(p*16.0 + 9.0)) - 0.5) * 0.010;
-      float m = texture2D(uLand, vUv + wob).r;
-      float land = smoothstep(0.40, 0.56, m), shelf = smoothstep(0.08, 0.40, m) * (1.0 - land);
-      vec3 ocean = mix(vec3(0.010,0.055,0.17), vec3(0.025,0.16,0.36), fbm(p*6.0));
-      ocean = mix(ocean, vec3(0.05,0.30,0.42), shelf*0.6);
-      float dry = smoothstep(0.22, 0.33, alat) * (1.0 - smoothstep(0.52, 0.64, alat)) * (0.55 + 0.45*fbm(p*2.5));
-      vec3 green = mix(vec3(0.07,0.17,0.07), vec3(0.16,0.27,0.11), fbm(p*9.0));
-      vec3 sand = mix(vec3(0.42,0.33,0.19), vec3(0.55,0.45,0.28), fbm(p*8.0 + 4.0));
-      vec3 ground = mix(green, sand, dry);
-      float cold = smoothstep(1.02, 1.22, alat + (fbm(p*5.0) - 0.5)*0.12);
-      ground = mix(ground, vec3(0.34,0.37,0.36), cold*0.6);
-      float ice = smoothstep(1.24, 1.34, alat);
-      float greenland = step(-1.0, lon) * step(lon, -0.33) * smoothstep(1.06, 1.12, lat);
-      ground = mix(ground, vec3(0.86,0.90,0.94), max(ice, greenland*0.9));
-      ocean = mix(ocean, vec3(0.80,0.87,0.93), smoothstep(1.30, 1.40, alat)*0.8);
-      vec3 col = mix(ocean, ground, land);
-      float cl = fbm(p*4.2 + vec3(uTime*0.004,0.0,0.0))*0.62 + fbm(p*12.0 - vec3(uTime*0.006,0.0,0.0))*0.38;
-      float cloud = smoothstep(0.50, 0.72, cl);
-      col = mix(col, vec3(0.86,0.90,0.95), cloud*0.6);
+      vec3 col = texture2D(uDay, vUv).rgb * 1.25;
+      float sea = texture2D(uOcean, vUv).r;
+      vec3 q = p*3.6 + vec3(uTime*0.003, 0.0, uTime*0.002);
+      float cl = fbm(q + fbm(q*2.0)*0.6)*0.66 + fbm(p*13.0 - vec3(uTime*0.004,0.0,0.0))*0.34;
+      float cloud = smoothstep(0.52, 0.76, cl);
+      float shade = smoothstep(0.52, 0.76, fbm(q + fbm(q*2.0)*0.6 + vec3(0.02))*0.66 + 0.17);
+      col = mix(col * (1.0 - 0.25*shade), vec3(0.92,0.95,0.98), cloud*0.82);
       vec3 N = normalize(vN);
       vec3 L = normalize((viewMatrix * vec4(uLight,0.0)).xyz);
-      float d = dot(N, L), lit = smoothstep(-0.10, 0.42, d);
+      float d = dot(N, L), lit = smoothstep(-0.12, 0.38, d);
       vec3 V = vec3(0.0,0.0,1.0);
-      float rim = pow(1.0 - max(dot(N, V), 0.0), 4.0);
-      vec3 atmo = vec3(0.30,0.62,1.0) * rim * (0.15 + 1.3*smoothstep(-0.25, 0.45, d));
-      float glint = pow(max(dot(reflect(-L, N), V), 0.0), 40.0) * (1.0 - land) * (1.0 - cloud) * 0.3;
-      float cities = land * (1.0 - max(ice, cold)) * smoothstep(0.86, 0.96, n(p*230.0)) * smoothstep(0.45, 0.62, fbm(p*6.0 + 1.0)) * (1.0 - lit) * (1.0 - cloud);
-      gl_FragColor = vec4(col*(lit*0.95 + 0.012) + atmo*0.85 + vec3(glint) + cities*vec3(1.0,0.72,0.38)*0.3, 1.0);
+      float rim = pow(1.0 - max(dot(N, V), 0.0), 3.6);
+      vec3 atmo = vec3(0.28,0.60,1.0) * rim * (0.12 + 1.5*smoothstep(-0.25, 0.45, d));
+      float glint = pow(max(dot(reflect(-L, N), V), 0.0), 60.0) * sea * (1.0 - cloud) * 0.45;
+      vec3 night = texture2D(uNight, vUv).rgb * (1.0 - lit) * (1.0 - cloud*0.8) * 1.6;
+      gl_FragColor = vec4(col*(lit*0.98 + 0.01) + atmo*0.9 + vec3(glint) + night, 1.0);
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
     }`,
@@ -517,7 +506,14 @@ sun.shadow.mapSize.set(2048, 2048);
 Object.assign(sun.shadow.camera, { left: -11, right: 11, top: 11, bottom: -11, near: 20, far: 80 });
 sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
 scene.add(sun);
-station.traverse((o) => { if (o.isMesh && o.material && !o.material.transparent && !(o.material.emissiveIntensity > 1)) { o.castShadow = true; o.receiveShadow = true; } });
+/* Only parts of some size cast a shadow. Rails, lamps and bolts would double the work for nothing you can see. */
+station.traverse((o) => {
+  if (!o.isMesh || !o.material || o.material.transparent || o.material.emissiveIntensity > 1) return;
+  o.receiveShadow = true;
+  if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
+  const sc = o.getWorldScale(new THREE.Vector3());
+  o.castShadow = o.geometry.boundingSphere.radius * Math.max(sc.x, sc.y, sc.z) > 0.3;
+});
 scene.add(new THREE.HemisphereLight(0x67caff, 0x0a2a55, 0.32));
 const rimLight = new THREE.DirectionalLight(0x67caff, 2.1); rimLight.position.set(-30, -26, -30); scene.add(rimLight);
 const fill = new THREE.DirectionalLight(0xbcd9ff, 0.45); fill.position.set(30, 10, 25); scene.add(fill);
@@ -536,7 +532,7 @@ camera.position.copy(HOME.pos);
 (function () {
   const C = planet.position, cam0 = new THREE.PerspectiveCamera(38, 1.6, 0.1, 2000);
   cam0.position.copy(HOME.pos); cam0.lookAt(HOME.target); cam0.updateMatrixWorld(); cam0.updateProjectionMatrix();
-  const rc = new THREE.Raycaster(); rc.setFromCamera(new THREE.Vector2(-0.42, -0.66), cam0);
+  const rc = new THREE.Raycaster(); rc.setFromCamera(new THREE.Vector2(0.16, -0.7), cam0);
   const hit = rc.ray.intersectSphere(new THREE.Sphere(C, 90), new THREE.Vector3());
   const D = (hit || cam0.position).clone().sub(C).normalize();
   const q1 = new THREE.Quaternion().setFromUnitVectors(EARTH_LOCAL, D);
@@ -570,7 +566,11 @@ function ringWant() { const m = focus >= 0 ? MODULES[focus] : null; return m && 
 function turnTo(want) { return ((((want - ring.rotation.y + Math.PI) % TAU) + TAU) % TAU) - Math.PI; }
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
-let composer = null, gtao = null;
+let composer = null, gtao = null, gtaoOk = false, gtaoTried = false, fpsN = 0, fpsT0 = performance.now();
+const perf = { fps: 0, calls: 0, tris: 0, fx: "" };
+/* Add ?perf=1 to the address for a small meter, to check a work laptop. */
+let perfEl = null;
+if (/[?&]perf=1/.test(location.search)) { perfEl = document.createElement("div"); perfEl.style.cssText = "position:fixed;left:8px;bottom:8px;z-index:70;padding:6px 10px;border-radius:6px;background:#020814;color:#fff;font:600 13px/1.3 system-ui"; document.body.appendChild(perfEl); }
 /* ---------- Resize with a view offset, so the station can sit beside a panel ---------- */
 function resize() {
   const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
@@ -606,10 +606,13 @@ if (fxMode !== "uit") {
 /* On a slow machine the bloom goes first: measured over two seconds of frames. */
 let slowT = 0, slowN = 0;
 function watchSpeed(dt) {
-  if (!composer || fxMode === "aan") return;
+  if (fxMode === "aan") { gtaoOk = true; return; }
+  if (!composer) return;
   slowT += dt; slowN++;
   if (slowN < 60) return;
-  if (slowT / slowN > (lowPower ? 1 / 18 : 1 / 24)) { if (gtao && gtao.enabled) gtao.enabled = false; else { composer.dispose(); composer = null; } }
+  /* Contact shadow is extra work, so it only comes on when the overview already runs fast. */
+  if (!gtaoTried && !lowPower && slowT / slowN < 1 / 50) { gtaoTried = true; gtaoOk = true; slowT = 0; slowN = 0; return; }
+  if (slowT / slowN > (lowPower ? 1 / 18 : 1 / 24)) { if (gtaoOk) gtaoOk = false; else if (renderer.getPixelRatio() > 1) { renderer.setPixelRatio(1); resize(); } else { composer.dispose(); composer = null; } }
   slowT = 0; slowN = 0;
 }
 
@@ -617,6 +620,7 @@ function watchSpeed(dt) {
 const clock = new THREE.Clock();
 let running = true, lowPower = 0, acc = 0, frameNo = 0;
 renderer.shadowMap.autoUpdate = false;
+renderer.info.autoReset = false;
 document.addEventListener("visibilitychange", () => { running = !document.hidden; if (running) clock.getDelta(); });
 const tmp = new THREE.Vector3();
 function tick() {
@@ -636,6 +640,7 @@ function tick() {
     station.rotation.z = Math.sin(t * 0.07) * 0.02;
   }
   planetMat.uniforms.uTime.value = t;
+  if (!reduce) planet.rotateY(dt * 0.004);   // the earth turns slowly, one round in about 26 minutes
   blinkers.forEach((b) => { const k = (Math.sin((t + b.userData.blink) * 2.2) + 1) / 2; b.material.emissiveIntensity = 0.4 + k * k * 1.8; });
 
   // Crane in the cargo dock
@@ -679,10 +684,13 @@ function tick() {
   aria.userData.halo.rotation.z += dt * 0.8;
   aria.userData.eye.material.emissive.setHex(alarm ? 0xff6467 : 0x15aaff);
 
-  frameNo++; renderer.shadowMap.needsUpdate = !lowPower || frameNo % 4 === 0;
+  frameNo++; renderer.shadowMap.needsUpdate = frameNo % (lowPower ? 6 : 2) === 0;
   pulseLevel *= Math.pow(0.02, dt); pulseLight.intensity = pulseLevel; pulseLight.position.copy(aria.position);
   if (pulseLevel > 0.05) aria.userData.eye.material.emissiveIntensity = 1.6 + pulseLevel * 0.3; else aria.userData.eye.material.emissiveIntensity = 1.6;
+  if (gtao) gtao.enabled = gtaoOk && lowPower === 0;   // contact shadow only on the overview, where the whole station is in view
+  renderer.info.reset();
   if (composer) composer.render(dt); else renderer.render(scene, camera);
+  fpsN++; const nowMs = performance.now(); if (nowMs - fpsT0 >= 1000) { perf.fps = Math.round(fpsN * 1000 / (nowMs - fpsT0)); perf.calls = renderer.info.render.calls; perf.tris = renderer.info.render.triangles; perf.fx = composer ? (gtao && gtao.enabled ? "bloom en contactschaduw" : "bloom") : "uit"; fpsN = 0; fpsT0 = nowMs; if (perfEl) perfEl.textContent = perf.fps + " beelden per seconde · " + perf.calls + " tekenopdrachten · " + Math.round(perf.tris / 1000) + "k driehoeken · effecten " + perf.fx; }
   if (labelsCb) labelsCb();
 }
 
@@ -696,7 +704,7 @@ window.OrionStation = {
     focus = i;
     setGoal(i, false);
     const w = canvas.clientWidth || window.innerWidth;
-    offsetTarget = side === "left" ? -w * 0.28 : side === "right" ? w * 0.2 : 0;
+    offsetTarget = side === "left" ? -w * 0.28 : side === "right" ? w * 0.2 : side === "home" ? w * 0.1 : 0;
   },
   alarm(on) { alarm = !!on; },
   /* Jump to the current goal without the flight (used for test stills). */
@@ -723,6 +731,7 @@ window.OrionStation = {
     wp.project(camera);
     return { x: (wp.x * 0.5 + 0.5) * w, y: (-wp.y * 0.5 + 0.5) * h, front: front && wp.z < 1 };
   },
+  stats() { return perf; },
   onFrame(cb) { labelsCb = cb; },
 };
 setGoal(-1, true);

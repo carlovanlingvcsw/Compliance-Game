@@ -7,7 +7,7 @@ import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 
 const SETS = ["hull_light", "hull_dark", "hull_white", "foil", "truss", "grate", "container", "solar", "scifi_panel", "rubber_floor", "heat_shield", "plastic_white"];
 const MAPS = ["color", "normal", "orm"];
-const EXTRA = ["earth/land"]; // single images: the land mask of the earth, drawn by tools/make-earth.py
+const EXTRA = ["earth/color", "earth/night", "earth/ocean"]; // single images: the earth, from NASA imagery (public domain)
 const DATA = window.ORION_TEX || null;
 const base = DATA ? "" : new URL("../textures/", import.meta.url).href;
 const images = {};

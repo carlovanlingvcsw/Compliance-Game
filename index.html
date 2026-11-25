@@ -18,14 +18,16 @@
     <ol class="boot-steps">
       <li><b>Zes missies</b><span>Elke missie speelt in een module van het station. Je krijgt situaties uit het werk en kiest wat je doet.</span></li>
       <li><b>Vier oefenrondes</b><span>Tussen de missies speel je een korte arcaderonde. Die telt alleen voor je score.</span></li>
-      <li><b>ARIA helpt</b><span>De boordcomputer legt bij elk antwoord uit waarom het goed of fout is.</span></li>
+      <li><b>ARIA helpt</b><span>De boordcomputer legt bij elk antwoord uit waarom het goed of fout is. Wat half goed of fout ging, lees je later terug met de knop Nalezen waarom.</span></li>
       <li><b>Jouw tempo</b><span>Met de knop Tijdsdruk zet je alle timers uit. Alles werkt ook met het toetsenbord.</span></li>
     </ol>
     <p class="boot-note">De witte stip op de aarde onder het station is VCSW in Den Haag. Je voortgang blijft alleen in deze browser bewaard. Dit is een prototype met fictieve namen en gegevens. De inhoud wacht op goedkeuring van de Privacy Officer.</p>
+    <div class="boot-login"><label for="boot-user">Account (demo)</label><select id="boot-user"></select><p>Dit zijn verzonnen accounts. In de eindversie log je in met je Microsoft-account van VCSW.</p></div>
     <div class="boot-foot">
       <div class="boot-load"><div class="boot-bar" id="boot-bar" role="progressbar" aria-label="Laden" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><p id="boot-status" aria-live="polite">Het station wordt opgebouwd</p></div>
-      <button type="button" class="go" id="boot-go" disabled>Naar het station</button>
+      <button type="button" class="go" id="boot-go" disabled>Inloggen en starten</button>
     </div>
+
   </div>
 </div>
 <canvas id="world" aria-hidden="true"></canvas>
@@ -41,6 +43,8 @@
     <div class="meter"><span>XP</span><b id="xp">0</b></div>
     <div class="meter combo" id="combo"><span>Combo</span><b>×1</b><div class="pips" aria-hidden="true"></div></div>
     <button class="icon-btn" id="open-trophies" type="button"><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg><span class="lbl">Prestaties</span> <span class="count" id="badgecount">0/11</span></button>
+    <button class="icon-btn" id="admin-btn" type="button" hidden>Beheer</button>
+    <button class="icon-btn" id="user-btn" type="button" aria-label="Wissel van account"></button>
     <button class="icon-btn" id="calm" type="button" aria-pressed="false">Tijdsdruk aan</button>
     <button class="icon-btn" id="sound" type="button" aria-pressed="false">Geluid uit</button>
   </div>
@@ -50,7 +54,7 @@
   <section class="home" id="home" aria-labelledby="home-title">
     <div class="home-copy">
       <h1 id="home-title">Ruimtestation Orion</h1>
-      <p class="lead">Het jaar is 2247. Als Cadet van de Datawacht bescherm je alle gegevens aan boord. ARIA brengt je langs elke module van het station.</p>
+      <p class="lead">Kies een module op het station, of start bij de aankomsthal.</p>
       <div class="map-card">
         <div class="map-head"><h2>Stationskaart</h2><span id="progress"></span></div>
         <ol class="map" id="map"></ol>
@@ -59,6 +63,16 @@
       </div>
     </div>
     <div class="hotspots" id="hotspots"></div>
+  </section>
+
+  <section class="admin" id="admin" hidden tabindex="-1" aria-labelledby="ad-title">
+    <div class="ad-wrap">
+      <div class="ad-head"><div><h1 id="ad-title">Beheer: voortgang per collega</h1><p>Wie de AVG-training heeft afgerond, per label en per afdeling.</p></div><button class="icon-btn" id="ad-close" type="button">Terug naar het station</button></div>
+      <div class="vcsw-alert" role="note"><div><p class="vcsw-alert-title">Demo met verzonnen collega's</p><p class="vcsw-alert-text">Alle namen, afdelingen en scores op deze pagina zijn fictieve testgegevens. Dit overzicht laat zien wie de training nog moet doen. Het is geen beoordeling van mensen. In de eindversie is deze pagina alleen na inloggen met een Microsoft-account te openen.</p></div></div>
+      <div class="ad-filters"><label>Label<select id="ad-label"></select></label><label>Afdeling<select id="ad-dept"></select></label><label>Status<select id="ad-status"><option value="">Alle</option><option>Afgerond</option><option>Bezig</option><option>Niet gestart</option></select></label><p id="ad-count" aria-live="polite"></p></div>
+      <div class="ad-sum"><section aria-labelledby="ad-l"><h2 id="ad-l">Per label</h2><div id="ad-by-label"></div></section><section aria-labelledby="ad-d"><h2 id="ad-d">Per afdeling</h2><div id="ad-by-dept"></div></section></div>
+      <div class="ad-table"><table><caption class="vcsw-sr-only">Voortgang per collega, op naam gesorteerd</caption><thead><tr><th scope="col">Naam</th><th scope="col">Label</th><th scope="col">Afdeling</th><th scope="col">Status</th><th scope="col">Missies</th><th scope="col">Kennisscore</th><th scope="col">Laatst actief</th></tr></thead><tbody id="ad-rows"></tbody></table></div>
+    </div>
   </section>
 
   <section class="mission" id="mission" hidden tabindex="-1" aria-labelledby="m-title">
