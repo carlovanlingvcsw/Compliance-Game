@@ -424,3 +424,30 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 [data-view="mission"] .meter.combo.hot { display: flex; }
 .panel { width: min(980px, 57vw); border-color: var(--o-edge-strong); background: color-mix(in srgb, var(--o-space) 84%, transparent); backdrop-filter: blur(8px); }
 .sky.pf3d .inv { top: 78px; }
+
+/* ---------- Nalezen ---------- */
+#review { grid-column: 1 / -1; justify-content: center; border-color: var(--vcsw-amber-300); }
+#review b { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--vcsw-amber-300); color: var(--vcsw-gray-900); font: 700 .8125rem/1 var(--vcsw-font-heading); }
+#review.new { animation: rvnew 1.2s ease 2; } @keyframes rvnew { 50% { background: color-mix(in srgb, var(--vcsw-amber-300) 30%, transparent); } }
+.rv-btns { display: flex; gap: 8px; }
+.rv { padding: 16px 0; border-bottom: 1px solid var(--o-edge); } .rv:last-child { border-bottom: 0; }
+.rv p { margin: 0; } .rv-meta { font-size: .875rem; color: var(--vcsw-gray-300); margin-bottom: 6px !important; }
+.rv-a { font-weight: 600; color: #fff; margin-bottom: 8px !important; line-height: 1.5; } .rv-a .vcsw-badge { margin-right: 6px; }
+.rv-why { color: var(--vcsw-gray-200); line-height: 1.55; }
+.ar-nalezen { margin: 16px 0 0; }
+@media (prefers-reduced-motion: reduce) { #review.new { animation: none; } }
+
+/* ---------- Text over the bright earth: a dark veil on the text side and firmer cards ---------- */
+.home::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, rgb(2 8 20 / .9) 0%, rgb(2 8 20 / .74) 28%, rgb(2 8 20 / .28) 44%, transparent 56%); }
+.no-3d .home::before { display: none; }
+.home-copy .lead { color: #e8eef6; font-size: 1.1875rem; line-height: 1.6; max-width: 36ch; text-shadow: none; }
+.home-copy h1 { text-shadow: none; }
+.map-card { background: color-mix(in srgb, var(--vcsw-blue-950) 92%, transparent); border-color: var(--o-edge-strong); backdrop-filter: blur(6px); }
+.map-card .note { color: var(--vcsw-gray-300); }
+.briefing { background: color-mix(in srgb, var(--vcsw-blue-950) 93%, transparent) !important; border-color: var(--o-edge-strong) !important; backdrop-filter: blur(6px); box-shadow: 0 24px 60px -24px #000; }
+#m-place { color: var(--vcsw-gray-200) !important; }
+.hot .tag, .earth-tag .tag { background: color-mix(in srgb, var(--vcsw-blue-950) 94%, transparent); backdrop-filter: none; font-weight: 600; letter-spacing: 0; box-shadow: 0 6px 18px -8px #000; }
+.earth-tag .tag { border-color: color-mix(in srgb, #fff 70%, transparent); }
+@media (max-width: 900px) { .home::before { background: rgb(2 8 20 / .72); } }
+#review[hidden] { display: none; }

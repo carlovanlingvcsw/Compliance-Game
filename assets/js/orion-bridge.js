@@ -21,10 +21,30 @@
     var h = document.querySelector("#stage h2, #screen h2, #stage h1, main h2");
     return h ? h.textContent.trim() : "";
   }
-  function send(result, key) {
+  /* The explanation the level shows for the chosen answer, so the shell can offer it again under "Nalezen". */
+  function clean(node) {
+    var c = node.cloneNode(true);
+    c.querySelectorAll(".key, .letter, .verdict, .vcsw-sr-only, .uitleg, .vcsw-badge, kbd").forEach(function (x) { x.remove(); });
+    return c.textContent.replace(/\s+/g, " ").trim();
+  }
+  function why(el) {
+    var n = document.querySelector("#fb .vcsw-alert[role=status] .vcsw-alert-text") || el.querySelector(".uitleg") || document.querySelector(".feedback .uitleg");
+    if (n) return clean(n);
+    var box = el.closest(".options"), said = "", alert = "";
+    for (var s = box ? box.nextElementSibling : null; s; s = s.nextElementSibling) {
+      if (s.matches(".actions, button")) break;
+      var sp = s.matches(".speech-text") ? [s] : s.querySelectorAll(".speech-text"), al = s.matches(".vcsw-alert-text") ? s : s.querySelector(".vcsw-alert-text");
+      if (sp.length) said = clean(sp[sp.length - 1]);
+      if (al && !alert) alert = clean(al);
+    }
+    return said || alert;
+  }
+  function send(result, key, el) {
     if (seen[key]) return;
     seen[key] = true;
-    try { window.parent.postMessage({ orion: "answer", result: result }, "*"); } catch (e) {}
+    var msg = { orion: "answer", result: result };
+    if (el && result !== "goed") { msg.q = title(); msg.a = clean(el); msg.why = why(el); }
+    try { window.parent.postMessage(msg, "*"); } catch (e) {}
   }
   function scan() {
     var t = title(), el, r;
@@ -32,18 +52,18 @@
     root.classList.toggle("asking", !!document.querySelector(".option:not([disabled]), .opt:not([disabled]), .choice:not([disabled])") && !document.querySelector(".option.picked, .option.chosen, .opt.chosen, .choice.picked"));
     // Level 1: .opt.chosen with goed/half/fout
     el = document.querySelector(".opt.chosen");
-    if (el) { r = el.classList.contains("goed") ? "goed" : el.classList.contains("half") ? "half" : "fout"; send(r, t + "|" + el.textContent.trim().slice(0, 60)); }
+    if (el) { r = el.classList.contains("goed") ? "goed" : el.classList.contains("half") ? "half" : "fout"; send(r, t + "|" + el.textContent.trim().slice(0, 60), el); }
     // Level 4: .option.chosen with good/half/bad
     el = document.querySelector(".option.chosen");
-    if (el) { r = el.classList.contains("good") ? "goed" : el.classList.contains("half") ? "half" : "fout"; send(r, t + "|" + el.textContent.trim().slice(0, 60)); }
+    if (el) { r = el.classList.contains("good") ? "goed" : el.classList.contains("half") ? "half" : "fout"; send(r, t + "|" + el.textContent.trim().slice(0, 60), el); }
     // Levels 2, 5 and the final mission: .option.picked with a verdict badge
-    el = document.querySelector(".option.picked .verdict .vcsw-badge");
-    if (el) { r = el.classList.contains("success") ? "goed" : el.classList.contains("warning") ? "half" : "fout"; send(r, t + "|" + el.closest(".option").textContent.trim().slice(0, 60)); }
+    el = document.querySelector(".option .verdict .vcsw-badge");
+    if (el) { r = el.classList.contains("success") ? "goed" : el.classList.contains("warning") ? "half" : "fout"; send(r, t + "|" + el.closest(".option").textContent.trim().slice(0, 60), el.closest(".option")); }
     // Level 3: .choice.picked, verdict in the feedback
     el = document.querySelector(".choice.picked");
     if (el) {
       var v = document.querySelector("#fb .vcsw-alert[role=status], #fb .vcsw-alert.success, #fb .vcsw-alert.warning, #fb .vcsw-alert.error");
-      if (v) { r = v.classList.contains("success") ? "goed" : v.classList.contains("warning") ? "half" : "fout"; send(r, t + "|" + el.textContent.trim().slice(0, 60)); }
+      if (v) { r = v.classList.contains("success") ? "goed" : v.classList.contains("warning") ? "half" : "fout"; send(r, t + "|" + el.textContent.trim().slice(0, 60), el); }
     }
     // Level reset: forget answers when the briefing shows again
     var ov = document.querySelector("#stage .vcsw-overline, #stage .overline, #stage .ov, #screen .vcsw-overline");

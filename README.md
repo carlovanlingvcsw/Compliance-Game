@@ -85,6 +85,8 @@ Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 2,6 MB
 
 ## Wijzigingen
 
+- Ronde 16: Nalezen. Elk half goed of fout antwoord, in de levels en in de arcade, komt met de uitleg in een lijst die je via de knop Nalezen waarom opent. Witte teksten boven de aarde staan op een donkere sluier en op dichtere kaarten.
+
 - Ronde 15: reflecties uit echte omgevingskaarten (vier HDRI's van Poly Haven, CC0, verkleind, zie `assets/hdri/CREDITS.md`) en een rustige vraagweergave. Zolang een vraag openstaat toont het level alleen de vraag, en een antwoord geeft één rustig signaal.
 
 - Ronde 14: beginscherm met uitleg tijdens het laden, de aarde met de plek van VCSW, een vaste camerastand per module, rijkere modellen (shuttle, ziekenboeg, passagiersmodule, geschut), contactschaduw, de knop Tijdsdruk die alle timers stilzet, een skiplink, en foute antwoorden die even concreet zijn als de goede.

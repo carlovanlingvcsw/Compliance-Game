@@ -45,7 +45,7 @@
 
   /* ---------- Saved progress (this browser only) ---------- */
   var KEY = "orion-datawacht-v1";
-  var P = { xp: 0, best: 0, levelStars: {}, games: {}, badges: {}, opened: {}, sound: false, calm: false, last: -1 };
+  var P = { xp: 0, best: 0, levelStars: {}, games: {}, badges: {}, opened: {}, sound: false, calm: false, review: [], last: -1 };
   try { var saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved) for (var k in saved) P[k] = saved[k]; } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
 
@@ -248,7 +248,7 @@
 
   window.addEventListener("message", function (e) {
     if (!e.data || e.data.orion !== "answer") return;
-    for (var n = 0; n < frames.length; n++) if (frames[n] && frames[n].contentWindow === e.source) onAnswer(n, e.data.result);
+    for (var n = 0; n < frames.length; n++) if (frames[n] && frames[n].contentWindow === e.source) { onAnswer(n, e.data.result); if (e.data.result !== "goed" && e.data.why) note(LEVELS[n].name, e.data.q, e.data.a, e.data.why, e.data.result); }
   });
   function loadFrame(n) {
     var f = document.createElement("iframe");
@@ -390,7 +390,7 @@
   }
 
   function startGame(id) {
-    stopGame();
+    stopGame(); roundNotes = 0;
     ({ sprint: playSprint, poort: playPoort, invaders: playInvaders, lekken: playLekken })[id]();
   }
 
@@ -410,8 +410,10 @@
       '<div class="score">' + val + " " + g.unit + '</div><p class="sub">+' + xp.toLocaleString("nl-NL") + " Datawacht-XP" + (s < 3 ? " · Drie sterren bij " + g.thresholds[2] + " " + g.unit : "") + "</p>" +
       (record && val > 0 ? '<span class="rec">Nieuw record</span>' : "") +
       '<div class="learn"><h3>Wat je hier traint</h3><ul>' + g.learn.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("") + "</ul></div>" +
+      (roundNotes ? '<p class="ar-nalezen"><button class="btn-ghost" id="g-review" type="button">Lees na wat fout ging (' + roundNotes + ")</button></p>" : "") +
       '<div class="ar-actions"><button class="btn-ghost" id="g-again">' + icon("refresh") + 'Nog een keer</button><button class="btn-go" id="g-next">Verder' + icon("right") + "</button></div>" +
       "</div></section></div>";
+    var gr = document.getElementById("g-review"); if (gr) gr.onclick = openReview;
     document.getElementById("g-again").onclick = function () { startGame(id); };
     document.getElementById("g-next").onclick = function () { go(cur + 1); };
     document.getElementById("g-next").focus({ preventScroll: true });
@@ -443,6 +445,7 @@
     function answer(yes) {
       if (lock || !G || G.over) return;
       var c = deck[idx], ok = (c[1] === 1) === yes; G.done++;
+      if (!ok) note("Holokaarten-sprint", c[0], yes ? "Wel persoonsgegeven" : "Geen persoonsgegeven", c[1] ? "Dit is wel een persoonsgegeven. Het is te herleiden tot één persoon, direct of via een omweg zoals een nummer, een locatie of een kleine groep." : "Dit is geen persoonsgegeven. Het gaat over een organisatie, een grote groep of iets algemeens en is niet tot één persoon te herleiden.", "fout");
       var tr = document.getElementById("trail"); if (tr) { var d = document.createElement("i"); d.className = ok ? "ok" : "nok"; tr.appendChild(d); while (tr.children.length > 14) tr.firstChild.remove(); }
       if (ok) { var pts = gGood(10); feed("+" + pts, "good"); lock = true; if (!reduce) holo.className = "holo " + (yes ? "fly-r" : "fly-l"); later(function () { idx++; lock = false; show(); }, reduce ? 0 : 230); }
       else { gBad(false); feed("Fout. Dit is " + (c[1] ? "wel" : "geen") + " persoonsgegeven.", "bad"); holo.className = "holo wrong"; lock = true; G.left -= 2; later(function () { idx++; lock = false; show(); }, 650); }
@@ -482,7 +485,7 @@
       btn.classList.add(ok ? "ok" : "nok"); later(function () { btn.classList.remove("ok", "nok"); }, 350);
       active = null; idx++; speed += 14;
       if (ok) { var pts = gGood(10); feed("+" + pts + " · Juist luik.", "good"); }
-      else { feed("Verkeerd luik. Dit hoort bij de " + DOORS[p[1]][0].toLowerCase() + ".", "bad"); gBad(true); }
+      else { feed("Verkeerd luik. Dit hoort bij de " + DOORS[p[1]][0].toLowerCase() + ".", "bad"); gBad(true); note("Wie mag dit zien?", p[0], DOORS[d][0], "Dit hoort bij de " + DOORS[p[1]][0].toLowerCase() + ". " + [GAMES.poort.learn[0], GAMES.poort.learn[2], GAMES.poort.learn[1]][p[1]], "fout"); }
       later(next, 350);
     }
     document.querySelectorAll(".door").forEach(function (b) { b.onclick = function () { decide(+b.getAttribute("data-d")); }; });
@@ -499,6 +502,7 @@
       if (x > beltW - 60) {
         var p = list[idx]; active.remove(); active = null; idx++; speed += 14;
         feed("Te laat. Dit hoorde bij de " + DOORS[p[1]][0].toLowerCase() + ".", "bad"); gBad(true); later(next, 450);
+        note("Wie mag dit zien?", p[0], "Te laat", "Dit hoort bij de " + DOORS[p[1]][0].toLowerCase() + ". " + [GAMES.poort.learn[0], GAMES.poort.learn[2], GAMES.poort.learn[1]][p[1]], "fout");
       }
     });
   }
@@ -556,7 +560,7 @@
         var r = el.getBoundingClientRect(), sr = sky.getBoundingClientRect(), x = r.left - sr.left + r.width / 2, y = r.top - sr.top + r.height / 2;
         el.remove(); live = live.filter(function (q) { return q !== o; }); G.done++;
         if (o.fake) { shot(x, y, "hit"); var pts = gGood(15); SFX.zap(); fx2("", x, y, "+" + pts); feed("Raak. Dat was een aanval.", "good"); }
-        else { shot(x, y, "wrong"); fx2("red", x, y, "Echt bericht"); feed("Dat was een echt bericht van " + m[0] + ".", "bad"); gBad(true); }
+        else { note("Phishing Invaders", m[2], "Neergeschoten als nepbericht", "Dit was een echt bericht. " + m[0] + " schrijft via " + m[1] + ". Dat is een bekend kanaal, en het bericht vraagt niets ongewoons.", "fout"); shot(x, y, "wrong"); fx2("red", x, y, "Echt bericht"); feed("Dat was een echt bericht van " + m[0] + ".", "bad"); gBad(true); }
       };
       sky.appendChild(el); live.push(o);
     }
@@ -571,7 +575,7 @@
         if (o.y + o.el.offsetHeight >= floor) {
           o.el.remove(); live = live.filter(function (q) { return q !== o; });
           var x = o.el.offsetLeft + o.el.offsetWidth / 2; G.done++;
-          if (o.fake) { shot(x, floor, "impact"); fx2("red", x, floor, "Aanval binnen"); feed("Een aanval kwam binnen.", "bad"); gBad(true); }
+          if (o.fake) { note("Phishing Invaders", o.m[2], "Doorgelaten", "Dit was een nepbericht. Het komt van " + o.m[1] + " en niet van een kanaal van het station. Let ook op spoed, geheimhouding, geld of een link om in te loggen.", "fout"); shot(x, floor, "impact"); fx2("red", x, floor, "Aanval binnen"); feed("Een aanval kwam binnen.", "bad"); gBad(true); }
           else { shot(x, floor, "land"); G.score += 5; fx2("blue", x, floor, "+5"); gHud(); }
         }
       });
@@ -610,7 +614,7 @@
         if (!G || G.over || !active[i]) return;
         var a = active[i]; G.done++;
         if (a.leak) { var pts = gGood(10); clear(i, "sealed"); feed("+" + pts + " · Gemeld: " + a.text + ".", "good"); }
-        else { G.streak = 0; SFX.half(); clear(i); feed("Geen datalek. Melden bij twijfel is altijd goed, maar dit was duidelijk geen lek.", ""); gHud(); }
+        else { note("Lekken dichten", a.text, "Gemeld als lek", "Dit is geen datalek. Er zijn geen persoonsgegevens bij iemand terechtgekomen die ze niet mag zien.", "half"); G.streak = 0; SFX.half(); clear(i); feed("Geen datalek. Melden bij twijfel is altijd goed, maar dit was duidelijk geen lek.", ""); gHud(); }
       };
       grid.querySelector('[data-m="' + i + '"]').appendChild(b);
     }
@@ -622,13 +626,37 @@
         if (!G || G.over) return; var a = active[k]; if (!a) return; if (!P.calm) a.t -= dt;
         var bar = a.el.querySelector(".bar2 i"); if (bar) bar.style.transform = "scaleX(" + Math.max(0, a.t / a.life) + ")";
         if (a.t <= 0) {
-          if (a.leak) { clear(k, "breach"); feed("Lek gemist: " + a.text + ".", "bad"); gBad(true); }
+          if (a.leak) { note("Lekken dichten", a.text, "Niet gemeld", "Dit is een mogelijk datalek. Persoonsgegevens zijn bij de verkeerde ontvanger beland, kwijtgeraakt of ingezien zonder reden. Meld het direct, het meldpunt beoordeelt.", "fout"); clear(k, "breach"); feed("Lek gemist: " + a.text + ".", "bad"); gBad(true); }
           else { clear(k); G.score += 2; gHud(); }
         }
       });
     });
   }
 
+
+  /* ---------- Nalezen: every half good or wrong answer is kept with its explanation, to read again ---------- */
+  var roundNotes = 0, revBtn = document.getElementById("review"), revDlg = document.getElementById("review-dlg");
+  function note(where, q, a, why, r) {
+    if (!why) return;
+    P.review = (P.review || []).filter(function (x) { return !(x.w === where && x.q === q && x.a === a); });
+    P.review.unshift({ w: where, q: q || "", a: a || "", why: why, r: r }); P.review = P.review.slice(0, 40);
+    roundNotes++; save(); paintReview(true);
+  }
+  function paintReview(fresh) {
+    var n = (P.review || []).length;
+    revBtn.hidden = !n; revBtn.querySelector("b").textContent = n;
+    if (fresh && !reduce) { revBtn.classList.add("new"); clearTimeout(paintReview.t); paintReview.t = setTimeout(function () { revBtn.classList.remove("new"); }, 2400); }
+  }
+  function openReview() {
+    revDlg.querySelector(".tr-body").innerHTML = (P.review || []).map(function (x) {
+      return '<article class="rv"><p class="rv-meta">' + esc(x.w) + (x.q ? " · " + esc(x.q) : "") + '</p><p class="rv-a"><span class="vcsw-badge ' + (x.r === "half" ? "warning" : "danger") + '">' + (x.r === "half" ? "Half goed" : "Fout") + "</span> Jouw antwoord: " + esc(x.a) + '</p><p class="rv-why">' + esc(x.why) + "</p></article>";
+    }).join("") || "<p>Je hebt nog niets om na te lezen.</p>";
+    revDlg.showModal();
+  }
+  revBtn.onclick = openReview;
+  document.getElementById("close-review").onclick = function () { revDlg.close(); };
+  document.getElementById("clear-review").onclick = function () { P.review = []; save(); paintReview(); revDlg.close(); };
+  paintReview();
 
   /* ---------- Tijdsdruk: one switch for every timer, in the arcade and in the levels (see orion-bridge.js) ---------- */
   var calmBtn = document.getElementById("calm");
