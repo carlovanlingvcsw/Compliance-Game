@@ -528,7 +528,7 @@
     var q = BOSS[B.i], ans = B.answered[B.i], answered = ans !== undefined, good = answered && ans === q.a;
     var html = '<div class="nevel"><div class="nevel-kaart' + (answered ? (good ? " is-goed" : " is-fout") : "") + '">' +
       '<div class="nevel-kop"><div class="ring' + (answered ? " is-stil" : B.left <= 5 ? " low" : "") + '" id="timer" aria-live="off">' + ringSVG(B.left, answered ? (good ? "goed" : "fout") : "loopt") + "</div>" +
-      '<div class="kop">' + chips([["Aanval van de Zwarte Nevel", "rood", "warn"]]) + "<h2>Aanval " + (B.i + 1) + " van " + BOSS.length + ": " + q.cat + "</h2></div></div>" +
+      '<div class="kop"><h2>Aanval ' + (B.i + 1) + " van " + BOSS.length + ": " + q.cat + '</h2><p class="nevel-sub">' + icon("warn") + "De Zwarte Nevel valt deze module aan</p></div></div>" +
       '<p class="nevel-vraag">' + esc(q.t) + "</p>" +
       '<div class="options" role="group" aria-label="Kies je antwoord">';
     q.o.forEach(function (o, k) {
@@ -588,7 +588,11 @@
   /* De deur is één SVG. Klassen op de onderdelen sturen lampjes, grendels en het openzwaaien via CSS. */
   function doorSVG() {
     var s = '<svg class="deur" id="deur" viewBox="0 0 560 560" role="img" aria-label="De hoofdsluis"><defs>' +
-      '<clipPath id="deurGat"><circle cx="280" cy="280" r="214"/></clipPath><clipPath id="deurAarde"><circle cx="280" cy="940" r="560"/></clipPath></defs>' +
+      '<clipPath id="deurGat"><circle cx="280" cy="280" r="214"/></clipPath><clipPath id="deurAarde"><circle cx="280" cy="940" r="560"/></clipPath>' +
+      '<radialGradient id="dSchijfG" cx="36%" cy="28%" r="85%"><stop offset="0" stop-color="#2c61a6"/><stop offset=".5" stop-color="#15386a"/><stop offset="1" stop-color="#0a1f42"/></radialGradient>' +
+      '<linearGradient id="dKozijnG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b4a80"/><stop offset=".6" stop-color="#0b2548"/><stop offset="1" stop-color="#06162f"/></linearGradient>' +
+      '<linearGradient id="dBalkG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d3dce8"/><stop offset="1" stop-color="#70819a"/></linearGradient>' +
+      '<radialGradient id="dNaafG" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#f1f5fa"/><stop offset="1" stop-color="#93a3b9"/></radialGradient></defs>' +
       '<circle class="d-kozijn" cx="280" cy="280" r="272"/><circle class="d-kozijn-lijn" cx="280" cy="280" r="262"/>';
     var i, p, q, seed = 11;
     function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
@@ -622,6 +626,11 @@
       p = pol(243, a);
       s += '<g transform="rotate(' + a + ' 280 280)"><rect class="d-houder" data-g="' + g + '" x="504" y="252" width="38" height="56" rx="7"/></g>' +
         '<text class="d-cijfer" data-g="' + g + '" x="' + p[0] + '" y="' + (+p[1] + 9.5).toFixed(1) + '" text-anchor="middle">' + (g + 1) + "</text>";
+    });
+    /* Vijf bogen op het kozijn: van ver zie je welke grendels open zijn. */
+    BOLT_ANG.forEach(function (a, g) {
+      p = pol(272, a - 27); q = pol(272, a + 27);
+      s += '<path class="d-boog" data-g="' + g + '" d="M' + p[0] + " " + p[1] + "A272 272 0 0 1 " + q[0] + " " + q[1] + '"/>';
     });
     return s + "</svg>";
   }
@@ -673,7 +682,7 @@
       chips(["Eindmissie, deel 3", [n + " van 5 grendels open", n ? "groen" : "blauw", n ? "unlock" : "lock"]]) + "</div>" +
       '<ol class="grendels" aria-label="Voortgang per grendel">' + BOLTS.map(function (name, k) {
         var st = L.bolts[k].open ? "open" : k === g ? "nu" : "dicht";
-        return '<li class="is-' + st + '"' + (st === "nu" ? ' aria-current="step"' : "") + '><span class="g-naam">' + (k + 1) + '<span class="g-tekst"> ' + name + '</span></span><span class="g-stand">' + icon(st === "open" ? "check" : st === "nu" ? "next" : "lock") + (st === "open" ? "Open" : st === "nu" ? "Nu" : "Dicht") + "</span></li>";
+        return '<li class="is-' + st + '"' + (st === "nu" ? ' aria-current="step"' : "") + '><span class="g-naam">' + (k + 1) + '<span class="g-tekst"> ' + name + '</span></span><span class="g-stand">' + icon(st === "open" ? "check" : st === "nu" ? "next" : "lock") + (st === "dicht" ? '<span class="vcsw-sr-only">Dicht</span>' : st === "open" ? "Open" : "Nu") + "</span></li>";
       }).join("") + "</ol>";
     lijf.innerHTML = '<div class="regels">' + boltIds(g).map(ruleCard).join("") + "</div>" +
       '<div class="sluis-acties">' + (bolt.open
@@ -741,7 +750,7 @@
   function renderLock() {
     show('<div class="sluis"><div class="sluis-kop" id="sluisKop"></div>' +
       '<div class="sluis-grid"><div class="sluis-links"><div class="sluis-deur">' + doorSVG() + "</div>" +
-      '<p class="sluis-uitleg" id="sluisUitleg">De hoofdsluis opent alleen met de vijftien kernregels van de Datawacht. Elke grendel vraagt de drie regels van één level. Kies bij elke regel het woord dat ontbreekt. Een gekozen woord zet een lampje op de grendel aan. Kloppen alle drie, dan schuift de grendel open.</p></div>' +
+      '<p class="sluis-uitleg" id="sluisUitleg">Elke grendel vraagt de drie kernregels van één level. Kies per regel het woord dat ontbreekt. Elk gekozen woord zet een lampje op de grendel aan. Kloppen alle drie, dan schuift de grendel open.</p></div>' +
       '<div class="sluis-lijf" id="sluisLijf"></div></div></div>', "is-smal");
     paintLock();
   }

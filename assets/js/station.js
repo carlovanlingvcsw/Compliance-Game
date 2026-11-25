@@ -551,10 +551,10 @@ scene.add(nevel.light);
     const grp = new THREE.Group(); grp.position.copy(m.anchor); if (!m.fixed) { grp.position.x += 0.7; grp.position.y -= 0.9; } grp.visible = false; m.group.add(grp);
     // a red glow inside the smoke of the module under attack
     const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, color: 0xff3030, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false, blending: THREE.AdditiveBlending }));
-    glow.scale.set(3.6, 3.6, 1); glow.renderOrder = 6; grp.add(glow);
+    glow.scale.set(2.2, 1.4, 1); glow.renderOrder = 6; grp.add(glow);
     const puffs = [];
-    for (let k = 0; k < 14; k++) {
-      const core = k < 4, mat = new THREE.SpriteMaterial({ map: tex, color: core ? 0x0a0d15 : k % 3 ? 0x1f2535 : 0x4a5674, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false });
+    for (let k = 0; k < 18; k++) {
+      const core = k < 4, mat = new THREE.SpriteMaterial({ map: tex, color: core ? 0x0b0e17 : k % 3 ? 0x222a3d : 0x5d6b8c, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false });
       const sp = new THREE.Sprite(mat); const a = rnd() * 6.283, r = core ? rnd() * 0.7 : 0.9 + rnd() * 1.9;
       sp.userData = { base: new THREE.Vector3(Math.cos(a) * r, (rnd() - 0.5) * (m.fixed ? 3.2 : 1.6), Math.sin(a) * r), size: (core ? 3.0 : 2.2) + rnd() * 1.6, ph: rnd() * 6.283, sp: 0.25 + rnd() * 0.4, rot: (rnd() - 0.5) * 0.3, rim: !core && k % 3 === 0 };
       sp.renderOrder = core ? 7 : 5; grp.add(sp); puffs.push(sp);
@@ -578,13 +578,13 @@ function nevelTick(t, dt) {
     if (c.blow > 0) c.blow = Math.min(1, c.blow + dt * 0.9); if (want > 0) c.blow = 0;
     const vis = c.level > 0.012; c.group.visible = vis; if (!vis) { c.blow = 0; return; }
     const isHot = nevel.on && k === nevel.i && nevel.results[k] == null; if (isHot) hot = c;
-    c.glow.material.opacity += ((isHot ? 0.3 + (reduce ? 0 : (Math.sin(t * 9) * Math.sin(t * 23.7) + 1) * 0.2) : 0) - c.glow.material.opacity) * Math.min(1, dt * 8);
+    c.glow.material.opacity += ((isHot ? 0.07 + (reduce ? 0 : Math.max(0, Math.sin(t * 9) * Math.sin(t * 23.7)) * 0.16) : 0) - c.glow.material.opacity) * Math.min(1, dt * 8);
     c.puffs.forEach((p) => {
       const u = p.userData, w = reduce ? 0 : Math.sin(t * u.sp + u.ph);
       p.position.set(u.base.x * (1 + c.blow * 1.8) + w * 0.18, u.base.y * (1 + c.blow * 1.2) + Math.cos(t * u.sp * 0.8 + u.ph) * (reduce ? 0 : 0.14) + c.blow * 0.8, u.base.z * (1 + c.blow * 1.8) + w * 0.12);
-      const sz = u.size * (0.55 + c.level * 0.55) * (1 + c.blow * 0.9) * (1 + w * 0.05); p.scale.set(sz, sz, 1);
+      const sz = u.size * (0.55 + c.level * 0.55) * (1 + c.blow * 0.9) * (1 + w * 0.05); if (u.rim) p.scale.set(sz * 1.7, sz * 0.5, 1); else p.scale.set(sz, sz, 1);
       p.material.rotation = u.ph + (reduce ? 0 : t * u.rot);
-      p.material.opacity = Math.min(1, c.level * 1.05) * (1 - c.blow * 0.6) * (u.rim ? 0.5 : 0.92);
+      p.material.opacity = Math.min(1, c.level * 1.05) * (1 - c.blow * 0.6) * (u.rim ? 0.42 : 0.9);
       if (isHot && !reduce) c.glow.position.set(Math.sin(t * 3.1) * 0.5, Math.sin(t * 2.3) * 0.35, Math.cos(t * 2.7) * 0.5);
     });
   });

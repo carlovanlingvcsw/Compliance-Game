@@ -24,15 +24,16 @@
       </ol>
     </div>
     <div class="gate" id="gate">
-      <div class="gate-top"><span class="gate-leds" aria-hidden="true"><i></i><i></i><i></i></span><p id="boot-status" aria-live="polite">Het station wordt opgebouwd</p>
+      <div class="gate-top"><p id="boot-status" aria-live="polite">Het station wordt opgebouwd</p><span class="gate-leds" aria-hidden="true"><i></i><i></i><i></i></span>
         <div class="boot-bar" id="boot-bar" role="progressbar" aria-label="Laden" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div></div>
       <div class="gate-doors">
         <div class="gate-beyond" aria-hidden="true"></div>
-        <div class="gd l" aria-hidden="true"><span class="gd-win"></span><span class="gd-rib"></span><span class="gd-rib b"></span><span class="gd-haz"></span></div>
-        <div class="gd r" aria-hidden="true"><span class="gd-win"></span><span class="gd-rib"></span><span class="gd-rib b"></span><span class="gd-haz"></span></div>
+        <div class="gd l" aria-hidden="true"><span class="gd-win"></span><span class="gd-rib"></span><span class="gd-rib b"></span><span class="gd-plate"></span><span class="gd-haz"></span><span class="gd-grip"></span></div>
+        <div class="gd r" aria-hidden="true"><span class="gd-win"></span><span class="gd-rib"></span><span class="gd-rib b"></span><span class="gd-plate"></span><span class="gd-haz"></span><span class="gd-grip"></span></div>
         <span class="gate-seam" aria-hidden="true"></span>
         <div class="gate-card">
           <span class="gate-scan" aria-hidden="true"></span>
+          <span class="gc-slot" aria-hidden="true"><i></i></span>
           <div class="gc-head"><span class="gc-ico" aria-hidden="true"><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span><div><h2>Houd je pas voor de lezer</h2><p>Datawacht Orion, toegangspas</p></div></div>
           <label for="boot-user">Pas van (demo)</label><select id="boot-user"></select>
           <button type="button" class="go" id="boot-go" disabled>Scan en ga aan boord<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>

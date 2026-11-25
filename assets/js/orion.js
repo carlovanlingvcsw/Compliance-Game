@@ -335,7 +335,7 @@
       var x = R[n], st = P.levelStars[n] || 0, stars = ""; for (var i = 0; i < 3; i++) stars += '<span class="lb-star' + (i < st ? " on" : "") + '">' + icon("star") + "</span>";
       return "<tr><th scope=\"row\">" + (n === 5 ? "E" : n + 1) + ". " + esc(L.name) + '</th><td class="num' + (x && !x.passed ? " low" : "") + '">' + (x ? x.pct + "%" : "") + "</td><td>" + stars + '</td><td class="state">' + (x ? (x.passed ? "Gehaald" : "Nog niet gehaald") : "Nog niet gespeeld") + "</td></tr>";
     }).join("");
-    logEl.innerHTML = '<div class="lb-sheet"><div class="lb-head"><span class="lb-seal">' + icon("shield") + '</span><div class="lb-who"><span>Logboek van de Datawacht</span><h1>' + esc(me().name) + "</h1><p>Rang: " + rank + ". Stand op " + day + '.</p></div><div class="lb-total"><b>' + tot + "%</b><span>totaalscore</span></div></div>" +
+    logEl.innerHTML = '<div class="lb-sheet"><div class="lb-head"><span class="lb-seal">' + icon("shield") + '</span><div class="lb-who"><h1>Logboek van ' + esc(me().name) + "</h1><p>" + rank + ". Stand op " + day + '.</p></div><div class="lb-total"><b>' + tot + "%</b><span>totaalscore</span></div></div>" +
       '<table><caption class="vcsw-sr-only">Uitslag per missie</caption><tbody>' + rows + '</tbody></table><div class="lb-foot"><span>' + passed + " van 6 missies gehaald</span><span>" + games + " van 4 oefenrondes gespeeld</span><span>" + badges + " van " + BADGES.length + ' prestaties</span></div><p class="lb-note">Het schild telt niet mee voor halen. Een missie is gehaald vanaf 70 procent van de punten. Dit logboek staat alleen in deze browser.</p></div>' +
       '<div class="lb-actions"><button type="button" class="btn-go" id="lb-print">' + icon("download") + "Bewaar als pdf</button>" + (worst !== null ? '<button type="button" class="btn-ghost" id="lb-again">' + icon("refresh") + "Speel " + esc(LEVELS[worst].short) + (R[worst] ? " opnieuw" : "") + "</button>" : "") + (P.review && P.review.length ? '<button type="button" class="btn-ghost" id="lb-review">' + icon("doc") + "Lees na wat fout ging</button>" : "") + '<button type="button" class="btn-ghost lb-close" id="lb-close">Sluit af</button></div>';
     document.getElementById("lb-print").onclick = function () { document.body.classList.add("print-logbook"); try { window.print(); } catch (e) {} setTimeout(function () { document.body.classList.remove("print-logbook"); }, 500); };
@@ -348,6 +348,11 @@
   var fitH = {};
   function fitPanel() {
     var r = ROUTE[cur], h = view === "mission" && r && r.type === "level" ? fitH[r.n] : 0;
+    if (view === "mission" && r && r.type === "result" && window.innerWidth >= 900) {
+      stageEl.classList.add("fit"); stageEl.style.height = "auto"; logEl.style.position = "static";
+      return;
+    }
+    logEl.style.position = "";
     if (!h || window.innerWidth < 900) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; }
     var room = window.innerHeight - stageEl.getBoundingClientRect().top - 12;
     if (h + 30 + (statusEl.hidden ? 0 : statusEl.offsetHeight) > room - 24) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; } // nearly full: keep one baseline with the module card
@@ -914,13 +919,13 @@
   (function () {
     var boot = document.getElementById("boot"); if (!boot) return;
     var rest = [document.querySelector("header.bar"), document.querySelector("main")];
-    function close() { boot.hidden = true; rest.forEach(function (el) { if (el) el.inert = false; }); }
+    function close() { boot.hidden = true; document.body.classList.remove("booting"); rest.forEach(function (el) { if (el) el.inert = false; }); }
     var sel = document.getElementById("boot-user");
     sel.innerHTML = USERS.map(function (u) { return '<option value="' + u.id + '"' + (u.id === P.user ? " selected" : "") + ">" + esc(u.name) + " · " + esc(u.label) + ", " + esc(u.dept) + "</option>"; }).join("");
     function login() { P.user = sel.value; save(); paintUser(); }
     var gate = document.getElementById("gate"), stEl = document.getElementById("boot-status"), gT = [];
     function resetGate() { gT.forEach(clearTimeout); gT = []; boot.classList.remove("scan", "open", "out"); stEl.textContent = "Wacht op je pas"; }
-    document.getElementById("user-btn").onclick = function () { resetGate(); boot.hidden = false; boot.classList.add("relog"); rest.forEach(function (el) { if (el) el.inert = true; }); document.getElementById("boot-go").disabled = false; sel.focus(); };
+    document.getElementById("user-btn").onclick = function () { resetGate(); boot.hidden = false; document.body.classList.add("booting"); boot.classList.add("relog"); rest.forEach(function (el) { if (el) el.inert = true; }); document.getElementById("boot-go").disabled = false; sel.focus(); };
     function enter() { close(); resetGate(); if (view === "admin" && !me().admin) showHome(); document.getElementById("start").focus({ preventScroll: true }); }
     document.getElementById("boot-go").onclick = function () {
       login(); boot.classList.add("ready");
@@ -932,7 +937,7 @@
     };
     if (/[?&]boot=uit/.test(location.search)) { if (!P.user) P.user = USERS[0].id; paintUser(); close(); return; }
     var bar = document.getElementById("boot-bar"), st = document.getElementById("boot-status"), goBtn = document.getElementById("boot-go"), ready = false;
-    rest.forEach(function (el) { if (el) el.inert = true; });
+    rest.forEach(function (el) { if (el) el.inert = true; }); document.body.classList.add("booting");
     function prog(f) { bar.firstElementChild.style.width = Math.round(f * 100) + "%"; bar.setAttribute("aria-valuenow", Math.round(f * 100)); }
     function done(text) { if (ready) return; ready = true; prog(1); st.textContent = text; boot.classList.add("ready"); goBtn.disabled = false; goBtn.focus({ preventScroll: true }); }
     window.addEventListener("orion-load", function (e) { if (!ready) prog(e.detail * 0.9); });

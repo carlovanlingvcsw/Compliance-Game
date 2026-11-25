@@ -238,3 +238,22 @@ html.orion-level .ox-clock.timer.low { color: #ffc978 !important; }
 @media (max-width: 600px) { .aarde .ox-two { grid-template-columns: minmax(0, 1fr); } }
 @media (max-height: 720px) { .aarde .ox-lead { display: none; } }
 @media (prefers-reduced-motion: reduce) { .ox-btn, .track .fill { transition: none; } }
+
+/* Ronde 24: de drie luiken als luikpanelen in plaats van labels. Het schild staat al in de statusbalk van de schil. */
+html.in-orion #schildChip { display: none; }
+.luik-pills { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1.75fr); gap: 10px; }
+.luik-pil { border-radius: 10px; min-height: 54px; padding: 6px 14px 6px 12px; border: 1px solid #1f4f85; border-left: 6px solid var(--luik); background: linear-gradient(180deg, #0f2c57, #081b38); box-shadow: inset 0 1px 0 rgb(255 255 255 / .08); justify-content: flex-start; min-width: 0; }
+.luik-pil > .vcsw-icon { width: 22px; height: 22px; padding: 6px; box-sizing: content-box; border-radius: 50%; background: #04122a; border: 1px solid #1f4f85; flex: none; }
+.luik-pil > span:not(.vcsw-sr-only) { overflow: hidden; text-overflow: ellipsis; }
+.luik-pil b { margin-left: auto; font-size: 20px; padding-left: 6px; }
+.luik-pil.slot b { margin-left: 6px; }
+.luik-pil.slot { padding-right: 8px; }
+.luik-open { margin-left: auto; border-radius: 8px; height: 38px; flex: none; }
+#screen .luik-rest { grid-column: 1 / -1; }
+.luik-card { background: linear-gradient(180deg, #081d3d, #06162f); }
+@media (max-width: 700px) { .luik-pills { grid-template-columns: minmax(0, 1fr); } }
+.luik-pills { grid-template-columns: minmax(0, .9fr) minmax(0, 1.3fr) minmax(0, 1.95fr); }
+.luik-pil { padding: 6px 10px 6px 10px; gap: 7px; }
+.luik-pil > .vcsw-icon { width: 20px; height: 20px; padding: 4px; }
+.luik-pil > span:not(.vcsw-sr-only) { overflow: visible; }
+.luik-open { padding: 0 9px; font-size: 13px; gap: 5px; }

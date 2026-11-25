@@ -790,3 +790,58 @@ body.panicking .mission { opacity: 0; }
 .st-row.end .st-stat.gems { flex: 0 0 132px; } .st-row.end .st-gems i { flex: 1 1 0; }
 .st-row.end .st-stat small { display: none; }
 @media (max-width: 1100px) { .st-row.end { flex-wrap: wrap; } .st-row.end .st-next { flex: 1 1 100%; justify-content: center; } }
+
+/* ---------- Ronde 24: logboek in de stijl van het station, wit op papier ---------- */
+@media screen {
+  .logbook { padding: 24px 28px; }
+  .lb-sheet { background: linear-gradient(180deg, #0a2247, #071a38); color: #fff; border: 1px solid var(--o-edge-strong); padding: 26px 30px; }
+  .lb-seal { background: #04122a; border: 2px solid var(--vcsw-amber-300); }
+  .lb-who h1 { color: #fff; font-size: 1.875rem; } .lb-who p, .lb-who span { color: #c7d6ea; }
+  .lb-total b { color: var(--vcsw-blue-300); } .lb-total span { color: #c7d6ea; }
+  .lb-sheet th, .lb-sheet td { border-bottom-color: #1c3d6c; color: #c7d6ea; }
+  .lb-sheet th { color: #fff; } .lb-sheet td.num { color: #fff; } .lb-sheet td.num.low { color: var(--vcsw-amber-300); }
+  .lb-sheet tr:last-child th, .lb-sheet tr:last-child td { border-bottom: 0; }
+  .lb-star { color: #2b4c7c; } .lb-star.on { color: var(--vcsw-amber-300); }
+  .lb-foot { color: #c7d6ea; padding-top: 14px; border-top: 1px solid #1c3d6c; } .lb-foot span { color: #fff; font-weight: 600; }
+  .lb-note { color: #a9bcd6; }
+  .panel.fit > .logbook { overflow: visible; }
+}
+/* ---------- Ronde 24: de route past naast de naam ---------- */
+@media (max-width: 1640px) { .brand-name { display: none; } }
+.route .node.flag { flex: none; }
+
+/* ---------- Ronde 24: de toegangspoort als deur van het station ---------- */
+body.booting .home, body.booting .mission { visibility: hidden; }
+.boot { background: linear-gradient(90deg, rgb(2 8 20 / .93) 0 38%, rgb(2 8 20 / .78) 62%, rgb(2 8 20 / .86)); background-size: auto; }
+.no-3d .boot { background: var(--o-space); }
+.gate { padding: 14px; border-radius: 18px; border: 0; background: linear-gradient(180deg, #2a3d58, #17273f 30%, #0d1a2e); box-shadow: 0 30px 70px -30px #000, inset 0 1px 0 rgb(255 255 255 / .18), inset 0 0 0 1px #0a1424; position: relative; }
+.gate::before, .gate::after { content: ""; position: absolute; left: 10px; right: 10px; height: 5px; background: radial-gradient(circle at 2.5px 2.5px, #6d7f99 0 2px, transparent 2.6px) 0 0 / 46px 5px repeat-x; opacity: .7; }
+.gate::before { top: 5px; } .gate::after { bottom: 5px; }
+.gate-top { border-radius: 6px; border: 1px solid #060e1c; background: linear-gradient(180deg, #071224, #0a1a33); padding: 10px 14px 12px; box-shadow: inset 0 2px 6px rgb(0 0 0 / .6); }
+.gate-top p { margin: 0; font: 600 1rem/1.2 var(--vcsw-font-heading); }
+.gate-leds { margin-left: auto; gap: 5px; }
+.gate-leds i { width: 26px; height: 8px; border-radius: 2px; background: #10294d; box-shadow: inset 0 1px 2px rgb(0 0 0 / .7); }
+.gate-doors { border-radius: 6px; box-shadow: inset 0 0 0 2px #060e1c, inset 0 10px 24px rgb(0 0 0 / .55); }
+.gd { background: linear-gradient(90deg, #1b3157, #34598f 22%, #2a4a7b 50%, #1d3660 82%, #15294a), #1d3660; box-shadow: inset 0 1px 0 rgb(255 255 255 / .16), inset 0 -18px 30px rgb(0 0 0 / .35); }
+.gd.r { background: linear-gradient(270deg, #1b3157, #34598f 22%, #2a4a7b 50%, #1d3660 82%, #15294a), #1d3660; }
+.gd.l { border-right: 2px solid #050c18; } .gd.r { border-left: 2px solid #050c18; }
+.gd::after { content: ""; position: absolute; top: 8px; bottom: 8px; width: 5px; background: radial-gradient(circle at 2.5px 2.5px, #8fa3c0 0 1.8px, transparent 2.4px) 0 0 / 5px 34px repeat-y; opacity: .75; }
+.gd.l::after { left: 8px; } .gd.r::after { right: 8px; }
+.gd-win { border: 3px solid #0c1a30; box-shadow: 0 0 0 2px #4a6c9c, inset 0 4px 10px #000; border-radius: 10px; left: 14%; right: 12%; }
+.gd-rib { height: 3px; background: #0c1d38; box-shadow: 0 1px 0 rgb(255 255 255 / .14); }
+.gd-plate { position: absolute; left: 16%; right: 16%; top: 66%; height: 12%; border-radius: 4px; background: linear-gradient(180deg, #223d68, #182e52); box-shadow: inset 0 1px 0 rgb(255 255 255 / .12), 0 1px 0 #0a1830; }
+.gd-grip { position: absolute; top: 38%; height: 20%; width: 9px; border-radius: 5px; background: linear-gradient(90deg, #dbe4f0, #8898b0); box-shadow: 2px 3px 6px rgb(0 0 0 / .5); }
+.gd.l .gd-grip { right: 22px; } .gd.r .gd-grip { left: 22px; }
+.gate-seam { width: 2px; left: calc(50% - 1px); box-shadow: 0 0 10px var(--vcsw-blue-400); }
+.gate-card { border: 1px solid #0b1a31; border-top: 0; border-radius: 10px; background: linear-gradient(180deg, #0c1c36, #071226); box-shadow: 0 18px 40px rgb(0 0 0 / .6), inset 0 1px 0 rgb(255 255 255 / .1); padding-top: 30px; }
+.gc-slot { position: absolute; left: 0; right: 0; top: 0; height: 18px; background: #030912; border-bottom: 1px solid #1c3a66; display: grid; place-items: center; }
+.gc-slot i { width: 46%; height: 4px; border-radius: 2px; background: var(--vcsw-blue-400); box-shadow: 0 0 8px var(--vcsw-blue-400); }
+.boot.open .gc-slot i { background: var(--vcsw-green-400); box-shadow: 0 0 8px var(--vcsw-green-400); }
+.gate-foot { color: #b9c7da; }
+/* de vier begrippen als één strook in plaats van vier kaarten */
+.boot-tiles { gap: 0; border: 1px solid var(--o-edge); border-radius: 12px; background: rgb(6 22 47 / .72); }
+.boot-tiles li { border: 0; border-radius: 0; background: none; padding: 14px 20px; }
+.boot-tiles li + li { border-left: 1px solid var(--o-edge); }
+@media (max-width: 980px) { .boot-tiles li + li { border-left: 0; } .boot-tiles li:nth-child(even) { border-left: 1px solid var(--o-edge); } .boot-tiles li:nth-child(n+3) { border-top: 1px solid var(--o-edge); } }
+@media (max-width: 520px) { .boot-tiles li:nth-child(even) { border-left: 0; } .boot-tiles li + li { border-top: 1px solid var(--o-edge); } }
+body.booting header.bar { visibility: hidden; }

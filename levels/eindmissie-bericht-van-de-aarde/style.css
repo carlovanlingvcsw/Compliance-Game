@@ -373,3 +373,28 @@ p { margin: 0; }
 
 /* Raakvlakken van minstens 44 px in de zoektocht en het antwoord. */
 .room .vcsw-button, .finding .vcsw-segmented button, .logrow .vcsw-segmented button, .screen .actions .vcsw-button { min-height: 44px; }
+
+/* Ronde 23: de hoofdsluis verder uitgewerkt. Grotere deur met diepte, bogen op het kozijn per grendel. */
+.sluis-grid { grid-template-columns: clamp(250px, 41%, 340px) minmax(0, 1fr); gap: 20px; }
+.sluis-deur { width: 100%; height: auto; aspect-ratio: 1; filter: drop-shadow(0 18px 28px rgb(0 0 0 / .5)); }
+.d-kozijn { fill: url(#dKozijnG); }
+.d-schijf { fill: url(#dSchijfG); }
+.d-balk { fill: url(#dBalkG); }
+.d-naaf-schijf { fill: url(#dNaafG); }
+.d-boog { fill: none; stroke: #16335c; stroke-width: 9; stroke-linecap: round; transition: stroke 300ms var(--vcsw-ease); }
+.d-boog.is-nu { stroke: var(--vcsw-blue-400); }
+.d-boog.is-open { stroke: var(--vcsw-green-300); }
+.d-grendel.is-open .d-schuif { transform: translateX(-46px); }
+#stage .sluis-uitleg { font-size: 0.9375rem; color: #d5e0ef; }
+.grendels li.is-dicht .g-stand { color: #7f93b0; }
+@media (prefers-reduced-motion: no-preference) {
+  .d-grendel.is-nu .d-lamp:not(.aan):not(.fout) { animation: lampwacht 1.6s ease-in-out infinite; }
+  @keyframes lampwacht { 50% { fill: #1f4f85; } }
+}
+
+/* Ronde 24: aanvalskaart zonder label boven de kop, themanamen passen op één regel. */
+#stage .nevel-sub { display: flex; gap: 6px; align-items: center; margin: 0; font-size: 0.9375rem; color: var(--vcsw-red-200, #ffc9c9); }
+.nevel-sub .vcsw-icon { width: 16px; height: 16px; flex: none; }
+.nr-naam { font-size: 0.9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nr-naam { font-size: 0.8125rem; text-overflow: clip; letter-spacing: -0.01em; }
+#stage .nevel-rij li { padding: 8px 8px; } #stage .nevel-rij li.is-nu { padding: 7px 7px; }
