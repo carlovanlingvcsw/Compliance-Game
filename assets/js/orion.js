@@ -184,7 +184,7 @@
         (b >= 0 ? " · met bonusronde" : "") + '</small></span><span class="stars" role="img" aria-label="' + s + ' van 3 sterren">' + stars(s) + "</span></button></li>";
     }).join("");
     hotEl.innerHTML = LEVELS.map(function (L, n) {
-      return '<button type="button" class="hot" data-i="' + routeIndexOfLevel(n) + '" data-m="' + L.module + '" tabindex="-1" aria-hidden="true"><span class="dot"></span><span class="tag">' + (n === 5 ? "E" : n + 1) + " · " + esc(L.short) + "</span></button>";
+      return '<button type="button" class="hot" data-i="' + routeIndexOfLevel(n) + '" data-m="' + L.module + '" tabindex="-1" aria-hidden="true"><span class="dot"></span><span class="tag">' + (n === 5 ? "E" : n + 1) + " · " + esc(L.place) + "</span></button>";
     }).join("");
     document.getElementById("progress").textContent = done + " van 6 missies gespeeld";
     var start = document.getElementById("start");
@@ -230,7 +230,7 @@
   /* ---------- Views ---------- */
   var view = "home", frames = [], cur = -1;
   var homeEl = document.getElementById("home"), missionEl = document.getElementById("mission"), arcade = document.getElementById("arcade");
-  function showHome() {
+  function showHome(quiet) {
     stopGame();
     view = "home"; cur = -1;
     document.body.setAttribute("data-view", "home");
@@ -238,10 +238,10 @@
     frames.forEach(function (f) { if (f) f.hidden = true; });
     document.title = "AVG-game Ruimtestation Orion";
     renderRoute(); syncStation();
-    document.getElementById("start").focus({ preventScroll: true });
+    if (quiet !== true) document.getElementById("start").focus({ preventScroll: true });
   }
-  document.getElementById("to-map").onclick = showHome;
-  document.getElementById("home-btn").onclick = showHome;
+  document.getElementById("to-map").onclick = function () { showHome(); };
+  document.getElementById("home-btn").onclick = function () { showHome(); };
 
   window.addEventListener("message", function (e) {
     if (!e.data || e.data.orion !== "answer") return;
@@ -263,8 +263,8 @@
     homeEl.hidden = true; missionEl.hidden = false;
     frames.forEach(function (f) { if (f) f.hidden = true; });
     var L = r.type === "level" ? LEVELS[r.n] : LEVELS[GAMES[r.id].after];
-    document.getElementById("m-place").textContent = L.place;
-    document.getElementById("m-title").textContent = label(r).title;
+    document.getElementById("m-title").textContent = L.place;
+    document.getElementById("m-place").textContent = label(r).title;
     document.getElementById("m-aria").textContent = r.type === "level" ? L.aria : GAMES[r.id].aria;
     if (r.type === "level") {
       arcade.hidden = true;
@@ -603,5 +603,5 @@
 
 
   /* ---------- Start ---------- */
-  hud(); showHome();
+  hud(); showHome(true);
 })();

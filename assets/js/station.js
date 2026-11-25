@@ -18,6 +18,8 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020814);
@@ -93,16 +95,25 @@ function solarTexture() {
   return t;
 }
 
+function containerTexture() {
+  const W = 256, H = 256, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const g = c.getContext("2d"); g.fillStyle = "#d8dde3"; g.fillRect(0, 0, W, H);
+  for (let x = 0; x < W; x += 16) { g.fillStyle = "rgba(0,0,0,.16)"; g.fillRect(x, 0, 5, H); g.fillStyle = "rgba(255,255,255,.18)"; g.fillRect(x + 7, 0, 3, H); }
+  g.fillStyle = "rgba(0,0,0,.35)"; g.fillRect(0, 0, W, 10); g.fillRect(0, H - 10, W, 10); g.fillRect(0, 0, 10, H); g.fillRect(W - 10, 0, 10, H);
+  g.fillStyle = "rgba(255,255,255,.55)"; g.fillRect(28, 30, 60, 10); g.fillRect(28, 46, 36, 6);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+}
 const TEX = {
+  container: containerTexture(),
   light: hullTexture("#aeb9c7", { cols: 10, rows: 6 }),
   mid: hullTexture("#8d9bb0", { cols: 8, rows: 8 }),
   dark: hullTexture("#3a4a62", { cols: 6, rows: 10, vary: 24 }),
   white: hullTexture("#d5dde7", { cols: 6, rows: 4, vary: 10 }),
 };
 const MAT = {
-  hull: new THREE.MeshStandardMaterial({ map: TEX.light, metalness: 0.55, roughness: 0.42 }),
-  hullMid: new THREE.MeshStandardMaterial({ map: TEX.mid, metalness: 0.6, roughness: 0.38 }),
-  hullDark: new THREE.MeshStandardMaterial({ map: TEX.dark, metalness: 0.7, roughness: 0.35 }),
+  hull: new THREE.MeshStandardMaterial({ map: TEX.light, metalness: 0.35, roughness: 0.58 }),
+  hullMid: new THREE.MeshStandardMaterial({ map: TEX.mid, metalness: 0.45, roughness: 0.5 }),
+  hullDark: new THREE.MeshStandardMaterial({ map: TEX.dark, metalness: 0.6, roughness: 0.45 }),
   white: new THREE.MeshStandardMaterial({ map: TEX.white, metalness: 0.25, roughness: 0.5 }),
   truss: new THREE.MeshStandardMaterial({ color: 0x8a96a8, metalness: 0.85, roughness: 0.3 }),
   gold: new THREE.MeshStandardMaterial({ color: 0xc8a65a, metalness: 1, roughness: 0.32 }),
@@ -240,7 +251,15 @@ function moduleFrame(angleDeg, name) {
   box.material = MAT.white.clone(); box.material.map = TEX.white.clone(); box.material.map.repeat.set(2, 1); box.material.map.needsUpdate = true;
   mesh(new THREE.BoxGeometry(2.42, 0.08, 1.62), emissive(0x67caff, 2.4), g, [2.3, 0.2, 0]);
   mesh(new THREE.SphereGeometry(0.75, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), MAT.glass, g, [2.3, 0.65, 0]).scale.set(1, 0.5, 0.8);
-  for (let i = 0; i < 3; i++) mesh(new THREE.BoxGeometry(0.5, 0.25, 0.02), emissive(0xd3efff, 1.4), g, [1.6 + i * 0.7, -0.15, 0.81]);
+  for (let i = 0; i < 2; i++) mesh(new THREE.BoxGeometry(0.42, 0.22, 0.02), emissive(0xd3efff, 1.4), g, [1.5 + i * 0.6, -0.15, 0.81]);
+  const crossMat = emissive(0x67e8d0, 2.6);
+  [[3.05, -0.1, 0.815, 0], [3.505, -0.1, 0, Math.PI / 2]].forEach(([x, y, z, ry]) => {
+    const c = new THREE.Group(); g.add(c); c.position.set(x, y, z); c.rotation.y = ry;
+    mesh(new THREE.BoxGeometry(0.5, 0.5, 0.012), new THREE.MeshStandardMaterial({ color: 0x0c2f5f, roughness: 0.4 }), c);
+    mesh(new THREE.BoxGeometry(0.34, 0.1, 0.02), crossMat, c, [0, 0, 0.01]);
+    mesh(new THREE.BoxGeometry(0.1, 0.34, 0.02), crossMat, c, [0, 0, 0.01]);
+  });
+  mesh(cyl(0.02, 0.7, 6), MAT.truss, g, [1.6, 1.0, -0.4]); lamp(g, [1.6, 1.36, -0.4], 0x67caff, 0.035);
   MODULES.push({ id: 2, group: g, anchor: new THREE.Vector3(2.4, 1.2, 0), cam: new THREE.Vector3(4.6, 2.2, 4.2) });
 })();
 
@@ -252,7 +271,7 @@ function moduleFrame(angleDeg, name) {
   const cols = [0x0a6dbe, 0x15aaff, 0xc9d3df, 0xffb900, 0x113e78, 0x62748e];
   for (let x = 0; x < 4; x++) for (let y = 0; y < 2; y++) for (let z = 0; z < 2; z++) {
     if (rnd() < 0.22) continue;
-    const c = new THREE.MeshStandardMaterial({ color: pick(cols), metalness: 0.35, roughness: 0.55, map: TEX.mid });
+    const c = new THREE.MeshStandardMaterial({ color: pick(cols), metalness: 0.3, roughness: 0.6, map: TEX.container });
     mesh(new THREE.BoxGeometry(0.68, 0.66, 0.78), c, t, [-1.15 + x * 0.76, -0.38 + y * 0.74, -0.42 + z * 0.86]);
   }
   const crane = new THREE.Group(); t.add(crane); crane.position.set(0, 1.05, 0);
@@ -262,23 +281,35 @@ function moduleFrame(angleDeg, name) {
   MODULES.push({ id: 3, group: g, anchor: new THREE.Vector3(2.6, 1.3, 0), cam: new THREE.Vector3(5.2, 2.8, 4.4), crane: hook });
 })();
 
-// 5. Hullbreuk: a damaged module with a breach that glows during the alarm
-const breach = { lights: [], crack: null };
+// 5. Hullbreuk (module Kepler): torn plating around a breach that glows during the alarm
+const breach = { lights: [], embers: null, plates: [] };
 (function () {
   const g = moduleFrame(260, "hullbreuk");
-  mesh(cyl(0.8, 2.6, 8), MAT.hullMid, g, [2.4, 0, 0], [0, 0, Math.PI / 2]);
-  [1.1, 3.7].forEach((x) => mesh(cyl(0.9, 0.18, 8), MAT.hullDark, g, [x, 0, 0], [0, 0, Math.PI / 2]));
-  const crackShape = new THREE.Shape();
-  const pts = [[-0.42, 0.05], [-0.2, 0.1], [-0.12, 0.02], [0.05, 0.08], [0.14, -0.02], [0.32, 0.03], [0.46, -0.06], [0.3, -0.02], [0.13, -0.08], [0.03, 0.0], [-0.13, -0.05], [-0.24, 0.03]];
-  crackShape.moveTo(pts[0][0], pts[0][1]); pts.slice(1).forEach((p) => crackShape.lineTo(p[0], p[1]));
-  breach.crack = mesh(new THREE.ShapeGeometry(crackShape), emissive(0xff8a3d, 0.6), g, [2.5, 0.25, 0.8]);
-  breach.crack.scale.setScalar(1.6); breach.crack.rotation.z = -0.25;
-  for (let i = 0; i < 4; i++) {
-    const s = mesh(new THREE.BoxGeometry(0.16, 0.05, 0.04), MAT.hullDark, g, [2.4 + (rnd() - 0.5) * 0.9, 0.2 + (rnd() - 0.5) * 0.6, 0.95 + rnd() * 0.5]);
+  const hull = mesh(new THREE.CylinderGeometry(0.8, 0.8, 2.6, 8, 1, false, Math.PI / 8), MAT.hullMid, g, [2.4, 0, 0], [0, 0, Math.PI / 2]);
+  hull.material = MAT.hullMid.clone(); hull.material.map = TEX.mid.clone(); hull.material.map.repeat.set(3, 1); hull.material.map.needsUpdate = true;
+  [1.1, 3.7].forEach((x) => mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.18, 8, 1, false, Math.PI / 8), MAT.hullDark, g, [x, 0, 0], [0, 0, Math.PI / 2]));
+  const face = 0.8 * Math.cos(Math.PI / 8) + 0.004;
+  const hole = new THREE.Shape(), H = [[-0.5, 0.05], [-0.34, 0.24], [-0.12, 0.2], [0.02, 0.34], [0.2, 0.22], [0.42, 0.26], [0.5, 0.02], [0.36, -0.18], [0.16, -0.12], [0.0, -0.3], [-0.18, -0.16], [-0.38, -0.22]];
+  hole.moveTo(H[0][0], H[0][1]); H.slice(1).forEach((p) => hole.lineTo(p[0], p[1]));
+  const hx = 2.55, hy = 0.05;
+  mesh(new THREE.ShapeGeometry(hole), new THREE.MeshBasicMaterial({ color: 0x010309 }), g, [hx, hy, face]);
+  const ember = new THREE.Shape(), E = [[-0.3, 0.02], [-0.1, 0.12], [0.08, 0.04], [0.28, 0.1], [0.2, -0.06], [0.0, -0.12], [-0.18, -0.06]];
+  ember.moveTo(E[0][0], E[0][1]); E.slice(1).forEach((p) => ember.lineTo(p[0], p[1]));
+  breach.embers = mesh(new THREE.ShapeGeometry(ember), new THREE.MeshBasicMaterial({ color: 0xff7a2e, transparent: true, opacity: 0.35 }), g, [hx, hy, face + 0.002]);
+  for (let i = 0; i < 3; i++) { const r = mesh(cyl(0.018, 0.6, 6), MAT.hullDark, g, [hx - 0.25 + i * 0.25, hy, face + 0.004]); r.rotation.z = 0.2 * (i - 1); }
+  // bent plates hinged at the edge of the hole, peeled outward
+  [[-0.5, 0.12, 0.5, 1], [0.44, 0.16, -0.6, 1], [0.05, 0.32, 0.1, 0], [-0.1, -0.28, -0.2, 0], [0.4, -0.16, 0.9, 1]].forEach(([dx, dy, rz, side]) => {
+    const pivot = new THREE.Group(); g.add(pivot); pivot.position.set(hx + dx, hy + dy, face);
+    pivot.rotation.set(side ? 0 : (dy > 0 ? -0.9 : 0.9), side ? (dx > 0 ? 0.9 : -0.9) : 0, rz);
+    const plate = mesh(new THREE.BoxGeometry(side ? 0.3 : 0.36, side ? 0.36 : 0.26, 0.018), MAT.hullMid, pivot, [side ? (dx > 0 ? 0.15 : -0.15) : 0, side ? 0 : (dy > 0 ? 0.13 : -0.13), 0]);
+    breach.plates.push(plate);
+  });
+  for (let i = 0; i < 5; i++) {
+    const s = mesh(new THREE.BoxGeometry(0.12 + rnd() * 0.1, 0.04, 0.08), MAT.hullDark, g, [hx + (rnd() - 0.5) * 0.9, hy + (rnd() - 0.5) * 0.6, face + 0.3 + rnd() * 0.6]);
     s.rotation.set(rnd() * 3, rnd() * 3, rnd() * 3); s.userData.drift = new THREE.Vector3((rnd() - 0.5) * 0.002, (rnd() - 0.5) * 0.002, 0.002 + rnd() * 0.002); s.userData.origin = s.position.clone();
     breach.lights.push(s);
   }
-  breach.beacon = lamp(g, [2.4, 0.85, 0], 0xffb900, 0.07);
+  breach.beacon = lamp(g, [2.4, 0.86, 0], 0xffb900, 0.07);
   MODULES.push({ id: 4, group: g, anchor: new THREE.Vector3(2.5, 1.1, 0), cam: new THREE.Vector3(4.8, 2.0, 4.6) });
 })();
 
@@ -323,7 +354,7 @@ const planetMat = new THREE.ShaderMaterial({
       float land = smoothstep(0.52, 0.58, fbm(p*2.6 + 3.0));
       float cloud = smoothstep(0.62, 0.85, fbm(p*5.0 + vec3(uTime*0.004, 0.0, 0.0)));
       vec3 ocean = mix(vec3(0.01,0.07,0.20), vec3(0.03,0.20,0.42), fbm(p*7.0));
-      vec3 ground = mix(vec3(0.10,0.22,0.24), vec3(0.32,0.38,0.34), fbm(p*9.0));
+      vec3 ground = mix(vec3(0.05,0.16,0.22), vec3(0.16,0.27,0.30), fbm(p*9.0));
       vec3 col = mix(ocean, ground, land);
       col = mix(col, vec3(0.80,0.88,0.96), cloud*0.45);
       vec3 N = normalize(vN);
@@ -401,7 +432,12 @@ mesh(new THREE.SphereGeometry(94, 64, 48), haloMat, scene, [-170, -150, -135]);
 /* ---------- Lights ---------- */
 const sun = new THREE.DirectionalLight(0xfff1dc, 3.8);
 sun.position.copy(planetMat.uniforms.uLight.value).multiplyScalar(50);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -11, right: 11, top: 11, bottom: -11, near: 20, far: 80 });
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
 scene.add(sun);
+station.traverse((o) => { if (o.isMesh && o.material && !o.material.transparent && !(o.material.emissiveIntensity > 1)) { o.castShadow = true; o.receiveShadow = true; } });
 scene.add(new THREE.HemisphereLight(0x67caff, 0x020814, 0.22));
 const rimLight = new THREE.DirectionalLight(0x67caff, 1.2); rimLight.position.set(20, -30, -20); scene.add(rimLight);
 const alarmLight = new THREE.PointLight(0xff4a3b, 0, 10, 2); scene.add(alarmLight);
@@ -452,7 +488,8 @@ function applyOffset() {
 
 /* ---------- Loop ---------- */
 const clock = new THREE.Clock();
-let running = true, lowPower = false, acc = 0;
+let running = true, lowPower = false, acc = 0, frameNo = 0;
+renderer.shadowMap.autoUpdate = false;
 document.addEventListener("visibilitychange", () => { running = !document.hidden; if (running) clock.getDelta(); });
 const tmp = new THREE.Vector3();
 function tick() {
@@ -475,9 +512,9 @@ function tick() {
   // Breach: drifting debris, flashing during the alarm
   breach.lights.forEach((s) => { if (!reduce) { s.position.add(s.userData.drift); s.rotation.x += 0.01; if (s.position.distanceTo(s.userData.origin) > 1.6) s.position.copy(s.userData.origin); } });
   const pulse = alarm ? (Math.sin(t * 5) + 1) / 2 : 0;
-  breach.crack.material.emissiveIntensity = alarm ? 1.2 + pulse * 3 : 0.5;
+  breach.embers.material.opacity = alarm ? 0.55 + pulse * 0.45 * (0.7 + 0.3 * Math.sin(t * 23)) : 0.3;
   alarmLight.intensity = alarm ? 2 + pulse * 7 : 0;
-  alarmLight.position.copy(moduleWorld(MODULES[4], new THREE.Vector3(2.6, 0.6, 1.4)));
+  alarmLight.position.copy(moduleWorld(MODULES[4], new THREE.Vector3(2.55, 0.1, 1.2)));
 
   // Camera: ease towards the goal, the goal follows the rotating ring
   const goal = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex);
@@ -501,7 +538,7 @@ function tick() {
   let ag;
   if (focus >= 0) {
     const m = MODULES[focus];
-    ag = moduleWorld(m, m.anchor.clone().add(m.fixed ? new THREE.Vector3(1.2, 0.4, 1.4) : new THREE.Vector3(3.4, 0.9, 2.4)));
+    ag = moduleWorld(m, m.anchor.clone().add(m.fixed ? new THREE.Vector3(1.2, 0.4, 1.4) : new THREE.Vector3(2.4, -0.5, 1.5)));
   } else {
     ag = tmp.set(Math.cos(t * 0.25) * 9, 2.2 + Math.sin(t * 0.6) * 0.4, Math.sin(t * 0.25) * 9);
   }
@@ -511,6 +548,7 @@ function tick() {
   aria.userData.halo.rotation.z += dt * 0.8;
   aria.userData.eye.material.emissive.setHex(alarm ? 0xff6467 : 0x15aaff);
 
+  frameNo++; renderer.shadowMap.needsUpdate = !lowPower || frameNo % 4 === 0;
   renderer.render(scene, camera);
   if (labelsCb) labelsCb();
 }

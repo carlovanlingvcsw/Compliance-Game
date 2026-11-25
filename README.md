@@ -1,39 +1,54 @@
 # AVG-game Ruimtestation Orion
 
-Een AVG-training van VCSW in de vorm van een game. Spelers zijn Cadet van de Datawacht op Ruimtestation Orion en doorlopen vijf levels en een eindmissie over het beschermen van persoonsgegevens.
+Een AVG-training van VCSW in de vorm van een game. Spelers zijn Cadet van de Datawacht op Ruimtestation Orion. Ze vliegen langs zes modules van het station en spelen daar vijf levels, een eindmissie en vier arcaderondes over het beschermen van persoonsgegevens.
 
-Status: prototype. Alle namen, planeten en gegevens in het spel zijn fictief. De goede antwoorden, stappen en termijnen wachten nog op goedkeuring van de Privacy Officer.
+Status: prototype. Alle namen, planeten en gegevens in het spel zijn fictief. De goede antwoorden, stappen en termijnen wachten nog op goedkeuring van de Privacy Officer. Het 3D-station en ARIA zijn een concept: het VCSW-merk heeft nog geen goedgekeurde illustraties, dus marketing moet de beeldtaal nog goedkeuren.
 
-## Levels
+## Zo werkt het spel
 
-| Level | Onderwerp | Map |
-| --- | --- | --- |
-| Level 1 | Aankomst op het station | [levels/level-1-aankomst](levels/level-1-aankomst) |
-| Level 2 | De passagiersmodule | [levels/level-2-passagiersmodule](levels/level-2-passagiersmodule) |
-| Level 3 | De medische ziekenboeg | [levels/level-3-ziekenboeg](levels/level-3-ziekenboeg) |
-| Level 4 | Het vrachtdok | [levels/level-4-vrachtdok](levels/level-4-vrachtdok) |
-| Level 5 | Hullbreuk! Alarmfase | [levels/level-5-hullbreuk](levels/level-5-hullbreuk) |
-| Eindmissie | Een bericht van de aarde | [levels/eindmissie-bericht-van-de-aarde](levels/eindmissie-bericht-van-de-aarde) |
+- **Station als wereld.** Het startscherm toont Ruimtestation Orion in 3D, met de stationskaart ernaast. Elke missie hoort bij een module. Kies je een missie, dan vliegt de camera naar die module en opent de missie in een paneel ernaast.
+- **ARIA** is de boordcomputer. Ze vliegt mee naar elke module en zegt in één zin wat er speelt.
+- **Combo's, sterren en badges.** Goede antwoorden op rij verhogen je combo tot ×4 en leveren XP op. Per level en per arcaderonde verdien je tot drie sterren. Er zijn elf badges.
+- **Voortgang** blijft alleen in de browser van de speler bewaard. Er worden geen gegevens verstuurd.
+- **Zonder 3D.** Kan de browser geen WebGL, of zet je `?3d=uit` achter het adres, dan speel je hetzelfde spel met een vlakke sterrenachtergrond. Bij de instelling "minder beweging" staat het station stil en springt de camera zonder vlucht.
+
+| Route | Onderwerp | Module | Map |
+| --- | --- | --- | --- |
+| Level 1 | Aankomst op het station | Aankomsthal | [levels/level-1-aankomst](levels/level-1-aankomst) |
+| Bonus | Holokaarten-sprint | Aankomsthal | in `assets/js/orion.js` |
+| Level 2 | De passagiersmodule | Passagiersmodule | [levels/level-2-passagiersmodule](levels/level-2-passagiersmodule) |
+| Level 3 | De medische ziekenboeg | Ziekenboeg | [levels/level-3-ziekenboeg](levels/level-3-ziekenboeg) |
+| Bonus | Wie mag dit zien? | Ziekenboeg | in `assets/js/orion.js` |
+| Level 4 | Het vrachtdok | Vrachtdok | [levels/level-4-vrachtdok](levels/level-4-vrachtdok) |
+| Bonus | Phishing Invaders | Vrachtdok | in `assets/js/orion.js` |
+| Level 5 | Hullbreuk! Alarmfase | Module Kepler | [levels/level-5-hullbreuk](levels/level-5-hullbreuk) |
+| Bonus | Lekken dichten | Module Kepler | in `assets/js/orion.js` |
+| Eindmissie | Een bericht van de aarde | Communicatietoren | [levels/eindmissie-bericht-van-de-aarde](levels/eindmissie-bericht-van-de-aarde) |
 
 ## Opbouw
 
 ```
-index.html                 Startpagina met de levelbalk, toont elk level in een iframe
+index.html                   Het spel: station, opdrachtbalk, stationskaart en missiepaneel
 assets/
-  css/vcsw-brand.css       VCSW-huisstijl (kleuren, typografie, knoppen, kaarten), gedeeld door alles
-  css/launcher.css         Opmaak van de levelbalk
-  js/launcher.js           Lijst met levels en de navigatie ertussen
-  img/                     VCSW-woordmerk voor lichte en donkere achtergrond
+  css/vcsw-brand.css         VCSW-huisstijl (kleuren, typografie, knoppen, kaarten), gedeeld door alles
+  css/orion.css              Opmaak van het spel rond de levels: balk, stationskaart, paneel, arcade, prestaties
+  css/orion-theme.css        Ruimte-thema voor level 2 tot en met de eindmissie
+  css/orion-level.css        Aanpassingen voor level 1, dat zijn eigen thema in style.css heeft
+  js/orion.js                Route, combo's, sterren, badges, de vier arcaderondes en de koppeling met het station
+  js/orion-bridge.js         Staat in elk level: meldt elk gekozen antwoord aan het spel, voor combo's en sterren
+  js/station.js              Het 3D-station, volledig in code gebouwd met three.js
+  vendor/three.module.js     three.js r170 (MIT-licentie), zonder internet bruikbaar
+  img/                       VCSW-woordmerk voor lichte en donkere achtergrond
 levels/<level>/
-  index.html               Pagina van het level (statusbalk, speelveld)
-  style.css                Opmaak die alleen voor dit level geldt
-  game.js                  Spellogica en alle teksten, vragen en antwoorden van dit level
+  index.html                 Pagina van het level (statusbalk, speelveld)
+  style.css                  Opmaak die alleen voor dit level geldt
+  game.js                    Spellogica en alle teksten, vragen en antwoorden van dit level
 tools/
-  serve.mjs                Lokale webserver
-  bundle.mjs               Maakt weer één los HTML-bestand van het hele spel
+  serve.mjs                  Lokale webserver
+  bundle.mjs                 Maakt één los HTML-bestand van het hele spel
 ```
 
-Elk level werkt op zichzelf. Je kunt `levels/<level>/index.html` dus ook los openen en testen.
+Elk level werkt ook op zichzelf. Je kunt `levels/<level>/index.html` los openen en testen; combo's, sterren en badges werken alleen in het spel zelf.
 
 ## Lokaal draaien
 
@@ -45,14 +60,15 @@ npm start
 
 Open daarna <http://localhost:8080>. Na een wijziging ververs je de pagina in de browser.
 
-Dubbelklikken op `index.html` werkt in de meeste browsers ook, maar via de server gedraagt het spel zich hetzelfde als online.
+Dubbelklikken op `index.html` werkt niet goed: de browser laat het 3D-station dan niet laden. Gebruik `npm start`, of maak het losse bestand hieronder. Dat werkt wel met dubbelklikken.
 
 ## Aanpassen
 
-- Teksten, vragen, antwoorden en feedback van een level staan in `game.js` van dat level. Zoek op de zin die je wilt wijzigen.
-- Opmaak van één level wijzig je in `style.css` van dat level. Kleuren en lettertypen voor alles komen uit `assets/css/vcsw-brand.css`; pas die alleen aan als de huisstijl verandert.
-- Een level toevoegen, weghalen of de volgorde wijzigen doe je in de lijst `LEVELS` bovenin `assets/js/launcher.js`. Een nieuw level is het makkelijkst te maken door een bestaande levelmap te kopiëren.
-- Level 2, level 5 en de eindmissie zijn op dezelfde manier opgebouwd. Level 1, 3 en 4 hebben elk een eigen opbouw. Kijk bij twijfel naar een level dat op het jouwe lijkt.
+- **Teksten, vragen, antwoorden en feedback** van een level staan in `game.js` van dat level. Zoek op de zin die je wilt wijzigen.
+- **Wat ARIA per missie zegt**, de naam van de module en de volgorde van levels staan in de lijst `LEVELS` bovenin `assets/js/orion.js`. De volgorde van levels en arcaderondes staat in `ROUTE` in hetzelfde bestand.
+- **Arcaderondes**: regels, kaarten en berichten staan in `GAMES`, `CARDS`, `PACKETS`, `MSGS` en `EVENTS` in `assets/js/orion.js`.
+- **Het station**: modules, kleuren en camerastandpunten staan in `assets/js/station.js`. Elke module heeft een eigen blok met een korte uitleg erboven.
+- **Opmaak** van één level wijzig je in `style.css` van dat level. Kleuren en lettertypen komen uit `assets/css/vcsw-brand.css`; pas die alleen aan als de huisstijl verandert.
 
 ## Eén bestand maken
 
@@ -62,38 +78,15 @@ Wil je het spel als één bestand versturen of in een leeromgeving zetten:
 npm run bundle
 ```
 
-Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html`. De map `dist/` gaat niet mee naar GitHub.
+Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 2,6 MB). Het werkt met dubbelklikken en zonder internet; alleen de lettertypen komen dan uit het systeem. De map `dist/` gaat niet mee naar GitHub.
 
-## Publiceren op GitHub
+## Wijzigingen
 
-1. Maak een nieuwe repository aan, bij voorkeur privé binnen de VCSW-organisatie.
-2. Zet de bestanden erin:
-
-   ```powershell
-   git init -b main
-   ```
-
-   ```powershell
-   git add .
-   ```
-
-   ```powershell
-   git commit -m "Eerste versie AVG-game Ruimtestation Orion"
-   ```
-
-   ```powershell
-   git remote add origin https://github.com/<organisatie>/<repository>.git
-   ```
-
-   ```powershell
-   git push -u origin main
-   ```
-
-3. Wil je het spel online spelen, zet dan GitHub Pages aan via Settings, Pages, Deploy from a branch, `main` en map `/ (root)`. Let op: een Pages-site is standaard voor iedereen te bezoeken, ook als de repository privé is. Alleen met GitHub Enterprise Cloud kun je de toegang tot de site beperken.
-
-Wijzigingen daarna gaan via een branch en een pull request met review door een collega.
+Wijzigingen gaan via een branch en een pull request met review door een collega. Een Pages-site is standaard voor iedereen te bezoeken, ook als de repository privé is. Zet GitHub Pages dus alleen aan als dat de bedoeling is.
 
 ## Gebruikte bronnen
 
+- three.js r170, MIT-licentie, zie `assets/vendor/LICENSE-three.txt`.
 - Lettertypen Figtree en Source Sans 3 via Google Fonts (SIL Open Font License).
 - Iconen in de stijl van Lucide (ISC-licentie), als inline SVG in de code.
+- Het station, ARIA, de planeet en de sterren zijn volledig in code gemaakt. Er worden geen modellen, foto's of texturen geladen.

@@ -54,6 +54,7 @@ body.orion { margin: 0; background: var(--o-space); color: var(--vcsw-gray-200);
 .star-on { fill: var(--vcsw-amber-300); stroke: var(--vcsw-amber-300); }
 .star-off { fill: none; stroke: color-mix(in srgb, #fff 30%, transparent); }
 [data-view="home"] .route { visibility: hidden; }
+[data-view="home"] .meter { display: none; }
 
 .meters { display: flex; align-items: center; gap: 8px; flex: none; }
 .meter { display: flex; flex-direction: column; align-items: flex-end; padding: 0 12px; min-width: 64px; }
@@ -107,17 +108,17 @@ main { position: relative; z-index: 1; height: 100%; }
 .hot .tag { padding: 6px 10px; border-radius: 6px; background: color-mix(in srgb, var(--o-space) 78%, transparent); border: 1px solid var(--o-edge-strong); }
 .hot:hover .tag, .hot.lit .tag { background: var(--vcsw-blue-600); border-color: var(--vcsw-blue-300); }
 .hot.lit .dot { background: #fff; }
-.hot.behind { opacity: .35; }
+.hot.behind { opacity: .6; }
 
 /* ---------- Mission ---------- */
 .mission { position: absolute; inset: 0; outline: none; }
 .mission[hidden] { display: none; }
 .briefing { position: absolute; left: clamp(16px, 3vw, 40px); bottom: 24px; width: min(360px, calc(38vw - 56px)); display: flex; flex-direction: column; gap: 12px;
   padding: 20px; border-radius: 12px; border: 1px solid var(--o-edge); background: var(--o-glass); backdrop-filter: blur(10px); }
-.briefing .place { margin: 0; font-size: .875rem; color: var(--vcsw-blue-200); }
-.briefing h1 { margin: 0; font: 700 1.375rem/1.25 var(--vcsw-font-heading); color: #fff; }
+.briefing h1 { margin: 0; font: 700 1.5rem/1.2 var(--vcsw-font-heading); color: #fff; }
+.briefing .mission-of { margin: -6px 0 0; font-size: .9375rem; color: var(--vcsw-gray-400); }
 .aria-line { display: flex; gap: 12px; align-items: flex-start; }
-.aria-line p { margin: 0; font-size: .9375rem; line-height: 1.5; color: var(--vcsw-gray-200); }
+.aria-line p { margin: 0; font-size: 1rem; line-height: 1.5; color: var(--vcsw-gray-200); }
 .aria-line b { color: var(--vcsw-blue-200); font-family: var(--vcsw-font-heading); }
 .aria-face { flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #fff, var(--vcsw-gray-300)); }
 .aria-face i { width: 16px; height: 16px; border-radius: 50%; background: var(--vcsw-blue-950); display: grid; place-items: center; }
@@ -132,11 +133,13 @@ main { position: relative; z-index: 1; height: 100%; }
 @keyframes shake { 20%, 80% { transform: translateX(-2px); } 40%, 60% { transform: translateX(3px); } }
 
 @media (max-width: 900px) {
+  .briefing .mission-of { display: none; }
   .brand-name, .icon-btn .lbl, .meter span { display: none; }
   .meter { min-width: 0; padding: 0 6px; }
   .panel { left: 8px; right: 8px; width: auto; top: calc(var(--bar-h) + 116px); bottom: 8px; }
   .briefing { left: 8px; right: 8px; width: auto; top: calc(var(--bar-h) + 8px); bottom: auto; padding: 12px 14px; gap: 8px; }
-  .briefing h1, .aria-line { display: none; }
+  .aria-line { display: none; }
+  .briefing h1 { font-size: 1.0625rem; }
   .home-copy { width: auto; right: 20px; }
   .hotspots { display: none; }
 }
@@ -214,7 +217,7 @@ main { position: relative; z-index: 1; height: 100%; }
 .lives i { width: 22px; height: 8px; border-radius: 2px; background: var(--vcsw-blue-400); }
 .lives i.off { background: color-mix(in srgb, #fff 12%, transparent); }
 .timebar { height: 4px; border-radius: 2px; background: color-mix(in srgb, #fff 10%, transparent); margin: -8px 0 16px; overflow: hidden; }
-.timebar i { display: block; height: 100%; background: var(--vcsw-amber-300); transition: width 250ms linear; }
+.timebar i { display: block; height: 100%; background: var(--vcsw-blue-400); transition: width 250ms linear; }
 .ar-feed { min-height: 28px; text-align: center; font-weight: 600; color: var(--vcsw-gray-200); margin-top: 12px; }
 .ar-feed.good { color: var(--vcsw-green-300); } .ar-feed.bad { color: var(--vcsw-red-300); }
 
@@ -247,7 +250,7 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .door .vcsw-icon { width: 28px; height: 28px; color: var(--vcsw-blue-200); }
 .door.ok { border-color: var(--vcsw-green-400); } .door.nok { border-color: var(--vcsw-red-300); }
 
-.sky-arcade, .ar-panel .sky { position: relative; display: block; height: min(470px, calc(100vh - 430px)); min-height: 320px; border-radius: 14px; overflow: hidden; border: 1px solid var(--o-edge-strong); cursor: crosshair;
+.sky-arcade, .ar-panel .sky { position: relative; display: block; height: max(320px, calc(100vh - 330px)); border-radius: 14px; overflow: hidden; border: 1px solid var(--o-edge-strong); cursor: crosshair;
   background: linear-gradient(180deg, #010714, color-mix(in srgb, var(--vcsw-blue-950) 92%, transparent)); }
 .ar-panel .sky::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 46px; background: color-mix(in srgb, var(--vcsw-blue-500) 22%, transparent); border-top: 1px dashed color-mix(in srgb, var(--vcsw-blue-300) 60%, transparent); }
 .inv { position: absolute; width: 30%; padding: 10px 12px; border-radius: 10px; text-align: left; cursor: crosshair; color: #fff; font: inherit; will-change: transform;

@@ -7,7 +7,7 @@
 html.in-orion, html.in-orion body { background: transparent !important; }
 html.in-orion body::before, html.in-orion body::after, html.in-orion .vcsw::before, html.in-orion .vcsw::after { display: none !important; }
 html.in-orion .vcsw-header, html.in-orion .vcsw-brandbar, html.in-orion .vcsw-footer { display: none !important; }
-html.in-orion .vcsw-page-title .vcsw-overline { display: none; }
+html.in-orion .vcsw-page-title { display: none; }
 
 #stage::before, .stage::before, .game-main > #screen::before { display: none !important; }
 .vcsw-overline::before, .overline::before, .stage .ov::before, .hud::before { display: none !important; }

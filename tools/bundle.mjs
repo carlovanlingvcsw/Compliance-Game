@@ -1,4 +1,4 @@
-// Builds one self-contained HTML file from the project, like the original download.
+// Builds one self-contained HTML file of the whole game: station, shell, levels and arcade.
 // Handy for sending by mail or uploading to an LMS. Usage: node tools/bundle.mjs
 // Output: dist/AVG-game_Ruimtestation_Orion.html
 import fs from "node:fs";
@@ -7,45 +7,58 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => fs.readFileSync(path.join(root, p), "utf8");
-const dataUri = (p) => "data:image/png;base64," + fs.readFileSync(path.join(root, p)).toString("base64");
+const dataUri = (p, type) => `data:${type};base64,` + fs.readFileSync(path.join(root, p)).toString("base64");
 // A function as replacement keeps "$" in CSS and JS literal.
-const swap = (s, from, to) => s.replace(from, () => to);
+const swap = (s, from, to) => {
+  if (!s.includes(from)) throw new Error(`Niet gevonden: ${from}`);
+  return s.replace(from, () => to);
+};
 const safeScript = (js) => js.replace(/<\/script/gi, "<\\/script");
+const inlineImages = (html, prefix) =>
+  html.replace(new RegExp(`src="${prefix.replace(/\./g, "\\.")}(assets/img/[^"]+\\.png)"`, "g"), (m, p) => `src="${dataUri(p, "image/png")}"`);
 
 const brand = read("assets/css/vcsw-brand.css");
 
-// The level list lives in the launcher; read it from there so there is one source.
-const launcherJs = read("assets/js/launcher.js");
-const listSrc = launcherJs.match(/var LEVELS = (\[[\s\S]*?\]);/)[1];
-const levels = Function(`"use strict"; return (${listSrc});`)();
+// The level list lives in the shell; read it from there so there is one source.
+const shellJs = read("assets/js/orion.js");
+const srcs = [...shellJs.matchAll(/src: "(levels\/[^"]+\/index\.html)"/g)].map((m) => m[1]);
+if (srcs.length !== 6) throw new Error(`Verwacht 6 levels, gevonden: ${srcs.length}`);
 
-const bundled = levels.map((l) => {
-  const dir = path.dirname(l.src);
-  let html = read(l.src);
-  html = swap(html, '<link rel="stylesheet" href="../../assets/css/vcsw-brand.css">\n<link rel="stylesheet" href="style.css">',
-    "<style>\n" + brand + "\n" + read(path.join(dir, "style.css")) + "</style>");
-  html = swap(html, '<script src="game.js"></script>', "<script>\n" + safeScript(read(path.join(dir, "game.js"))) + "</script>");
-  html = html.replace(/src="\.\.\/\.\.\/(assets\/img\/[^"]+\.png)"/g, (m, p) => `src="${dataUri(p)}"`);
-  if (/href="[^"#:]+\.css"|src="[^":]+\.(js|png)"/.test(html)) throw new Error(`Niet alles ingebakken in ${l.src}`);
-  return { tag: l.tag, name: l.name, b64: Buffer.from(html, "utf8").toString("base64") };
+const levelHtml = srcs.map((src) => {
+  const dir = path.dirname(src);
+  let html = read(src);
+  html = html.replace(/<link rel="stylesheet" href="([^"]+)">/g, (m, href) => "<style>\n" + read(path.join(dir, href)) + "\n</style>");
+  html = html.replace(/<script src="([^"]+)"><\/script>/g, (m, s) => "<script>\n" + safeScript(read(path.join(dir, s))) + "\n</script>");
+  html = inlineImages(html, "../../");
+  if (/href="[^"#:]+\.css"|src="[^":]+\.(js|png)"/.test(html)) throw new Error(`Niet alles ingebakken in ${src}`);
+  return { src, b64: Buffer.from(html, "utf8").toString("base64") };
 });
 
-let js = launcherJs
-  .replace(/var LEVELS = \[[\s\S]*?\];/, () => "var LEVELS = " + JSON.stringify(bundled) + ";")
-  .replace("f.src = LEVELS[i].src;", "f.srcdoc = decode(LEVELS[i].b64);")
-  .replace("var frames = [], cur = -1;", () => `var frames = [], cur = -1;
-  function decode(b64) {
-    var bin = atob(b64), bytes = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return new TextDecoder("utf-8").decode(bytes);
-  }`);
+// Shell: levels come from the bundle instead of separate files.
+let js = shellJs;
+levelHtml.forEach((l) => { js = swap(js, `src: "${l.src}"`, `src: "${l.src}", b64: "${l.b64}"`); });
+js = swap(js, "f.src = LEVELS[n].src;", `if (LEVELS[n].b64) {
+      var bin = atob(LEVELS[n].b64), bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      f.srcdoc = new TextDecoder("utf-8").decode(bytes);
+    } else f.src = LEVELS[n].src;`);
+
+// Station: three.js goes in as a data URL through the import map, the station as an inline module.
+const three = dataUri("assets/vendor/three.module.js", "text/javascript");
+const station = read("assets/js/station.js");
 
 let index = read("index.html");
-index = swap(index, '<link rel="stylesheet" href="assets/css/vcsw-brand.css">\n<link rel="stylesheet" href="assets/css/launcher.css">',
-  "<style>\n" + brand + "\n" + read("assets/css/launcher.css") + "</style>");
-index = swap(index, '<script src="assets/js/launcher.js"></script>', "<script>\n" + safeScript(js) + "</script>");
+index = swap(index, '<link rel="stylesheet" href="assets/css/vcsw-brand.css">\n<link rel="stylesheet" href="assets/css/orion.css">',
+  "<style>\n" + brand + "\n" + read("assets/css/orion.css") + "\n</style>");
+index = swap(index, '{ "imports": { "three": "./assets/vendor/three.module.js" } }', JSON.stringify({ imports: { three } }));
+index = swap(index, '<script src="assets/js/orion.js"></script>', "<script>\n" + safeScript(js) + "\n</script>");
+index = swap(index, 'var s = document.createElement("script"); s.type = "module"; s.src = "assets/js/station.js";',
+  'var s = document.createElement("script"); s.type = "module"; s.textContent = document.getElementById("station-src").textContent;');
+index = swap(index, "<script>\n  /* The 3D station", '<script type="text/plain" id="station-src">\n' + safeScript(station) + "\n</script>\n<script>\n  /* The 3D station");
+index = inlineImages(index, "");
+if (/href="[^"#:]+\.css"|src="assets\//.test(index)) throw new Error("Niet alles ingebakken in index.html");
 
 const out = path.join(root, "dist", "AVG-game_Ruimtestation_Orion.html");
 fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, index);
-console.log(`Gebundeld: ${path.relative(root, out)} (${Math.round(index.length / 1024)} kB, ${levels.length} levels)`);
+console.log(`Gebundeld: ${path.relative(root, out)} (${Math.round(index.length / 1024)} kB, ${levelHtml.length} levels)`);
