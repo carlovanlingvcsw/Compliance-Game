@@ -355,8 +355,8 @@
     logEl.style.position = "";
     if (!h || window.innerWidth < 900) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; }
     var room = window.innerHeight - stageEl.getBoundingClientRect().top - 12;
-    if (h + 30 + (statusEl.hidden ? 0 : statusEl.offsetHeight) > room - 24) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; } // nearly full: keep one baseline with the module card
-    stageEl.classList.add("fit"); stageEl.style.height = Math.max(420, h + 30 + (statusEl.hidden ? 0 : statusEl.offsetHeight)) + "px";
+    if (h + 12 + (statusEl.hidden ? 0 : statusEl.offsetHeight) > room - 24) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; } // nearly full: keep one baseline with the module card
+    stageEl.classList.add("fit"); stageEl.style.height = Math.max(420, h + 12 + (statusEl.hidden ? 0 : statusEl.offsetHeight)) + "px";
   }
   window.addEventListener("message", function (e) {
     if (e.data && e.data.orion === "status") { for (var q = 0; q < frames.length; q++) if (frames[q] && frames[q].contentWindow === e.source) onStatus(q, e.data.s); return; }

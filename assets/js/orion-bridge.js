@@ -72,10 +72,25 @@
   /* Tell the shell how tall the content is, so the panel can end where the content ends. */
   var lastH = 0, sizeT = 0;
   function measure() {
-    var els = document.body.querySelectorAll("*"), max = 0, i, el, b;
-    for (i = 0; i < els.length; i++) { el = els[i]; if (el.children.length || !el.offsetParent) continue; b = el.getBoundingClientRect().bottom + window.pageYOffset; if (b > max) max = b; }
-    return Math.ceil(max);
+    var els = document.body.querySelectorAll("*"), max = 0, low = null, i, el, b, leaf;
+    for (i = 0; i < els.length; i++) { el = els[i]; if (el.children.length || !el.offsetParent) continue; b = el.getBoundingClientRect().bottom + window.pageYOffset; if (b > max) { max = b; low = el; } }
+    /* The space below the lowest element belongs to the page too: the padding of the boxes around it.
+       A box that ends far below it is stretched to the window and says nothing about the content. */
+    leaf = max;
+    for (el = low && low.parentElement; el && el !== document.documentElement; el = el.parentElement) {
+      b = el.getBoundingClientRect().bottom + window.pageYOffset;
+      if (b - leaf <= 96 && b > max) max = b;
+    }
+    /* When the page overflows its frame, the browser knows the exact height. Keep that height for as long as
+       the same screen is shown, so the panel does not shrink back and start to scroll again. */
+    var est = Math.ceil(max), sh = document.documentElement.scrollHeight, t = document.querySelector("h1, h2"),
+      sig = (t ? t.textContent : "") + ":" + document.querySelectorAll("h1, h2, h3, button").length;
+    if (sh > window.innerHeight + 1) { floorH = sig === floorSig ? Math.max(sh, floorH) : sh; floorSig = sig; return floorH; }
+    if (sig === floorSig) return Math.max(est, floorH);
+    floorSig = ""; floorH = 0;
+    return est;
   }
+  var floorSig = "", floorH = 0;
   function size() { clearTimeout(sizeT); sizeT = setTimeout(function () { var h = measure(); if (h && Math.abs(h - lastH) > 6) { lastH = h; try { window.parent.postMessage({ orion: "size", h: h }, "*"); } catch (e) {} } }, 140); }
   window.addEventListener("load", size); window.addEventListener("resize", size);
   /* The level's own state for the status bar of the shell. Each level offers window.orionStatus(). */
