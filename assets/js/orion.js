@@ -364,7 +364,8 @@
     f.title = LEVELS[n].title;
     /* Test jump: index.html?ls=3&scherm=sluis opens level 3 at that screen. */
     var jump = /[?&]ls=(\d)/.exec(location.search);
-    f.src = LEVELS[n].src + (jump && +jump[1] === n + 1 ? location.search : "");
+    f.src = LEVELS[n].src;
+    if (jump && +jump[1] === n + 1 && !LEVELS[n].b64) f.src = LEVELS[n].src + location.search;
     stageEl.insertBefore(f, fx);
     return f;
   }
