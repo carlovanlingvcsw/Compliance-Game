@@ -69,8 +69,18 @@
     var ov = document.querySelector("#stage .vcsw-overline, #stage .overline, #stage .ov, #screen .vcsw-overline");
     if ((ov && /briefing/i.test(ov.textContent)) || document.querySelector(".title-screen")) seen = {};
   }
+  /* Tell the shell how tall the content is, so the panel can end where the content ends. */
+  var lastH = 0, sizeT = 0;
+  function measure() {
+    var els = document.body.querySelectorAll("*"), max = 0, i, el, b;
+    for (i = 0; i < els.length; i++) { el = els[i]; if (el.children.length || !el.offsetParent) continue; b = el.getBoundingClientRect().bottom + window.pageYOffset; if (b > max) max = b; }
+    return Math.ceil(max);
+  }
+  function size() { clearTimeout(sizeT); sizeT = setTimeout(function () { var h = measure(); if (h && Math.abs(h - lastH) > 6) { lastH = h; try { window.parent.postMessage({ orion: "size", h: h }, "*"); } catch (e) {} } }, 140); }
+  window.addEventListener("load", size); window.addEventListener("resize", size);
   var pending = false;
   new MutationObserver(function () {
+    size();
     if (pending) return;
     pending = true;
     setTimeout(function () { pending = false; scan(); }, 60);

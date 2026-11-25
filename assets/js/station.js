@@ -93,7 +93,7 @@ const MAT = {
   truss: pbr("truss", { normal: false, color: 0xc0cad8, metalness: 0.9, roughness: 0.8 }),
   grate: pbr("grate", { repeat: [1, 1], color: 0x9fadbf, metalness: 0.8, roughness: 0.9 }),
   gold: new THREE.MeshStandardMaterial({ color: 0xc8a65a, metalness: 1, roughness: 0.32 }),
-  solar: Object.assign(pbr("solar", { repeat: [4, 1], metalness: 0.75, roughness: 0.45 }), { envMapIntensity: 1.8 }),
+  solar: Object.assign(pbr("solar", { repeat: [4, 1], color: 0xb8cdf5, metalness: 0.85, roughness: 0.3 }), { envMapIntensity: 2.4, emissive: new THREE.Color(0x0b2a66), emissiveIntensity: 0.55 }),
   blue: new THREE.MeshStandardMaterial({ color: 0x0a6dbe, metalness: 0.4, roughness: 0.35 }),
   glass: new THREE.MeshStandardMaterial({ color: 0x0c2f5f, metalness: 0.9, roughness: 0.08 }),
 };
@@ -212,7 +212,7 @@ const comms = new THREE.Group(); station.add(comms); comms.position.y = 4.5;
 mesh(cyl(0.12, 1.8, 12), MAT.truss, comms, [0, 0.9, 0]);
 mesh(cyl(0.34, 0.5, 16), FOIL.gold, comms, [0, 0.25, 0]);
 const dishPts = []; for (let i = 0; i <= 16; i++) { const t = i / 16; dishPts.push(new THREE.Vector2(t * 1.3, t * t * 0.55)); }
-const dish = mesh(new THREE.LatheGeometry(dishPts, 48), new THREE.MeshStandardMaterial({ color: 0xc9d3df, metalness: 0.75, roughness: 0.42, side: THREE.DoubleSide }), comms, [0, 1.9, 0]);
+const dish = mesh(new THREE.LatheGeometry(dishPts, 48), new THREE.MeshStandardMaterial({ color: 0x9fb4cf, metalness: 0.8, roughness: 0.38, side: THREE.DoubleSide }), comms, [0, 1.9, 0]);
 dish.rotation.set(-0.9, 0, 0.3);
 for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; strut(dish, [Math.cos(a) * 0.15, 0.012, Math.sin(a) * 0.15], [Math.cos(a) * 1.28, 0.56, Math.sin(a) * 1.28], 0.012, MAT.hullDark); }
 mesh(new THREE.TorusGeometry(1.3, 0.025, 6, 64), MAT.hullDark, dish, [0, 0.55, 0], [Math.PI / 2, 0, 0]);
@@ -282,7 +282,7 @@ function moduleFrame(angleDeg, name) {
   for (let i = 0; i < 6; i++) mesh(new THREE.CircleGeometry(0.07, 20), emissive(0xffe2a8, 1.3), g, [1.6 + i * 0.5, 0.15, 0.715]);
   vents(g, 2.9, 0.72, 0, 6, 0).rotation.x = -Math.PI / 2;
   mesh(cyl(0.015, 0.6, 6), MAT.truss, g, [4.2, 0.95, 0]); lamp(g, [4.2, 1.26, 0], 0xff6467, 0.03);
-  MODULES.push({ id: 1, group: g, anchor: new THREE.Vector3(3.0, 1.0, 0), cam: new THREE.Vector3(4.8, 2.6, 4.6) });
+  MODULES.push({ id: 1, group: g, anchor: new THREE.Vector3(3.0, 1.0, 0), cam: new THREE.Vector3(4.8, 2.6, 4.6), view: new THREE.Vector3(10.4, 3.0, 4.2) });
 })();
 
 // 3. Ziekenboeg: clean white module with a soft cyan light band
@@ -310,7 +310,7 @@ function moduleFrame(angleDeg, name) {
   });
   mesh(cyl(0.02, 0.7, 6), MAT.truss, g, [1.6, 1.0, -0.4]); lamp(g, [1.6, 1.36, -0.4], 0x67caff, 0.035);
   hatch(g, 2.35, -0.2, 0.81); vents(g, 1.5, 0.45, 0.81, 4); rail(g, 1.3, 3.3, -0.5, 0.86);
-  MODULES.push({ id: 2, group: g, anchor: new THREE.Vector3(2.4, 1.2, 0), cam: new THREE.Vector3(4.6, 2.2, 4.2) });
+  MODULES.push({ id: 2, group: g, anchor: new THREE.Vector3(2.4, 1.2, 0), cam: new THREE.Vector3(4.6, 2.2, 4.2), view: new THREE.Vector3(8.2, 1.2, 7.4) });
 })();
 
 // 4. Vrachtdok: open truss with stacked containers
@@ -330,7 +330,7 @@ function moduleFrame(angleDeg, name) {
   lamp(t, [1.6, 0.85, 0.9], 0xffb900, 0.05); lamp(t, [-1.6, 0.85, -0.9], 0xffb900, 0.05);
   [[-0.8, 0.9], [-0.8, -0.9]].forEach(([y, z]) => strut(g, [1.0, y, z], [0.4, y * 0.3, z * 0.4], 0.035, MAT.hullDark));
   [[-1.6, -0.8, 0.9], [-1.6, -0.8, -0.9], [-1.6, 0.8, 0.9], [-1.6, 0.8, -0.9]].forEach((p) => mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), MAT.gold, t, p));
-  MODULES.push({ id: 3, group: g, anchor: new THREE.Vector3(2.6, 1.3, 0), cam: new THREE.Vector3(5.2, 2.8, 4.4), crane: hook });
+  MODULES.push({ id: 3, group: g, anchor: new THREE.Vector3(2.6, 1.3, 0), cam: new THREE.Vector3(5.2, 2.8, 4.4), crane: hook, view: new THREE.Vector3(9.0, 3.2, 6.8) });
 })();
 
 // 5. Hullbreuk (module Kepler): torn plating around a breach that glows during the alarm
@@ -344,15 +344,18 @@ const breach = { lights: [], embers: null, plates: [] };
   const hole = new THREE.Shape(), H = [[-0.5, 0.05], [-0.34, 0.24], [-0.12, 0.2], [0.02, 0.34], [0.2, 0.22], [0.42, 0.26], [0.5, 0.02], [0.36, -0.18], [0.16, -0.12], [0.0, -0.3], [-0.18, -0.16], [-0.38, -0.22]];
   hole.moveTo(H[0][0], H[0][1]); H.slice(1).forEach((p) => hole.lineTo(p[0], p[1]));
   const hx = 2.55, hy = 0.05;
-  mesh(new THREE.ShapeGeometry(hole), new THREE.MeshBasicMaterial({ color: 0x010309 }), g, [hx, hy, face]);
+  const BW = 1.7;
+  const scorch = (function () { const c = document.createElement("canvas"); c.width = 256; c.height = 128; const x = c.getContext("2d"); x.translate(128, 64); x.scale(2, 1); const gr = x.createRadialGradient(0, 0, 8, 0, 0, 62); gr.addColorStop(0, "rgba(6,5,6,.95)"); gr.addColorStop(0.55, "rgba(14,10,8,.7)"); gr.addColorStop(1, "rgba(14,10,8,0)"); x.fillStyle = gr; x.fillRect(-64, -64, 128, 128); return new THREE.CanvasTexture(c); })();
+  mesh(new THREE.PlaneGeometry(2.3, 0.6), new THREE.MeshBasicMaterial({ map: scorch, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }), g, [hx, hy, face - 0.003]);
+  mesh(new THREE.ShapeGeometry(hole), new THREE.MeshBasicMaterial({ color: 0x010309, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }), g, [hx, hy, face]).scale.set(BW, 0.9, 1);
   const ember = new THREE.Shape(), E = [[-0.3, 0.02], [-0.1, 0.12], [0.08, 0.04], [0.28, 0.1], [0.2, -0.06], [0.0, -0.12], [-0.18, -0.06]];
   ember.moveTo(E[0][0], E[0][1]); E.slice(1).forEach((p) => ember.lineTo(p[0], p[1]));
   breach.embers = mesh(new THREE.ShapeGeometry(ember), new THREE.MeshBasicMaterial({ color: 0xff7a2e, transparent: true, opacity: 0.35 }), g, [hx, hy, face + 0.002]);
-  breach.embers.scale.setScalar(1.35);
-  for (let i = 0; i < 3; i++) { const r = mesh(cyl(0.018, 0.6, 6), MAT.hullDark, g, [hx - 0.25 + i * 0.25, hy, face + 0.004]); r.rotation.z = 0.2 * (i - 1); }
+  breach.embers.scale.set(1.35 * BW, 1.3, 1);
+  for (let i = 0; i < 5; i++) { const r = mesh(cyl(0.018, 0.56, 6), MAT.hullDark, g, [hx - 0.5 + i * 0.25, hy, face + 0.004]); r.rotation.z = 0.2 * ((i % 3) - 1); }
   // bent plates hinged at the edge of the hole, peeled outward
   [[-0.5, 0.12, 0.5, 1], [0.44, 0.16, -0.6, 1], [0.05, 0.32, 0.1, 0], [-0.1, -0.28, -0.2, 0], [0.4, -0.16, 0.9, 1]].forEach(([dx, dy, rz, side]) => {
-    const pivot = new THREE.Group(); g.add(pivot); pivot.position.set(hx + dx, hy + dy, face);
+    const pivot = new THREE.Group(); g.add(pivot); pivot.position.set(hx + dx * BW, hy + dy * 0.9, face);
     pivot.rotation.set(side ? 0 : (dy > 0 ? -0.9 : 0.9), side ? (dx > 0 ? 0.9 : -0.9) : 0, rz);
     const plate = mesh(new THREE.BoxGeometry(side ? 0.3 : 0.36, side ? 0.36 : 0.26, 0.018), MAT.hullMid, pivot, [side ? (dx > 0 ? 0.15 : -0.15) : 0, side ? 0 : (dy > 0 ? 0.13 : -0.13), 0]);
     breach.plates.push(plate);
@@ -365,11 +368,11 @@ const breach = { lights: [], embers: null, plates: [] };
   breach.beacon = lamp(g, [2.4, 0.86, 0], 0xffb900, 0.07);
   [1.45, 3.35].forEach((x) => { const b = mesh(new THREE.CylinderGeometry(0.815, 0.815, 0.14, 8, 1, true, Math.PI / 8), new THREE.MeshStandardMaterial({ map: stripeTex, roughness: 0.6, metalness: 0.2 }), g, [x, 0, 0], [0, 0, Math.PI / 2]); b.material.map.repeat.set(4, 1); });
   vents(g, 3.2, 0.42, face + 0.002, 4); hatch(g, 1.85, -0.2, face + 0.002);
-  MODULES.push({ id: 4, group: g, anchor: new THREE.Vector3(2.5, 1.1, 0), cam: new THREE.Vector3(4.8, 2.0, 4.6) });
+  MODULES.push({ id: 4, group: g, anchor: new THREE.Vector3(2.5, 1.1, 0), cam: new THREE.Vector3(4.8, 2.0, 4.6), view: new THREE.Vector3(6.6, 1.0, 5.6), drop: 1.25 });
 })();
 
 // 6. Eindmissie: the comms array on top of the spine (registered for the camera)
-MODULES.push({ id: 5, group: comms, anchor: new THREE.Vector3(0, 2.4, 0), cam: new THREE.Vector3(3.2, 5.6, 11.5), fixed: true });
+MODULES.push({ id: 5, group: comms, anchor: new THREE.Vector3(0, 2.4, 0), cam: new THREE.Vector3(1.0, 4.8, 15.5), fixed: true, drop: 1.1 });
 
 // Extra greebles on the ring between modules
 for (let i = 0; i < 18; i++) {
@@ -412,10 +415,10 @@ const planetMat = new THREE.ShaderMaterial({
       vec3 col = texture2D(uDay, vUv).rgb * 1.25;
       float sea = texture2D(uOcean, vUv).r;
       vec3 q = p*3.6 + vec3(uTime*0.003, 0.0, uTime*0.002);
-      float cl = fbm(q + fbm(q*2.0)*0.6)*0.66 + fbm(p*13.0 - vec3(uTime*0.004,0.0,0.0))*0.34;
-      float cloud = smoothstep(0.52, 0.76, cl);
+      float cl = fbm(q + fbm(q*2.0)*0.6)*0.56 + fbm(p*13.0 - vec3(uTime*0.004,0.0,0.0))*0.30 + fbm(p*31.0)*0.14;
+      float cloud = smoothstep(0.50, 0.80, cl);
       float shade = smoothstep(0.52, 0.76, fbm(q + fbm(q*2.0)*0.6 + vec3(0.02))*0.66 + 0.17);
-      col = mix(col * (1.0 - 0.25*shade), vec3(0.92,0.95,0.98), cloud*0.82);
+      col = mix(col * (1.0 - 0.25*shade), vec3(0.92,0.95,0.98), cloud*0.72);
       vec3 N = normalize(vN);
       vec3 L = normalize((viewMatrix * vec4(uLight,0.0)).xyz);
       float d = dot(N, L), lit = smoothstep(-0.12, 0.38, d);
@@ -549,10 +552,10 @@ const VIEW = new THREE.Vector3(9.6, 1.9, 6.2); // outward, up, along the ring: b
 function focusGoal(i) {
   if (i < 0) return { pos: HOME.pos.clone(), target: HOME.target.clone() };
   const m = MODULES[i];
-  const target = moduleWorld(m, m.anchor.clone().setY(m.anchor.y - (m.fixed ? 1.0 : 1.6)));
+  const target = moduleWorld(m, m.anchor.clone().setY(m.anchor.y - (m.drop !== undefined ? m.drop : m.fixed ? 1.0 : 1.6)));
   // camera sits outside the module, measured in the module's own frame so it follows the ring
   // the preset is measured in the module's own frame; pull it back so the module reads well beside the panel
-  const pos = moduleWorld(m, m.fixed ? m.cam : m.anchor.clone().add(VIEW));
+  const pos = moduleWorld(m, m.fixed ? m.cam : m.anchor.clone().add(m.view || VIEW));
   return { pos, target };
 }
 function setGoal(i, instant) {
@@ -634,6 +637,10 @@ function tick() {
   /* A focused module turns to one fixed spot, so every mission has the same framing with the earth behind it. */
   const want = ringWant();
   if (want !== null) ring.rotation.y += turnTo(want) * (reduce ? 1 : 1 - Math.pow(0.03, dt));
+  { // the lower solar wings fold in while a ring module is in view, so they do not block it
+    const fold = want !== null ? 0.02 : 1, k = reduce ? 1 : 1 - Math.pow(0.02, dt);
+    for (let i = 2; i < 4; i++) { const w = wings[i], s = w.scale.x + (fold - w.scale.x) * k; w.scale.set(s, 1, s); w.visible = s > 0.04; }
+  }
   if (!reduce) {
     if (ringWant() === null) ring.rotation.y += dt * (focus < 0 ? 0.035 : 0.012);
     wings.forEach((w, i) => (w.rotation.y = 0.5 + Math.sin(t * 0.05 + i) * 0.04));
@@ -717,7 +724,7 @@ window.OrionStation = {
   project() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     return MODULES.map((m) => {
-      v3.copy(moduleWorld(m, m.anchor.clone().add(new THREE.Vector3(0, m.fixed ? 0.6 : 1.1, 0))));
+      v3.copy(moduleWorld(m, m.anchor.clone().add(m.fixed ? new THREE.Vector3(0.9, 1.5, 0) : new THREE.Vector3(1.9, 0.2, 0))));
       const toCam = camera.position.clone().sub(v3).normalize();
       const out = m.fixed ? new THREE.Vector3(0, 1, 0) : m.group.localToWorld(new THREE.Vector3(1, 0, 0)).sub(m.group.getWorldPosition(new THREE.Vector3())).normalize();
       v3.project(camera);
@@ -731,6 +738,7 @@ window.OrionStation = {
     wp.project(camera);
     return { x: (wp.x * 0.5 + 0.5) * w, y: (-wp.y * 0.5 + 0.5) * h, front: front && wp.z < 1 };
   },
+  centre() { const w = canvas.clientWidth, h = canvas.clientHeight; v3.set(0, 0, 0); station.localToWorld(v3); v3.project(camera); return { x: (v3.x * 0.5 + 0.5) * w, y: (-v3.y * 0.5 + 0.5) * h }; },
   stats() { return perf; },
   onFrame(cb) { labelsCb = cb; },
 };

@@ -261,3 +261,6 @@ html.in-orion .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) { bor
 html.in-orion .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) .vcsw-alert-title { display: inline; font-weight: 600; } 
 html.in-orion .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) .vcsw-alert-text { display: inline; }
 html.in-orion .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) > .vcsw-icon { display: none; }
+
+/* ---------- Rules of a level as one open row with a blue rule, not three boxes ---------- */
+html.in-orion #stage .vcsw-dl > div, html.in-orion #screen .vcsw-dl > div { padding: 2px 16px 2px 14px !important; border: 0 !important; border-left: 2px solid var(--vcsw-blue-400, #15aaff) !important; border-radius: 0 !important; background: none !important; }

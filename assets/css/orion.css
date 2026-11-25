@@ -503,3 +503,19 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .bar .icon-btn { border-color: transparent; background: none; }
 .bar .icon-btn:hover, .bar .icon-btn[aria-pressed="true"] { background: color-mix(in srgb, var(--vcsw-blue-700) 40%, transparent); }
 .bar .meters { gap: 2px; }
+
+/* ---------- Module labels stand outside the station: left of the hub they point left ---------- */
+.hot.left { flex-direction: row-reverse; }
+.hot.left .dot { margin-left: 0; margin-right: -4px; }
+.hot .tag { font-size: .875rem; padding: 7px 11px; }
+.hot .lead { width: 30px; }
+
+/* ---------- The route in the top bar always fits ---------- */
+.route ol { gap: 1px; }
+.node:not([aria-current="step"]) { padding: 0 3px; }
+.node { height: 36px; }
+.sprint.pf3d .bin-btn { font-size: .9375rem; padding-left: 14px; padding-right: 14px; }
+
+/* ---------- The mission panel ends where its content ends ---------- */
+.panel.fit { bottom: auto; max-height: calc(100vh - var(--bar-h) - 24px); transition: height 220ms ease; }
+@media (prefers-reduced-motion: reduce) { .panel.fit { transition: none; } }

@@ -205,10 +205,14 @@
   function placeHotspots() {
     var S = window.OrionStation;
     if (!S || view !== "home") return;
-    var pts = S.project(), btns = hotEl.children;
+    var pts = S.project(), btns = hotEl.children, mid = S.centre ? S.centre() : { x: window.innerWidth / 2 };
+    var copy = document.getElementById("home-title"), cr = copy ? copy.getBoundingClientRect() : null;
     LEVELS.forEach(function (L, n) {
       var p = pts[L.module], b = btns[n]; if (!p || !b) return;
-      b.style.transform = "translate(" + Math.round(p.x) + "px," + Math.round(p.y) + "px)";
+      var left = p.x < mid.x - 20;
+      var low = left && cr && p.y > cr.top - 30 && p.x - b.offsetWidth < cr.right + 24; // not across the title: hang it below the module
+      b.classList.toggle("left", left);
+      b.style.transform = "translate(" + Math.round(p.x) + "px," + Math.round(p.y) + "px)" + (left ? " translateX(-100%)" : "") + (low ? " translateY(46px)" : "");
       b.classList.toggle("behind", !p.front);
     });
     var et = document.getElementById("earth-tag");
@@ -247,7 +251,15 @@
   document.getElementById("to-map").onclick = function () { showHome(); };
   document.getElementById("home-btn").onclick = function () { showHome(); };
 
+  /* The panel ends where the level's content ends, so there is no empty band under it. */
+  var fitH = {};
+  function fitPanel() {
+    var r = ROUTE[cur], h = view === "mission" && r && r.type === "level" ? fitH[r.n] : 0;
+    if (!h || window.innerWidth < 900) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; }
+    stageEl.classList.add("fit"); stageEl.style.height = Math.max(420, h + 30) + "px";
+  }
   window.addEventListener("message", function (e) {
+    if (e.data && e.data.orion === "size") { for (var k = 0; k < frames.length; k++) if (frames[k] && frames[k].contentWindow === e.source) { fitH[k] = e.data.h; fitPanel(); } return; }
     if (!e.data || e.data.orion !== "answer") return;
     for (var n = 0; n < frames.length; n++) if (frames[n] && frames[n].contentWindow === e.source) { onAnswer(n, e.data.result); if (e.data.result !== "goed" && e.data.why) note(LEVELS[n].name, e.data.q, e.data.a, e.data.why, e.data.result); }
   });
@@ -284,7 +296,7 @@
     document.getElementById("prev").disabled = i === 0;
     document.getElementById("next").disabled = i === ROUTE.length - 1;
     document.title = label(r).title + " · AVG-game Ruimtestation Orion";
-    renderRoute(); syncStation();
+    renderRoute(); syncStation(); fitPanel();
     var node = routeEl.querySelector('[data-i="' + i + '"]'); if (node) node.scrollIntoView({ block: "nearest", inline: "center" });
     if (first) missionEl.focus({ preventScroll: true });
   }

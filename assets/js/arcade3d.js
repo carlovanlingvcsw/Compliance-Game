@@ -26,7 +26,7 @@ function stars(parent, n) {
   const pos = new Float32Array(n * 3);
   for (let i = 0; i < n; i++) pos.set([(Math.random() - 0.5) * 9000, (Math.random() - 0.5) * 5000, -3200 - Math.random() * 2500], i * 3);
   const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-  parent.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0xd3e6ff, size: 2.2, sizeAttenuation: false, transparent: true, opacity: 0.85 })));
+  parent.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0xd3e6ff, size: 2.2, sizeAttenuation: false, transparent: true, opacity: 0.85, fog: false })));
 }
 /* A soft band of light low on the horizon, like the edge of the planet below the station. */
 function horizon(parent) {
@@ -38,6 +38,9 @@ function horizon(parent) {
 }
 
 /* The earth below the deck: the same NASA image as the station view. */
+function blobTex() { const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d"), gr = x.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, "rgba(0,0,0,.7)"); gr.addColorStop(0.6, "rgba(0,0,0,.3)"); gr.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = gr; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); }
+function contact(parent) { const m = mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex(), transparent: true, depthWrite: false }), parent); m.rotation.x = -Math.PI / 2; m.renderOrder = 2; return m; }
+function setRepeat(mat, u, v) { [mat.map, mat.normalMap, mat.roughnessMap].forEach((t) => { if (t) t.repeat.set(u, v); }); }
 function earth(parent) {
   const t = tex("earth", "color", null, true); t.anisotropy = 8;
   const m = mesh(new THREE.SphereGeometry(1, 96, 64), new THREE.MeshStandardMaterial({ map: t, roughness: 1, metalness: 0 }), parent);
@@ -50,8 +53,19 @@ function earth(parent) {
 function invaders(S) {
   const g = S.scene, drones = new Map(), fx = [];
   stars(g, 700);
-  const glowBand = horizon(g), globe = earth(g);
-  const deck = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_light", { repeat: [5, 4], color: 0x33415a, metalness: 0.6, roughness: 1, normalScale: 2.4 }), g); deck.rotation.x = -Math.PI / 2;
+  const glowBand = horizon(g);
+  g.fog = new THREE.Fog(0x030a1a, 1700, 6200); // the far end of the dock sinks into the dark
+  const deck = mesh(new THREE.PlaneGeometry(1, 1), pbr("scifi_panel", { repeat: [6, 12], color: 0x55668a, metalness: 0.55, roughness: 0.8, normalScale: 1.2, ao: true }), g); deck.rotation.x = -Math.PI / 2;
+  const turretShadow = contact(g);
+  const lane = (function () { const c = document.createElement("canvas"); c.width = 256; c.height = 16; const x = c.getContext("2d"); x.fillStyle = "#ffb900"; x.fillRect(0, 0, 256, 16); x.fillStyle = "#1b2740"; for (let i = -1; i < 17; i++) { x.beginPath(); x.moveTo(i * 16, 16); x.lineTo(i * 16 + 8, 16); x.lineTo(i * 16 + 16, 0); x.lineTo(i * 16 + 8, 0); x.fill(); } const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.repeat.set(6, 1); t.anisotropy = 8; const m = mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ map: t, roughness: 0.8, metalness: 0.1 }), g); m.rotation.x = -Math.PI / 2; return m; })();
+  // the far end of the dock: stacked containers in the station colours and a gantry across
+  const far = new THREE.Group(); g.add(far);
+  const boxCols = [0x084f8c, 0x8d98a8, 0xb58400, 0x173a63, 0x5f6d82], boxMats = boxCols.map((c) => pbr("container", { repeat: [1, 1], color: c, metalness: 0.4, roughness: 0.9, normalScale: 0.7, ao: true }));
+  const crates = []; for (let i = 0; i < 9; i++) crates.push(mesh(box(250, 250, 560), boxMats[(i * 3 + (i >> 1)) % 5], far));
+  const gantryMat = pbr("hull_dark", { repeat: [10, 1], metalness: 0.75 });
+  const beam = mesh(box(1, 46, 60), gantryMat, far), legs = [-1, 1].map(() => mesh(box(70, 1, 70), gantryMat, far));
+  const beamLamps = [-1, 0, 1].map(() => mesh(box(90, 8, 30), glow(0xfff1dc, 1.5), far));
+  const key2 = new THREE.SpotLight(0xfff1dc, 0, 0, 0.42, 0.7, 0); g.add(key2); g.add(key2.target);
   const edge = mesh(box(1, 10, 26), pbr("hull_dark", { repeat: [8, 1], metalness: 0.7 }), g);
   const lamps = []; for (let i = 0; i < 16; i++) lamps.push(mesh(box(14, 4, 14), glow(SKYBLUE, 1.6), g));
   const pylonMat = pbr("heat_shield", { repeat: [1, 6], color: 0x8fa0ba, metalness: 0.3, ao: true });
@@ -93,13 +107,21 @@ function invaders(S) {
   return {
     layout(W, H) {
       const fy = floorY();
-      deck.scale.set(W * 3.4, 2100, 1); deck.position.set(0, fy - 16, -700);
+      deck.scale.set(W * 4.2, 3600, 1); deck.position.set(0, fy - 16, -1450);
       edge.scale.set(W * 1.2, 1, 1); edge.position.set(0, fy - 21, 96);
       lamps.forEach((l, i) => { const s = i % 2 ? 1 : -1, k = Math.floor(i / 2); l.position.set(s * W * 0.47, fy - 13, 40 - k * 190); });
       pylons.forEach((p) => p.position.set(p.userData.s * (W * 0.9 + 260), fy + 430, -1500));
       glowBand.visible = false;
       turret.position.set(0, fy - 12, -70); turret.scale.setScalar(1.45);
-      globe.scale.setScalar(2600); globe.position.set(0, -2740, -3600);
+      turretShadow.scale.set(330, 250, 1); turretShadow.position.set(18, fy - 15, -62);
+      lane.scale.set(W * 1.1, 26, 1); lane.position.set(0, fy - 15.5, 62);
+      const fz = -2900, span = W * 2.1;
+      crates.forEach((c, i) => { const col = i % 7, row = i >= 7 ? 1 : 0, gap = col >= 3 ? 1 : 0; if (row) { c.position.set(-span + (i === 7 ? 0.5 : 5.5) * (span * 2 / 6.4) + (i === 7 ? 0 : span * 0.12), fy - 16 + 125 + 252, fz - 30); return; } c.position.set(-span + col * (span * 2 / 6.4) + gap * span * 0.12, fy - 16 + 125 + row * 252, fz - (col % 2) * 60); });
+      far.traverse((o) => { o.frustumCulled = false; });
+      beam.scale.set(span * 2.4, 1, 1); beam.position.set(0, fy + 900, fz + 200);
+      legs.forEach((l, i) => { l.scale.set(1, 920, 1); l.position.set((i ? 1 : -1) * span * 0.98, fy + 430, fz + 200); });
+      beamLamps.forEach((l, i) => l.position.set((i - 1) * span * 0.55, fy + 872, fz + 200));
+      key2.position.set(-W * 0.25, fy + 900, 420); key2.target.position.set(0, fy, -70); key2.intensity = 2.6;
       shields.forEach((s, i) => s.position.set((i - 1) * 62, fy - 12, 110));
     },
     tick(dt, t) {
@@ -148,15 +170,16 @@ function sprint(S) {
   const g = S.scene;
   stars(g, 400);
   const globe = earth(g);
-  const wallMat = pbr("hull_light", { repeat: [1.2, 1.2], color: 0x566884, metalness: 0.5, normalScale: 1.8 });
-  const wallParts = [0, 1, 2, 3].map(() => mesh(box(1, 1, 40), wallMat, g));          // left, right, top, sill around the window
+  const wallParts = [0, 1, 2, 3].map(() => mesh(box(1, 1, 40), pbr("hull_light", { color: 0x3d4c68, metalness: 0.55, roughness: 0.8, normalScale: 2.0, ao: true }), g));
+  const winLight = (function () { const c = document.createElement("canvas"); c.width = 256; c.height = 256; const x = c.getContext("2d"); for (let i = 0; i < 3; i++) { const gr = x.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, "rgba(150,200,255,.75)"); gr.addColorStop(1, "rgba(150,200,255,0)"); x.fillStyle = gr; x.beginPath(); const a = 18 + i * 78, b = a + 62; x.moveTo(a, 0); x.lineTo(b, 0); x.lineTo(b + (i - 1) * 26 + 10, 256); x.lineTo(a + (i - 1) * 26 - 10, 256); x.fill(); } const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; const m = mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: 0.34, depthWrite: false, blending: THREE.AdditiveBlending }), g); m.rotation.x = -Math.PI / 2; m.renderOrder = 1; return m; })();
+  const beamTex = (function () { const c = document.createElement("canvas"); c.width = 4; c.height = 128; const x = c.getContext("2d"), gr = x.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, "rgba(103,202,255,0)"); gr.addColorStop(1, "rgba(103,202,255,.55)"); x.fillStyle = gr; x.fillRect(0, 0, 4, 128); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+  const proj = mesh(new THREE.CylinderGeometry(1, 0.62, 1, 40, 1, true), new THREE.MeshBasicMaterial({ map: beamTex, transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }), g); proj.renderOrder = 3;          // left, right, top, sill around the window
   const mullions = [-1, 1].map(() => mesh(box(14, 1, 46), pbr("hull_dark", { metalness: 0.7 }), g));
   const wall = mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 }), g);
-  const blob = (function () { const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d"), gr = x.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, "rgba(0,0,0,.6)"); gr.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = gr; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
-  const shadow = mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blob, transparent: true, depthWrite: false }), g); shadow.rotation.x = -Math.PI / 2;
+  const shadow = contact(g);
   const spot = new THREE.SpotLight(0xfff1dc, 0, 0, 0.5, 0.6, 0); g.add(spot); g.add(spot.target);
   const strip = mesh(box(1, 5, 6), glow(SKYBLUE, 1.0), g);
-  const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("rubber_floor", { repeat: [5, 3], color: 0x3b4d6e, metalness: 0.35, roughness: 0.8, ao: true }), g); table.rotation.x = -Math.PI / 2;
+  const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("scifi_panel", { repeat: [8, 4], color: 0x24314a, metalness: 0.5, roughness: 0.75, normalScale: 1.2, ao: true }), g); table.rotation.x = -Math.PI / 2; table.material.envMapIntensity = 0.3;
   const rim = mesh(box(1, 16, 30), pbr("hull_light", { repeat: [8, 1], color: 0x8fa0b8, metalness: 0.5 }), g);
   // a matte landing pad with painted markings, where the next card arrives
   const pc = document.createElement("canvas"); pc.width = pc.height = 256; const pg = pc.getContext("2d");
@@ -179,15 +202,17 @@ function sprint(S) {
   return {
     layout(W, H) {
       const wz = -620, winW = W * 0.9, winTop = H * 0.72, winBot = H * 0.02;
+      wallParts.forEach((p, i) => setRepeat(p.material, (i < 2 ? W * 1.4 : winW) / 380, (i < 2 ? H * 2.6 : H) / 380));
+      winLight.scale.set(winW * 1.05, 520, 1); winLight.position.set(0, -H * 0.36 + 0.6, wz + 20 + 260);
       wallParts[0].scale.set(W * 1.4, H * 2.6, 1); wallParts[0].position.set(-winW / 2 - W * 0.7, H * 0.2, wz);
       wallParts[1].scale.set(W * 1.4, H * 2.6, 1); wallParts[1].position.set(winW / 2 + W * 0.7, H * 0.2, wz);
       wallParts[2].scale.set(winW, H, 1); wallParts[2].position.set(0, winTop + H / 2, wz);
       wallParts[3].scale.set(winW, H, 1); wallParts[3].position.set(0, winBot - H / 2, wz);
       mullions.forEach((m, i) => { m.scale.set(1, winTop - winBot, 1); m.position.set((i ? 1 : -1) * winW / 6, (winTop + winBot) / 2, wz); });
-      globe.scale.setScalar(2400); globe.position.set(0, -2080, -4200);
+      globe.scale.setScalar(2400); globe.position.set(0, -1420, -4200);
       shadow.scale.set(W * 0.55, 260, 1); shadow.position.set(0, -H * 0.36 + 1, -70);
-      spot.position.set(-W * 0.2, H * 1.1, 500); spot.target.position.set(0, -H * 0.3, -80); spot.intensity = 3.2;
-      strip.scale.set(W * 1.5, 1, 1); strip.position.set(0, H * 0.62, -600);
+      spot.position.set(-W * 0.2, H * 1.1, 500); spot.target.position.set(0, -H * 0.3, -80); spot.intensity = 2.4;
+      strip.scale.set(W * 1.5, 1, 1); strip.position.set(0, H * 0.78, -596);
       table.scale.set(W * 2.2, 900, 1); table.position.set(0, -H * 0.36, -300);
       rim.scale.set(W * 2.2, 1, 1); rim.position.set(0, -H * 0.36 - 8, 150);
     },
@@ -197,6 +222,8 @@ function sprint(S) {
         const r = S.rect(holo), rad = Math.min(r.w * 0.5, 210);
         pad.scale.set(rad * 1.12, 1, rad * 1.12); pad.position.set(r.x, -S.H * 0.36 + 3, -70);
         ring.scale.setScalar(rad); ring.position.set(r.x, -S.H * 0.36 + 8, -70);
+        const padY = -S.H * 0.36 + 8, cardBot = r.y - r.h / 2 + 6, bh = Math.max(10, cardBot - padY);
+        proj.scale.set(Math.min(r.w * 0.5, rad * 1.25), bh, rad * 0.55); proj.position.set(r.x, padY + bh / 2, -60);
         const cls = holo.className;
         if (cls !== last) {
           if (cls.indexOf("fly-l") >= 0) { chutes[0].heat = 1; chutes[0].hex = GREEN; ringHeat = 1; ringHex = GREEN; }
