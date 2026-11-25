@@ -1,0 +1,14 @@
+/* ================================================================
+   Orion station shell. When a level runs inside the game (html.in-orion),
+   the 3D station shows through and the shell carries the wordmark.
+   Labels are sentence case and decorative corner marks are gone.
+   Only presentation: content, rules and scripts stay unchanged.
+   ================================================================ */
+html.in-orion, html.in-orion body { background: transparent !important; }
+html.in-orion body::before, html.in-orion body::after, html.in-orion .vcsw::before, html.in-orion .vcsw::after { display: none !important; }
+html.in-orion .vcsw-header, html.in-orion .vcsw-brandbar, html.in-orion .vcsw-footer { display: none !important; }
+html.in-orion .vcsw-page-title { display: none; }
+
+#stage::before, .stage::before, .game-main > #screen::before { display: none !important; }
+.vcsw-overline::before, .overline::before, .stage .ov::before, .hud::before { display: none !important; }
+html.orion-level body *:not(h1):not(h2):not(kbd) { text-transform: none !important; letter-spacing: normal !important; }
