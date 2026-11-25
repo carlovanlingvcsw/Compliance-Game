@@ -166,7 +166,7 @@
     routeEl.innerHTML = ROUTE.map(function (r, i) {
       var L = label(r);
       return '<li><button type="button" class="node' + (r.type === "game" ? " bonus" : "") + '" data-i="' + i + '"' + (i === cur ? ' aria-current="step"' : "") +
-        ' title="' + esc(L.title) + '"><span class="num">' + num(r) + '</span><span class="nm">' + esc(L.short) + '</span><span class="stars" role="img" aria-label="' + rStars(r) + ' van 3 sterren">' + stars(rStars(r)) + "</span></button></li>";
+        ' title="' + esc(L.title) + '"><span class="num">' + num(r) + '</span><span class="nm">' + esc(L.short) + "</span></button></li>";
     }).join("");
     renderMap();
   }
@@ -266,6 +266,7 @@
     document.getElementById("m-title").textContent = L.place;
     document.getElementById("m-place").textContent = label(r).title;
     document.getElementById("m-aria").textContent = r.type === "level" ? L.aria : GAMES[r.id].aria;
+    missionEl.classList.toggle("is-level", r.type === "level");
     if (r.type === "level") {
       arcade.hidden = true;
       if (!frames[r.n]) frames[r.n] = loadFrame(r.n);
@@ -526,13 +527,15 @@
     }
     function spawn() {
       var m = MSGS[Math.floor(Math.random() * MSGS.length)], lane;
-      do { lane = lanes[Math.floor(Math.random() * 3)]; } while (lane === lastLane && Math.random() < 0.7);
+      var free = lanes.filter(function (l) { return !live.some(function (q) { return q.lane === l && q.y < 150; }); });
+      if (!free.length) { spawnIn = 0.25; return; }
+      lane = free[Math.floor(Math.random() * free.length)];
       lastLane = lane;
       var el = document.createElement("button"); el.type = "button"; el.className = "inv";
       el.innerHTML = '<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><small>Van: ' + esc(m[0]) + " · " + esc(m[1]) + "</small><b>" + esc(m[2]) + "</b></span>";
       el.setAttribute("aria-label", "Bericht van " + m[0] + ", " + m[1] + ": " + m[2] + ". Klik om neer te schieten.");
       el.style.left = (2 + lane * 33) + "%";
-      var o = { el: el, y: 10, fake: m[3] === 1, v: 52 + (60 - G.left) * 1.6 + Math.random() * 14 };
+      var o = { el: el, lane: lane, y: 10, fake: m[3] === 1, v: 52 + (60 - G.left) * 1.6 + Math.random() * 14 };
       el.onclick = function (e) {
         if (!G || G.over) return;
         var r = el.getBoundingClientRect(), sr = sky.getBoundingClientRect(), x = r.left - sr.left + r.width / 2, y = r.top - sr.top + r.height / 2;

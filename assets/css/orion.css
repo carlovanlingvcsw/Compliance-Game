@@ -81,7 +81,7 @@ main { position: relative; z-index: 1; height: 100%; }
 .home-copy { pointer-events: auto; position: absolute; left: clamp(20px, 5vw, 72px); top: calc(var(--bar-h) + clamp(24px, 6vh, 64px)); bottom: 24px; width: min(460px, calc(100% - 40px));
   display: flex; flex-direction: column; gap: 20px; overflow-y: auto; scrollbar-width: thin; }
 .home-copy h1 .kicker-free { display: block; font-size: .5em; font-weight: 600; letter-spacing: 0; color: var(--vcsw-blue-200); }
-.home-copy h1 { margin: 0; font: 800 clamp(2.25rem, 4.2vw, 3.25rem)/1.02 var(--vcsw-font-heading); letter-spacing: -0.03em; color: #fff; text-shadow: 0 2px 24px rgb(2 8 20 / .6); }
+.home-copy h1 { margin: 0; font: 800 clamp(2rem, 3.4vw, 2.75rem)/1.05 var(--vcsw-font-heading); letter-spacing: -0.03em; color: #fff; text-shadow: 0 2px 24px rgb(2 8 20 / .6); }
 .home-copy .lead { margin: 0; font-size: 1.125rem; line-height: 1.55; color: var(--vcsw-gray-200); text-shadow: 0 1px 12px rgb(2 8 20 / .8); }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .map-card .go { width: 100%; justify-content: center; margin-top: 12px; }
@@ -124,6 +124,7 @@ main { position: relative; z-index: 1; height: 100%; }
 .briefing h1 { margin: 0; font: 700 1.5rem/1.2 var(--vcsw-font-heading); color: #fff; }
 .briefing .mission-of { margin: -6px 0 0; font-size: 1rem; color: var(--vcsw-gray-400); }
 .aria-line { display: flex; gap: 12px; align-items: flex-start; }
+.mission.is-level .aria-line { display: none; }
 .aria-line p { margin: 0; font-size: 1rem; line-height: 1.5; color: var(--vcsw-gray-200); }
 .aria-line b { color: var(--vcsw-blue-200); font-family: var(--vcsw-font-heading); }
 .aria-face { flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #fff, var(--vcsw-gray-300)); }
@@ -238,9 +239,9 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .holo-wrap { display: flex; flex-direction: column; gap: 14px; }
 .holo-wrap .ar-feed { margin: 0; min-height: 48px; }
 .bin-btn .vcsw-icon { width: 36px; height: 36px; color: var(--vcsw-blue-200); }
-.bin-btn.no { background: color-mix(in srgb, var(--vcsw-gray-700) 60%, transparent); }
-.bin-btn.yes { background: color-mix(in srgb, var(--vcsw-blue-700) 60%, transparent); border-color: var(--vcsw-blue-300); }
-.bin-btn.no .vcsw-icon { color: var(--vcsw-gray-300); }
+.bin-btn.no, .bin-btn.yes { background: color-mix(in srgb, var(--vcsw-blue-800) 70%, transparent); border-color: var(--vcsw-blue-300); }
+.bin-btn kbd { font-size: .9375rem; padding: 8px 12px; }
+.bin-btn.no .vcsw-icon { color: var(--vcsw-blue-200); }
 .holo { position: relative; min-height: 260px; box-shadow: 0 24px 40px -18px #000; transform: translateY(-4px); border-radius: 16px; padding: 28px 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 12px;
   background: color-mix(in srgb, var(--vcsw-blue-700) 55%, transparent); border: 1px solid color-mix(in srgb, var(--vcsw-blue-200) 55%, transparent); }
 .holo small { font-size: .8125rem; color: var(--vcsw-blue-100); }
@@ -284,7 +285,7 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .beam.red { background: var(--vcsw-red-300); }
 @keyframes beam { from { opacity: 1; } to { opacity: 0; } }
 .ar-panel .sky::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 46px; background: color-mix(in srgb, var(--vcsw-blue-500) 22%, transparent); border-top: 1px dashed color-mix(in srgb, var(--vcsw-blue-300) 60%, transparent); }
-.inv { position: absolute; width: 30%; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; border-radius: 10px; text-align: left; cursor: crosshair; color: #fff; font: inherit; will-change: transform;
+.inv { position: absolute; width: 31%; background: var(--vcsw-blue-900) !important; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; border-radius: 10px; text-align: left; cursor: crosshair; color: #fff; font: inherit; will-change: transform;
   background: color-mix(in srgb, var(--vcsw-blue-800) 92%, transparent); border: 1px solid var(--vcsw-blue-300); }
 .inv:hover, .inv:focus-visible { border-color: var(--vcsw-amber-300); outline: none; }
 .inv .vcsw-icon { flex: none; margin-top: 2px; color: var(--vcsw-blue-200); }

@@ -119,6 +119,24 @@ function containerTexture() {
   g.fillStyle = "rgba(255,255,255,.55)"; g.fillRect(28, 30, 60, 10); g.fillRect(28, 46, 36, 6);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
+/* Crinkled insulation foil, like the gold and silver blankets on real spacecraft */
+function foilTexture(tone) {
+  const S = 256, c = document.createElement("canvas"); c.width = c.height = S; const g = c.getContext("2d");
+  const base = tone === "gold" ? [196, 152, 72] : [196, 204, 214];
+  g.fillStyle = `rgb(${base})`; g.fillRect(0, 0, S, S);
+  for (let i = 0; i < 260; i++) {
+    const x = rnd() * S, y = rnd() * S, r = 6 + rnd() * 22, k = 0.7 + rnd() * 0.6;
+    g.fillStyle = `rgb(${base.map((v) => Math.min(255, Math.round(v * k))).join(",")})`;
+    g.beginPath(); g.moveTo(x, y);
+    for (let j = 0; j < 4; j++) g.lineTo(x + (rnd() - 0.5) * r * 2, y + (rnd() - 0.5) * r * 2);
+    g.closePath(); g.fill();
+  }
+  g.strokeStyle = "rgba(0,0,0,.18)"; g.lineWidth = 1;
+  for (let i = 0; i < 4; i++) { g.beginPath(); g.moveTo(0, i * 64 + 2); g.lineTo(S, i * 64 + 2); g.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
+  const b = new THREE.CanvasTexture(c); b.wrapS = b.wrapT = THREE.RepeatWrapping;
+  return new THREE.MeshStandardMaterial({ map: t, bumpMap: b, bumpScale: 3, metalness: 0.55, roughness: 0.38 });
+}
 const TEX = {
   container: containerTexture(),
   light: hullTexture("#a9b4c2", { cols: 6, rows: 3 }),
@@ -126,6 +144,7 @@ const TEX = {
   dark: hullTexture("#34445c", { cols: 4, rows: 4, vary: 20 }),
   white: hullTexture("#d2dae4", { cols: 4, rows: 3, vary: 10 }),
 };
+const FOIL = { gold: foilTexture("gold"), silver: foilTexture("silver") };
 const MAT = {
   hull: hullMat(TEX.light, 0.4, 0.75),
   hullMid: hullMat(TEX.mid, 0.5, 0.7),
@@ -206,8 +225,8 @@ station.rotation.x = 0.08;
 
 // Central spine and hub
 mesh(cyl(1.25, 3.2, 48), MAT.hull, station);
-mesh(new THREE.SphereGeometry(1.25, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), MAT.hullMid, station, [0, 1.6, 0]);
-mesh(new THREE.SphereGeometry(1.25, 48, 24, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), MAT.hullMid, station, [0, -1.6, 0]);
+mesh(new THREE.SphereGeometry(1.25, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), FOIL.silver, station, [0, 1.6, 0]);
+mesh(new THREE.SphereGeometry(1.25, 48, 24, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), FOIL.silver, station, [0, -1.6, 0]);
 mesh(cyl(0.42, 9, 24), MAT.hullDark, station);
 [-2.2, 2.2].forEach((y) => mesh(new THREE.TorusGeometry(1.3, 0.08, 12, 64), MAT.hullDark, station, [0, y * 0.72, 0], [Math.PI / 2, 0, 0]));
 for (let i = 0; i < 32; i++) { const a = (i / 32) * Math.PI * 2; if (i % 5 === 1) continue; mesh(new THREE.BoxGeometry(0.1, 0.05, 0.02), emissive(0xffe2a8, 1.6), station, [Math.cos(a) * 1.255, 0.55, Math.sin(a) * 1.255], [0, -a + Math.PI / 2, 0]); }
@@ -249,6 +268,7 @@ wings.forEach((w) => (w.rotation.y = 0.5));
 // Top communications array (the final mission)
 const comms = new THREE.Group(); station.add(comms); comms.position.y = 4.5;
 mesh(cyl(0.12, 1.8, 12), MAT.truss, comms, [0, 0.9, 0]);
+mesh(cyl(0.34, 0.5, 16), FOIL.gold, comms, [0, 0.25, 0]);
 const dishPts = []; for (let i = 0; i <= 16; i++) { const t = i / 16; dishPts.push(new THREE.Vector2(t * 1.3, t * t * 0.55)); }
 const dish = mesh(new THREE.LatheGeometry(dishPts, 48), new THREE.MeshStandardMaterial({ color: 0xc9d3df, metalness: 0.25, roughness: 0.62, side: THREE.DoubleSide }), comms, [0, 1.9, 0]);
 dish.rotation.set(-0.9, 0, 0.3);
@@ -275,7 +295,7 @@ function moduleFrame(angleDeg, name) {
 (function () {
   const g = moduleFrame(20, "aankomst");
   mesh(new THREE.BoxGeometry(1.6, 1.1, 1.3), MAT.hull, g, [1.9, 0, 0]); trims(g, 1.9, 0, 0, 1.6, 1.1, 1.3);
-  mesh(new THREE.BoxGeometry(1.0, 0.3, 1.0), MAT.hullMid, g, [1.9, 0.7, 0]); trims(g, 1.9, 0.7, 0, 1.0, 0.3, 1.0);
+  mesh(new THREE.BoxGeometry(1.0, 0.3, 1.0), FOIL.silver, g, [1.9, 0.7, 0]); trims(g, 1.9, 0.7, 0, 1.0, 0.3, 1.0);
   mesh(cyl(0.45, 0.4, 32), MAT.hullMid, g, [2.9, 0, 0], [0, 0, Math.PI / 2]);
   const ship = new THREE.Group(); g.add(ship); ship.position.set(3.8, 0, 0);
   const body = mesh(new THREE.CapsuleGeometry(0.32, 1.1, 8, 24), MAT.white, ship, [0.5, 0, 0], [0, 0, Math.PI / 2]);
@@ -297,7 +317,7 @@ function moduleFrame(angleDeg, name) {
   const hab = mesh(cyl(0.7, 3.4, 48), MAT.hull, g, [2.9, 0, 0], [0, 0, Math.PI / 2]);
   hab.material = hullMat(TEX.light, 0.4, 0.75, [4, 2]);
   // windows are the lit portholes further down
-  [1.2, 4.6].forEach((x) => mesh(new THREE.SphereGeometry(0.7, 32, 16), MAT.hullMid, g, [x, 0, 0]).scale.set(0.35, 1, 1));
+  [1.2, 4.6].forEach((x) => mesh(new THREE.SphereGeometry(0.7, 32, 16), x > 2 ? FOIL.gold : MAT.hullMid, g, [x, 0, 0]).scale.set(0.35, 1, 1));
   [2.2, 3.6].forEach((x) => mesh(new THREE.TorusGeometry(0.74, 0.06, 8, 48), MAT.hullDark, g, [x, 0, 0], [0, Math.PI / 2, 0]));
   lamp(g, [4.85, 0, 0], 0xffd230, 0.05);
   rail(g, 1.7, 4.1, 0.55, 0.5); rail(g, 1.7, 4.1, -0.55, 0.5);
@@ -355,7 +375,7 @@ const breach = { lights: [], embers: null, plates: [] };
   const g = moduleFrame(260, "hullbreuk");
   const hull = mesh(new THREE.CylinderGeometry(0.8, 0.8, 2.6, 8, 1, false, Math.PI / 8), MAT.hullMid, g, [2.4, 0, 0], [0, 0, Math.PI / 2]);
   hull.material = hullMat(TEX.mid, 0.5, 0.7, [3, 1]);
-  [1.1, 3.7].forEach((x) => mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.18, 8, 1, false, Math.PI / 8), MAT.hullDark, g, [x, 0, 0], [0, 0, Math.PI / 2]));
+  [1.1, 3.7].forEach((x) => mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.18, 8, 1, false, Math.PI / 8), FOIL.silver, g, [x, 0, 0], [0, 0, Math.PI / 2]));
   const face = 0.8 * Math.cos(Math.PI / 8) + 0.004;
   const hole = new THREE.Shape(), H = [[-0.5, 0.05], [-0.34, 0.24], [-0.12, 0.2], [0.02, 0.34], [0.2, 0.22], [0.42, 0.26], [0.5, 0.02], [0.36, -0.18], [0.16, -0.12], [0.0, -0.3], [-0.18, -0.16], [-0.38, -0.22]];
   hole.moveTo(H[0][0], H[0][1]); H.slice(1).forEach((p) => hole.lineTo(p[0], p[1]));
@@ -613,7 +633,7 @@ function tick() {
   let ag;
   if (focus >= 0) {
     const m = MODULES[focus];
-    ag = moduleWorld(m, m.anchor.clone().add(m.fixed ? new THREE.Vector3(1.2, 0.4, 1.4) : new THREE.Vector3(0.8, 1.9, 1.0)));
+    ag = moduleWorld(m, m.anchor.clone().add(m.fixed ? new THREE.Vector3(1.2, 0.4, 1.4) : new THREE.Vector3(-0.97, 0.2, 1.5)));
   } else {
     ag = tmp.set(Math.cos(t * 0.25) * 9, 2.2 + Math.sin(t * 0.6) * 0.4, Math.sin(t * 0.25) * 9);
   }
