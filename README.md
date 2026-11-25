@@ -86,6 +86,12 @@ Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 2,6 MB
 ## Wijzigingen
 
 - Ronde 17: het station is het menu op het startscherm, een demo-inlog met verzonnen accounts, een beheerpagina met voortgang per label en afdeling (fictieve testgegevens), de aarde uit NASA-beelden die langzaam draait, een rustiger einde van Lekken dichten en een prestatiemeter via `?perf=1`.
+- Ronde 18: de sprintruimte kreeg wanden rond een raam, de containers kregen de merkkleuren en de bovenbalk verloor zijn kaders.
+- Ronde 19: Phishing Invaders speelt in een dok met containers, de sprint kreeg raamlicht en een projectie onder de kaart, de hullbreuk werd breder, elke module kreeg een eigen camerastand en het missiepaneel eindigt waar de inhoud eindigt.
+- Ronde 20: de zon staat opzij zodat het station een schaduwkant heeft, de hullbreuk toont het binnenwerk, de schotel is naar de camera gedraaid en de regels van een level staan als korte lijst.
+- Ronde 21: dokwand achter de containers en dekplaten als vloer. De rustiger rompstructuur en het lagere vullicht van deze ronde scoorden lager en zijn in ronde 22 teruggedraaid.
+- Ronde 22: romp en licht terug naar ronde 20, de brede zonneglans op zee is klein gemaakt, het dok is donkerder, de afzender van een bericht staat op leesgrootte en de beheerpagina heeft een rustiger achtergrond.
+- Beoordeling door twee critici zonder voorkennis, gemiddelde van 0 tot 100: ronde 17 65,9, ronde 18 66,2, ronde 19 67,2, ronde 20 68,8, ronde 21 64,2 en ronde 22 66,8. Het zijn schattingen, geen metingen.
 
 - Ronde 16: Nalezen. Elk half goed of fout antwoord, in de levels en in de arcade, komt met de uitleg in een lijst die je via de knop Nalezen waarom opent. Witte teksten boven de aarde staan op een donkere sluier en op dichtere kaarten.
 

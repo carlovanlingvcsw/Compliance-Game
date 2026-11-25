@@ -538,3 +538,8 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .inv small { font-size: .9375rem; }
 .sprint.pf3d { grid-template-columns: 1fr minmax(240px, 350px) 1fr; }
 .sprint.pf3d .bin-btn { font-size: .9375rem; padding-left: 10px; padding-right: 10px; }
+
+/* ---------- The admin page is a working screen: the station stays far in the back ---------- */
+[data-view="admin"] #world { filter: brightness(.22) saturate(.6) blur(3px); }
+.admin { background: rgb(2 8 20 / .55); }
+.grid9.pf3d .mname { background: rgb(2 8 20 / .72); padding: 2px 8px; border-radius: 4px; }
