@@ -543,3 +543,65 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 [data-view="admin"] #world { filter: brightness(.22) saturate(.6) blur(3px); }
 .admin { background: rgb(2 8 20 / .55); }
 .grid9.pf3d .mname { background: rgb(2 8 20 / .72); padding: 2px 8px; border-radius: 4px; }
+
+/* ================= Round 23: status bar, route with the final mission in three parts, logbook ================= */
+.status { position: absolute; left: 0; right: 0; top: 0; z-index: 3; display: flex; flex-direction: column; gap: 12px; padding: 14px 20px 12px; background: #06162f; border-bottom: 1px solid var(--o-edge-strong); }
+.status[hidden] { display: none; }
+.panel.has-status iframe { top: var(--status-h, 128px); height: calc(100% - var(--status-h, 128px)); }
+.st-steps { display: flex; gap: 8px; }
+.st-step { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 5px; font-size: .8125rem; color: #b9cbe3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-step i { height: 6px; border-radius: 999px; background: #16335c; }
+.st-step.done i, .st-step.cur i { background: var(--vcsw-blue-400); }
+.st-step.cur { color: #fff; font-weight: 700; } .st-step.cur i { box-shadow: 0 0 0 2px rgb(21 170 255 / .35); }
+.st-step span { overflow: hidden; text-overflow: ellipsis; }
+.st-row { display: flex; gap: 24px; align-items: flex-start; }
+.st-stat { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.st-stat.gems { flex: 0 0 168px; }
+.st-top { display: flex; align-items: center; gap: 8px; color: var(--vcsw-blue-300); font-size: .875rem; }
+.st-top span { color: #b9cbe3; } .st-top b { margin-left: auto; font: 700 1.125rem var(--vcsw-font-heading); color: #fff; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.st-top em { font-style: normal; font-weight: 700; font-size: .8125rem; border-radius: 999px; padding: 1px 9px; white-space: nowrap; }
+.st-top em.up { background: rgb(123 241 168 / .16); color: #7bf1a8; } .st-top em.down { background: rgb(255 162 162 / .16); color: #ffa2a2; }
+.st-top em + b { margin-left: 0; } .st-top span + em { margin-left: auto; }
+.st-top .vcsw-icon { width: 18px; height: 18px; flex: none; }
+.st-bar { position: relative; height: 8px; border-radius: 999px; background: #16335c; }
+.st-bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: var(--vcsw-blue-400); transition: width 400ms ease; }
+.st-bar.ok i { background: #7bf1a8; } .st-bar.warn i { background: #ffc978; }
+.st-bar u { position: absolute; top: 0; bottom: 0; border-radius: 0 999px 999px 0; } .st-bar u.up { background: #7bf1a8; } .st-bar u.down { background: #ffa2a2; }
+.st-bar s { position: absolute; top: -3px; width: 2px; height: 14px; background: #ffb900; }
+.st-stat small { font-size: .8125rem; color: #b9cbe3; }
+.st-gems { display: flex; gap: 6px; height: 8px; } .st-gems i { flex: 0 0 26px; border-radius: 999px; background: #16335c; } .st-gems i.on { background: #ffb900; }
+.st-combo { align-self: center; flex: none; font-size: .875rem; color: #b9cbe3; white-space: nowrap; } .st-combo b { font: 800 1.25rem var(--vcsw-font-heading); color: #ffb900; }
+.st-next { align-self: center; flex: none; min-height: 44px; padding: 0 18px; border-radius: 8px; border: 1px solid var(--vcsw-blue-600); background: var(--vcsw-blue-600); color: #fff; font: 600 1rem var(--vcsw-font-heading); display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.st-next:hover { background: var(--vcsw-blue-500); } .st-next .vcsw-icon { width: 18px; height: 18px; }
+@media (prefers-reduced-motion: reduce) { .st-bar i { transition: none; } }
+@media (max-width: 900px) { .st-row { flex-wrap: wrap; gap: 12px; } .st-stat { flex-basis: 40%; } .st-steps { display: none; } }
+/* the level's own bar is shown by the shell now, combo lives in the status bar */
+.bar #combo, .bar .meter:has(#xp) { display: none; }
+/* route: the final mission as three linked stops, and a flag for the result */
+.route li.egroup { display: flex; gap: 2px; padding: 2px 4px; border: 1px dashed var(--o-edge-strong); border-radius: 999px; }
+.node.done .num { background: var(--vcsw-blue-600); color: #fff; }
+.node.flag .num { background: none; border-color: transparent; color: #b9cbe3; } .node.flag[aria-current="step"] .num { color: #04142b; }
+/* logbook */
+.logbook { position: absolute; inset: 0; overflow: auto; padding: 28px; display: flex; flex-direction: column; gap: 16px; }
+.logbook[hidden] { display: none; }
+.lb-sheet { background: #fff; color: #06224c; border-radius: 16px; padding: 30px 36px; display: flex; flex-direction: column; gap: 16px; }
+.lb-head { display: flex; gap: 20px; align-items: center; }
+.lb-seal { width: 72px; height: 72px; border-radius: 50%; background: #06224c; color: #ffb900; display: inline-flex; align-items: center; justify-content: center; flex: none; } .lb-seal .vcsw-icon { width: 38px; height: 38px; }
+.lb-who { flex: 1; min-width: 0; } .lb-who span { font-size: 1rem; color: #3b4d6e; } .lb-who h1 { margin: 0; font: 800 2rem/1.15 var(--vcsw-font-heading); color: #06224c; } .lb-who p { margin: 2px 0 0; font-size: 1rem; color: #06224c; }
+.lb-total { display: flex; flex-direction: column; align-items: flex-end; } .lb-total b { font: 800 3.25rem/1 var(--vcsw-font-heading); color: #0a6dbe; } .lb-total span { font-size: .9375rem; color: #3b4d6e; }
+.lb-sheet table { border-collapse: collapse; width: 100%; } .lb-sheet th, .lb-sheet td { padding: 9px 12px; border-bottom: 1px solid #d3deeb; text-align: left; font-size: .9375rem; color: #3b4d6e; }
+.lb-sheet th { padding-left: 0; font: 700 .9375rem var(--vcsw-font-heading); color: #06224c; } .lb-sheet td.num { text-align: right; font: 800 1rem var(--vcsw-font-heading); color: #06224c; } .lb-sheet td.num.low { color: #a14b00; } .lb-sheet td.state { text-align: right; padding-right: 0; }
+.lb-star { display: inline-flex; color: #c3cedc; } .lb-star .vcsw-icon { width: 18px; height: 18px; } .lb-star.on { color: #e0a300; } .lb-star.on .vcsw-icon { fill: #ffb900; }
+.lb-foot { display: flex; gap: 28px; flex-wrap: wrap; font-size: .9375rem; color: #3b4d6e; } .lb-note { margin: 0; font-size: .875rem; color: #3b4d6e; }
+.lb-actions { display: flex; gap: 10px; flex-wrap: wrap; } .lb-actions .lb-close { margin-left: auto; }
+@media print { body.print-logbook > *:not(main), body.print-logbook .briefing, body.print-logbook #world, body.print-logbook .lb-actions, body.print-logbook .fx { display: none !important; } body.print-logbook .panel { position: static; width: auto; border: 0; background: #fff; } body.print-logbook .logbook { position: static; padding: 0; } }
+/* the route has thirteen stops now: tighter, with practice rounds as small diamonds */
+.route ol { gap: 1px; }
+.node { height: 34px; } .node:not([aria-current="step"]) { padding: 0 2px; }
+.node .num { width: 26px; height: 26px; }
+.node.bonus .num { width: 18px; height: 18px; border-radius: 4px; transform: rotate(45deg); margin: 0 3px; border: 1px solid var(--vcsw-amber-400, #ffb900); }
+.node.bonus .num .vcsw-icon { display: none; }
+.node.bonus[aria-current="step"] .num { background: #ffb900; }
+.route li.egroup { gap: 0; padding: 1px 3px; margin: 0 3px; }
+.node.flag .num .vcsw-icon { width: 18px; height: 18px; }
+@media (max-width: 1300px) { .brand-name { display: none; } .bar .meters { gap: 0; } .bar .icon-btn { padding-left: 10px; padding-right: 10px; } }

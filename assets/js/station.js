@@ -624,14 +624,14 @@ function watchSpeed(dt) {
   slowT += dt; slowN++;
   if (slowN < 60) return;
   /* Contact shadow is extra work, so it only comes on when the overview already runs fast. */
-  if (!gtaoTried && !lowPower && slowT / slowN < 1 / 50) { gtaoTried = true; gtaoOk = true; slowT = 0; slowN = 0; return; }
-  if (slowT / slowN > (lowPower ? 1 / 18 : 1 / 24)) { if (gtaoOk) gtaoOk = false; else if (renderer.getPixelRatio() > 1) { renderer.setPixelRatio(1); resize(); } else { composer.dispose(); composer = null; } }
+  /* Contact shadow stays off unless asked for with ?fx=aan: its grain crawled over the hull while the station turned. */
+  if (slowT / slowN > (lowPower ? 1 / 18 : 1 / 24)) { if (shadowEvery === 1) shadowEvery = 2; else if (renderer.getPixelRatio() > 1) { renderer.setPixelRatio(1); resize(); } else { composer.dispose(); composer = null; } }
   slowT = 0; slowN = 0;
 }
 
 /* ---------- Loop ---------- */
 const clock = new THREE.Clock();
-let running = true, lowPower = 0, acc = 0, frameNo = 0;
+let running = true, lowPower = 0, acc = 0, frameNo = 0, shadowEvery = 1;
 renderer.shadowMap.autoUpdate = false;
 renderer.info.autoReset = false;
 document.addEventListener("visibilitychange", () => { running = !document.hidden; if (running) clock.getDelta(); });
@@ -701,7 +701,7 @@ function tick() {
   aria.userData.halo.rotation.z += dt * 0.8;
   aria.userData.eye.material.emissive.setHex(alarm ? 0xff6467 : 0x15aaff);
 
-  frameNo++; renderer.shadowMap.needsUpdate = frameNo % (lowPower ? 6 : 2) === 0;
+  frameNo++; renderer.shadowMap.needsUpdate = frameNo % (lowPower > 1 ? 6 : shadowEvery) === 0;   // every frame, so shadows on the hull do not stutter while the ring turns
   pulseLevel *= Math.pow(0.02, dt); pulseLight.intensity = pulseLevel; pulseLight.position.copy(aria.position);
   if (pulseLevel > 0.05) aria.userData.eye.material.emissiveIntensity = 1.6 + pulseLevel * 0.3; else aria.userData.eye.material.emissiveIntensity = 1.6;
   if (gtao) gtao.enabled = gtaoOk && lowPower === 0;   // contact shadow only on the overview, where the whole station is in view

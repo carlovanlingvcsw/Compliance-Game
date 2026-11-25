@@ -24,6 +24,14 @@
   /* ---------- Icons (Lucide) ---------- */
   var IC = {
     left: '<path d="m15 18-6-6 6-6"/>', right: '<path d="m9 18 6-6-6-6"/>',
+    shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+    gem: '<path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>',
+    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+    download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+    doc: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    refresh: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+    star: '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.12 2.12 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.12 2.12 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.12 2.12 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.12 2.12 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.12 2.12 0 0 0 1.597-1.16z"/>',
     trophy: '<path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/>',
     vol: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/>',
     mute: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/>',
@@ -79,8 +87,10 @@
     { type: "level", n: 2 }, { type: "game", id: "poort" },
     { type: "level", n: 3 }, { type: "game", id: "invaders" },
     { type: "level", n: 4 }, { type: "game", id: "lekken" },
-    { type: "level", n: 5 }
+    { type: "level", n: 5 },
+    { type: "result" }
   ];
+  var RESULT = { title: "Resultaat", short: "Resultaat", place: "Communicatietoren", aria: "Dit is je logboek. Hier staat hoe elke missie ging." };
 
 
   /* ---------- Badges ---------- */
@@ -131,10 +141,10 @@
     station(function (S) { S.pulse(result === "fout" ? "bad" : "good"); });
     if (result === "goed") {
       var before = mult(); streak++; var m = mult(), gain = 100 * m;
-      P.xp += gain; pop(m > before ? "+" + gain + " · combo ×" + m : "+" + gain, m > before ? "gold" : ""); SFX.good();
+      P.xp += gain; if (m > before) pop("Combo ×" + m, "gold"); SFX.good();
       if (m >= 2) award("vonk"); if (streak >= 5) award("keten"); if (streak >= 10) award("onbreekbaar");
     } else if (result === "half") {
-      P.xp += 40; streak = 0; pop("+40"); SFX.half();
+      P.xp += 40; streak = 0; SFX.half();
     } else {
       streak = 0; SFX.bad();
     }
@@ -160,13 +170,20 @@
   document.getElementById("sound").onclick = function () { P.sound = !P.sound; save(); hud(); if (P.sound) SFX.good(); };
 
   var routeEl = document.getElementById("route");
-  function label(r) { return r.type === "level" ? LEVELS[r.n] : GAMES[r.id]; }
-  function rStars(r) { return r.type === "level" ? (P.levelStars[r.n] || 0) : ((P.games[r.id] || {}).stars || 0); }
-  function num(r) { return r.type === "level" ? (r.n === 5 ? "E" : String(r.n + 1)) : icon("zap"); }
+  function label(r) { return r.type === "level" ? LEVELS[r.n] : r.type === "result" ? RESULT : GAMES[r.id]; }
+  function rStars(r) { return r.type === "level" ? (P.levelStars[r.n] || 0) : r.type === "result" ? 0 : ((P.games[r.id] || {}).stars || 0); }
+  function num(r) { return r.type === "level" ? (r.n === 5 ? "E" : String(r.n + 1)) : r.type === "result" ? icon("flag") : icon("zap"); }
   function renderRoute() {
     routeEl.innerHTML = ROUTE.map(function (r, i) {
       var L = label(r);
-      return '<li><button type="button" class="node' + (r.type === "game" ? " bonus" : "") + '" data-i="' + i + '"' + (i === cur ? ' aria-current="step"' : "") +
+      if (r.type === "level" && r.n === 5) {   // the final mission shows its three parts, so nobody thinks it is one short step
+        var part = i === cur ? (P.epart || 1) : 0, doneE = (P.results || {})[5];
+        return '<li class="egroup" title="Eindmissie in drie delen">' + EPARTS.map(function (nm, k) {
+          var on = i === cur && part === k + 1 || (i === cur && part === 4 && k === 2);
+          return '<button type="button" class="node' + (doneE || (i === cur && part > k + 1) ? " done" : "") + '" data-i="' + i + '"' + (on ? ' aria-current="step"' : "") + ' title="Eindmissie, deel ' + (k + 1) + ": " + nm + '"><span class="num">E' + (k + 1) + '</span><span class="nm">' + nm + "</span></button>";
+        }).join("") + "</li>";
+      }
+      return '<li><button type="button" class="node' + (r.type === "game" ? " bonus" : r.type === "result" ? " flag" : "") + '" data-i="' + i + '"' + (i === cur ? ' aria-current="step"' : "") +
         ' title="' + esc(L.title) + '"><span class="num">' + num(r) + '</span><span class="nm">' + esc(L.short) + "</span></button></li>";
     }).join("");
     renderMap();
@@ -228,7 +245,7 @@
   function syncStation() {
     station(function (S) {
       if (view === "home" || view === "admin") { S.focus(-1, view === "home" && window.innerWidth > 900 ? "home" : null); S.alarm(false); S.lowPower(view === "admin" ? 2 : false); return; }
-      var r = ROUTE[cur], L = r.type === "level" ? LEVELS[r.n] : LEVELS[GAMES[r.id].after];
+      var r = ROUTE[cur], L = r.type === "level" ? LEVELS[r.n] : r.type === "result" ? LEVELS[5] : LEVELS[GAMES[r.id].after];
       S.focus(L.module, window.innerWidth > 900 ? "left" : null);
       S.alarm(!!L.alarm || r.id === "lekken");
       S.lowPower(true);
@@ -245,6 +262,7 @@
     document.body.setAttribute("data-view", "home");
     homeEl.hidden = false; missionEl.hidden = true; document.getElementById("admin").hidden = true;
     frames.forEach(function (f) { if (f) f.hidden = true; });
+    document.getElementById("logbook").hidden = true; document.getElementById("status").hidden = true;
     document.title = "AVG-game Ruimtestation Orion";
     renderRoute(); syncStation();
     if (quiet !== true) document.getElementById("start").focus({ preventScroll: true });
@@ -252,16 +270,72 @@
   document.getElementById("to-map").onclick = function () { showHome(); };
   document.getElementById("home-btn").onclick = function () { showHome(); };
 
+  /* ---------- Status bar: score, shield, crystals and steps of the level, always in view ---------- */
+  var statusEl = document.getElementById("status"), ST = {}, DELTA = {}, EPARTS = ["Het bericht", "De aanval", "De hoofdsluis"];
+  function sbar(pct, cls, mark, from) {
+    var lo = from === undefined ? pct : Math.min(from, pct), hi = from === undefined ? pct : Math.max(from, pct);
+    return '<div class="st-bar' + (cls ? " " + cls : "") + '"><i style="width:' + lo + '%"></i>' + (hi > lo ? '<u class="' + (pct >= from ? "up" : "down") + '" style="left:' + lo + "%;width:" + (hi - lo) + '%"></u>' : "") + (mark ? '<s style="left:' + mark + '%"></s>' : "") + "</div>";
+  }
+  function renderStatus() {
+    var r = ROUTE[cur], s = view === "mission" && r && r.type === "level" ? ST[r.n] : null;
+    statusEl.hidden = !s; stageEl.classList.toggle("has-status", !!s);
+    if (!s) { stageEl.style.removeProperty("--status-h"); return; }
+    var d = DELTA[r.n] && DELTA[r.n].until > Date.now() ? DELTA[r.n] : null, m = mult();
+    var pct = s.max ? Math.round(s.score / s.max * 100) : 0, was = d && s.max ? Math.round((s.score - d.score) / s.max * 100) : undefined;
+    var steps = (s.steps || []).map(function (n, i) { return '<div class="st-step' + (i < s.step ? " done" : i === s.step ? " cur" : "") + '"' + (i === s.step ? ' aria-current="step"' : "") + "><i></i><span>" + esc(n) + "</span></div>"; }).join("");
+    var gems = ""; for (var i = 0; i < (s.crystalsMax || 0); i++) gems += '<i class="' + (i < s.crystals ? "on" : "") + '"></i>';
+    var last = s.steps && s.step >= s.steps.length - 1, nx = ROUTE[cur + 1];
+    statusEl.innerHTML = (steps ? '<div class="st-steps" role="list" aria-label="Stappen van dit level">' + steps + "</div>" : "") + '<div class="st-row">' +
+      '<div class="st-stat"><div class="st-top">' + icon("target") + "<span>Score</span>" + (d && d.score ? '<em class="up">plus ' + d.score + "</em>" : "") + "<b>" + s.score + " van " + s.max + "</b></div>" + sbar(pct, "", 70, was) + "<small>Gehaald vanaf " + Math.ceil(s.max * 0.7) + " punten</small></div>" +
+      '<div class="st-stat"><div class="st-top">' + icon("shield") + "<span>Schild</span>" + (d && d.shield ? '<em class="down">min ' + (-d.shield) + "%</em>" : "") + "<b>" + s.shield + "%</b></div>" + sbar(s.shield, s.shield > 50 ? "ok" : "warn", 0, d && d.shield ? s.shield - d.shield : undefined) + "<small>Elke fout kost schild</small></div>" +
+      (s.crystalsMax ? '<div class="st-stat gems"><div class="st-top">' + icon("gem") + "<span>Kristallen</span><b>" + s.crystals + " van " + s.crystalsMax + '</b></div><div class="st-gems">' + gems + "</div><small>Openen aanwijzingen</small></div>" : "") +
+      (m > 1 ? '<div class="st-combo" title="Reeks goede antwoorden">Combo <b>×' + m + "</b></div>" : "") +
+      (last && nx ? '<button type="button" class="st-next" id="st-next">Verder naar ' + esc(nx.type === "result" ? "je resultaat" : label(nx).short) + icon("right") + "</button>" : "") + "</div>";
+    var nb = document.getElementById("st-next"); if (nb) nb.onclick = function () { go(cur + 1); };
+    stageEl.style.setProperty("--status-h", statusEl.offsetHeight + "px");
+  }
+  function onStatus(n, s) {
+    var old = ST[n]; ST[n] = s;
+    if (old && (s.score > old.score || s.shield < old.shield)) { DELTA[n] = { score: s.score - old.score, shield: s.shield - old.shield, until: Date.now() + 5000 }; setTimeout(renderStatus, 5100); }
+    if (n === 5 && s.part && s.part !== P.epart) { P.epart = s.part; renderRoute(); }
+    if (n === 5) station(function (S) { if (S.nevel) S.nevel(s.part === 2 && s.boss ? s.boss : null); });
+    if (s.done && s.pct !== null && s.pct !== undefined) { P.results = P.results || {}; var b = P.results[n]; if (!b || s.pct >= b.pct) { P.results[n] = { pct: s.pct, passed: !!s.passed, shield: s.shield, crystals: s.crystals, crystalsMax: s.crystalsMax }; save(); } }
+    renderStatus(); fitPanel();
+  }
+
+  /* ---------- Closing screen: the logbook with every result ---------- */
+  var logEl = document.getElementById("logbook");
+  function renderLogbook() {
+    var R = P.results || {}, played = Object.keys(R), tot = played.length ? Math.round(played.reduce(function (a, k) { return a + R[k].pct; }, 0) / played.length) : 0;
+    var passed = played.filter(function (k) { return R[k].passed; }).length, worst = null;
+    LEVELS.forEach(function (L, n) { if (!R[n] || !R[n].passed) { if (worst === null) worst = n; } });
+    var games = Object.keys(GAMES).filter(function (id) { return P.games[id]; }).length, badges = Object.keys(P.badges || {}).length;
+    var rank = passed === 6 ? "Admiraal van de Datawacht" : passed >= 3 ? "Luitenant van de Datawacht" : "Cadet van de Datawacht";
+    var day = new Date().toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+    var rows = LEVELS.map(function (L, n) {
+      var x = R[n], st = P.levelStars[n] || 0, stars = ""; for (var i = 0; i < 3; i++) stars += '<span class="lb-star' + (i < st ? " on" : "") + '">' + icon("star") + "</span>";
+      return "<tr><th scope=\"row\">" + (n === 5 ? "E" : n + 1) + ". " + esc(L.name) + '</th><td class="num' + (x && !x.passed ? " low" : "") + '">' + (x ? x.pct + "%" : "") + "</td><td>" + stars + '</td><td class="state">' + (x ? (x.passed ? "Gehaald" : "Nog niet gehaald") : "Nog niet gespeeld") + "</td></tr>";
+    }).join("");
+    logEl.innerHTML = '<div class="lb-sheet"><div class="lb-head"><span class="lb-seal">' + icon("shield") + '</span><div class="lb-who"><span>Logboek van de Datawacht</span><h1>' + esc(me().name) + "</h1><p>Rang: " + rank + ". Stand op " + day + '.</p></div><div class="lb-total"><b>' + tot + "%</b><span>totaalscore</span></div></div>" +
+      '<table><caption class="vcsw-sr-only">Uitslag per missie</caption><tbody>' + rows + '</tbody></table><div class="lb-foot"><span>' + passed + " van 6 missies gehaald</span><span>" + games + " van 4 oefenrondes gespeeld</span><span>" + badges + " van " + BADGES.length + ' prestaties</span></div><p class="lb-note">Het schild telt niet mee voor halen. Een missie is gehaald vanaf 70 procent van de punten. Dit logboek staat alleen in deze browser.</p></div>' +
+      '<div class="lb-actions"><button type="button" class="btn-go" id="lb-print">' + icon("download") + "Bewaar als pdf</button>" + (worst !== null ? '<button type="button" class="btn-ghost" id="lb-again">' + icon("refresh") + "Speel " + esc(LEVELS[worst].short) + (R[worst] ? " opnieuw" : "") + "</button>" : "") + (P.review && P.review.length ? '<button type="button" class="btn-ghost" id="lb-review">' + icon("doc") + "Lees na wat fout ging</button>" : "") + '<button type="button" class="btn-ghost lb-close" id="lb-close">Sluit af</button></div>';
+    document.getElementById("lb-print").onclick = function () { document.body.classList.add("print-logbook"); try { window.print(); } catch (e) {} setTimeout(function () { document.body.classList.remove("print-logbook"); }, 500); };
+    document.getElementById("lb-close").onclick = function () { showHome(); };
+    var a = document.getElementById("lb-again"); if (a) a.onclick = function () { go(routeIndexOfLevel(worst)); };
+    var rv = document.getElementById("lb-review"); if (rv) rv.onclick = function () { document.getElementById("review").click(); };
+  }
+
   /* The panel ends where the level's content ends, so there is no empty band under it. */
   var fitH = {};
   function fitPanel() {
     var r = ROUTE[cur], h = view === "mission" && r && r.type === "level" ? fitH[r.n] : 0;
     if (!h || window.innerWidth < 900) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; }
     var room = window.innerHeight - stageEl.getBoundingClientRect().top - 12;
-    if (h + 30 > room - 24) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; } // nearly full: keep one baseline with the module card
-    stageEl.classList.add("fit"); stageEl.style.height = Math.max(420, h + 30) + "px";
+    if (h + 30 + (statusEl.hidden ? 0 : statusEl.offsetHeight) > room - 24) { stageEl.classList.remove("fit"); stageEl.style.height = ""; return; } // nearly full: keep one baseline with the module card
+    stageEl.classList.add("fit"); stageEl.style.height = Math.max(420, h + 30 + (statusEl.hidden ? 0 : statusEl.offsetHeight)) + "px";
   }
   window.addEventListener("message", function (e) {
+    if (e.data && e.data.orion === "status") { for (var q = 0; q < frames.length; q++) if (frames[q] && frames[q].contentWindow === e.source) onStatus(q, e.data.s); return; }
     if (e.data && e.data.orion === "size") { for (var k = 0; k < frames.length; k++) if (frames[k] && frames[k].contentWindow === e.source) { fitH[k] = e.data.h; fitPanel(); } return; }
     if (!e.data || e.data.orion !== "answer") return;
     for (var n = 0; n < frames.length; n++) if (frames[n] && frames[n].contentWindow === e.source) { onAnswer(n, e.data.result); if (e.data.result !== "goed" && e.data.why) note(LEVELS[n].name, e.data.q, e.data.a, e.data.why, e.data.result); }
@@ -281,16 +355,20 @@
     document.body.setAttribute("data-view", "mission");
     homeEl.hidden = true; missionEl.hidden = false; document.getElementById("admin").hidden = true;
     frames.forEach(function (f) { if (f) f.hidden = true; });
-    var L = r.type === "level" ? LEVELS[r.n] : LEVELS[GAMES[r.id].after];
+    var L = r.type === "level" ? LEVELS[r.n] : r.type === "result" ? RESULT : LEVELS[GAMES[r.id].after];
     document.getElementById("m-title").textContent = L.place;
     document.getElementById("m-place").textContent = label(r).title;
-    document.getElementById("m-aria").textContent = r.type === "level" ? L.aria : GAMES[r.id].aria;
+    document.getElementById("m-aria").textContent = r.type === "level" ? L.aria : r.type === "result" ? RESULT.aria : GAMES[r.id].aria;
+    logEl.hidden = r.type !== "result";
     missionEl.classList.toggle("is-level", r.type === "level");
     if (r.type === "level") {
       arcade.hidden = true;
       if (!frames[r.n]) frames[r.n] = loadFrame(r.n);
       frames[r.n].hidden = false;
       P.opened[r.n] = 1; if (Object.keys(P.opened).length >= 6) award("ontdekker");
+    } else if (r.type === "result") {
+      arcade.hidden = true; renderLogbook(); logEl.scrollTop = 0;
+      document.body.setAttribute("data-view", "result");
     } else {
       arcade.hidden = false; arcade.scrollTop = 0; gameIntro(r.id);
       document.body.setAttribute("data-view", "arcade");
@@ -299,7 +377,7 @@
     document.getElementById("prev").disabled = i === 0;
     document.getElementById("next").disabled = i === ROUTE.length - 1;
     document.title = label(r).title + " · AVG-game Ruimtestation Orion";
-    renderRoute(); syncStation(); fitPanel();
+    renderRoute(); syncStation(); renderStatus(); fitPanel();
     var node = routeEl.querySelector('[data-i="' + i + '"]'); if (node) node.scrollIntoView({ block: "nearest", inline: "center" });
     if (first) missionEl.focus({ preventScroll: true });
   }

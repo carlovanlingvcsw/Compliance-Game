@@ -32,8 +32,18 @@ export function loadTextures() {
 /* Reflections from a real environment: HDRI maps from Poly Haven, CC0 (see assets/hdri/CREDITS.md).
    The file is read once; every renderer gets its own prefiltered copy. */
 const envData = {};
+/* In the single-file build the HDR sits in the page as base64. Decode it here instead of fetching a data address, which some sandboxes refuse. */
+function hdrFromData(uri) {
+  try {
+    const bin = atob(uri.slice(uri.indexOf(",") + 1)), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const d = new RGBELoader().parse(bytes.buffer), t = new THREE.DataTexture(d.data, d.width, d.height, THREE.RGBAFormat, d.type);
+    t.colorSpace = THREE.LinearSRGBColorSpace; t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; t.flipY = true; t.needsUpdate = true;
+    return Promise.resolve(t);
+  } catch (e) { return Promise.reject(e); }
+}
 export function loadEnv(renderer, name) {
-  envData[name] = envData[name] || new RGBELoader().loadAsync(DATA ? DATA["hdri/" + name] : new URL("../hdri/" + name + ".hdr", import.meta.url).href);
+  envData[name] = envData[name] || (DATA ? hdrFromData(DATA["hdri/" + name]) : new RGBELoader().loadAsync(new URL("../hdri/" + name + ".hdr", import.meta.url).href));
   return envData[name].then((hdr) => {
     hdr.mapping = THREE.EquirectangularReflectionMapping;
     const pm = new THREE.PMREMGenerator(renderer), t = pm.fromEquirectangular(hdr).texture; pm.dispose(); return t;
@@ -41,7 +51,7 @@ export function loadEnv(renderer, name) {
 }
 export function tex(name, map, repeat, srgb) {
   const t = new THREE.Texture(images[name + "/" + map] || flat(map));
-  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8;
   if (srgb) t.colorSpace = THREE.SRGBColorSpace;
   if (repeat) t.repeat.set(repeat[0], repeat[1]);
   t.needsUpdate = true;

@@ -270,3 +270,6 @@ html.in-orion #stage .vcsw-dl, html.in-orion #screen .vcsw-dl { grid-template-co
 html.in-orion #stage .vcsw-dl > div, html.in-orion #screen .vcsw-dl > div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 2px 0 2px 14px !important; }
 html.in-orion #stage .vcsw-dl dd, html.in-orion #screen .vcsw-dl dd { margin: 0 !important; }
 @media (max-width: 560px) { html.in-orion #stage .vcsw-dl > div, html.in-orion #screen .vcsw-dl > div { grid-template-columns: 1fr; gap: 2px; } }
+
+/* ---------- The shell shows score, shield, crystals and steps: the level's own bar is hidden there ---------- */
+html.in-orion .own-status { display: none !important; }
