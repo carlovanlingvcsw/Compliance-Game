@@ -61,7 +61,7 @@ scene.environmentIntensity = 0.85;
 
 /* ---------- Materials ---------- */
 function hullMat(kind, repeat) {
-  if (kind === "white") return pbr("hull_white", { repeat, metalness: 0.25, roughness: 0.9, normalScale: 0.8 });
+  if (kind === "white") return pbr("plastic_white", { repeat, color: 0xe6ecf3, metalness: 0.15, roughness: 0.75 });
   if (kind === "dark") return pbr("hull_dark", { repeat, metalness: 0.7, roughness: 0.95 });
   return pbr("hull_light", { repeat, color: kind === "mid" ? 0xb4c1d4 : 0xf2f6fb, metalness: 0.4, roughness: 1, normalScale: 2.2 });
 }
@@ -94,6 +94,7 @@ const MAT = {
   blue: new THREE.MeshStandardMaterial({ color: 0x0a6dbe, metalness: 0.4, roughness: 0.35 }),
   glass: new THREE.MeshStandardMaterial({ color: 0x0c2f5f, metalness: 0.9, roughness: 0.08 }),
 };
+const heatMat = pbr("heat_shield", { repeat: [2, 2], color: 0xb9c6d8, metalness: 0.35, roughness: 0.9, ao: true });
 const containerMats = {};
 function containerMat(hex) { return containerMats[hex] || (containerMats[hex] = pbr("container", { color: hex, metalness: 0.45, roughness: 0.95, ao: true })); }
 function emissive(color, intensity) { return new THREE.MeshStandardMaterial({ color: 0x000000, emissive: color, emissiveIntensity: intensity, roughness: 0.6 }); }
@@ -313,7 +314,7 @@ const breach = { lights: [], embers: null, plates: [] };
   const g = moduleFrame(260, "hullbreuk");
   const hull = mesh(new THREE.CylinderGeometry(0.8, 0.8, 2.6, 8, 1, false, Math.PI / 8), MAT.hullMid, g, [2.4, 0, 0], [0, 0, Math.PI / 2]);
   hull.material = hullMat("mid", [1, 1]);
-  [1.1, 3.7].forEach((x) => mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.18, 8, 1, false, Math.PI / 8), FOIL.silver, g, [x, 0, 0], [0, 0, Math.PI / 2]));
+  [1.1, 3.7].forEach((x) => mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.18, 8, 1, false, Math.PI / 8), heatMat, g, [x, 0, 0], [0, 0, Math.PI / 2]));
   const face = 0.8 * Math.cos(Math.PI / 8) + 0.004;
   const hole = new THREE.Shape(), H = [[-0.5, 0.05], [-0.34, 0.24], [-0.12, 0.2], [0.02, 0.34], [0.2, 0.22], [0.42, 0.26], [0.5, 0.02], [0.36, -0.18], [0.16, -0.12], [0.0, -0.3], [-0.18, -0.16], [-0.38, -0.22]];
   hole.moveTo(H[0][0], H[0][1]); H.slice(1).forEach((p) => hole.lineTo(p[0], p[1]));

@@ -24,6 +24,10 @@ def tone(im, name):
         return ImageOps.colorize(g, (196, 206, 218), (240, 244, 248))
     if name == "container":
         return ImageEnhance.Brightness(im).enhance(1.45)
+    if name == "scifi_panel":
+        return ImageEnhance.Brightness(im).enhance(1.5)
+    if name in ("rubber_floor", "heat_shield"):  # bijna zwart in het origineel: lichter, zodat een tint werkt
+        return ImageEnhance.Brightness(im).enhance(2.6)
     if name == "truss":
         return ImageEnhance.Brightness(im).enhance(1.2)
     return im
@@ -34,7 +38,7 @@ for name in sorted(os.listdir(src)):
     color = tone(load(name, "color", "RGB"), name)
     normal = load(name, "normal", "RGB")
     ao = load(name, "ao", "L") or Image.new("L", (SIZE, SIZE), 255)
-    rough = load(name, "roughness", "L"); metal = load(name, "metalness", "L")
+    rough = load(name, "roughness", "L"); metal = load(name, "metalness", "L") or Image.new("L", (SIZE, SIZE), 0)  # geen kaart: niet-metaal
     orm = Image.merge("RGB", (ao, rough, metal))
     for im, fn, q in ((color, "color", 84), (normal, "normal", 88), (orm, "orm", 82)):
         p = os.path.join(d, fn + ".jpg"); im.save(p, quality=q, optimize=True); total += os.path.getsize(p)

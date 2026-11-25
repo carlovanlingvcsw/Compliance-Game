@@ -28,6 +28,17 @@ Bestanden in `assets/vendor/addons/` zijn ongewijzigde kopieën uit `examples/js
 - Licentie: MIT, Copyright © 2010-2024 three.js authors. Zie LICENSE-three.txt.
 - Opgehaald: 2026-11-25
 
+## Aanvulling uit orion-assets-extra.zip
+
+| Naam | Origineel (ID) | URL | Bron | Licentie | Kaarten | Opgehaald |
+|---|---|---|---|---|---|---|
+| scifi_panel | Metal Plates 015 A (MetalPlates015A) | https://ambientcg.com/view?id=MetalPlates015A | ambientCG | CC0 1.0 | color, normal, roughness, metalness, ao | 2026-11-25 |
+| rubber_floor | Rubber Tiles (rubber_tiles), auteur Amal Kumar | https://polyhaven.com/a/rubber_tiles | Poly Haven | CC0 1.0 | color, normal, roughness, ao | 2026-11-25 |
+| heat_shield | Tiles 138 (Tiles138) | https://ambientcg.com/view?id=Tiles138 | ambientCG | CC0 1.0 | color, normal, roughness, ao | 2026-11-25 |
+| plastic_white | Plastic 013 A (Plastic013A) | https://ambientcg.com/view?id=Plastic013A | ambientCG | CC0 1.0 | color, normal, roughness | 2026-11-25 |
+
+De overige zes texturen uit die zip (scifi_vent, carbon, copper, brass_trim, chrome, perforated) zijn niet in het spel opgenomen.
+
 ## Bewerking voor het spel
 
 De bestanden in deze map zijn webversies, gemaakt met `tools/prepare-textures.py`: verkleind naar 512 x 512, ruwheid, metaal en ambient occlusion samengevoegd in één bestand (`orm.jpg`), en de kleur van hull_light, hull_dark, hull_white, container en truss aangepast aan de kleuren van het station. CC0 staat bewerken toe. Van three.js r170 zijn alleen de addons meegenomen die het spel gebruikt (EffectComposer, RenderPass, ShaderPass, MaskPass, Pass, UnrealBloomPass, OutputPass en de drie bijbehorende shaders).

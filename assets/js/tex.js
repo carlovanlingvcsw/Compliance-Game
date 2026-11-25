@@ -4,7 +4,7 @@
    The single-file bundle puts the images in window.ORION_TEX as data URLs. */
 import * as THREE from "three";
 
-const SETS = ["hull_light", "hull_dark", "hull_white", "foil", "truss", "grate", "container", "solar"];
+const SETS = ["hull_light", "hull_dark", "hull_white", "foil", "truss", "grate", "container", "solar", "scifi_panel", "rubber_floor", "heat_shield", "plastic_white"];
 const MAPS = ["color", "normal", "orm"];
 const DATA = window.ORION_TEX || null;
 const base = DATA ? "" : new URL("../textures/", import.meta.url).href;

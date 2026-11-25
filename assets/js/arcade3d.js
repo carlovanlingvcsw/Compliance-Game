@@ -45,7 +45,7 @@ function invaders(S) {
   const deck = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_light", { repeat: [5, 4], color: 0x33415a, metalness: 0.6, roughness: 1, normalScale: 2.4 }), g); deck.rotation.x = -Math.PI / 2;
   const edge = mesh(box(1, 10, 26), pbr("hull_dark", { repeat: [8, 1], metalness: 0.7 }), g);
   const lamps = []; for (let i = 0; i < 16; i++) lamps.push(mesh(box(14, 4, 14), glow(SKYBLUE, 1.6), g));
-  const pylonMat = pbr("hull_light", { repeat: [1, 5], color: 0x5c6c86, metalness: 0.5, normalScale: 2 });
+  const pylonMat = pbr("heat_shield", { repeat: [1, 6], color: 0x8fa0ba, metalness: 0.3, ao: true });
   const pylons = [-1, 1].map((s) => { const p = new THREE.Group(); g.add(p); mesh(box(130, 1500, 130), pylonMat, p, 0, 300, 0); mesh(box(134, 12, 134), glow(BLUE, 1.2), p, 0, 120, 0); mesh(box(160, 40, 160), pbr("hull_dark", {}), p, 0, -440, 0); p.userData.s = s; return p; });
   // turret
   const turret = new THREE.Group(); g.add(turret);
@@ -61,7 +61,7 @@ function invaders(S) {
   // one courier drone, cloned for every message. Real and fake messages get the same drone.
   const proto = new THREE.Group();
   (function () {
-    const body = mesh(new THREE.CapsuleGeometry(12, 30, 6, 16), pbr("hull_white", { metalness: 0.3, roughness: 0.75 }), proto); body.rotation.z = Math.PI / 2;
+    const body = mesh(new THREE.CapsuleGeometry(12, 30, 6, 16), pbr("plastic_white", { metalness: 0.1, roughness: 0.6 }), proto); body.rotation.z = Math.PI / 2;
     mesh(new THREE.SphereGeometry(9, 16, 10), new THREE.MeshStandardMaterial({ color: 0x0c2f5f, metalness: 0.9, roughness: 0.1 }), proto, 0, 6, 8);
     [-1, 1].forEach((s) => { mesh(box(10, 4, 34), pbr("hull_dark", {}), proto, s * 26, 0, 0); mesh(new THREE.CylinderGeometry(5, 5, 16, 10), barrelMat, proto, s * 34, 0, 0).rotation.x = Math.PI / 2; mesh(new THREE.CylinderGeometry(3.6, 3.6, 2, 10), glow(SKYBLUE, 2.4), proto, s * 34, 0, -9).rotation.x = Math.PI / 2; });
     [-1, 1].forEach((s) => { const t = mesh(new THREE.CylinderGeometry(0.8, 0.8, 30, 4), barrelMat, proto, s * 22, -22, 0); t.rotation.z = s * 0.5; });
@@ -130,9 +130,9 @@ function invaders(S) {
 /* ---------- Holokaarten-sprint: a holo table in the arrival hall with a sorting chute on each side ---------- */
 function sprint(S) {
   const g = S.scene;
-  const wall = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_light", { repeat: [3, 2], color: 0x4a5a76, metalness: 0.5, normalScale: 2 }), g);
+  const wall = mesh(new THREE.PlaneGeometry(1, 1), pbr("scifi_panel", { repeat: [3, 1.5], color: 0x5d6f8c, metalness: 0.6, ao: true }), g);
   const strip = mesh(box(1, 8, 6), glow(SKYBLUE, 1.5), g);
-  const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_dark", { repeat: [5, 3], color: 0x8a99b0, metalness: 0.8, roughness: 0.7 }), g); table.rotation.x = -Math.PI / 2;
+  const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("rubber_floor", { repeat: [5, 3], color: 0x8fa0b8, metalness: 0.2, roughness: 0.9, ao: true }), g); table.rotation.x = -Math.PI / 2;
   const rim = mesh(box(1, 16, 30), pbr("hull_light", { repeat: [8, 1], color: 0x8fa0b8, metalness: 0.5 }), g);
   const pad = mesh(new THREE.CylinderGeometry(1, 1, 6, 48), pbr("hull_dark", { repeat: [1, 1], color: 0xaebbd0, metalness: 0.8, roughness: 0.6 }), g);
   const ringMat = glow(BLUE, 2), ring = mesh(new THREE.TorusGeometry(1, 0.016, 8, 64), ringMat, g); ring.rotation.x = Math.PI / 2;
@@ -188,8 +188,8 @@ function sprint(S) {
 /* ---------- Wie mag dit zien?: a conveyor in the sick bay, each packet rides in a crate ---------- */
 function poort(S) {
   const g = S.scene;
-  const wall = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_light", { repeat: [5, 1], color: 0x55657f, metalness: 0.45, normalScale: 2 }), g);
-  const beltMat = pbr("grate", { repeat: [14, 2], color: 0x3d4b62, metalness: 0.6, roughness: 0.9 });
+  const wall = mesh(new THREE.PlaneGeometry(1, 1), pbr("scifi_panel", { repeat: [5, 1.2], color: 0x5d6f8c, metalness: 0.6, ao: true }), g);
+  const beltMat = pbr("rubber_floor", { repeat: [10, 1.5], color: 0x76859c, metalness: 0.1, roughness: 0.95 });
   const belt = mesh(new THREE.PlaneGeometry(1, 1), beltMat, g); belt.rotation.x = -Math.PI / 2;
   const railMat = pbr("hull_light", { repeat: [10, 1], color: 0xa9b8cc, metalness: 0.5 });
   const rail = mesh(box(1, 22, 18), railMat, g), railBack = mesh(box(1, 30, 12), railMat, g);
@@ -223,7 +223,7 @@ function poort(S) {
 /* ---------- Lekken dichten: nine hull panels of the station, an alarm lights the panel it belongs to ---------- */
 function lekken(S) {
   const g = S.scene;
-  const back = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_dark", { repeat: [4, 3], metalness: 0.7 }), g);
+  const back = mesh(new THREE.PlaneGeometry(1, 1), pbr("heat_shield", { repeat: [4, 3], color: 0x7d8da6, metalness: 0.3 }), g);
   const frameMat = pbr("hull_dark", { color: 0xd7e0ec, metalness: 0.75 }), lampGeo = new THREE.SphereGeometry(6, 12, 8);
   const cells = [];
   S.el.querySelectorAll(".mod").forEach((n, i) => {
