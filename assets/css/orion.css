@@ -134,6 +134,8 @@ main { position: relative; z-index: 1; height: 100%; }
 
 @media (max-width: 900px) {
   .briefing .mission-of { display: none; }
+  .route { display: none; }
+  .bar { justify-content: space-between; }
   .brand-name, .icon-btn .lbl, .meter span { display: none; }
   .meter { min-width: 0; padding: 0 6px; }
   .panel { left: 8px; right: 8px; width: auto; top: calc(var(--bar-h) + 116px); bottom: 8px; }
