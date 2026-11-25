@@ -42,7 +42,7 @@ function invaders(S) {
   const g = S.scene, drones = new Map(), fx = [];
   stars(g, 700);
   const glowBand = horizon(g);
-  const deck = mesh(new THREE.PlaneGeometry(1, 1), pbr("grate", { repeat: [7, 5], color: 0x46566f, metalness: 0.8, roughness: 0.8 }), g); deck.rotation.x = -Math.PI / 2;
+  const deck = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_light", { repeat: [5, 4], color: 0x33415a, metalness: 0.6, roughness: 1, normalScale: 2.4 }), g); deck.rotation.x = -Math.PI / 2;
   const edge = mesh(box(1, 10, 26), pbr("hull_dark", { repeat: [8, 1], metalness: 0.7 }), g);
   const lamps = []; for (let i = 0; i < 16; i++) lamps.push(mesh(box(14, 4, 14), glow(SKYBLUE, 1.6), g));
   const pylonMat = pbr("hull_light", { repeat: [1, 5], color: 0x5c6c86, metalness: 0.5, normalScale: 2 });
@@ -83,16 +83,16 @@ function invaders(S) {
       lamps.forEach((l, i) => { const s = i % 2 ? 1 : -1, k = Math.floor(i / 2); l.position.set(s * W * 0.47, fy - 13, 40 - k * 190); });
       pylons.forEach((p) => p.position.set(p.userData.s * (W * 0.9 + 260), fy + 430, -1500));
       glowBand.scale.set(W * 9, 1500, 1); glowBand.position.set(0, fy + 330, -3000);
-      turret.position.set(0, fy - 16, 0); turret.scale.setScalar(1.25);
-      shields.forEach((s, i) => s.position.set((i - 1) * 56, fy - 12, 92));
+      turret.position.set(0, fy - 16, 0); turret.scale.setScalar(1.8);
+      shields.forEach((s, i) => s.position.set((i - 1) * 62, fy - 12, 128));
     },
     tick(dt, t) {
       const seen = new Set();
       S.el.querySelectorAll(".inv").forEach((n) => {
         seen.add(n);
-        let d = drones.get(n); if (!d) { d = proto.clone(); d.userData.ph = Math.random() * 6; g.add(d); drones.set(n, d); }
+        let d = drones.get(n); if (!d) { d = proto.clone(); d.scale.setScalar(1.5); d.userData.ph = Math.random() * 6; g.add(d); drones.set(n, d); }
         const r = S.rect(n);
-        d.position.set(r.x, r.top + 36 + (reduce ? 0 : Math.sin(t * 2.4 + d.userData.ph) * 2.5), -4);
+        d.position.set(r.x, r.top + 52 + (reduce ? 0 : Math.sin(t * 2.4 + d.userData.ph) * 2.5), -4);
         d.rotation.y = reduce ? 0 : Math.sin(t * 0.9 + d.userData.ph) * 0.25;
       });
       drones.forEach((d, n) => { if (!seen.has(n)) { g.remove(d); drones.delete(n); } });
@@ -114,7 +114,7 @@ function invaders(S) {
       const X = x - S.W / 2, Y = S.H / 2 - y, col = kind === "hit" ? SKYBLUE : kind === "land" ? BLUE : RED;
       flash.color.setHex(col); flash.position.set(X, Y, 120); flash.intensity = kind === "land" ? 2.5 : 7;
       if (kind === "hit" || kind === "wrong") {
-        const from = new THREE.Vector3(0, turret.position.y + 56, 0), to = new THREE.Vector3(X, Y, 0), len = from.distanceTo(to);
+        const from = new THREE.Vector3(0, turret.position.y + 80, 0), to = new THREE.Vector3(X, Y, 0), len = from.distanceTo(to);
         aimTo = Math.atan2(-(to.x - from.x), to.y - from.y); aim = aimTo; aimHold = 0.5;
         if (!reduce) {
           const b = mesh(new THREE.CylinderGeometry(3, 3, len, 8), glow(col, 3), g);
@@ -134,7 +134,7 @@ function sprint(S) {
   const strip = mesh(box(1, 8, 6), glow(SKYBLUE, 1.5), g);
   const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_dark", { repeat: [5, 3], color: 0x8a99b0, metalness: 0.8, roughness: 0.7 }), g); table.rotation.x = -Math.PI / 2;
   const rim = mesh(box(1, 16, 30), pbr("hull_light", { repeat: [8, 1], color: 0x8fa0b8, metalness: 0.5 }), g);
-  const pad = mesh(new THREE.CylinderGeometry(1, 1, 6, 48), pbr("grate", { repeat: [3, 3], color: 0x55657f, metalness: 0.8 }), g);
+  const pad = mesh(new THREE.CylinderGeometry(1, 1, 6, 48), pbr("hull_dark", { repeat: [1, 1], color: 0xaebbd0, metalness: 0.8, roughness: 0.6 }), g);
   const ringMat = glow(BLUE, 2), ring = mesh(new THREE.TorusGeometry(1, 0.016, 8, 64), ringMat, g); ring.rotation.x = Math.PI / 2;
   const frameMat = pbr("hull_light", { color: 0x9aabc2, metalness: 0.5, normalScale: 1.6 }), darkMat = new THREE.MeshStandardMaterial({ color: 0x050d1c, roughness: 0.9 });
   const chutes = [".bin-btn.no", ".bin-btn.yes"].map((sel) => {

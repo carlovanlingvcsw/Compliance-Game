@@ -79,7 +79,7 @@ function windowTexture(cols, rows, lit, color) {
   return t;
 }
 const FOIL = {
-  gold: pbr("foil", { repeat: [1, 1], orm: false, color: 0xe2ab4c, metalness: 0.8, roughness: 0.42, normalScale: 0.7 }),
+  gold: pbr("foil", { repeat: [1, 1], orm: false, color: 0xc29a52, metalness: 0.75, roughness: 0.5, normalScale: 0.35 }),
   silver: pbr("foil", { repeat: [1, 1], map: false, orm: false, color: 0x9aa3ae, metalness: 0.6, roughness: 0.65, normalScale: 0.25 }),
 };
 const MAT = {
@@ -292,7 +292,7 @@ function moduleFrame(angleDeg, name) {
   const g = moduleFrame(200, "vrachtdok");
   const t = new THREE.Group(); g.add(t); t.position.set(2.6, 0, 0);
   trussBox(t, 3.2, 1.6, 1.8, 0.03);
-  const cols = [0x3f8fd8, 0xb4bfcc, 0xe6ebf2, 0xf2b530, 0x4d6f9c, 0x7f93ad, 0xc9a983];
+  const cols = [0x3a78b8, 0xa9b4c2, 0xd9dfe7, 0xc99a3a, 0x48648a, 0x7487a0, 0xa9b4c2];
   for (let x = 0; x < 4; x++) for (let y = 0; y < 2; y++) for (let z = 0; z < 2; z++) {
     if (rnd() < 0.22) continue;
     const c = containerMat(pick(cols));
