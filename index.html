@@ -11,23 +11,42 @@
 <body class="vcsw orion" data-view="home">
 <a class="skip" href="#main">Naar de inhoud</a>
 <div class="boot" id="boot" role="dialog" aria-modal="true" aria-labelledby="boot-title">
-  <div class="boot-card">
-    <img class="wordmark" src="assets/img/vcsw-wordmark-on-dark.png" alt="VCSW">
-    <h1 id="boot-title">AVG-game Ruimtestation Orion</h1>
-    <p class="boot-lead">Het jaar is 2247. Jij bent Cadet van de Datawacht en beschermt alle gegevens aan boord. Wat je hier oefent, gebruik je in je werk bij VCSW.</p>
-    <ol class="boot-steps">
-      <li><b>Zes missies</b><span>Elke missie speelt in een module van het station. Je krijgt situaties uit het werk en kiest wat je doet.</span></li>
-      <li><b>Vier oefenrondes</b><span>Tussen de missies speel je een korte arcaderonde. Die telt alleen voor je score.</span></li>
-      <li><b>ARIA helpt</b><span>De boordcomputer legt bij elk antwoord uit waarom het goed of fout is. Wat half goed of fout ging, lees je later terug met de knop Nalezen waarom.</span></li>
-      <li><b>Jouw tempo</b><span>Met de knop Tijdsdruk zet je alle timers uit. Alles werkt ook met het toetsenbord.</span></li>
-    </ol>
-    <p class="boot-note">De witte stip op de aarde onder het station is VCSW in Den Haag. Je voortgang blijft alleen in deze browser bewaard. Dit is een prototype met fictieve namen en gegevens. De inhoud wacht op goedkeuring van de Privacy Officer.</p>
-    <div class="boot-login"><label for="boot-user">Account (demo)</label><select id="boot-user"></select><p>Dit zijn verzonnen accounts. In de eindversie log je in met je Microsoft-account van VCSW.</p></div>
-    <div class="boot-foot">
-      <div class="boot-load"><div class="boot-bar" id="boot-bar" role="progressbar" aria-label="Laden" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><p id="boot-status" aria-live="polite">Het station wordt opgebouwd</p></div>
-      <button type="button" class="go" id="boot-go" disabled>Inloggen en starten</button>
+  <div class="boot-in">
+    <div class="boot-text">
+      <img class="wordmark" src="assets/img/vcsw-wordmark-on-dark.png" alt="VCSW">
+      <h1 id="boot-title">Welkom op Ruimtestation Orion</h1>
+      <p class="boot-lead">Je oefent hoe je bij VCSW met persoonsgegevens omgaat. Het station is verzonnen. De situaties komen uit je werk.</p>
+      <h2>Dit is de bedoeling</h2>
+      <ol class="boot-steps">
+        <li><b>Speel zes missies</b><span>Elke missie hoort bij een module van het station en gaat over één onderwerp van de AVG.</span></li>
+        <li><b>Haal per missie 70 procent</b><span>Je kiest wat je doet in situaties uit het werk. Goede keuzes leveren punten op.</span></li>
+        <li><b>Sluit af met je resultaat</b><span>Aan het eind zie je per missie hoe het ging en wat je nog kunt nalezen.</span></li>
+      </ol>
     </div>
-
+    <div class="gate" id="gate">
+      <div class="gate-top"><span class="gate-leds" aria-hidden="true"><i></i><i></i><i></i></span><p id="boot-status" aria-live="polite">Het station wordt opgebouwd</p>
+        <div class="boot-bar" id="boot-bar" role="progressbar" aria-label="Laden" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div></div>
+      <div class="gate-doors">
+        <div class="gate-beyond" aria-hidden="true"></div>
+        <div class="gd l" aria-hidden="true"><span class="gd-win"></span><span class="gd-rib"></span><span class="gd-rib b"></span><span class="gd-haz"></span></div>
+        <div class="gd r" aria-hidden="true"><span class="gd-win"></span><span class="gd-rib"></span><span class="gd-rib b"></span><span class="gd-haz"></span></div>
+        <span class="gate-seam" aria-hidden="true"></span>
+        <div class="gate-card">
+          <span class="gate-scan" aria-hidden="true"></span>
+          <div class="gc-head"><span class="gc-ico" aria-hidden="true"><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span><div><h2>Houd je pas voor de lezer</h2><p>Datawacht Orion, toegangspas</p></div></div>
+          <label for="boot-user">Pas van (demo)</label><select id="boot-user"></select>
+          <button type="button" class="go" id="boot-go" disabled>Scan en ga aan boord<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+        </div>
+      </div>
+      <p class="gate-foot">Dit zijn verzonnen accounts. In de eindversie log je in met je Microsoft-account van VCSW.</p>
+    </div>
+    <ul class="boot-tiles">
+      <li><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><b>Score</b><span>Punten per goed antwoord. Vanaf 70 procent is de missie gehaald.</span></li>
+      <li><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg><b>Schild</b><span>Begint op 100 procent. Elke fout kost schild. Zo zie je hoe zeker je speelde.</span></li>
+      <li><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg><b>Kristallen</b><span>Verdien je met goede antwoorden. In de luchtsluis openen ze een aanwijzing.</span></li>
+      <li><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><b>Tijd</b><span>Sommige onderdelen hebben een klok. Met de knop Tijdsdruk zet je die uit.</span></li>
+    </ul>
+    <p class="boot-note">Prototype met fictieve namen en gegevens. De inhoud wacht op goedkeuring van de Privacy Officer. Je voortgang blijft alleen in deze browser bewaard.</p>
   </div>
 </div>
 <canvas id="world" aria-hidden="true"></canvas>

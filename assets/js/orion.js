@@ -81,7 +81,8 @@
     combo: function () { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, 0.14, "square", 0.06, i * 0.06); }); },
     badge: function () { [784, 988, 1175, 1568].forEach(function (f, i) { tone(f, 0.22, "sine", 0.1, i * 0.09); }); },
     zap: function () { tone(880, 0.08, "square", 0.05); tone(440, 0.1, "square", 0.04, 0.04); },
-    tick: function () { tone(1200, 0.04, "square", 0.03); }
+    tick: function () { tone(1200, 0.04, "square", 0.03); },
+    siren: function () { for (var i = 0; i < 6; i++) { tone(660, 0.24, "sawtooth", 0.05, i * 0.5); tone(495, 0.24, "sawtooth", 0.05, i * 0.5 + 0.25); } }
   };
 
 
@@ -262,6 +263,7 @@
   var view = "home", frames = [], cur = -1;
   var homeEl = document.getElementById("home"), missionEl = document.getElementById("mission"), arcade = document.getElementById("arcade");
   function showHome(quiet) {
+    if (typeof endPanic === "function") endPanic();
     stopGame();
     view = "home"; cur = -1;
     document.body.setAttribute("data-view", "home");
@@ -354,7 +356,7 @@
   }
   function go(i) {
     if (i < 0 || i >= ROUTE.length) return;
-    stopGame();
+    stopGame(); endPanic();
     var r = ROUTE[i], first = view !== "mission";
     cur = i; view = "mission"; P.last = i;
     document.body.setAttribute("data-view", "mission");
@@ -371,6 +373,7 @@
       if (!frames[r.n]) frames[r.n] = loadFrame(r.n);
       frames[r.n].hidden = false;
       P.opened[r.n] = 1; if (Object.keys(P.opened).length >= 6) award("ontdekker");
+      if (r.n === 4) panic(); else endPanic();
     } else if (r.type === "result") {
       arcade.hidden = true; renderLogbook(); logEl.scrollTop = 0;
       document.body.setAttribute("data-view", "result");
@@ -385,6 +388,37 @@
     renderRoute(); syncStation(); renderStatus(); fitPanel();
     var node = routeEl.querySelector('[data-i="' + i + '"]'); if (node) node.scrollIntoView({ block: "nearest", inline: "center" });
     if (first) missionEl.focus({ preventScroll: true });
+  }
+  /* Level 5 opens with a few seconds of alarm, then hands over to a calm level. Shown once per visit to the page. */
+  var panicSeen = /[?&]paniek=uit/.test(location.search), panicEl = null, panicT = [];
+  function endPanic() {
+    panicT.forEach(clearTimeout); panicT = [];
+    document.body.classList.remove("panicking");
+    if (panicEl) { panicEl.remove(); panicEl = null; }
+  }
+  function panic() {
+    if (panicSeen) return; panicSeen = true; endPanic();
+    var lines = [["ARIA", "Alarm. Er zijn persoonsgegevens het station uit."], ["Bram", "Ik heb het ziekteoverzicht naar de verkeerde kolonie gestuurd."], ["Luitenant Mira", "Wie pakt dit op? De klok loopt."]];
+    panicEl = document.createElement("div"); panicEl.className = "panic"; panicEl.setAttribute("role", "alert");
+    panicEl.innerHTML = '<div class="p-stripe" aria-hidden="true"></div><div class="p-core"><p class="p-kind">' + icon("alert") + "Alarm</p><h2>Module Kepler</h2>" +
+      '<p class="p-clock" aria-hidden="true">00:00<span>sinds het bericht de deur uit ging</span></p>' +
+      '<ul class="p-msgs">' + lines.map(function (l) { return "<li hidden><b>" + esc(l[0]) + "</b>" + esc(l[1]) + "</li>"; }).join("") + "</ul>" +
+      '<p class="p-calm" hidden>Rustig. Jij pakt dit stap voor stap op.</p></div>' +
+      '<button type="button" class="p-skip">Sla over</button><div class="p-stripe" aria-hidden="true"></div>';
+    document.body.appendChild(panicEl); document.body.classList.add("panicking");
+    panicEl.querySelector(".p-skip").onclick = endPanic;
+    var li = panicEl.querySelectorAll(".p-msgs li"), clockEl = panicEl.querySelector(".p-clock"), sec = 0, long = reduce ? 1500 : 3400;
+    SFX.siren();
+    station(function (S) { if (S.pulse) S.pulse("bad"); });
+    [150, 1000, 1900].forEach(function (ms, i) { panicT.push(setTimeout(function () { li[i].hidden = false; if (!reduce) station(function (S) { if (S.pulse) S.pulse("bad"); }); }, reduce ? 0 : ms)); });
+    for (var k = 1; k <= 3; k++) panicT.push(setTimeout(function () { sec++; clockEl.firstChild.nodeValue = "00:0" + sec; }, k * 1000));
+    if (/[?&]paniek=vast/.test(location.search)) return;
+    panicT.push(setTimeout(function () {
+      if (!panicEl) return; document.body.classList.remove("panicking"); panicEl.classList.add("calm");
+      panicEl.querySelector(".p-calm").hidden = false;
+    }, long));
+    panicT.push(setTimeout(function () { if (panicEl) panicEl.classList.add("out"); }, long + 1700));
+    panicT.push(setTimeout(endPanic, long + 2200));
   }
   document.getElementById("prev").onclick = function () { go(cur - 1); };
   document.getElementById("next").onclick = function () { go(cur + 1); };
@@ -868,16 +902,26 @@
     var sel = document.getElementById("boot-user");
     sel.innerHTML = USERS.map(function (u) { return '<option value="' + u.id + '"' + (u.id === P.user ? " selected" : "") + ">" + esc(u.name) + " · " + esc(u.label) + ", " + esc(u.dept) + "</option>"; }).join("");
     function login() { P.user = sel.value; save(); paintUser(); }
-    document.getElementById("user-btn").onclick = function () { boot.hidden = false; boot.classList.add("relog"); rest.forEach(function (el) { if (el) el.inert = true; }); sel.focus(); };
+    var gate = document.getElementById("gate"), stEl = document.getElementById("boot-status"), gT = [];
+    function resetGate() { gT.forEach(clearTimeout); gT = []; boot.classList.remove("scan", "open", "out"); stEl.textContent = "Wacht op je pas"; }
+    document.getElementById("user-btn").onclick = function () { resetGate(); boot.hidden = false; boot.classList.add("relog"); rest.forEach(function (el) { if (el) el.inert = true; }); document.getElementById("boot-go").disabled = false; sel.focus(); };
+    function enter() { close(); resetGate(); if (view === "admin" && !me().admin) showHome(); document.getElementById("start").focus({ preventScroll: true }); }
+    document.getElementById("boot-go").onclick = function () {
+      login(); boot.classList.add("ready");
+      if (reduce) { enter(); return; }
+      this.disabled = true; boot.classList.add("scan"); stEl.textContent = "Pas wordt gelezen";
+      gT.push(setTimeout(function () { boot.classList.add("open"); stEl.textContent = "Welkom aan boord, " + me().name.split(" ")[0]; SFX.good(); }, 650));
+      gT.push(setTimeout(function () { boot.classList.add("out"); }, 1500));
+      gT.push(setTimeout(enter, 1950));
+    };
     if (/[?&]boot=uit/.test(location.search)) { if (!P.user) P.user = USERS[0].id; paintUser(); close(); return; }
     var bar = document.getElementById("boot-bar"), st = document.getElementById("boot-status"), goBtn = document.getElementById("boot-go"), ready = false;
     rest.forEach(function (el) { if (el) el.inert = true; });
     function prog(f) { bar.firstElementChild.style.width = Math.round(f * 100) + "%"; bar.setAttribute("aria-valuenow", Math.round(f * 100)); }
-    function done(text) { if (ready) return; ready = true; prog(1); st.textContent = text; goBtn.disabled = false; goBtn.focus({ preventScroll: true }); }
+    function done(text) { if (ready) return; ready = true; prog(1); st.textContent = text; boot.classList.add("ready"); goBtn.disabled = false; goBtn.focus({ preventScroll: true }); }
     window.addEventListener("orion-load", function (e) { if (!ready) prog(e.detail * 0.9); });
-    window.addEventListener("orion-station-ready", function () { done("Het station is klaar."); });
-    var iv = setInterval(function () { if (ready) { clearInterval(iv); return; } if (document.documentElement.classList.contains("no-3d")) done("Je speelt zonder 3D-beeld. Alles werkt verder hetzelfde."); }, 300);
-    goBtn.onclick = function () { login(); close(); if (view === "admin" && !me().admin) showHome(); document.getElementById("start").focus({ preventScroll: true }); };
+    window.addEventListener("orion-station-ready", function () { done("Wacht op je pas"); });
+    var iv = setInterval(function () { if (ready) { clearInterval(iv); return; } if (document.documentElement.classList.contains("no-3d")) done("Wacht op je pas. Je speelt zonder 3D-beeld."); }, 300);
     paintUser();
   })();
 
