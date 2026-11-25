@@ -64,6 +64,7 @@ for (const mod of ["tex.js", "arcade3d.js"]) imports[`orion/${mod}`] = js64(read
 const texRoot = path.join(root, "assets/textures"), tex = {};
 for (const set of fs.readdirSync(texRoot)) if (fs.statSync(path.join(texRoot, set)).isDirectory())
   for (const file of fs.readdirSync(path.join(texRoot, set))) tex[`${set}/${file.replace(".jpg", "")}`] = dataUri(`assets/textures/${set}/${file}`, "image/jpeg");
+for (const file of fs.readdirSync(path.join(root, "assets/hdri"))) if (file.endsWith(".hdr")) tex[`hdri/${file.replace(".hdr", "")}`] = dataUri(`assets/hdri/${file}`, "application/octet-stream");
 index = swap(index, '{ "imports": { "three": "./assets/vendor/three.module.js", "three/addons/": "./assets/vendor/addons/", "orion/": "./assets/js/" } }', JSON.stringify({ imports }));
 index = swap(index, '<script src="assets/js/orion.js"></script>', "<script>window.ORION_TEX = " + JSON.stringify(tex) + ";</script>\n" + '<script src="assets/js/orion.js"></script>');
 index = swap(index, '<script src="assets/js/orion.js"></script>', "<script>\n" + safeScript(js) + "\n</script>");

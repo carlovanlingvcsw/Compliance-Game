@@ -418,3 +418,9 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 [data-view="arcade"] #world { filter: saturate(.7) brightness(.7); }
 .sprint.pf3d .holo { background: var(--vcsw-blue-900); }
 @media (prefers-reduced-motion: reduce) { #world { transition: none; } }
+
+/* ---------- Calm while you answer: the bar shows the route, a combo only once it counts ---------- */
+[data-view="mission"] .meter { display: none; }
+[data-view="mission"] .meter.combo.hot { display: flex; }
+.panel { width: min(980px, 57vw); border-color: var(--o-edge-strong); background: color-mix(in srgb, var(--o-space) 84%, transparent); backdrop-filter: blur(8px); }
+.sky.pf3d .inv { top: 78px; }

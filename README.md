@@ -85,6 +85,8 @@ Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 2,6 MB
 
 ## Wijzigingen
 
+- Ronde 15: reflecties uit echte omgevingskaarten (vier HDRI's van Poly Haven, CC0, verkleind, zie `assets/hdri/CREDITS.md`) en een rustige vraagweergave. Zolang een vraag openstaat toont het level alleen de vraag, en een antwoord geeft één rustig signaal.
+
 - Ronde 14: beginscherm met uitleg tijdens het laden, de aarde met de plek van VCSW, een vaste camerastand per module, rijkere modellen (shuttle, ziekenboeg, passagiersmodule, geschut), contactschaduw, de knop Tijdsdruk die alle timers stilzet, een skiplink, en foute antwoorden die even concreet zijn als de goede.
 
 - Ronde 12: echte texturen op het station, bloom, de vier arcaderondes in een 3D-speelveld, antwoorden in level 2, level 5 en de eindmissie per poging in een andere volgorde. Met `?fx=uit` zet je de bloom uit, met `?3d=uit` speel je zonder 3D.

@@ -3,6 +3,7 @@
    (R = ambient occlusion, G = roughness, B = metalness), prepared by tools/prepare-textures.py.
    The single-file bundle puts the images in window.ORION_TEX as data URLs. */
 import * as THREE from "three";
+import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 
 const SETS = ["hull_light", "hull_dark", "hull_white", "foil", "truss", "grate", "container", "solar", "scifi_panel", "rubber_floor", "heat_shield", "plastic_white"];
 const MAPS = ["color", "normal", "orm"];
@@ -27,6 +28,16 @@ export function loadTextures() {
   pending = Promise.all(keys.map((key) =>
     loader.loadAsync(DATA ? DATA[key] : base + key + ".jpg").then((img) => { images[key] = img; step(); }, () => { images[key] = flat(key.split("/")[1]); step(); })));
   return pending;
+}
+/* Reflections from a real environment: HDRI maps from Poly Haven, CC0 (see assets/hdri/CREDITS.md).
+   The file is read once; every renderer gets its own prefiltered copy. */
+const envData = {};
+export function loadEnv(renderer, name) {
+  envData[name] = envData[name] || new RGBELoader().loadAsync(DATA ? DATA["hdri/" + name] : new URL("../hdri/" + name + ".hdr", import.meta.url).href);
+  return envData[name].then((hdr) => {
+    hdr.mapping = THREE.EquirectangularReflectionMapping;
+    const pm = new THREE.PMREMGenerator(renderer), t = pm.fromEquirectangular(hdr).texture; pm.dispose(); return t;
+  });
 }
 export function tex(name, map, repeat, srgb) {
   const t = new THREE.Texture(images[name + "/" + map] || flat(map));

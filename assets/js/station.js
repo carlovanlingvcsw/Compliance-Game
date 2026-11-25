@@ -8,7 +8,7 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
-import { loadTextures, pbr, tex } from "orion/tex.js";
+import { loadTextures, loadEnv, pbr, tex } from "orion/tex.js";
 import "orion/arcade3d.js";
 
 await loadTextures();
@@ -59,6 +59,8 @@ function makeEnvironment() {
 }
 scene.environment = makeEnvironment();
 scene.environmentIntensity = 0.85;
+/* The studio HDRI replaces the code-built environment as soon as it has loaded. Space itself stays dark. */
+loadEnv(renderer, "env_studio").then((t) => { scene.environment = t; scene.environmentIntensity = 0.5; scene.environmentRotation.y = 1.2; }, () => {});
 
 /* ---------- Materials ---------- */
 function hullMat(kind, repeat) {
@@ -700,7 +702,7 @@ window.OrionStation = {
   /* Jump to the current goal without the flight (used for test stills). */
   snap() { const w = ringWant(); if (w !== null) { ring.rotation.y = w; ring.updateMatrixWorld(true); } const g = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex); cam.t = 1; camera.position.copy(g.pos); cam.target.copy(g.target); offsetX = offsetTarget; ariaPos.copy(aria.position); },
   /* A short flash of light at ARIA when the player answers: blue for good, red for wrong. */
-  pulse(kind) { pulseLight.color.setHex(kind === "bad" ? 0xff6467 : kind === "gold" ? 0xffd230 : 0x67caff); pulseLevel = kind === "gold" ? 14 : 9; if (lowPower) acc = 1; },
+  pulse(kind) { pulseLight.color.setHex(kind === "bad" ? 0xff6467 : kind === "gold" ? 0xffd230 : 0x67caff); pulseLevel = kind === "gold" ? 12 : 6; if (lowPower) acc = 1; },
   /* 0 = full speed, 1 = thirty frames a second, 2 = a slow idle while an arcade round has the screen. */
   lowPower(on) { lowPower = on === 2 ? 2 : on ? 1 : 0; },
   /* Screen positions of the module labels, for the HTML buttons on the overview. */

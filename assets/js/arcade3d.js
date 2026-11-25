@@ -4,7 +4,7 @@
    It follows the HTML elements every frame, so the game rules live in one place (orion.js).
    One unit in the scene is one CSS pixel at the depth of the controls. */
 import * as THREE from "three";
-import { loadTextures, pbr, tex } from "orion/tex.js";
+import { loadTextures, loadEnv, pbr, tex } from "orion/tex.js";
 
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const FOV = 28;
@@ -39,18 +39,18 @@ function horizon(parent) {
 
 /* The earth below the deck: the same land mask as the station view, coloured on a canvas. */
 function earth(parent) {
-  const img = tex("earth", "land").image, c = document.createElement("canvas"); c.width = 512; c.height = 256;
-  const g = c.getContext("2d"); g.drawImage(img, 0, 0, 512, 256);
-  const d = g.getImageData(0, 0, 512, 256), px = d.data;
+  const img = tex("earth", "land").image, c = document.createElement("canvas"); c.width = 1024; c.height = 512;
+  const g = c.getContext("2d"); g.drawImage(img, 0, 0, 1024, 512);
+  const d = g.getImageData(0, 0, 1024, 512), px = d.data;
   for (let i = 0; i < px.length; i += 4) {
-    const y = Math.floor(i / 4 / 512), lat = Math.abs(90 - (y / 256) * 180), m = px[i] / 255, k = (Math.sin(i * 0.37) + 1) * 6;
+    const y = Math.floor(i / 4 / 1024), lat = Math.abs(90 - (y / 512) * 180), m = px[i] / 255, k = (Math.sin(i * 0.37) + 1) * 6;
     const dry = lat > 13 && lat < 33 ? 1 : 0, ice = lat > 72 ? 1 : 0;
     const land = ice ? [220, 230, 240] : dry ? [150 + k, 122 + k, 78] : [52, 92 + k, 48];
     const sea = ice ? [205, 222, 238] : [14, 60 + k, 128];
     for (let j = 0; j < 3; j++) px[i + j] = sea[j] + (land[j] - sea[j]) * Math.min(1, Math.max(0, (m - 0.4) / 0.16));
   }
   g.putImageData(d, 0, 0);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
   const m = mesh(new THREE.SphereGeometry(1, 96, 64), new THREE.MeshStandardMaterial({ map: t, roughness: 1, metalness: 0 }), parent);
   const phi = ((4.34 + 180) / 360) * Math.PI * 2, th = THREE.MathUtils.degToRad(90 - 52.07);
   m.quaternion.setFromUnitVectors(new THREE.Vector3(-Math.cos(phi) * Math.sin(th), Math.cos(th), Math.sin(phi) * Math.sin(th)), new THREE.Vector3(0.1, 0.86, 0.5).normalize());
@@ -157,7 +157,7 @@ function invaders(S) {
 /* ---------- Holokaarten-sprint: a holo table in the arrival hall with a sorting chute on each side ---------- */
 function sprint(S) {
   const g = S.scene;
-  const wall = mesh(new THREE.PlaneGeometry(1, 1), pbr("scifi_panel", { repeat: [3, 1.5], color: 0x33415a, metalness: 0.6, normalScale: 0.5, ao: true }), g);
+  const wall = mesh(new THREE.PlaneGeometry(1, 1), pbr("hull_light", { repeat: [2.5, 1.5], color: 0x3c4a63, metalness: 0.5, normalScale: 1.6 }), g);
   const strip = mesh(box(1, 5, 6), glow(SKYBLUE, 1.0), g);
   const table = mesh(new THREE.PlaneGeometry(1, 1), pbr("rubber_floor", { repeat: [5, 3], color: 0x8fa0b8, metalness: 0.2, roughness: 0.9, ao: true }), g); table.rotation.x = -Math.PI / 2;
   const rim = mesh(box(1, 16, 30), pbr("hull_light", { repeat: [8, 1], color: 0x8fa0b8, metalness: 0.5 }), g);
@@ -321,6 +321,7 @@ function mount(el, id) {
   const key = new THREE.DirectionalLight(0xfff0dc, 2.3); key.position.set(-0.55, 0.8, 1); scene.add(key);
   const rim = new THREE.DirectionalLight(0x67caff, 1.3); rim.position.set(0.9, 0.3, -0.6); scene.add(rim);
   scene.add(new THREE.HemisphereLight(0xa9d4ff, 0x0a1830, 0.9));
+  loadEnv(renderer, { invaders: "env_hangar", poort: "env_medbay", sprint: "env_corridor", lekken: "env_studio" }[id]).then((t) => { if (S.alive) { scene.environment = t; scene.environmentIntensity = 0.7; } }, () => {});
   const S = { el, id, canvas, renderer, scene, camera, W: 0, H: 0, alive: true, raf: 0, box: null };
   S.rect = (n) => { const r = n.getBoundingClientRect(), b = S.box; return { x: r.left - b.left + r.width / 2 - S.W / 2, y: S.H / 2 - (r.top - b.top + r.height / 2), top: S.H / 2 - (r.top - b.top), w: r.width, h: r.height }; };
   S.game = BUILD[id](S);

@@ -127,20 +127,16 @@
   function onAnswer(levelN, result) {
     var st = stats[levelN] = stats[levelN] || { goed: 0, half: 0, fout: 0 };
     st[result]++;
-    /* The station answers too: a blue flash at ARIA for a good choice, a short alarm for a wrong one. */
-    station(function (S) {
-      S.pulse(result === "fout" ? "bad" : "good");
-      if (result === "fout") { S.alarm(true); setTimeout(syncStation, 1300); }
-    });
+    /* One calm signal per answer: a soft light at ARIA beside the module, and at most one line of text. */
+    station(function (S) { S.pulse(result === "fout" ? "bad" : "good"); });
     if (result === "goed") {
       var before = mult(); streak++; var m = mult(), gain = 100 * m;
-      P.xp += gain; pop("+" + gain + (m > 1 ? "  ×" + m : "")); flash("good"); SFX.good();
-      if (m > before) { setTimeout(function () { pop("Combo ×" + m, "gold"); flash("gold"); SFX.combo(); }, 250); }
+      P.xp += gain; pop(m > before ? "+" + gain + " · combo ×" + m : "+" + gain, m > before ? "gold" : ""); SFX.good();
       if (m >= 2) award("vonk"); if (streak >= 5) award("keten"); if (streak >= 10) award("onbreekbaar");
     } else if (result === "half") {
       P.xp += 40; streak = 0; pop("+40"); SFX.half();
     } else {
-      streak = 0; pop("Combo verloren", "bad"); flash("bad"); shake(); SFX.bad();
+      streak = 0; SFX.bad();
     }
     if (streak > P.best) P.best = streak;
     var tot = st.goed + st.half + st.fout, acc = (st.goed + st.half * 0.5) / tot;
@@ -554,7 +550,7 @@
       el.innerHTML = '<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><small>Van: ' + esc(m[0]) + '</small><small class="dom">' + esc(m[1]) + "</small><b>" + esc(m[2]) + "</b></span>";
       el.setAttribute("aria-label", "Bericht van " + m[0] + ", " + m[1] + ": " + m[2] + ". Klik om neer te schieten.");
       el.style.left = (2 + lane * 33) + "%";
-      var o = { el: el, m: m, lane: lane, y: 10, fake: m[3] === 1, v: (52 + (60 - G.left) * 1.6 + Math.random() * 14) * (P.calm ? 0.45 : 1) };
+      var o = { el: el, m: m, lane: lane, y: 0, fake: m[3] === 1, v: (52 + (60 - G.left) * 1.6 + Math.random() * 14) * (P.calm ? 0.45 : 1) };
       el.onclick = function (e) {
         if (!G || G.over) return;
         var r = el.getBoundingClientRect(), sr = sky.getBoundingClientRect(), x = r.left - sr.left + r.width / 2, y = r.top - sr.top + r.height / 2;

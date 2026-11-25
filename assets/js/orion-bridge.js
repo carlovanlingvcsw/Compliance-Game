@@ -28,6 +28,8 @@
   }
   function scan() {
     var t = title(), el, r;
+    // While a question waits for an answer the level shows only the question: see html.asking in the theme.
+    root.classList.toggle("asking", !!document.querySelector(".option:not([disabled]), .opt:not([disabled]), .choice:not([disabled])") && !document.querySelector(".option.picked, .option.chosen, .opt.chosen, .choice.picked"));
     // Level 1: .opt.chosen with goed/half/fout
     el = document.querySelector(".opt.chosen");
     if (el) { r = el.classList.contains("goed") ? "goed" : el.classList.contains("half") ? "half" : "fout"; send(r, t + "|" + el.textContent.trim().slice(0, 60)); }

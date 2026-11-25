@@ -249,3 +249,8 @@ html.in-orion .options { display: grid; gap: 12px; }
 html.in-orion .option, html.in-orion .choice { padding: 16px 18px !important; font-size: 1.0625rem; line-height: 1.45; border-radius: 12px !important; border-bottom-width: 3px !important; }
 html.calm .timer, html.calm #timer { display: none !important; }
 @media (prefers-reduced-motion: reduce) { html.in-orion *, html.in-orion *::before, html.in-orion *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* ---------- While a question waits for an answer, the level shows only the question ---------- */
+html.asking .hud, html.asking .vcsw-stats, html.asking .vcsw-card.flush:has(> .hud), html.asking :has(> .alarm-dot),
+html.asking .vcsw-alert:not(#stage .vcsw-alert):not(#screen .vcsw-alert) { display: none !important; }
+html.asking .options { margin-top: 8px; }
