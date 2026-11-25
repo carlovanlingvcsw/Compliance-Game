@@ -869,3 +869,5 @@ body.booting header.bar { visibility: hidden; }
   .no-3d .boot { background: var(--o-space); }
 }
 .inv { width: 29%; margin-left: 1%; }
+.lb-sheet tr.lb-low th { box-shadow: inset 4px 0 0 #c77700; padding-left: 12px; }
+@media screen { .lb-sheet tr.lb-low th { box-shadow: inset 4px 0 0 var(--vcsw-amber-300); } .lb-sheet tr.lb-low { background: rgb(255 185 0 / .06); } .lb-sheet tr.lb-low .lb-nr { background: #7a4a00; } }
