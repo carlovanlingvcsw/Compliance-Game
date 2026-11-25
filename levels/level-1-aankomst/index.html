@@ -26,7 +26,7 @@
       <div><p class="vcsw-alert-title">Prototype van level 1, Aankomst op het station</p><p class="vcsw-alert-text">Alle namen, planeten en gegevens in het spel zijn fictief.</p></div>
     </div>
 
-    <section class="hud" aria-label="Status van je missie">
+    <section class="hud own-status" aria-label="Status van je missie">
       <div><span class="hud-label"><svg class="vcsw-icon sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg>Rang</span><span class="hud-value" id="hud-rank">Cadet</span></div>
       <div><span class="hud-label"><svg class="vcsw-icon sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>Schildsterkte</span><span class="hud-value" id="hud-shield">100%</span><div class="vcsw-progress-track"><div class="vcsw-progress-fill" id="hud-shield-bar" style="width:100%"></div></div></div>
       <div><span class="hud-label"><svg class="vcsw-icon sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Score dienst</span><span class="hud-value" id="hud-score">0 van 40</span></div>
@@ -37,7 +37,6 @@
       <!-- Start screen, also rendered by script; this copy makes the page complete before the script runs -->
       <div class="title-screen">
         <div>
-          <p class="ov">Datawacht · Level 1</p>
           <h1>Ruimtestation Orion</h1>
           <p class="lead">Het jaar is 2247. Je komt aan als Cadet van de Datawacht, de eenheid die alle gegevens aan boord beschermt.</p>
           <div class="actions"><button class="vcsw-button lg" id="start-static" type="button">Aan boord gaan</button></div>

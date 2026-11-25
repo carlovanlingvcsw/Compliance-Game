@@ -15,7 +15,16 @@ const I = {
   refresh: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
   copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
   memo: '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
-  undo: '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>'
+  undo: '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+  arrow: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
+  clip: '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+  pulse: '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>',
+  lock: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  unlock: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'
 };
 const icon = (n, cls = 'sm') => `<svg class="vcsw-icon ${cls}" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
 
@@ -87,16 +96,16 @@ const CARDS = [
 
 /* Hut objects: label is neutral (what you see), name is what ARIA calls it once found */
 const HUT = [
-  { id: 'console', risk: true,  label: 'Console op het bureau', name: 'Ontgrendelde console', cx: 225, cy: 207, r: 52 },
-  { id: 'code',    risk: true,  label: 'Briefje op de muur', name: 'Toegangscode op de muur', cx: 157, cy: 138, r: 30 },
-  { id: 'lijst',   risk: true,  label: 'Papieren op het bureau', name: 'Uitgeprinte passagierslijst', cx: 360, cy: 238, r: 32 },
-  { id: 'medisch', risk: true,  label: 'Tablet op het bed', name: 'Open medisch dossier', cx: 674, cy: 262, r: 32 },
-  { id: 'chip',    risk: true,  label: 'Iets op de vloer', name: 'Onbekende datachip', cx: 277, cy: 381, r: 30 },
-  { id: 'comm',    risk: true,  label: 'Communicator op de plank', name: 'Communicator met zichtbaar bericht van Kapitein Vega', cx: 674, cy: 172, r: 30 },
-  { id: 'kast',    risk: true,  label: 'Archiefkastje', name: 'Sleutelkaart in het archiefkastje', cx: 500, cy: 245, r: 30 },
-  { id: 'printer', risk: true,  label: 'Printer', name: 'Folie in de printer', cx: 475, cy: 188, r: 32 },
+  { id: 'console', risk: true,  label: 'Console op het bureau', name: 'Ontgrendelde console', clue: 'Kijk eens naar de console op het bureau.', cx: 225, cy: 207, r: 52 },
+  { id: 'code',    risk: true,  label: 'Briefje op de muur', name: 'Toegangscode op de muur', clue: 'Kijk eens naar het briefje op de muur.', cx: 157, cy: 138, r: 30 },
+  { id: 'lijst',   risk: true,  label: 'Papieren op het bureau', name: 'Uitgeprinte passagierslijst', clue: 'Kijk eens naar de papieren op het bureau.', cx: 360, cy: 238, r: 32 },
+  { id: 'medisch', risk: true,  label: 'Tablet op het bed', name: 'Open medisch dossier', clue: 'Kijk eens naar de tablet op het bed.', cx: 674, cy: 262, r: 32 },
+  { id: 'chip',    risk: true,  label: 'Iets op de vloer', name: 'Onbekende datachip', clue: 'Er ligt iets op de vloer. Kijk daar eens naar.', cx: 277, cy: 381, r: 30 },
+  { id: 'comm',    risk: true,  label: 'Communicator op de plank', name: 'Communicator met zichtbaar bericht van Kapitein Vega', clue: 'Kijk eens naar de communicator op de plank.', cx: 674, cy: 172, r: 30 },
+  { id: 'kast',    risk: true,  label: 'Archiefkastje', name: 'Sleutelkaart in het archiefkastje', clue: 'Kijk eens naar het archiefkastje.', cx: 500, cy: 245, r: 30 },
+  { id: 'printer', risk: true,  label: 'Printer', name: 'Folie in de printer', clue: 'Kijk eens naar de printer.', cx: 475, cy: 188, r: 32 },
   { id: 'plant',   risk: false, label: 'Ruimteplant', name: 'Ruimteplant', cx: 735, cy: 165, r: 28 },
-  { id: 'mok',     risk: false, label: 'Mok', name: 'Mok', cx: 308, cy: 232, r: 22 },
+  { id: 'mok',     risk: false, label: 'Mok', name: 'Mok', cx: 308, cy: 232, r: 24 },
   { id: 'kaart',   risk: false, label: 'Stationsplattegrond', name: 'Stationsplattegrond', cx: 690, cy: 100, r: 48 },
   { id: 'poster',  risk: false, label: 'Poster aan de muur', name: 'Poster van Nova Terra', cx: 565, cy: 110, r: 50 }
 ];
@@ -111,7 +120,8 @@ const RULES = [
 
 const POINTS = { goed: 10, half: 5, fout: 0 };
 const SHIELD_LOSS = { goed: 0, half: 5, fout: 10 };   // assumption: amounts are not in the design
-const HINT_COST = 5;                                    // assumption
+const CLUE_COST = 10;                                   // one price: a crystal earned in this level is one clue without cost, after that 10 percent shield
+const CRYSTALS_MAX = 3;
 const MAX = SITS.length * 10;
 const PASS = 0.7;
 const VLABEL = { goed: 'Goed', half: 'Half goed', fout: 'Fout' };
@@ -125,7 +135,7 @@ function fresh() {
     optOrder: Object.fromEntries(SITS.filter(s => s.type === 'mc').map(s => [s.id, shuffle([0, 1, 2])])),
     pending: null,
     sortOrder: shuffle(CARDS.map((_, i) => i)), sort: {}, sortChecked: false,
-    hut: { started: false, found: [], nope: [], left: SLUIS_SECONDS, clues: 0, free: 3, paid: 0, done: false, timeout: false },
+    hut: { started: false, found: [], nope: [], left: SLUIS_SECONDS, asked: [], paid: 0, done: false, timeout: false },
     passed: false
   };
 }
@@ -162,19 +172,37 @@ function hud() {
   bar.style.width = S.shield + '%';
   bar.className = 'vcsw-progress-fill' + (S.shield < 50 ? ' error' : S.shield < 80 ? ' warning' : '');
   document.getElementById('hud-score').textContent = `${S.score} van ${MAX}`;
-  document.getElementById('hud-crystals').textContent = `${S.crystals.length} van 3`;
+  document.getElementById('hud-crystals').textContent = `${S.crystals.length} van ${CRYSTALS_MAX}`;
 }
 
 const STEPS = [['briefing', 'Briefing'], ['dienst', 'Dienst'], ['sluis', 'Luchtsluis'], ['debrief', 'Debriefing'], ['aarde', 'Terug op aarde']];
+/* The level's own steps strip. Inside the shell it is hidden (.own-status); the shell reads window.orionStatus instead. */
 function steps(cur) {
   const idx = STEPS.findIndex(s => s[0] === cur);
-  return `<ol class="steps" aria-label="Opbouw van het level">${STEPS.map((s, i) => `<li class="${i < idx ? 'done' : ''}"${i === idx ? ' aria-current="step"' : ''}><span class="dot" aria-hidden="true"></span>${s[1]}</li>`).join('')}</ol>`;
+  return `<ol class="steps own-status" aria-label="Opbouw van het level">${STEPS.map((s, i) => `<li class="${i < idx ? 'done' : ''}"${i === idx ? ' aria-current="step"' : ''}><span class="dot" aria-hidden="true"></span>${i < idx ? '<span class="vcsw-sr-only">Afgerond: </span>' : ''}${s[1]}</li>`).join('')}</ol>`;
 }
+
+/* ---------- Hook for the shell: always reflects the current state ---------- */
+const STEP_OF = { start: 0, briefing: 0, sit: 1, sluis: 2, debrief: 3, aarde: 4 };
+window.orionStatus = function () {
+  const done = S.screen === 'aarde';
+  return {
+    score: S.score,
+    max: MAX,
+    shield: S.shield,
+    crystals: S.crystals.length,
+    crystalsMax: CRYSTALS_MAX,
+    steps: STEPS.map(s => s[1]),
+    step: STEP_OF[S.screen] || 0,
+    done,
+    passed: done ? S.score / MAX >= PASS : null,
+    pct: done ? Math.round(S.score / MAX * 100) : null
+  };
+};
 
 /* ---------- Screens ---------- */
 function render() {
   if (timer && S.screen !== 'sluis') { clearInterval(timer); timer = null; }
-  stage.classList.toggle('earth', S.screen === 'aarde');
   hud();
   ({ start: renderStart, briefing: renderBriefing, sit: renderSit, sluis: renderSluis, debrief: renderDebrief, aarde: renderAarde })[S.screen]();
 }
@@ -183,7 +211,6 @@ function go(screen, extra = {}) { Object.assign(S, extra, { screen }); render();
 function renderStart() {
   stage.innerHTML = `<div class="title-screen">
     <div>
-      <p class="ov">Datawacht · Level 1</p>
       <h1>Ruimtestation Orion</h1>
       <p class="lead">Het jaar is 2247. Je komt aan als Cadet van de Datawacht, de eenheid die alle gegevens aan boord beschermt. Boordcomputer ARIA begeleidt je, en de piraten van de Zwarte Nevel liggen op de loer.</p>
       <div class="actions"><button class="vcsw-button lg" type="button" id="b-start">Aan boord gaan ${icon('right')}</button></div>
@@ -197,8 +224,10 @@ function renderStart() {
 }
 
 function renderBriefing() {
+  /* The hidden marker tells the bridge that a new run starts here, so it forgets earlier answers. It is never shown. */
   stage.innerHTML = `${steps('briefing')}
-    <div><p class="ov">Missie</p><h2>Aankomst op het station</h2></div>
+    <span class="ov" hidden>Briefing</span>
+    <h2>Aankomst op het station</h2>
     ${dialog('ARIA')}
     <p class="uitleg">Leerdoel: je herkent wat persoonsgegevens zijn en je houdt je werkplek veilig.</p>
     <div class="actions"><button class="vcsw-button lg" type="button" id="b-next">Begin je dienst ${icon('right')}</button></div>`;
@@ -208,12 +237,12 @@ function renderBriefing() {
 
 function renderSit() {
   const sit = SITS[S.sit];
-  const head = `${steps('dienst')}<div><p class="ov">Dienst · situatie ${S.sit + 1} van ${SITS.length}</p><h2>${sit.title}</h2></div>`;
+  const head = `${steps('dienst')}<div class="head"><div class="chips"><span class="chip">Situatie ${S.sit + 1} van ${SITS.length}</span></div><h2>${sit.title}</h2></div>`;
   if (sit.type === 'sort') return renderSort(sit, head);
   const order = S.optOrder[sit.id];
   stage.innerHTML = `${head}${dialog(sit.speaker)}
     <div class="options" role="group" aria-label="Kies je antwoord">
-      ${order.map((oi, k) => `<button class="opt" type="button" data-oi="${oi}"><span class="key" aria-hidden="true">${'ABC'[k]}</span><span class="txt">${esc(sit.opts[oi].t)}</span><span class="verdict"></span></button>`).join('')}
+      ${order.map((oi, k) => `<button class="opt" type="button" data-oi="${oi}" aria-pressed="false"><span class="key" aria-hidden="true">${'ABC'[k]}</span><span class="txt">${esc(sit.opts[oi].t)}</span><span class="verdict"></span></button>`).join('')}
     </div>
     <div class="feedback" hidden></div>`;
   const done = S.results[sit.id];
@@ -222,14 +251,18 @@ function renderSit() {
   if (done) showFeedback(sit, done.oi, false);
 }
 
-function choose(sit, oi) {
-  if (S.results[sit.id]) return;
+/* Scoring of one answer; the same step is used by the test jump (?scherm=) */
+function grade(sit, oi) {
   const o = sit.opts[oi];
   S.results[sit.id] = { v: o.v, points: POINTS[o.v], oi };
   S.score += POINTS[o.v];
   S.shield = Math.max(0, S.shield - SHIELD_LOSS[o.v]);
   if (o.crystal && !S.crystals.includes(o.crystal)) S.crystals.push(o.crystal);
   if (o.memo) S.memos.push(o.memo);
+}
+function choose(sit, oi) {
+  if (S.results[sit.id]) return;
+  grade(sit, oi);
   hud();
   showFeedback(sit, oi, true);
 }
@@ -239,6 +272,7 @@ function showFeedback(sit, oi, animate) {
   const best = sit.opts.findIndex(x => x.v === 'goed');
   stage.querySelectorAll('.opt').forEach(b => {
     const i = +b.dataset.oi; b.disabled = true;
+    b.setAttribute('aria-pressed', String(i === oi));
     const vd = b.querySelector('.verdict');
     if (i === oi) { b.classList.add('chosen', o.v); vd.innerHTML = `<span class="v-${o.v}">${icon(VICON[o.v])} ${VLABEL[o.v]}</span>`; }
     else if (i === best) { b.classList.add('best'); vd.innerHTML = `<span class="v-goed">${icon('check')} Beste keuze</span>`; }
@@ -296,15 +330,15 @@ function drawSort() {
       el.draggable = true;
       el.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', String(i)));
     }
-    let body = `<span>${esc(txt)}</span>`;
+    let body = `<span class="card-txt">${esc(txt)}</span>`;
     if (S.sortChecked) {
       const ok = (where === 'wel') === isPd;
       el.classList.add(ok ? 'ok' : 'nok');
       body += `<span class="row ${ok ? 'v-goed' : 'v-fout'}">${icon(ok ? 'check' : 'x')} <strong>${ok ? 'Goed' : 'Fout'}</strong></span><span class="why">${esc(why)}</span>`;
     } else if (!where) {
-      body += `<span class="row"><button class="vcsw-button outline sm" type="button" data-to="wel" aria-label="${esc(txt)}: wel persoonsgegeven">Wel</button><button class="vcsw-button outline sm" type="button" data-to="geen" aria-label="${esc(txt)}: geen persoonsgegeven">Geen</button></span>`;
+      body += `<span class="row"><button class="vcsw-button outline" type="button" data-to="wel" aria-label="${esc(txt)}: wel persoonsgegeven">Wel</button><button class="vcsw-button outline" type="button" data-to="geen" aria-label="${esc(txt)}: geen persoonsgegeven">Geen</button></span>`;
     } else {
-      body += `<span class="row"><button class="vcsw-button ghost sm" type="button" data-to="" aria-label="${esc(txt)} terugleggen">${icon('undo')} Terugleggen</button></span>`;
+      body += `<span class="row"><button class="vcsw-button ghost" type="button" data-to="" aria-label="${esc(txt)} terugleggen">${icon('undo')} Terugleggen</button></span>`;
     }
     el.innerHTML = body;
     el.querySelectorAll('[data-to]').forEach(b => b.onclick = () => place(i, b.dataset.to));
@@ -322,7 +356,7 @@ function place(i, to) {
   if (to) S.sort[i] = to; else delete S.sort[i];
   drawSort();
 }
-function checkSort() {
+function gradeSort() {
   const good = CARDS.filter((c, i) => (S.sort[i] === 'wel') === c[1]).length;
   const v = good >= 10 ? 'goed' : good >= 7 ? 'half' : 'fout';   // assumption: 10+ goed, 7 to 9 half goed
   S.sortChecked = true;
@@ -330,8 +364,8 @@ function checkSort() {
   S.score += POINTS[v];
   S.shield = Math.max(0, S.shield - SHIELD_LOSS[v]);
   if (good >= 10 && !S.crystals.includes('Herleidbaar = persoonsgegeven')) S.crystals.push('Herleidbaar = persoonsgegeven');
-  hud(); drawSort(); sortFeedback();
 }
+function checkSort() { gradeSort(); hud(); drawSort(); sortFeedback(); }
 function sortFeedback() {
   const r = S.results.s3; if (!r) return;
   stage.querySelector('#sort-actions').hidden = true;
@@ -366,7 +400,7 @@ function hutSvg() {
     poster: `<rect class="h-trim" x="520" y="52" width="90" height="120" rx="3"/><rect class="h-stroke" x="520" y="52" width="90" height="120" rx="3"/><circle class="h-soft" cx="565" cy="100" r="24"/><ellipse cx="565" cy="100" rx="36" ry="8" fill="none" stroke="var(--vcsw-blue-100)" stroke-width="2"/><text class="h-txt-light" x="535" y="155">NOVA TERRA</text>`
   };
   const objs = HUT.map(h => `<g class="hot" data-id="${h.id}" role="button" tabindex="0" aria-label="${esc(h.label)}">${art[h.id]}${hit(h)}${mark(h)}</g>`).join('');
-  return `<svg class="hut" viewBox="0 0 800 460" role="group" aria-label="Je hut. Zoek de acht risico's.">
+  return `<svg class="hut" viewBox="0 30 800 390" role="group" aria-label="Je hut. Zoek de acht risico's.">
     <rect class="h-wall" x="0" y="0" width="800" height="340"/>
     <rect class="h-floor" x="0" y="340" width="800" height="120"/>
     <path class="h-stroke" d="M0 340h800" opacity=".6"/>
@@ -380,25 +414,59 @@ function hutSvg() {
   </svg>`;
 }
 
+const ilist = rows => `<ul class="ilist">${rows.map(r => `<li><span class="ic ${r[2] || ''}">${icon(r[0], '')}</span><span>${r[1]}</span></li>`).join('')}</ul>`;
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+/* Start card of the airlock: the goal in one sentence, how you score, what a mistake costs, one start button */
+function renderSluisStart() {
+  const H = S.hut, n = S.crystals.length;
+  stage.innerHTML = `${steps('sluis')}
+    <div class="head">
+      <div class="chips"><span class="chip">Luchtsluis</span><span class="chip">${icon('clock')} 3 minuten</span><span class="chip">${icon('gem')} ${plural(n, 'kristal', 'kristallen')} uit dit level</span></div>
+      <h2>Hutinspectie</h2>
+      <p class="lead">ARIA scant je hut. Vind alle acht risico’s voordat de tijd om is.</p>
+    </div>
+    <div class="two">
+      <section class="acard"><h3>Zo scoor je</h3>${ilist([
+        ['check', 'Klik een risico aan en er licht een cijfer van de sluiscode op', 'good'],
+        ['unlock', 'Met alle acht cijfers gaat de luchtsluis open', 'good'],
+        ['info', 'In de hut verdien je geen punten. Je score uit de dienst staat vast']
+      ])}</section>
+      <section class="acard"><h3>Wat een fout kost</h3>${ilist([
+        ['x', 'Een voorwerp zonder risico aanklikken kost niets'],
+        ['gem', n ? `Elk kristal uit dit level is één aanwijzing van ARIA zonder kosten. Jij hebt er ${n}` : 'Elk kristal uit dit level is één aanwijzing van ARIA zonder kosten. Jij hebt er geen', 'gold'],
+        ['shield', `Daarna kost een aanwijzing ${CLUE_COST} procent schild`, 'bad'],
+        ['clock', 'Is de tijd om, dan opent ARIA de sluis en zie je wat je miste']
+      ])}</section>
+    </div>
+    <div class="actions"><button class="vcsw-button lg" type="button" id="b-go">Start de inspectie ${icon('arrow')}</button></div>`;
+  stage.querySelector('#b-go').onclick = () => { H.started = true; render(); const h = stage.querySelector('h2'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); } };
+}
+
+const DOOR_SVG = `<svg class="door" viewBox="0 0 180 120" aria-hidden="true"><rect x="2" y="2" width="176" height="116" rx="14" fill="var(--vcsw-blue-950)" stroke="var(--vcsw-blue-300)" stroke-width="2"/><rect x="30" y="16" width="120" height="88" rx="6" fill="var(--vcsw-blue-200)"/><g class="l"><rect x="30" y="16" width="60" height="88" fill="var(--vcsw-blue-700)" stroke="var(--vcsw-blue-300)" stroke-width="2"/></g><g class="r"><rect x="90" y="16" width="60" height="88" fill="var(--vcsw-blue-700)" stroke="var(--vcsw-blue-300)" stroke-width="2"/></g></svg>`;
+
 function renderSluis() {
   const H = S.hut;
-  const doorSvg = `<svg class="door" viewBox="0 0 180 120" aria-hidden="true"><rect x="2" y="2" width="176" height="116" rx="14" fill="var(--vcsw-blue-950)" stroke="var(--vcsw-blue-300)" stroke-width="2"/><rect x="30" y="16" width="120" height="88" rx="6" fill="var(--vcsw-blue-200)"/><g class="l"><rect x="30" y="16" width="60" height="88" fill="var(--vcsw-blue-700)" stroke="var(--vcsw-blue-300)" stroke-width="2"/></g><g class="r"><rect x="90" y="16" width="60" height="88" fill="var(--vcsw-blue-700)" stroke="var(--vcsw-blue-300)" stroke-width="2"/></g></svg>`;
-  if (!H.started) {
-    stage.innerHTML = `${steps('sluis')}<div><p class="ov">Luchtsluis</p><h2>Hutinspectie</h2></div>${dialog('ARIA')}
-      <div class="chips"><span class="chip">${icon('clock')} 3 minuten</span><span class="chip">${icon('gem')} ${S.crystals.length} aanwijzing${S.crystals.length === 1 ? '' : 'en'} uit je kristallen</span><span class="chip">${icon('bulb')} 3 gratis hints</span></div>
-      <div class="actions"><button class="vcsw-button lg" type="button" id="b-go">Start de inspectie ${icon('right')}</button></div>`;
-    speak(stage.querySelector('.dialog'), 'Dienst voorbij. Ik scan nu je hut. Klik alle risico’s aan die je ziet. Elk gevonden risico licht een cijfer van de sluiscode op. Je hebt drie minuten.');
-    stage.querySelector('#b-go').onclick = () => { H.started = true; render(); };
-    return;
-  }
+  if (!H.started) return renderSluisStart();
+  const n = S.crystals.length;
   stage.innerHTML = `${steps('sluis')}
+    <h2 class="vcsw-sr-only">Hutinspectie</h2>
     <div class="sluis-bar">
       <div class="timer" role="timer" aria-label="Resterende tijd">${icon('clock', '')}<span id="t">${fmt(H.left)}</span></div>
-      <div><p class="ov" style="margin-bottom:6px">Sluiscode</p><div class="code" id="code" aria-label="Sluiscode, ${H.found.length} van 8 cijfers gevonden">${[...CODE].map((d, i) => `<span class="${i < H.found.length ? 'lit' : ''}">${i < H.found.length ? d : '·'}</span>`).join('')}</div></div>
-      <div class="actions"><button class="vcsw-button outline" type="button" id="b-hint"></button></div>
+      <div class="code-box"><span class="code-label">Sluiscode</span><div class="code" id="code" role="img" aria-label="Sluiscode, ${H.found.length} van 8 cijfers gevonden">${[...CODE].map((d, i) => `<span class="${i < H.found.length ? 'lit' : ''}">${i < H.found.length ? d : '·'}</span>`).join('')}</div></div>
     </div>
-    <div class="hut-wrap">${hutSvg()}</div>
-    <p class="status" id="hut-status" aria-live="polite"></p>
+    <div class="hut-box"><div class="hut-wrap">${hutSvg()}</div>
+      <p class="status" id="hut-status" aria-live="polite"></p></div>
+    <section class="clues" id="clues" aria-labelledby="clues-h">
+      <div class="clues-card">
+        <div class="clues-text">
+          <div class="clues-head"><h3 id="clues-h">Aanwijzingen van ARIA</h3><span class="gems" id="clue-gems"></span></div>
+          <p>${n ? `Je verdiende ${plural(n, 'kristal', 'kristallen')} in dit level. Elk kristal is één aanwijzing zonder kosten. Daarna kost een aanwijzing ${CLUE_COST} procent schild.` : `Je verdiende geen kristallen in dit level. Een aanwijzing kost ${CLUE_COST} procent schild.`}</p>
+        </div>
+        <div class="clues-act"><button class="vcsw-button" type="button" id="b-clue">Vraag ARIA om een aanwijzing ${icon('bulb')}</button><span class="chip cost" id="clue-cost"></span></div>
+      </div>
+      <div class="clue-list" id="clue-list" aria-live="polite"></div>
+    </section>
     <div class="feedback" id="hut-end" hidden></div>`;
   stage.querySelectorAll('.hut .hot').forEach(g => {
     const id = g.dataset.id;
@@ -408,11 +476,10 @@ function renderSluis() {
     g.addEventListener('click', act);
     g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });
   });
-  stage.querySelector('#b-hint').onclick = useHint;
-  hintLabel();
-  if (H.done || H.timeout) endSluis(false, doorSvg);
+  stage.querySelector('#b-clue').onclick = askClue;
+  drawClues();
+  if (H.done || H.timeout) endSluis(false);
   else if (!timer) timer = setInterval(tick, 1000);
-  stage._door = doorSvg;
 }
 const fmt = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 function tick() {
@@ -420,7 +487,7 @@ function tick() {
   H.left = Math.max(0, H.left - 1);
   const t = stage.querySelector('#t'); if (t) { t.textContent = fmt(H.left); t.parentElement.classList.toggle('low', H.left <= 30); }
   if (H.left === 60 || H.left === 30) say(`Nog ${H.left === 60 ? 'één minuut' : 'dertig seconden'}.`);
-  if (H.left === 0) { H.timeout = true; clearInterval(timer); timer = null; endSluis(true, stage._door); }
+  if (H.left === 0) { H.timeout = true; clearInterval(timer); timer = null; endSluis(true); }
 }
 const say = t => { const s = stage.querySelector('#hut-status'); if (s) s.textContent = t; };
 function clickHut(id, g) {
@@ -428,50 +495,65 @@ function clickHut(id, g) {
   const h = HUT.find(x => x.id === id);
   if (H.found.includes(id)) return;
   if (h.risk) {
-    H.found.push(id); g.classList.add('found'); g.classList.remove('hint');
+    H.found.push(id); g.classList.add('found'); g.classList.remove('pointed');
     const code = stage.querySelector('#code');
     const sp = code.children[H.found.length - 1]; sp.textContent = CODE[H.found.length - 1]; sp.classList.add('lit');
     code.setAttribute('aria-label', `Sluiscode, ${H.found.length} van 8 cijfers gevonden`);
     say(`Risico gevonden: ${h.name}. Cijfer ${H.found.length} van de sluiscode licht op.`);
-    if (H.found.length === 8) { H.done = true; clearInterval(timer); timer = null; endSluis(true, stage._door); }
-    hintLabel();
+    if (H.found.length === 8) { H.done = true; clearInterval(timer); timer = null; endSluis(true); }
+    drawClues();
   } else {
     if (!H.nope.includes(id)) H.nope.push(id);
     g.classList.add('nope');
     say(`${h.name}: geen risico.`);
   }
 }
-function nextHintKind() { const H = S.hut; return H.clues < S.crystals.length ? 'kristal' : H.free > 0 ? 'gratis' : 'betaald'; }
-function hintLabel() {
-  const b = stage.querySelector('#b-hint'); if (!b) return;
-  const H = S.hut, k = nextHintKind();
-  b.innerHTML = k === 'kristal' ? `${icon('gem')} Aanwijzing uit kristal (${S.crystals.length - H.clues})` : k === 'gratis' ? `${icon('bulb')} Hint (${H.free} gratis)` : `${icon('bulb')} Extra hint (−${HINT_COST}% schild)`;
-  b.disabled = H.done || H.timeout || H.found.length === 8;
+
+/* Clues, proposal B: one button. ARIA gives the next clue as a speech balloon, in the fixed order of HUT.
+   One price: every crystal earned in this level is one clue without cost, after that a clue costs CLUE_COST percent shield. */
+const nextClue = () => HUT.find(h => h.risk && !S.hut.found.includes(h.id) && !S.hut.asked.includes(h.id));
+const clueIsFree = () => S.hut.asked.length < S.crystals.length;
+function drawClues() {
+  const H = S.hut, n = S.crystals.length, used = Math.min(H.asked.length, n);
+  const b = stage.querySelector('#b-clue'); if (!b) return;
+  const next = nextClue(), over = H.done || H.timeout;
+  b.disabled = over || !next;
+  stage.querySelector('#clue-gems').innerHTML = n
+    ? `${Array.from({ length: n }, (_, i) => `<span class="gem ${i < used ? 'used' : 'left'}">${icon('gem', '')}</span>`).join('')}<span class="gems-txt">${used} van ${n} gebruikt</span>`
+    : `<span class="gems-txt">Geen kristallen</span>`;
+  const cost = stage.querySelector('#clue-cost');
+  cost.className = 'chip cost' + (!next ? '' : clueIsFree() ? ' free' : ' paid');
+  cost.innerHTML = !next ? `${icon('check')} Je hebt alle aanwijzingen gekregen`
+    : clueIsFree() ? `${icon('gem')} De volgende kost niets`
+    : `${icon('shield')} De volgende kost ${CLUE_COST} procent schild`;
+  const open = H.asked.filter(id => !H.found.includes(id));
+  stage.querySelector('#clue-list').innerHTML = open.map(id => `<div class="clue"><div class="clue-av">${ARIA_SVG}</div><div><p class="clue-who"><strong>ARIA</strong> <span>boordcomputer</span></p><p class="clue-txt">${esc(HUT.find(h => h.id === id).clue)}</p></div></div>`).join('');
 }
-function useHint() {
-  const H = S.hut;
-  const left = HUT.filter(h => h.risk && !H.found.includes(h.id));
-  if (!left.length) return;
-  const k = nextHintKind();
-  if (k === 'kristal') H.clues++; else if (k === 'gratis') H.free--; else { H.paid++; S.shield = Math.max(0, S.shield - HINT_COST); hud(); }
-  const pick = left[Math.floor(Math.random() * left.length)];
-  const g = stage.querySelector(`.hot[data-id="${pick.id}"]`);
-  g.classList.add('hint');
-  setTimeout(() => g.classList.remove('hint'), 3000);
-  say(`ARIA markeert een plek: kijk bij ${pick.label.toLowerCase()}.`);
-  hintLabel();
+function askClue() {
+  const H = S.hut; if (H.done || H.timeout) return;
+  const next = nextClue(); if (!next) return;
+  if (!clueIsFree()) { H.paid++; S.shield = Math.max(0, S.shield - CLUE_COST); hud(); }
+  H.asked.push(next.id);
+  const g = stage.querySelector(`.hot[data-id="${next.id}"]`);
+  g.classList.add('pointed');
+  setTimeout(() => g.classList.remove('pointed'), 3000);
+  drawClues();
+  const last = stage.querySelector('#clue-list .clue:last-child');
+  if (last) last.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
 }
-function endSluis(animate, doorSvg) {
+function endSluis(animate) {
   const H = S.hut;
-  hintLabel();
+  drawClues();
+  stage.querySelector('#clues').hidden = true;
   const missed = HUT.filter(h => h.risk && !H.found.includes(h.id));
   missed.forEach(h => stage.querySelector(`.hot[data-id="${h.id}"]`).classList.add('missed'));
   if (H.found.length === 8) stage.querySelector('#code').classList.add('complete');
+  const asked = H.asked.length;
   const end = stage.querySelector('#hut-end');
-  end.innerHTML = `<div class="actions" style="align-items:center;gap:20px">${doorSvg}
-      <div style="flex:1;min-width:220px;display:grid;gap:8px">
+  end.innerHTML = `<div class="end-row">${DOOR_SVG}
+      <div class="end-text">
         <h3>${H.found.length === 8 ? 'Sluiscode compleet. De luchtsluis gaat open.' : 'De tijd is om. ARIA opent de sluis handmatig.'}</h3>
-        <p>Je vond ${H.found.length} van de 8 risico’s${H.paid ? ` en gebruikte ${H.paid} extra hint${H.paid === 1 ? '' : 's'}` : ''}.</p>
+        <p>Je vond ${H.found.length} van de 8 risico’s${asked ? ` en vroeg ARIA om ${plural(asked, 'aanwijzing', 'aanwijzingen')}` : ''}.</p>
         ${missed.length ? `<p>Gemist, rood omcirkeld in je hut:</p><ul class="missed-list">${missed.map(h => `<li>${esc(h.name)}</li>`).join('')}</ul>` : ''}
       </div></div>
     <div class="actions"><button class="vcsw-button" type="button" id="b-next">Naar de debriefing ${icon('right')}</button></div>`;
@@ -488,53 +570,103 @@ function renderDebrief() {
   const line = goodOnes.length
     ? `Dienst afgerond. Sterk werk bij ${goodOnes.length > 1 ? goodOnes.slice(0, -1).join(', ') + ' en ' + goodOnes.slice(-1) : goodOnes[0]}. En je vond ${S.hut.found.length} van de 8 risico’s in je hut. Onthoud drie regels.`
     : `Dienst afgerond. Je vond ${S.hut.found.length} van de 8 risico’s in je hut. Lees de uitleg nog eens rustig na, en onthoud drie regels.`;
-  stage.innerHTML = `${steps('debrief')}<div><p class="ov">Debriefing</p><h2>Wat ARIA je meegeeft</h2></div>
+  stage.innerHTML = `${steps('debrief')}<h2>Wat ARIA je meegeeft</h2>
     ${dialog('ARIA')}
     <ol class="rules">${RULES.map(r => `<li>${esc(r)}</li>`).join('')}</ol>
-    <div><h3 style="margin-bottom:10px">Jouw dienst</h3><div class="recap">${recap}<div><span>Hutinspectie</span><span>${S.hut.found.length} van 8 risico’s gevonden</span></div></div></div>
+    <div class="recap-box"><h3>Jouw dienst</h3><div class="recap">${recap}<div><span>Hutinspectie</span><span>${S.hut.found.length} van 8 risico’s gevonden</span></div></div></div>
     ${S.memos.length ? `<div class="chips">${S.memos.map(m => `<span class="chip memo">${icon('memo')} ${esc(m)}</span>`).join('')}</div>` : ''}
     <div class="actions"><button class="vcsw-button lg" type="button" id="b-next">Terug op aarde ${icon('right')}</button></div>`;
   speak(stage.querySelector('.dialog'), line);
   stage.querySelector('#b-next').onclick = () => go('aarde', { passed: S.score / MAX >= PASS });
 }
 
+/* Terug op aarde: dark cards, two lists side by side, the report route and the result of the level */
 function renderAarde() {
   const pct = Math.round(S.score / MAX * 100);
   const passed = S.passed;
+  const n = S.crystals.length;
+  const meter = (label, value, fill, cls, note, mark, aria) => `<div class="meter"><p class="m-label">${label}</p><p class="m-value">${value}</p>
+      <div class="m-bar ${cls}" role="img" aria-label="${aria}"><span class="m-fill" style="width:${fill}%"></span>${mark ? `<span class="m-mark" style="left:${mark}%"></span>` : ''}</div>
+      <p class="m-note">${note}</p></div>`;
   stage.innerHTML = `${steps('aarde')}
-    <div class="earth-grid">
-      <div class="earth" style="display:grid;gap:16px">
-        <div><p class="ov">Terug op aarde</p><h2>Wat dit betekent voor je werk bij VCSW</h2></div>
-        <p>Op je werk gaat het om namen en e-mailadressen van contactpersonen bij klanten, cv's van kandidaten, adressen, BSN’s en telefoonnummers van werknemers van klanten, en verzuim- en gezondheidsgegevens.</p>
-        <p>Vergrendel je laptop met Windows-toets en L, deel wachtwoorden nooit via Teams of mail en meld twijfel bij Tarik, Dagmar of via jz@vcsw.nl.</p>
-        <div class="vcsw-card basic" style="display:grid;gap:8px">
-          <h3>Meldroute</h3>
-          <p>Meld twijfel of een mogelijk datalek bij Tarik of Dagmar, of mail naar</p>
-          <span class="mail"><code id="mailaddr">jz@vcsw.nl</code><button class="vcsw-button outline sm" type="button" id="b-copy">${icon('copy')} Kopieer adres</button></span>
-        </div>
+    <div class="aarde">
+      <div class="head">
+        <h2>Wat dit betekent voor je werk bij VCSW</h2>
+        <p class="lead">Het station is verzonnen. Dit neem je mee naar je werk.</p>
       </div>
-      <div class="vcsw-card" style="display:grid;gap:16px">
-        <div class="result-head"><h3>Resultaat level 1</h3><span class="vcsw-badge ${passed ? 'success' : 'warning'}">${passed ? 'Gehaald' : 'Niet gehaald'}</span></div>
-        <div class="vcsw-stats">
-          <div class="vcsw-stat"><span class="vcsw-stat-label">Score dienst</span><span class="vcsw-stat-value">${pct}%</span><span class="vcsw-stat-note">${S.score} van ${MAX} punten</span></div>
-          <div class="vcsw-stat"><span class="vcsw-stat-label">Schildsterkte</span><span class="vcsw-stat-value">${S.shield}%</span><span class="vcsw-stat-note">${S.crystals.length} van 3 kristallen</span></div>
-        </div>
-        <p>${passed ? 'Je bent bevorderd tot <strong>Vaandrig</strong>. Je kristallen neem je mee naar de volgende modules.' : 'Je hebt minimaal 70 procent nodig. Speel de dienst opnieuw om je rang te halen.'}</p>
-        <div class="actions">${passed ? `<button class="vcsw-button outline" type="button" id="b-again">${icon('refresh')} Level opnieuw spelen</button>` : `<button class="vcsw-button" type="button" id="b-retry">${icon('refresh')} Speel de dienst opnieuw</button>`}</div>
+      <div class="two">
+        <section class="acard"><h3>Hier gaat het om</h3>${ilist([
+          ['user', 'Namen en e-mailadressen van contactpersonen bij klanten'],
+          ['file', 'Cv’s van kandidaten'],
+          ['clip', 'Adressen, BSN’s en telefoonnummers van werknemers van klanten'],
+          ['pulse', 'Verzuim- en gezondheidsgegevens']
+        ])}</section>
+        <section class="acard"><h3>Dit doe je morgen</h3>${ilist([
+          ['lock', 'Vergrendel je laptop met de Windows-toets en L'],
+          ['x', 'Deel wachtwoorden nooit via Teams of mail'],
+          ['mail', 'Twijfel je, meld het dan meteen']
+        ])}</section>
       </div>
+      <section class="acard meld">
+        <div class="meld-text"><h3>Meldroute</h3><p>Meld twijfel of een mogelijk datalek bij Tarik of Dagmar, of mail naar het meldpunt.</p></div>
+        <div class="meld-act"><code id="mailaddr">jz@vcsw.nl</code><button class="vcsw-button outline" type="button" id="b-copy">Kopieer adres ${icon('copy')}</button></div>
+        <p class="vcsw-sr-only" id="copy-status" aria-live="polite"></p>
+      </section>
+      <section class="acard result">
+        <div class="result-head"><h3>Resultaat level 1</h3><span class="verdict-badge ${passed ? 'ok' : 'warn'}">${icon(passed ? 'check' : 'half')} ${passed ? 'Gehaald' : 'Nog niet gehaald'}</span></div>
+        <p class="result-line">${passed ? 'Je bent bevorderd tot <strong>Vaandrig</strong>. Je kristallen neem je mee naar de volgende modules.' : 'Je hebt minimaal 70 procent nodig. Speel de dienst opnieuw om je rang te halen.'}</p>
+        <div class="meters">
+          ${meter('Score', `${S.score} van ${MAX} punten`, pct, 'score', `${pct} procent. ${passed ? 'Je had 70 procent nodig.' : 'Je hebt 70 procent nodig.'}`, 70, `Score ${pct} procent, de grens ligt bij 70 procent`)}
+          ${meter('Schild', `${S.shield} procent`, S.shield, 'shield', 'Het schild telt niet mee voor halen. Het laat zien hoe zeker je speelde.', 0, `Schild ${S.shield} procent`)}
+          ${meter('Kristallen', `${n} van ${CRYSTALS_MAX}`, Math.round(n / CRYSTALS_MAX * 100), 'crystals', 'Elk kristal is één aanwijzing zonder kosten in de luchtsluis.', 0, `${n} van ${CRYSTALS_MAX} kristallen`)}
+        </div>
+        <div class="actions"><button class="vcsw-button" type="button" id="b-again">Speel level 1 opnieuw ${icon('refresh')}</button></div>
+      </section>
     </div>`;
   stage.querySelector('#b-copy').onclick = async e => {
-    const btn = e.currentTarget;
-    try { await navigator.clipboard.writeText('jz@vcsw.nl'); btn.innerHTML = `${icon('check')} Gekopieerd`; }
-    catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('mailaddr')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Geselecteerd, kopieer met Ctrl+C'; }
+    const btn = e.currentTarget, st = stage.querySelector('#copy-status');
+    try { await navigator.clipboard.writeText('jz@vcsw.nl'); btn.innerHTML = `Gekopieerd ${icon('check')}`; st.textContent = 'Het adres jz@vcsw.nl is gekopieerd.'; }
+    catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('mailaddr')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Geselecteerd, kopieer met Ctrl+C'; st.textContent = 'Het adres is geselecteerd. Kopieer het met Ctrl+C.'; }
   };
-  const again = stage.querySelector('#b-again'); if (again) again.onclick = () => { S = fresh(); go('briefing'); };
-  const retry = stage.querySelector('#b-retry'); if (retry) retry.onclick = () => { S = fresh(); go('sit', { sit: 0 }); };
+  stage.querySelector('#b-again').onclick = () => { S = fresh(); go('briefing'); };
+}
+
+/* ---------- Test jump: ?scherm=<naam> opens the level on one screen, with a plausible state ---------- */
+const SCHERMEN = ['start', 'briefing', 'dienst', 'dienst2', 'sorteren', 'dienst4', 'luchtsluis', 'hut', 'hut-einde', 'debriefing', 'aarde', 'aarde-gehaald'];
+function jump(name) {
+  if (!SCHERMEN.includes(name)) return false;
+  S = fresh();
+  const best = id => SITS.find(s => s.id === id).opts.findIndex(o => o.v === 'goed');
+  const answer = (id, oi) => grade(SITS.find(s => s.id === id), oi);
+  const sort = wrong => { CARDS.forEach((c, i) => { S.sort[i] = (i < wrong ? !c[1] : c[1]) ? 'wel' : 'geen'; }); gradeSort(); };
+  const upto = (k, all) => {   // answers the first k situations; mixed result unless all is true
+    if (k > 0) answer('s1', all ? best('s1') : 0);
+    if (k > 1) answer('s2', all ? best('s2') : 2);
+    if (k > 2) sort(all ? 0 : 2);
+    if (k > 3) answer('s4', best('s4'));
+  };
+  const hutDone = all => { const H = S.hut; H.started = true; H.found = HUT.filter(h => h.risk).slice(0, all ? 8 : 5).map(h => h.id); H.left = all ? 74 : 0; H.done = all; H.timeout = !all; };
+  if (name === 'start') S.screen = 'start';
+  else if (name === 'briefing') S.screen = 'briefing';
+  else if (name === 'dienst') { S.screen = 'sit'; S.sit = 0; }
+  else if (name === 'dienst2') { upto(1); S.screen = 'sit'; S.sit = 1; }
+  else if (name === 'sorteren') { upto(2); S.screen = 'sit'; S.sit = 2; }
+  else if (name === 'dienst4') { upto(3); S.screen = 'sit'; S.sit = 3; }
+  else if (name === 'luchtsluis') { upto(4); S.screen = 'sluis'; }
+  else if (name === 'hut') { upto(4); S.hut.started = true; S.screen = 'sluis'; }
+  else if (name === 'hut-einde') { upto(4); hutDone(false); S.screen = 'sluis'; }
+  else if (name === 'debriefing') { upto(4); hutDone(false); S.screen = 'debrief'; }
+  else if (name === 'aarde') { upto(4); hutDone(false); S.screen = 'aarde'; S.passed = S.score / MAX >= PASS; }
+  else if (name === 'aarde-gehaald') { upto(4, true); hutDone(true); S.screen = 'aarde'; S.passed = S.score / MAX >= PASS; }
+  return true;
 }
 
 /* ---------- Boot, keeps progress when the page is updated while open ---------- */
 function boot(data) {
   if (data && data.S && data.S.screen) S = data.S;
+  let want = null;
+  try { want = new URLSearchParams(location.search).get('scherm'); } catch (e) { want = null; }
+  if (want) jump(want);
   render();
 }
 const sb = document.getElementById('start-static'); if (sb) sb.onclick = () => go('briefing');

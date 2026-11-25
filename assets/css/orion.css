@@ -778,3 +778,15 @@ body.panicking .mission { opacity: 0; }
   radial-gradient(130% 120% at 50% 150%, #0a3a7a 0 55%, #1f7fe0 59.2%, #9fd6ff 60%, color-mix(in srgb, var(--vcsw-blue-400) 40%, transparent) 60.6%, transparent 64%),
   radial-gradient(1.4px 1.4px at 12% 22%, #fff, transparent), radial-gradient(1px 1px at 27% 48%, #cfe8ff, transparent), radial-gradient(1.6px 1.6px at 44% 16%, #fff, transparent),
   radial-gradient(1px 1px at 61% 38%, #fff, transparent), radial-gradient(1.4px 1.4px at 78% 20%, #cfe8ff, transparent), radial-gradient(1px 1px at 90% 52%, #fff, transparent), radial-gradient(1px 1px at 35% 30%, #fff, transparent), #02060e; }
+
+/* ---------- Ronde 23: compacte statusbalk op lage schermen ---------- */
+@media (max-height: 800px) {
+  .status { gap: 8px; padding: 10px 20px 10px; }
+  .st-stat small { display: none; }
+  .st-step { font-size: .75rem; gap: 4px; } .st-step i { height: 5px; }
+}
+.st-row.end { gap: 16px; align-items: center; }
+.st-row.end .st-top span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.st-row.end .st-stat.gems { flex: 0 0 132px; } .st-row.end .st-gems i { flex: 1 1 0; }
+.st-row.end .st-stat small { display: none; }
+@media (max-width: 1100px) { .st-row.end { flex-wrap: wrap; } .st-row.end .st-next { flex: 1 1 100%; justify-content: center; } }

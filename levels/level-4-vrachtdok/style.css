@@ -4,7 +4,7 @@ body { background: var(--vcsw-page); margin: 0; }
 .game-main { padding-bottom: 48px; }
 .hud { display: grid; gap: 1px; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--vcsw-border);
   border: 1px solid var(--vcsw-border); border-radius: var(--vcsw-radius-xl); overflow: hidden; box-shadow: var(--vcsw-shadow-sm); margin-bottom: 16px; }
-@media (min-width: 768px) { .hud { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 768px) { .hud { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .hud-item { background: var(--vcsw-surface); padding: 12px 16px; min-width: 0; }
 .hud-label { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--vcsw-text-muted); margin: 0 0 4px; }
 .hud-value { font-family: var(--vcsw-font-heading); font-weight: 700; font-size: 1.125rem; color: var(--vcsw-heading); margin: 0; font-variant-numeric: tabular-nums; }
@@ -23,7 +23,8 @@ body { background: var(--vcsw-page); margin: 0; }
 .stage h2:focus { outline: none; }
 .stage :where(h3) { font-family: var(--vcsw-font-heading); font-size: 1.125rem; font-weight: 600; color: var(--vcsw-heading); margin: 24px 0 8px; }
 :where(.stage) :where(p, li) { font-size: 1rem; line-height: 1.625; color: var(--vcsw-text); }
-.overline { font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; color: var(--vcsw-overline); margin: 0 0 6px; }
+/* The only .overline left is a hidden marker for the bridge on the briefing screen */
+.overline[hidden] { display: none !important; }
 .lead { font-size: 1.125rem; color: var(--vcsw-text-muted); }
 
 .speech { display: flex; gap: 12px; align-items: flex-start; margin: 16px 0; }
@@ -85,8 +86,8 @@ body { background: var(--vcsw-page); margin: 0; }
 .stamp.right { left: 16px; color: var(--vcsw-green-700); }
 .swipe-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 560px; margin: 16px auto 0; }
 .swipe-actions .vcsw-button { min-height: 44px; }
-.stage .swipe-help { text-align: center; font-size: 0.75rem; color: var(--vcsw-text-muted); margin: 8px 0 0; }
-.hint-box { max-width: 560px; margin: 12px auto 0; }
+#stage .swipe-help { max-width: 560px; margin: 8px auto 0; text-align: center; font-size: 0.875rem; color: var(--o-soft); }
+#stage .timer { text-shadow: none; }
 .lock-feedback { max-width: 560px; margin: 16px auto 0; display: grid; gap: 12px; }
 
 .fragments { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
@@ -138,3 +139,103 @@ body { background: var(--vcsw-page); margin: 0; }
 .mail-attach td { line-height: 2; }
 .sel-count { font-size: 0.875rem; color: var(--vcsw-text-muted); margin: 12px 0 0; }
 @media (prefers-reduced-motion: reduce) { .option, .msg { transition: none !important; } }
+
+/* ================================================================
+   Start card of the airlock, clues from ARIA (one button, one price) and Terug op aarde.
+   Dark cards in the brand blues, the same pieces as in the designs.
+   ================================================================ */
+:root { --o-card: #06162f; --o-card-2: #0b2548; --o-line: #1f4f85; --o-soft: #b9cbe3; --o-gold: #ffb900; --o-green: #7bf1a8; --o-red: #ffa2a2; }
+#stage [tabindex="-1"]:focus { outline: none; }
+#stage .vcsw-button { min-height: 44px; }
+#stage .vcsw-button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font: 600 .875rem/1.5 var(--vcsw-font-body); color: var(--vcsw-blue-300); background: rgba(21, 170, 255, .14); }
+.chip .vcsw-icon { width: 14px; height: 14px; flex: none; }
+.chip.cost { color: var(--o-soft); background: rgba(255, 255, 255, .08); }
+.chip.cost.free { color: var(--o-green); background: rgba(123, 241, 168, .12); }
+.chip.cost.paid { color: #ffc978; background: rgba(255, 185, 0, .14); }
+
+#stage .head { display: flex; flex-direction: column; gap: 6px; }
+#stage .head .chips, #stage .head h2 { margin: 0; }
+#stage .head .lead { margin: 0; font: 400 1.0625rem/1.5 var(--vcsw-font-body); color: #fff; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+@media (max-width: 620px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.acard { box-sizing: border-box; padding: 16px 18px; background: var(--o-card); border: 1px solid var(--o-line); border-radius: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+#stage .acard h3 { margin: 0; font: 700 1.125rem/1.25 var(--vcsw-font-heading); }
+#stage .acard .ilist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+#stage .acard .ilist li { display: flex; gap: 10px; align-items: flex-start; margin: 0; font: 400 1rem/1.45 var(--vcsw-font-body); color: #fff; }
+.ilist .ic { display: inline-flex; flex: none; padding-top: 1px; color: var(--vcsw-blue-300); }
+.ilist .ic.good { color: var(--o-green); } .ilist .ic.gold { color: var(--o-gold); } .ilist .ic.bad { color: var(--o-red); }
+#stage .acard.tips { margin-top: 16px; gap: 6px; }
+#stage .acard.tips .clues { margin: 0; gap: 6px; }
+#stage .acard.tips .clues li { font: 400 .9375rem/1.45 var(--vcsw-font-body); color: #fff; margin: 0; }
+#stage .acard.tips .clues li.got .vcsw-icon { color: var(--vcsw-blue-300); margin-top: 3px; }
+#stage .acard.tips .clues li.missed { color: var(--o-soft); }
+#stage .acard.tips .clues li.missed .vcsw-icon { margin-top: 3px; }
+
+/* Clues in the message stream */
+.ask { max-width: 640px; margin: 16px auto 0; display: flex; flex-direction: column; gap: 8px; }
+.ask-card { background: var(--o-card-2); border: 1px solid var(--o-line); border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.ask-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ask-head { display: flex; gap: 8px 12px; align-items: center; flex-wrap: wrap; }
+#stage .ask .ask-head h3 { margin: 0; font: 700 1.0625rem/1.25 var(--vcsw-font-heading); }
+#stage .ask .ask-text p { margin: 0; font: 400 .9375rem/1.45 var(--vcsw-font-body); color: #fff; }
+.gems { display: inline-flex; gap: 6px; align-items: center; margin-left: auto; }
+.gem { display: inline-flex; }
+.gem .vcsw-icon { width: 22px; height: 22px; }
+.gem.left { color: var(--o-gold); }
+.gem.used { color: #8a6a1a; }
+.gems-txt { font: 400 .875rem/1.4 var(--vcsw-font-body); color: var(--o-soft); margin-left: 2px; }
+.ask-act { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.clue { background: var(--o-card); border: 1px solid var(--o-line); border-radius: 12px; padding: 12px 14px; display: flex; gap: 14px; align-items: flex-start; }
+.aria-av { width: 44px; height: 44px; flex: none; border-radius: 50%; }
+#stage .clue .clue-who { margin: 0; font: 400 .875rem/1.4 var(--vcsw-font-body); color: var(--o-soft); }
+#stage .clue .clue-who strong { font: 700 1rem/1.4 var(--vcsw-font-heading); color: #fff; margin-right: 4px; }
+#stage .clue .clue-txt { margin: 0; font: 400 1.0625rem/1.5 var(--vcsw-font-body); color: #fff; }
+
+/* Terug op aarde */
+.aarde { display: flex; flex-direction: column; gap: 14px; }
+.aarde .two { margin-top: 0; }
+#stage .aarde .actions { margin-top: 2px; }
+#stage .acard .ilist.topics { gap: 10px; }
+#stage .acard .ilist.topics li { font-size: .9375rem; line-height: 1.45; }
+#stage .acard .ilist.topics strong { display: block; font: 700 1rem/1.35 var(--vcsw-font-heading); color: #fff; }
+.meld { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.meld-text { flex: 1 1 280px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+#stage .meld .meld-text p { margin: 0; font: 400 1rem/1.5 var(--vcsw-font-body); color: #fff; }
+.meld-act { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.meld code { font: 700 1.125rem/1.2 var(--vcsw-font-heading); color: #fff; background: var(--vcsw-blue-800); border-radius: 8px; padding: 11px 14px; user-select: all; }
+#stage .aarde .result { gap: 12px; padding: 18px 20px; }
+.result-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+#stage .result .result-head h3 { font-size: 1.25rem; }
+.verdict-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font: 600 .875rem/1.5 var(--vcsw-font-body); white-space: nowrap; }
+.verdict-badge .vcsw-icon { width: 14px; height: 14px; }
+.verdict-badge.ok { color: var(--o-green); background: rgba(123, 241, 168, .12); }
+.verdict-badge.warn { color: #ffc978; background: rgba(255, 185, 0, .16); }
+#stage .result .result-line { margin: 0; font: 400 1rem/1.5 var(--vcsw-font-body); color: #fff; }
+.meters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 620px) { .meters { grid-template-columns: minmax(0, 1fr); gap: 14px; } }
+.meter { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+#stage .meter .m-label, #stage .meter .m-note { margin: 0; font: 400 .875rem/1.45 var(--vcsw-font-body); color: var(--o-soft); }
+#stage .meter .m-value { margin: 0; font: 700 1.375rem/1.2 var(--vcsw-font-heading); color: #fff; }
+.m-bar { position: relative; height: 8px; background: #16335c; border-radius: 999px; }
+.m-fill { display: block; height: 100%; border-radius: 999px; background: var(--vcsw-blue-400); max-width: 100%; }
+.m-bar.shield .m-fill { background: #ffc978; }
+.m-bar.crystals .m-fill { background: var(--o-gold); }
+.m-mark { position: absolute; top: -3px; width: 2px; height: 14px; background: var(--o-gold); }
+#stage .result .actions { margin-top: 4px; }
+
+/* Calm surfaces: no glow around values, markers, rewards and chosen answers */
+.hud .hud-value, #stage .vcsw-stat-value { text-shadow: none; }
+#steps li[aria-current="step"] { box-shadow: none; }
+#stage .reward { box-shadow: none; }
+#stage .reward .vcsw-icon { filter: none; }
+#stage .speech .who { box-shadow: 0 0 0 2px color-mix(in srgb, var(--vcsw-blue-300) 50%, transparent); }
+#stage .option.chosen { box-shadow: 0 0 0 1px var(--vcsw-blue-300); }
+#stage .option.good.chosen { box-shadow: 0 0 0 1px var(--vcsw-green-400); }
+#stage .option.half.chosen { box-shadow: 0 0 0 1px var(--vcsw-amber-300); }
+#stage .option.bad.chosen { box-shadow: 0 0 0 1px var(--vcsw-red-300); }
+#stage .option:hover:not([disabled]) { box-shadow: none; }
+#stage > .chips { margin-top: 12px; }
+#stage > .chips:first-child { margin-top: 0; }

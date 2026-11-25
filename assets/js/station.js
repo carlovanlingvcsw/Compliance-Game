@@ -535,6 +535,63 @@ const alarmLight = new THREE.PointLight(0xff8a2e, 0, 3.4, 2); scene.add(alarmLig
 const pulseLight = new THREE.PointLight(0x67caff, 0, 6, 2); scene.add(pulseLight);
 let pulseLevel = 0;
 
+/* ---------- The Zwarte Nevel: smoke over the modules during the attack in the final mission ---------- */
+const nevel = { on: false, i: 0, results: [], clouds: [], light: new THREE.PointLight(0xff3b3b, 0, 7, 2) };
+scene.add(nevel.light);
+(function () {
+  const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
+  const g = x.createRadialGradient(64, 64, 4, 64, 64, 62); g.addColorStop(0, "rgba(255,255,255,1)"); g.addColorStop(0.45, "rgba(255,255,255,.62)"); g.addColorStop(1, "rgba(255,255,255,0)");
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+  // break the round blob up so the puffs read as smoke
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  x.globalCompositeOperation = "destination-out";
+  for (let k = 0; k < 26; k++) { const r = 6 + rnd() * 16, a = rnd() * 6.283, d = 26 + rnd() * 34; const gg = x.createRadialGradient(64 + Math.cos(a) * d, 64 + Math.sin(a) * d, 0, 64 + Math.cos(a) * d, 64 + Math.sin(a) * d, r); gg.addColorStop(0, "rgba(0,0,0,.55)"); gg.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = gg; x.fillRect(0, 0, 128, 128); }
+  const tex = new THREE.CanvasTexture(c);
+  MODULES.forEach((m, mi) => {
+    const grp = new THREE.Group(); grp.position.copy(m.anchor); if (!m.fixed) { grp.position.x += 0.7; grp.position.y -= 0.9; } grp.visible = false; m.group.add(grp);
+    // a red glow inside the smoke of the module under attack
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, color: 0xff3030, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false, blending: THREE.AdditiveBlending }));
+    glow.scale.set(3.6, 3.6, 1); glow.renderOrder = 6; grp.add(glow);
+    const puffs = [];
+    for (let k = 0; k < 14; k++) {
+      const core = k < 4, mat = new THREE.SpriteMaterial({ map: tex, color: core ? 0x0a0d15 : k % 3 ? 0x1f2535 : 0x4a5674, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false });
+      const sp = new THREE.Sprite(mat); const a = rnd() * 6.283, r = core ? rnd() * 0.7 : 0.9 + rnd() * 1.9;
+      sp.userData = { base: new THREE.Vector3(Math.cos(a) * r, (rnd() - 0.5) * (m.fixed ? 3.2 : 1.6), Math.sin(a) * r), size: (core ? 3.0 : 2.2) + rnd() * 1.6, ph: rnd() * 6.283, sp: 0.25 + rnd() * 0.4, rot: (rnd() - 0.5) * 0.3, rim: !core && k % 3 === 0 };
+      sp.renderOrder = core ? 7 : 5; grp.add(sp); puffs.push(sp);
+    }
+    nevel.clouds.push({ group: grp, puffs, glow, level: 0, blow: 0, mod: m, index: mi });
+  });
+})();
+function nevelTarget(k) {
+  if (!nevel.on) return 0;
+  const r = nevel.results[k];
+  if (r === "good") return 0;
+  if (r === "bad") return 0.82;
+  return k === nevel.i ? 1 : 0.6;
+}
+function nevelTick(t, dt) {
+  let hot = null;
+  nevel.clouds.forEach((c, k) => {
+    const want = nevelTarget(k), was = c.level;
+    c.level += (want - c.level) * Math.min(1, dt * (want < c.level ? 1.6 : 1.1));
+    if (want === 0 && was > 0.3 && c.blow === 0) c.blow = 0.001;        // just freed: blow the smoke away
+    if (c.blow > 0) c.blow = Math.min(1, c.blow + dt * 0.9); if (want > 0) c.blow = 0;
+    const vis = c.level > 0.012; c.group.visible = vis; if (!vis) { c.blow = 0; return; }
+    const isHot = nevel.on && k === nevel.i && nevel.results[k] == null; if (isHot) hot = c;
+    c.glow.material.opacity += ((isHot ? 0.3 + (reduce ? 0 : (Math.sin(t * 9) * Math.sin(t * 23.7) + 1) * 0.2) : 0) - c.glow.material.opacity) * Math.min(1, dt * 8);
+    c.puffs.forEach((p) => {
+      const u = p.userData, w = reduce ? 0 : Math.sin(t * u.sp + u.ph);
+      p.position.set(u.base.x * (1 + c.blow * 1.8) + w * 0.18, u.base.y * (1 + c.blow * 1.2) + Math.cos(t * u.sp * 0.8 + u.ph) * (reduce ? 0 : 0.14) + c.blow * 0.8, u.base.z * (1 + c.blow * 1.8) + w * 0.12);
+      const sz = u.size * (0.55 + c.level * 0.55) * (1 + c.blow * 0.9) * (1 + w * 0.05); p.scale.set(sz, sz, 1);
+      p.material.rotation = u.ph + (reduce ? 0 : t * u.rot);
+      p.material.opacity = Math.min(1, c.level * 1.05) * (1 - c.blow * 0.6) * (u.rim ? 0.5 : 0.92);
+      if (isHot && !reduce) c.glow.position.set(Math.sin(t * 3.1) * 0.5, Math.sin(t * 2.3) * 0.35, Math.cos(t * 2.7) * 0.5);
+    });
+  });
+  if (hot) { nevel.light.position.copy(moduleWorld(hot.mod, hot.mod.anchor)); nevel.light.intensity = 5 + (reduce ? 2 : (Math.sin(t * 7) + Math.sin(t * 17.3)) * 2.4 + 2.4); }
+  else nevel.light.intensity += (0 - nevel.light.intensity) * Math.min(1, dt * 3);
+}
+
 /* ---------- Camera rig ---------- */
 const HOME = { pos: new THREE.Vector3(19.5, 8.5, 22), target: new THREE.Vector3(0, 0.2, 0) };
 const cam = { pos: HOME.pos.clone(), target: HOME.target.clone(), fromPos: HOME.pos.clone(), fromTarget: HOME.target.clone(), t: 1, dur: 2.4 };
@@ -660,6 +717,7 @@ function tick() {
   if (!reduce) planet.rotateY(dt * 0.004);   // the earth turns slowly, one round in about 26 minutes
   blinkers.forEach((b) => { const k = (Math.sin((t + b.userData.blink) * 2.2) + 1) / 2; b.material.emissiveIntensity = 0.4 + k * k * 1.8; });
 
+  nevelTick(t, dt);
   // Crane in the cargo dock
   const dock = MODULES[3]; if (dock.crane && !reduce) dock.crane.position.x = Math.sin(t * 0.4) * 1.1;
   // Breach: drifting debris, flashing during the alarm
@@ -724,6 +782,12 @@ window.OrionStation = {
     offsetTarget = side === "left" ? -w * 0.28 : side === "right" ? w * 0.2 : side === "home" ? w * 0.1 : 0;
   },
   alarm(on) { alarm = !!on; },
+  /* The attack of the Zwarte Nevel. boss: { i: current attack 0 to 5, n: 6, results: ["good" | "bad", ...] } or null to clear the smoke. */
+  nevel(boss) {
+    if (!boss) { nevel.on = false; return; }
+    nevel.on = true; nevel.i = Math.max(0, Math.min(5, boss.i | 0)); nevel.results = (boss.results || []).slice(0, 6);
+    if (lowPower) acc = 1;
+  },
   /* Jump to the current goal without the flight (used for test stills). */
   snap() { const w = ringWant(); if (w !== null) { ring.rotation.y = w; ring.updateMatrixWorld(true); } const g = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex); cam.t = 1; camera.position.copy(g.pos); cam.target.copy(g.target); offsetX = offsetTarget; ariaPos.copy(aria.position); },
   /* A short flash of light at ARIA when the player answers: blue for good, red for wrong. */

@@ -16,7 +16,19 @@
     unlock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
     clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
     eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
-    bell: '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>'
+    bell: '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
+    scale: '<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
+    file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+    hand: '<path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>',
+    trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+    bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+    copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+    archive: '<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
+    down: '<path d="m6 9 6 6 6-6"/>',
+    left: '<path d="m15 18-6-6 6-6"/>',
+    right: '<path d="m9 18 6-6-6-6"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'
   };
   function icon(name, cls) { return '<svg class="vcsw-icon' + (cls ? " " + cls : "") + '" viewBox="0 0 24 24" aria-hidden="true">' + I[name] + "</svg>"; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -169,41 +181,95 @@
   var DOSSIER_POINTS = 5;
   var MAX = SITS.length * 10 + DOSSIERS.length * DOSSIER_POINTS;
   var LOCK_SECONDS = 300;
+  var CRYSTALS_MAX = SITS.filter(function (s) { return s.crystal; }).length;
+  var CLUE_COST = 10;
+
+  /* Vorm bij de vijf gronden: teken en uitleg in één regel voor de keuzelijst. De volledige uitleg staat op de startkaart. */
+  var GROND = {
+    ovk: { ic: "file", kort: "Nodig om de overeenkomst uit te voeren." },
+    wet: { ic: "scale", kort: "De wet verplicht het station hiertoe." },
+    bel: { ic: "shield", kort: "Een belang van het station weegt zwaarder." },
+    toe: { ic: "hand", kort: "Zelf en vrij gekozen, altijd in te trekken." },
+    geen: { ic: "trash", kort: "Geen reden die de wet erkent. Het moet weg." }
+  };
+  var GOAL = "In het archief liggen tien gegevens van crewleden. Bij elk gegeven beslis je of het station het mag hebben, en op welke grond. Is er geen grond, dan wis je het.";
+
+  /* Terug op aarde: de bestaande tekst, in twee lijsten */
+  var EARTH = [
+    { title: "BSN, identiteitsbewijs en adres", items: [
+      ["Het BSN", "Buiten de overheid gebruik je het BSN alleen als een wet dat bepaalt. Voor een werkgever is dat de loonaangifte bij de Belastingdienst, en het doorgeven aan de arbodienst of bedrijfsarts voor de re-integratie van die werknemer. Niet als inlogcode of op een toegangspas, ook niet met toestemming."],
+      ["Het identiteitsbewijs", "De werkgever controleert bij indiensttreding de identiteit en bewaart een kopie in de loonadministratie, tot vijf jaar na het jaar van uitdiensttreding. Beveiligd en alleen toegankelijk voor wie het nodig heeft."],
+      ["Adressen", "Een adres is nodig voor de administratie, en bij een ziekmelding mag de werkgever een (verpleeg)adres vastleggen. Gebruik het niet voor een ander doel, zoals een lijst voor collega’s."]
+    ], note: "Toestemming is in een werkrelatie zelden de juiste grondslag. Een werknemer kan moeilijk vrij nee zeggen tegen wie over zijn werk beslist." },
+    { title: "Waarom mag een werkgever gezondheidsgegevens verwerken?", items: [
+      ["Het verbod, art. 9 lid 1 AVG", "Gezondheidsgegevens zijn bijzondere persoonsgegevens. Verwerken is in beginsel verboden."],
+      ["De uitzondering, art. 9 lid 2 sub b AVG", "Het verbod geldt niet als de verwerking nodig is om plichten uit het arbeidsrecht en het socialezekerheidsrecht na te komen, voor zover de nationale wet dat met waarborgen toestaat. In Nederland regelt art. 30 lid 1 UAVG dat. Werkgevers mogen gezondheidsgegevens verwerken voor zover dat nodig is voor wettelijke regels waarbij aanspraken van de gezondheid afhangen, en voor de re-integratie en begeleiding van zieke werknemers."],
+      ["De grondslag, art. 6 lid 1 sub c AVG", "Naast de uitzondering is altijd een grondslag nodig. Dat is hier de wettelijke verplichting van de werkgever. Hij moet het loon doorbetalen bij ziekte (art. 7:629 BW) en de werknemer begeleiden bij re-integratie (Wet verbetering poortwachter)."],
+      ["Samen", "Artikel 9 haalt het verbod weg en artikel 6 geeft de grondslag. Pas met allebei mag de werkgever de gegevens verwerken."],
+      ["De grens", "Alleen wat nodig is, zoals bereikbaarheid, (verpleeg)adres, verwachte duur, lopende afspraken, of de werknemer onder een vangnetregeling valt en of er een arbeidsongeval of aansprakelijke derde is. De diagnose legt de werkgever volgens de Autoriteit Persoonsgegevens niet vast, ook niet met toestemming. Medische informatie is voor de bedrijfsarts."]
+    ] }
+  ];
+  var MELD_ADRES = "jz@vcsw.nl";
 
   /* ---------- State ---------- */
   var S, timer = null;
   function fresh() {
-    return { screen: "brief", sit: 0, shield: 100, score: 0, hints: 3, crystals: [], picks: {}, memos: [],
-      lock: { assign: {}, attempts: 0, firstCorrect: null, solved: false, revealed: false, left: LOCK_SECONDS, timeout: false, clues: {}, wrong: {}, msg: null } };
+    return { screen: "brief", sit: 0, shield: 100, score: 0, crystals: [], picks: {}, memos: [], earthOpen: [-1, 0], earthStep: 0,
+      lock: { assign: {}, attempts: 0, firstCorrect: null, solved: false, revealed: false, left: LOCK_SECONDS, timeout: false, wrong: {}, msg: null,
+        sel: DOSSIERS[0].id, dirty: true, given: 0, view: 0 } };
   }
   S = fresh();
 
   var stage = document.getElementById("stage");
+  var STEPS = ["Briefing", "Dienst", "Luchtsluis", "Debriefing", "Terug op aarde"];
 
   function hit(n) { S.shield = Math.max(0, S.shield - n); }
   function hasCrystal(n) { return S.crystals.indexOf(n) !== -1; }
+  function isLock() { return S.screen === "lockstart" || S.screen === "lock"; }
+  function pct() { return Math.round(S.score / MAX * 100); }
+  function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
+
+  /* De schil leest hier de stand van het level uit. */
+  window.orionStatus = function () {
+    var done = S.screen === "debrief" || S.screen === "earth";
+    return {
+      score: S.score, max: MAX, shield: S.shield,
+      crystals: S.crystals.length, crystalsMax: CRYSTALS_MAX,
+      steps: STEPS.slice(),
+      step: S.screen === "brief" ? 0 : S.screen === "sit" ? 1 : isLock() ? 2 : S.screen === "debrief" ? 3 : 4,
+      done: done, passed: done ? pct() >= 70 : null, pct: done ? pct() : null
+    };
+  };
 
   function hud() {
+    document.body.setAttribute("data-screen", S.screen);
+    stage.setAttribute("aria-live", isLock() ? "off" : "polite");
     document.getElementById("shieldText").textContent = S.shield + "%";
     var f = document.getElementById("shieldFill");
     f.style.width = S.shield + "%";
     f.className = "vcsw-progress-fill" + (S.shield < 50 ? " error" : S.shield < 80 ? " warning" : "");
     document.getElementById("scoreText").textContent = S.score + " / " + MAX;
-    document.getElementById("hintText").textContent = S.hints;
-    document.getElementById("crystalText").textContent = S.crystals.length;
+    document.getElementById("crystalText").textContent = S.crystals.length + " / " + CRYSTALS_MAX;
     var n = SITS.length, labels = ["Briefing"].concat(SITS.map(function (s, i) { return "Dienst " + (i + 1); }), ["Luchtsluis", "Debriefing", "Terug op aarde"]);
-    var cur = S.screen === "brief" ? 0 : S.screen === "sit" ? 1 + S.sit : S.screen === "lock" ? n + 1 : S.screen === "debrief" ? n + 2 : n + 3;
+    var cur = S.screen === "brief" ? 0 : S.screen === "sit" ? 1 + S.sit : isLock() ? n + 1 : S.screen === "debrief" ? n + 2 : n + 3;
     document.getElementById("steps").innerHTML = labels.map(function (l, i) {
       var cls = i < cur ? "done" : i === cur ? "now" : "";
       return '<li class="' + cls + '"' + (i === cur ? ' aria-current="step"' : "") + ">" + (i < cur ? icon("check") : "") + l + "</li>";
     }).join("");
   }
 
-  function show(html) {
-    stage.innerHTML = '<div class="screen" tabindex="-1">' + html + "</div>";
+  /* Tekent het scherm opnieuw en zet de focus terug: op het gevraagde element, anders op hetzelfde onderdeel als voor het tekenen. */
+  var lastScreen = null;
+  function show(html, focusSel, cls) {
+    var a = document.activeElement, had = !!a && stage.contains(a), fk = had ? a.getAttribute("data-fk") : null;
+    stage.innerHTML = '<div class="screen' + (cls ? " " + cls : "") + '" tabindex="-1">' + html + "</div>";
     hud();
-    var sc = stage.querySelector(".screen");
-    if (sc && document.activeElement && document.activeElement !== document.body) sc.focus({ preventScroll: true });
+    var t = null;
+    if (focusSel) t = stage.querySelector(focusSel);
+    if (!t && fk && lastScreen === S.screen) t = stage.querySelector('[data-fk="' + fk + '"]:not([disabled])');
+    if (!t && had) t = stage.querySelector(".screen");
+    if (t) t.focus({ preventScroll: true });
+    if (lastScreen !== S.screen) { lastScreen = S.screen; window.scrollTo(0, 0); }
   }
 
   function verdictBadge(r) {
@@ -214,25 +280,34 @@
   function alertBox(kind, ic, title, text) {
     return '<div class="vcsw-alert ' + kind + '">' + icon(ic) + '<div><p class="vcsw-alert-title">' + title + '</p><p class="vcsw-alert-text">' + text + "</p></div></div>";
   }
+  function chip(text, ic, cls) { return '<span class="chip' + (cls ? " " + cls : "") + '">' + (ic ? icon(ic) : "") + text + "</span>"; }
+  function vak(id) { return VAKKEN.filter(function (v) { return v.id === id; })[0]; }
+  function gIcon(id) { return '<span class="g-ic g-' + id + '">' + icon(GROND[id].ic) + "</span>"; }
+  function facts(rows) {
+    return '<ul class="facts">' + rows.filter(Boolean).map(function (r) {
+      return "<li" + (r[3] ? ' class="' + r[3] + '"' : "") + '><span class="f-ic ' + r[0] + '">' + icon(r[1]) + "</span><span>" + r[2] + "</span></li>";
+    }).join("") + "</ul>";
+  }
 
   /* ---------- Schermen ---------- */
   function renderBrief() {
     show(
-      '<div><p class="vcsw-overline">Level 2 · Briefing</p><h1>De passagiersmodule</h1></div>' +
+      "<h1>De passagiersmodule</h1>" +
       '<p class="lead">Je leert waarom het station een BSN, een adres en verzuimgegevens mag verwerken, en waar de grens ligt.</p>' +
-      speech("aria", "De nieuwe kolonisten zijn aan boord en een deel is crewlid van Orion geworden. Luitenant Mira houdt hun administratie bij, met BSN\u2019s, adressen, paspoortkopie\u00ebn en ziekmeldingen. Voor alles wat je daarmee doet, heb je een reden nodig die de wet erkent. Dat heet een grondslag. Vraag je bij elke stap af waarom het station dit mag, en waarvoor.") +
+      speech("aria", "De nieuwe kolonisten zijn aan boord en een deel is crewlid van Orion geworden. Luitenant Mira houdt hun administratie bij, met BSN’s, adressen, paspoortkopieën en ziekmeldingen. Voor alles wat je daarmee doet, heb je een reden nodig die de wet erkent. Dat heet een grondslag. Vraag je bij elke stap af waarom het station dit mag, en waarvoor.") +
       '<dl class="vcsw-dl" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">' +
       "<div><dt>Dienst</dt><dd>Vijf situaties met elk drie keuzes. Goed is 10 punten, half goed 5.</dd></div>" +
       "<div><dt>Luchtsluis</dt><dd>Geef tien gegevens in het cryo-archief binnen vijf minuten de juiste grondslag.</dd></div>" +
       "<div><dt>Gehaald</dt><dd>Bij minimaal 70 procent van de punten word je Luitenant.</dd></div></dl>" +
-      '<div class="actions"><button class="vcsw-button lg" id="go">Begin de dienst' + icon("next") + "</button></div>"
+      '<div class="actions"><button class="vcsw-button lg" id="go">Begin de dienst' + icon("next") + "</button></div>",
+      null, "title-screen"
     );
     document.getElementById("go").onclick = function () { S.screen = "sit"; S.sit = 0; render(); };
   }
 
   function renderSit() {
     var s = SITS[S.sit], pick = S.picks[S.sit];
-    var html = '<div><p class="vcsw-overline">Dienst ' + (S.sit + 1) + " van " + SITS.length + "</p><h2>" + esc(s.title) + "</h2></div>";
+    var html = '<div class="titled"><div class="chips">' + chip("Dienst " + (S.sit + 1) + " van " + SITS.length) + "</div><h2>" + esc(s.title) + "</h2></div>";
     if (s.intro) html += "<p>" + esc(s.intro) + "</p>";
     html += speech(s.who, s.say);
     html += '<div class="options" role="group" aria-label="Kies je antwoord">';
@@ -249,7 +324,7 @@
       if (s.crystal && s.crystal.on === pick) {
         html += '<div class="reward">' + icon("gem") + "<div><strong>Datakristal " + esc(s.crystal.name) + "</strong><br><span>" + esc(s.crystal.desc) + "</span></div></div>";
       } else if (s.crystal) {
-        html += '<p class="dossier-note" style="color:var(--vcsw-text-muted)">Geen datakristal bij deze keuze. In de luchtsluis kost de bijbehorende aanwijzing je een hint.</p>';
+        html += '<p class="dossier-note" style="color:var(--vcsw-text-muted)">Geen datakristal bij deze keuze. In de luchtsluis is elk kristal één aanwijzing van ARIA zonder kosten.</p>';
       }
       if (o.memo) html += alertBox("warning", "bell", "ARIA onthoudt deze keuze", "Dit komt terug in de eindmissie.");
       html += '</div><div class="actions"><button class="vcsw-button lg" id="next">' + (S.sit < SITS.length - 1 ? "Volgende situatie" : "Naar de luchtsluis") + icon("next") + "</button></div>";
@@ -261,7 +336,7 @@
       });
     } else {
       document.getElementById("next").onclick = function () {
-        if (S.sit < SITS.length - 1) { S.sit++; } else { S.screen = "lock"; startTimer(); }
+        if (S.sit < SITS.length - 1) { S.sit++; } else { S.screen = "lockstart"; }
         render();
       };
     }
@@ -291,116 +366,194 @@
   function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
   function fmt(n) { return Math.floor(n / 60) + ":" + String(n % 60).padStart(2, "0"); }
 
-  function renderLock() {
+  /* Startkaart: het doel, hoe je scoort, wat een fout kost, en één startknop */
+  function renderLockStart() {
+    var n = S.crystals.length;
+    show(
+      '<div class="titled"><div class="chips">' + chip("Luchtsluis", "unlock") + chip(plural(LOCK_SECONDS / 60, "minuut", "minuten"), "clock", "calm-hide") + chip("Tien lades", "archive") + "</div>" +
+      '<h2 class="h-md">Het cryo-archief</h2>' +
+      '<p class="start-goal">Geef elk van de tien gegevens in het archief de grond waarop het station het mag hebben, en wis wat geen grond heeft.</p></div>' +
+      '<div class="o-card"><h3>De vijf gronden</h3><dl class="gronden-uitleg">' + VAKKEN.map(function (v) {
+        return "<div>" + gIcon(v.id) + "<dt>" + v.label + "</dt><dd>" + v.desc + '</dd><dd class="art">' + v.art + "</dd></div>";
+      }).join("") + "</dl></div>" +
+      '<div class="two"><div class="o-card"><h3>Zo scoor je</h3>' + facts([
+        ["ok", "check", "Elke lade die bij je eerste controle klopt, is " + DOSSIER_POINTS + " punten"],
+        ["blue", "unlock", "De sluis gaat open als alle tien lades kloppen"],
+        ["gold", "gem", n ? "Je verdiende " + plural(n, "kristal", "kristallen") + ". Elk kristal is één aanwijzing van ARIA zonder kosten" : "Je verdiende geen kristallen, dus een aanwijzing van ARIA kost schild"]
+      ]) + '</div><div class="o-card"><h3>Wat een fout kost</h3>' + facts([
+        ["bad", "shield", "Een nieuwe poging kost 5 procent schild"],
+        ["gold", "bulb", "Een aanwijzing zonder kristal kost " + CLUE_COST + " procent schild"],
+        ["blue", "clock", "Is de tijd op, dan kost dat 10 procent schild en maak je de sluis gewoon af", "calm-hide"],
+        ["blue", "eye", "Na twee pogingen mag je de oplossing zien"]
+      ]) + "</div></div>" +
+      '<div class="actions"><button class="vcsw-button lg start" id="startLock">Start de luchtsluis' + icon("next") + "</button></div>"
+    );
+    document.getElementById("startLock").onclick = function () { S.screen = "lock"; startTimer(); render(); };
+  }
+
+  function dossier(id) { return DOSSIERS.filter(function (d) { return d.id === id; })[0]; }
+  /* De volgende lade zonder keuze. Is die er niet, dan de volgende lade die na controle fout bleek. Anders blijft de lade open. */
+  function nextLade(from) {
+    var L = S.lock, i = DOSSIERS.indexOf(dossier(from)), n = DOSSIERS.length, k, d;
+    for (k = 1; k < n; k++) { d = DOSSIERS[(i + k) % n]; if (!L.assign[d.id]) return d.id; }
+    for (k = 1; k < n; k++) { d = DOSSIERS[(i + k) % n]; if (L.wrong[d.id]) return d.id; }
+    return from;
+  }
+
+  function renderLock(focusSel) {
     var L = S.lock, done = L.solved || L.revealed;
     var counts = {}; VAKKEN.forEach(function (v) { counts[v.id] = 0; });
     Object.keys(L.assign).forEach(function (id) { counts[L.assign[id]]++; });
-    var all = Object.keys(L.assign).length === DOSSIERS.length;
+    var nSet = Object.keys(L.assign).length, all = nSet === DOSSIERS.length;
+    var free = S.crystals.length, used = Math.min(L.given, free), cluesLeft = CLUES.length - L.given, cost = L.given < free ? 0 : CLUE_COST;
+    var cur = dossier(L.sel), i;
 
-    var html = '<div><p class="vcsw-overline">Luchtsluis</p><h2>Het cryo-archief</h2></div>' +
-      speech("aria", "In het cryo-archief liggen tien gegevens. Kies bij elk gegeven op welke grondslag het station het mag hebben. Is er geen grondslag, dan moet het weg. Pas als alles klopt, gaat de sluis open.");
-    html += '<dl class="bases">' + VAKKEN.map(function (v) { return "<div><dt>" + v.label + "<small>" + v.art + "</small></dt><dd>" + v.desc + "</dd></div>"; }).join("") + "</dl>";
-
-    html += '<div class="lockbar"><div class="tally" aria-label="Verdeling">' + VAKKEN.map(function (v) {
-      return '<span class="vcsw-badge neutral">' + v.label + ": " + counts[v.id] + "</span>";
-    }).join("") + '</div><div class="timer' + (L.left <= 60 ? " low" : "") + '" id="timer" aria-label="Resterende tijd">' + icon("clock") + "<span>" + fmt(L.left) + "</span></div></div>";
-
-    html += '<div><h3>Aanwijzingen</h3><p style="font-size:0.875rem;color:var(--vcsw-text-muted)">Een datakristal opent de aanwijzing gratis. Zonder kristal kost hij een hint, en zonder hints 10 procent schild.</p></div><div class="clues">';
-    CLUES.forEach(function (c, i) {
-      var open = hasCrystal(c.crystal) || L.clues[i];
-      if (open) {
-        html += '<div class="clue"><div class="clue-head">' + icon(hasCrystal(c.crystal) ? "gem" : "unlock") + esc(c.title) + "</div><p>" + esc(c.text) + "</p></div>";
-      } else {
-        html += '<div class="clue locked"><div class="clue-head">' + icon("lock") + esc(c.title) + "</div><p>Vergrendeld. Kristal " + esc(c.crystal) + " ontbreekt.</p>" +
-          '<button class="vcsw-button outline sm" data-clue="' + i + '">' + (S.hints > 0 ? "Gebruik een hint" : "Openen voor 10% schild") + "</button></div>";
-      }
-    });
-    html += "</div>";
-
-    html += '<div class="dossiers">';
-    DOSSIERS.forEach(function (d) {
-      var a = L.assign[d.id], showAns = L.revealed || L.solved;
-      var wrong = !L.solved && L.wrong[d.id];
-      html += '<article class="dossier' + (wrong ? " wrong" : "") + '" aria-label="' + esc(d.what) + ' van ' + esc(d.name) + '">' +
-        '<div class="dossier-top"><span class="dossier-name">' + esc(d.name) + '</span><span class="dossier-id">' + d.id + "</span></div>" +
-        "<dl><dt>Gegeven</dt><dd>" + esc(d.what) + "</dd><dt>Situatie</dt><dd>" + esc(d.ctx) + "</dd></dl>" +
-        '<div class="vcsw-segmented" role="group" aria-label="Grondslag voor ' + esc(d.what) + ', ' + esc(d.name) + '">' +
-        VAKKEN.map(function (v) {
-          return '<button type="button" data-d="' + d.id + '" data-v="' + v.id + '" aria-pressed="' + (a === v.id) + '"' + (done ? " disabled" : "") + ">" + v.label + "</button>";
-        }).join("") + "</div>";
-      if (wrong) html += '<p class="dossier-note" style="color:var(--vcsw-down)"><strong>Verkeerde grondslag.</strong></p>';
-      if (showAns && (L.revealed || d.trap)) {
-        var good = a === d.ans;
-        html += '<p class="dossier-note">' + (good ? "" : "<strong>Juist: " + VAKKEN.filter(function (v) { return v.id === d.ans; })[0].label + ".</strong> ") + esc(d.why) + "</p>";
-      }
-      html += "</article>";
-    });
-    html += "</div>";
-
-    if (L.msg === "timeout") html += alertBox("warning", "warn", "De tijd is op", "Je schild verliest 10 procent. Maak de sluis gewoon af.");
-    if (L.msg === "wrong") {
-      var n = Object.keys(L.wrong).length;
-      html += alertBox("error", "bad", n + (n === 1 ? " gegeven heeft" : " gegevens hebben") + " de verkeerde grondslag", "Een nieuwe poging kost 5 procent schild. Kijk nog eens naar de aanwijzingen.");
-    }
-    if (L.solved) html += alertBox("success", "ok", "Sluiscode " + VAKKEN.map(function (v) { return counts[v.id]; }).join(" ") + ". De sluis gaat open.", "Elk gegeven heeft de juiste grondslag, en wat geen grondslag heeft gaat weg.");
-    if (L.revealed) html += alertBox("info", "eye", "Oplossing getoond", "Bij elk dossier staat het juiste vak met uitleg. De sluis is handmatig geopend.");
-
-    html += '<div class="actions">';
+    /* ARIA met het doel, en de ene knop voor een aanwijzing */
+    var html = '<div class="aria-card"><span class="vcsw-avatar av-aria" aria-hidden="true">A</span><div class="aria-body"><div class="aria-who">ARIA <span>boordcomputer</span></div><p class="aria-text">' + GOAL + "</p></div>";
     if (!done) {
-      if (L.attempts >= 2) html += '<button class="vcsw-button outline lg" id="reveal">' + icon("eye") + "Toon de oplossing</button>";
-      html += '<button class="vcsw-button lg" id="check"' + (all ? "" : " disabled") + ">" + icon("unlock") + "Sluis openen</button>";
-    } else {
-      html += '<button class="vcsw-button lg" id="toDebrief">Naar de debriefing' + icon("next") + "</button>";
+      html += '<div class="ask"><button type="button" class="vcsw-button outline" id="ask" data-fk="ask"' + (cluesLeft ? "" : " disabled") + ">" + (cluesLeft ? "Vraag ARIA om een aanwijzing" : "Alle aanwijzingen gegeven") + icon("bulb") + "</button>" +
+        (cluesLeft ? (cost ? chip("De volgende kost " + cost + " procent schild", "shield", "gold") : chip("De volgende is zonder kosten", "gem", "green")) : "") + "</div>";
     }
     html += "</div>";
-    if (!all && !done) html += '<p style="font-size:0.875rem;color:var(--vcsw-text-muted);text-align:right">Nog ' + (DOSSIERS.length - Object.keys(L.assign).length) + " gegevens zonder keuze.</p>";
 
-    show(html);
+    if (L.given) {
+      var c = CLUES[L.view];
+      html += '<div class="clue-say" id="clueSay" tabindex="-1"><p><span class="vcsw-sr-only">Aanwijzing van ARIA. </span><strong>' + esc(c.title) + ".</strong> " + esc(c.text) + "</p>";
+      if (L.given > 1) {
+        html += '<div class="pager"><button type="button" id="cluePrev" data-fk="cluePrev" aria-label="Vorige aanwijzing"' + (L.view === 0 ? " disabled" : "") + ">" + icon("left") + "</button>" +
+          "<span>" + (L.view + 1) + " van " + L.given + "</span>" +
+          '<button type="button" id="clueNext" data-fk="clueNext" aria-label="Volgende aanwijzing"' + (L.view >= L.given - 1 ? " disabled" : "") + ">" + icon("right") + "</button></div>";
+      }
+      html += "</div>";
+    }
 
-    stage.querySelectorAll("[data-d]").forEach(function (b) {
+    /* Eén regel: de naam van de sluis, hoeveel gekozen, de kristallen, en rechts de klok */
+    var gems = "";
+    for (i = 0; i < free; i++) gems += '<span class="gem' + (i < used ? " used" : "") + '">' + icon("gem") + "</span>";
+    html += '<div class="lockbar"><h2 class="lock-title">Het cryo-archief</h2>' +
+      (L.solved ? chip("Sluis open", "unlock", "green") : L.revealed ? chip("Oplossing getoond", "eye") : chip(nSet + " van " + DOSSIERS.length + " gekozen", "check")) +
+      '<span class="chip neutral">' + gems + (free ? used + " van " + plural(free, "kristal", "kristallen") + " gebruikt" : "Geen kristallen verdiend") + "</span>" +
+      '<div class="timer' + (L.left <= 60 ? " low" : "") + '" id="timer" role="timer" aria-label="Resterende tijd">' + icon("clock") + "<span>" + fmt(L.left) + "</span></div></div>";
+
+    /* Links de kast met tien lades, rechts de lade die open is */
+    html += '<div class="kast-grid"><div class="kast" role="group" aria-labelledby="kastTitle"><h3 class="vcsw-sr-only" id="kastTitle">De tien lades</h3>';
+    DOSSIERS.forEach(function (d) {
+      var a = L.assign[d.id], good = a === d.ans, wrong = !done && L.wrong[d.id], open = d.id === L.sel;
+      var mark, line, cls = "lade" + (open ? " open" : "");
+      if (done) {
+        cls += good ? " ok" : " wrong";
+        mark = '<span class="lade-mark ' + (good ? "ok" : "bad") + '">' + (good ? "Goed" : "Fout") + icon(good ? "ok" : "bad") + "</span>";
+        line = '<span class="lade-grond g-' + d.ans + '">' + (good ? "" : '<span class="vcsw-sr-only">Juiste grond: </span>') + vak(d.ans).label + "</span>";
+      } else if (wrong) {
+        cls += " wrong";
+        mark = '<span class="lade-mark bad">Fout' + icon("bad") + "</span>";
+        line = '<span class="lade-grond g-' + a + '">' + vak(a).label + "</span>";
+      } else if (a) {
+        mark = '<span class="lade-mark g-' + a + '">' + icon(GROND[a].ic) + "</span>";
+        line = '<span class="lade-grond g-' + a + '">' + vak(a).label + "</span>";
+      } else {
+        mark = '<span class="lade-mark"><span class="dash"></span></span>';
+        line = '<span class="lade-grond none">Nog kiezen</span>';
+      }
+      html += '<button type="button" class="' + cls + '" data-lade="' + d.id + '" data-fk="lade-' + d.id + '" aria-controls="openLade"' + (open ? ' aria-current="true"' : "") + ">" +
+        '<span class="lade-top"><span class="lade-id"><span class="vcsw-sr-only">Lade </span>' + d.id + '<span class="vcsw-sr-only">, ' + esc(d.name) + ". </span></span>" + mark + "</span>" +
+        '<span class="lade-what">' + esc(d.what) + '<span class="vcsw-sr-only">. </span></span>' + line + "</button>";
+    });
+    html += "</div>";
+
+    var a = L.assign[cur.id], curWrong = !done && L.wrong[cur.id];
+    html += '<section class="open-lade" id="openLade" tabindex="-1" aria-labelledby="openTitle">' +
+      '<p class="open-meta">Lade ' + cur.id + ", " + esc(cur.name) + "</p>" +
+      '<h3 id="openTitle">' + esc(cur.what) + "</h3>" +
+      '<p class="open-ctx">' + esc(cur.ctx) + ".</p>";
+    if (!done) {
+      html += curWrong ? '<p class="open-kies bad">' + icon("bad") + "Deze grond klopt niet. Kies een andere.</p>" : '<p class="open-kies">Kies de grond</p>';
+      html += '<div class="gronden" role="group" aria-label="Grond voor ' + esc(cur.what) + ", " + esc(cur.name) + '">' + VAKKEN.map(function (v) {
+        var on = a === v.id;
+        return '<button type="button" class="grond' + (on && curWrong ? " wrong" : "") + '" data-grond="' + v.id + '" data-fk="grond-' + v.id + '" aria-pressed="' + on + '">' +
+          '<span class="radio" aria-hidden="true"></span>' + gIcon(v.id) +
+          '<span class="grond-txt"><span class="grond-label">' + v.label + '</span><span class="grond-desc">' + GROND[v.id].kort + "</span></span></button>";
+      }).join("") + "</div>";
+    } else {
+      var good = a === cur.ans;
+      html += '<dl class="open-result"><div><dt>Jouw keuze</dt><dd>' + (a ? gIcon(a) + vak(a).label : "Geen keuze") +
+        '<span class="tag ' + (good ? "ok" : "bad") + '">' + icon(good ? "check" : "x") + (good ? "Goed" : "Fout") + "</span></dd></div>" +
+        (good ? "" : "<div><dt>Juiste grond</dt><dd>" + gIcon(cur.ans) + vak(cur.ans).label + "</dd></div>") + "</dl>" +
+        '<p class="open-why">' + esc(cur.why) + "</p>";
+    }
+    html += "</section></div>";
+
+    /* De knoppen, met ernaast wat er aan de hand is */
+    var msg;
+    if (L.solved) msg = ["ok", "ok", "Sluiscode " + VAKKEN.map(function (v) { return counts[v.id]; }).join(" ") + ". De sluis gaat open. Elk gegeven heeft de juiste grondslag, en wat geen grondslag heeft gaat weg."];
+    else if (L.revealed) msg = ["", "eye", "Oplossing getoond. Bij elke lade staat de juiste grond met uitleg. De sluis is handmatig geopend."];
+    else if (L.msg === "timeout") msg = ["warn", "warn", "De tijd is op. Je schild verliest 10 procent. Maak de sluis gewoon af."];
+    else if (L.msg === "wrong") { var n = Object.keys(L.wrong).length; msg = ["bad", "bad", (n === 1 ? "1 lade heeft" : n + " lades hebben") + " de verkeerde grond. Pas " + (n === 1 ? "hem" : "ze") + " aan. Een nieuwe poging kost 5 procent schild."]; }
+    else if (!all) msg = ["", "", "Kan zodra alle tien lades een grond hebben."];
+    else msg = ["", "", L.attempts ? "Controleer opnieuw. Deze poging kost 5 procent schild." : "Alle tien lades hebben een grond."];
+
+    html += '<div class="lock-actions">';
+    if (!done) {
+      html += '<button type="button" class="vcsw-button lg" id="check" data-fk="check"' + (all && L.dirty ? "" : " disabled") + ">Open de sluis" + icon("unlock") + "</button>";
+      if (L.attempts >= 2) html += '<button type="button" class="vcsw-button outline lg" id="reveal" data-fk="reveal">' + icon("eye") + "Toon de oplossing</button>";
+    } else {
+      html += '<button type="button" class="vcsw-button lg" id="toDebrief" data-fk="toDebrief">Naar de debriefing' + icon("next") + "</button>";
+    }
+    html += '<p class="lock-msg ' + msg[0] + '" role="status">' + (msg[1] ? icon(msg[1]) : "") + "<span>" + msg[2] + "</span></p></div>";
+
+    show(html, focusSel);
+
+    stage.querySelectorAll("[data-lade]").forEach(function (b) {
+      b.onclick = function () { L.sel = b.getAttribute("data-lade"); renderLock('[data-fk="lade-' + L.sel + '"]'); };
+    });
+    stage.querySelectorAll("[data-grond]").forEach(function (b) {
       b.onclick = function () {
-        var id = b.getAttribute("data-d");
-        L.assign[id] = b.getAttribute("data-v");
+        var id = L.sel, v = b.getAttribute("data-grond");
+        L.assign[id] = v;
+        L.dirty = true;
         delete L.wrong[id];
-        if (L.msg === "wrong" && !Object.keys(L.wrong).length) L.msg = null;
-        render();
-        var again = stage.querySelector('[data-d="' + id + '"][data-v="' + L.assign[id] + '"]');
-        if (again) again.focus();
+        if (L.msg === "timeout" || (L.msg === "wrong" && !Object.keys(L.wrong).length)) L.msg = null;
+        L.sel = nextLade(id);
+        renderLock(L.sel === id ? '[data-fk="grond-' + v + '"]' : "#openLade");
       };
     });
-    stage.querySelectorAll("[data-clue]").forEach(function (b) {
-      b.onclick = function () {
-        var i = +b.getAttribute("data-clue");
-        if (S.hints > 0) S.hints--; else hit(10);
-        L.clues[i] = true;
-        render();
-      };
-    });
-    var c = document.getElementById("check");
-    if (c) c.onclick = checkLock;
+    var ask = document.getElementById("ask");
+    if (ask) ask.onclick = function () {
+      if (L.given >= CLUES.length) return;
+      if (L.given >= S.crystals.length) hit(CLUE_COST);
+      L.view = L.given;
+      L.given++;
+      renderLock("#clueSay");
+    };
+    var p = document.getElementById("cluePrev"), nx = document.getElementById("clueNext");
+    if (p) p.onclick = function () { L.view = Math.max(0, L.view - 1); renderLock(L.view === 0 ? "#clueNext" : null); };
+    if (nx) nx.onclick = function () { L.view = Math.min(L.given - 1, L.view + 1); renderLock(L.view >= L.given - 1 ? "#cluePrev" : null); };
+    var c2 = document.getElementById("check");
+    if (c2) c2.onclick = function () { checkLock(); renderLock(S.lock.solved ? "#toDebrief" : "#openLade"); };
     var r = document.getElementById("reveal");
-    if (r) r.onclick = function () { L.revealed = true; L.msg = null; L.wrong = {}; stopTimer(); render(); };
+    if (r) r.onclick = function () { L.revealed = true; L.msg = null; L.wrong = {}; stopTimer(); renderLock("#openLade"); };
     var t = document.getElementById("toDebrief");
     if (t) t.onclick = function () { S.screen = "debrief"; render(); };
   }
 
+  /* Punten per dossier alleen bij de eerste controle. Elke controle daarna kost 5 procent schild. */
   function checkLock() {
-    var L = S.lock, wrong = {}, correct = 0;
-    DOSSIERS.forEach(function (d) { if (L.assign[d.id] === d.ans) correct++; else wrong[d.id] = true; });
+    var L = S.lock, wrong = {}, correct = 0, first = null;
+    DOSSIERS.forEach(function (d) { if (L.assign[d.id] === d.ans) correct++; else { wrong[d.id] = true; if (!first) first = d.id; } });
     if (L.firstCorrect === null) { L.firstCorrect = correct; S.score += correct * DOSSIER_POINTS; }
     else hit(5);
     L.attempts++;
+    L.dirty = false;
     if (correct === DOSSIERS.length) { L.solved = true; L.wrong = {}; L.msg = null; stopTimer(); }
-    else { L.wrong = wrong; L.msg = "wrong"; }
-    render();
+    else { L.wrong = wrong; L.msg = "wrong"; L.sel = first; }
   }
 
   function renderDebrief() {
-    var pct = Math.round(S.score / MAX * 100), passed = pct >= 70;
-    var html = '<div><p class="vcsw-overline">Debriefing</p><h2>' + (passed ? "Level gehaald. Je bent nu Luitenant." : "Nog niet gehaald") + "</h2></div>";
-    html += '<div class="vcsw-stats cols-3"><div class="vcsw-stat"><span class="vcsw-stat-label">Score</span><span class="vcsw-stat-value">' + pct + '%</span><span class="vcsw-stat-note">' + S.score + " van " + MAX + ' punten</span></div>' +
+    var p = pct(), passed = p >= 70;
+    var html = "<h2>" + (passed ? "Level gehaald. Je bent nu Luitenant." : "Nog niet gehaald") + "</h2>";
+    html += '<div class="vcsw-stats cols-3"><div class="vcsw-stat"><span class="vcsw-stat-label">Score</span><span class="vcsw-stat-value">' + p + '%</span><span class="vcsw-stat-note">' + S.score + " van " + MAX + ' punten</span></div>' +
       '<div class="vcsw-stat"><span class="vcsw-stat-label">Schildsterkte</span><span class="vcsw-stat-value">' + S.shield + '%</span><span class="vcsw-stat-note">vertrouwen aan boord</span></div>' +
-      '<div class="vcsw-stat"><span class="vcsw-stat-label">Datakristallen</span><span class="vcsw-stat-value">' + S.crystals.length + '</span><span class="vcsw-stat-note">van ' + SITS.filter(function (s) { return s.crystal; }).length + ' in dit level</span></div></div>';
+      '<div class="vcsw-stat"><span class="vcsw-stat-label">Datakristallen</span><span class="vcsw-stat-value">' + S.crystals.length + '</span><span class="vcsw-stat-note">van ' + CRYSTALS_MAX + ' in dit level</span></div></div>';
 
     html += speech("aria", passed
       ? "Goed werk, Luitenant. Je weet nu waarom het station een BSN, een adres of een ziekmelding mag hebben, en waar de grens ligt."
@@ -409,6 +562,7 @@
     html += "<div><h3>Jouw keuzes</h3><ul class=\"result-list\">";
     SITS.forEach(function (s, i) {
       var o = s.opts.filter(function (x) { return x.k === S.picks[i]; })[0];
+      if (!o) { html += "<li><span>" + (i + 1) + ". " + esc(s.title) + '</span><span class="vcsw-badge neutral">Niet gespeeld</span></li>'; return; }
       html += "<li><span>" + (i + 1) + ". " + esc(s.title) + " <span style=\"color:var(--vcsw-text-muted)\">(" + "ABC"[S.ord && S.ord[i] ? S.ord[i].indexOf(s.opts.indexOf(o)) : s.opts.indexOf(o)] + ")</span></span>" + verdictBadge(o.r) + "</li>";
     });
     var lc = S.lock.firstCorrect || 0;
@@ -431,28 +585,73 @@
     document.getElementById("earth").onclick = function () { S.screen = "earth"; render(); };
   }
 
-  function renderEarth() {
-    show(
-      '<div><p class="vcsw-overline">Terug op aarde</p><h2>Wat betekent dit voor je werk bij VCSW</h2></div>' +
-      "<p>Bij VCSW werk je dagelijks met BSN’s, adressen en verzuimgegevens van werknemers van klanten. Dezelfde regels gelden daar.</p>" +
-      '<dl class="law">' +
-      "<dt>Het BSN</dt><dd>Buiten de overheid gebruik je het BSN alleen als een wet dat bepaalt. Voor een werkgever is dat de loonaangifte bij de Belastingdienst, en het doorgeven aan de arbodienst of bedrijfsarts voor de re-integratie van die werknemer. Niet als inlogcode of op een toegangspas, ook niet met toestemming.</dd>" +
-      "<dt>Het identiteitsbewijs</dt><dd>De werkgever controleert bij indiensttreding de identiteit en bewaart een kopie in de loonadministratie, tot vijf jaar na het jaar van uitdiensttreding. Beveiligd en alleen toegankelijk voor wie het nodig heeft.</dd>" +
-      "<dt>Adressen</dt><dd>Een adres is nodig voor de administratie, en bij een ziekmelding mag de werkgever een (verpleeg)adres vastleggen. Gebruik het niet voor een ander doel, zoals een lijst voor collega’s.</dd>" +
-      "</dl>" +
-      "<h3>Waarom mag een werkgever gezondheidsgegevens verwerken?</h3>" +
-      '<dl class="law">' +
-      "<dt>Het verbod, art. 9 lid 1 AVG</dt><dd>Gezondheidsgegevens zijn bijzondere persoonsgegevens. Verwerken is in beginsel verboden.</dd>" +
-      "<dt>De uitzondering, art. 9 lid 2 sub b AVG</dt><dd>Het verbod geldt niet als de verwerking nodig is om plichten uit het arbeidsrecht en het socialezekerheidsrecht na te komen, voor zover de nationale wet dat met waarborgen toestaat. In Nederland regelt art. 30 lid 1 UAVG dat. Werkgevers mogen gezondheidsgegevens verwerken voor zover dat nodig is voor wettelijke regels waarbij aanspraken van de gezondheid afhangen, en voor de re-integratie en begeleiding van zieke werknemers.</dd>" +
-      "<dt>De grondslag, art. 6 lid 1 sub c AVG</dt><dd>Naast de uitzondering is altijd een grondslag nodig. Dat is hier de wettelijke verplichting van de werkgever. Hij moet het loon doorbetalen bij ziekte (art. 7:629 BW) en de werknemer begeleiden bij re-integratie (Wet verbetering poortwachter).</dd>" +
-      "<dt>Samen</dt><dd>Artikel 9 haalt het verbod weg en artikel 6 geeft de grondslag. Pas met allebei mag de werkgever de gegevens verwerken.</dd>" +
-      "<dt>De grens</dt><dd>Alleen wat nodig is, zoals bereikbaarheid, (verpleeg)adres, verwachte duur, lopende afspraken, of de werknemer onder een vangnetregeling valt en of er een arbeidsongeval of aansprakelijke derde is. De diagnose legt de werkgever volgens de Autoriteit Persoonsgegevens niet vast, ook niet met toestemming. Medische informatie is voor de bedrijfsarts.</dd>" +
-      "</dl>" +
-      "<p>Toestemming is in een werkrelatie zelden de juiste grondslag. Een werknemer kan moeilijk vrij nee zeggen tegen wie over zijn werk beslist.</p>" +
-      '<div class="vcsw-card basic"><h4>Twijfel of een incident? Meld het</h4><p>Bij Tarik, Dagmar of via <span class="route">jz@vcsw.nl</span>.</p></div>' +
-      '<div class="actions"><button class="vcsw-button outline lg" id="again">' + icon("refresh") + "Speel level 2 opnieuw</button></div>"
-    );
-    document.getElementById("again").onclick = restart;
+  function bar(value, cls, mark) {
+    return '<div class="bar" aria-hidden="true"><div class="bar-fill ' + cls + '" style="width:' + Math.max(0, Math.min(100, value)) + '%"></div>' + (mark ? '<span class="bar-mark" style="left:' + mark + '%"></span>' : "") + "</div>";
+  }
+
+  /* Terug op aarde in twee delen, zodat elk deel in het paneel past: eerst de regels, dan melden en de uitslag. */
+  function renderEarth(focusSel) {
+    var p = pct(), passed = p >= 70, step = S.earthStep;
+    var html = '<div class="titled"><h2 class="h-md">Wat betekent dit voor je werk bij VCSW</h2>' +
+      (step === 0 ? "<p>Bij VCSW werk je dagelijks met BSN’s, adressen en verzuimgegevens van werknemers van klanten. Dezelfde regels gelden daar.</p>" : "") + "</div>";
+
+    if (step === 0) {
+      html += '<div class="two earth-lists">' + EARTH.map(function (list, li) {
+        return '<div class="o-card"><h3>' + list.title + '</h3><div class="acc">' + list.items.map(function (it, ii) {
+          var open = S.earthOpen[li] === ii, id = "acc-" + li + "-" + ii;
+          return '<div class="acc-item' + (open ? " open" : "") + '"><h4><button type="button" data-acc="' + li + "-" + ii + '" data-fk="' + id + '" id="' + id + '-b" aria-expanded="' + open + '" aria-controls="' + id + '">' +
+            "<span>" + it[0] + "</span>" + icon("down") + "</button></h4>" +
+            '<div class="acc-body" id="' + id + '" role="region" aria-labelledby="' + id + '-b"' + (open ? "" : " hidden") + "><p>" + it[1] + "</p></div></div>";
+        }).join("") + "</div>" + (list.note ? '<p class="acc-note">' + list.note + "</p>" : "") + "</div>";
+      }).join("") + "</div>" +
+        '<div class="actions"><button type="button" class="vcsw-button lg" id="earthNext" data-fk="earthNext">Verder naar melden en je uitslag' + icon("next") + "</button></div>";
+    } else {
+      html += '<div class="o-card meld"><div><h3>Twijfel of een incident? Meld het</h3><p>Bij Tarik, Dagmar of per mail.</p></div>' +
+        '<span class="route">' + MELD_ADRES + "</span>" +
+        '<button type="button" class="vcsw-button outline lg" id="copy" data-fk="copy">Kopieer adres' + icon("copy") + '</button><span class="vcsw-sr-only" role="status" id="copyStatus"></span></div>';
+
+      html += '<div class="o-card uitslag"><div class="uitslag-head"><h3>Resultaat level 2</h3>' +
+        (passed ? chip("Gehaald", "check", "green") : chip("Nog niet gehaald", "", "gold")) + "</div>" +
+        '<div class="uitslag-stats">' +
+        '<div><p class="u-label">Score</p><p class="u-value">' + S.score + " van " + MAX + " punten</p>" + bar(p, "blue", 70) + '<p class="u-note">' + p + " procent. Je " + (passed ? "had" : "hebt") + " 70 procent nodig.</p></div>" +
+        '<div><p class="u-label">Schild</p><p class="u-value">' + S.shield + " procent</p>" + bar(S.shield, S.shield < 80 ? "gold" : "green") + '<p class="u-note">Het schild telt niet mee voor halen. Het laat zien hoe zeker je speelde.</p></div>' +
+        '<div><p class="u-label">Kristallen</p><p class="u-value">' + S.crystals.length + " van " + CRYSTALS_MAX + "</p>" + bar(S.crystals.length / CRYSTALS_MAX * 100, "gold") + '<p class="u-note">Elk kristal is in de luchtsluis één aanwijzing zonder kosten.</p></div>' +
+        "</div>" +
+        '<div class="actions"><button type="button" class="vcsw-button lg" id="again" data-fk="again">Speel level 2 opnieuw' + icon("refresh") + "</button>" +
+        '<button type="button" class="vcsw-button outline lg" id="earthBack" data-fk="earthBack">' + icon("left") + "Terug naar de regels</button></div></div>";
+    }
+
+    show(html, focusSel);
+
+    stage.querySelectorAll("[data-acc]").forEach(function (b) {
+      b.onclick = function () {
+        var k = b.getAttribute("data-acc").split("-"), li = +k[0], ii = +k[1];
+        S.earthOpen[li] = S.earthOpen[li] === ii ? -1 : ii;
+        renderEarth('[data-acc="' + li + "-" + ii + '"]');
+      };
+    });
+    var nx = document.getElementById("earthNext"), bk = document.getElementById("earthBack"), cp = document.getElementById("copy"), ag = document.getElementById("again");
+    if (nx) nx.onclick = function () { S.earthStep = 1; renderEarth(".screen"); window.scrollTo(0, 0); };
+    if (bk) bk.onclick = function () { S.earthStep = 0; renderEarth(".screen"); window.scrollTo(0, 0); };
+    if (ag) ag.onclick = restart;
+    if (cp) cp.onclick = function () {
+      var btn = this, status = document.getElementById("copyStatus");
+      function done(ok) {
+        btn.innerHTML = (ok ? "Gekopieerd" : "Kopiëren lukt niet") + icon(ok ? "check" : "copy");
+        status.textContent = ok ? "Het adres " + MELD_ADRES + " is gekopieerd." : "Kopiëren lukt niet. Het adres is " + MELD_ADRES + ".";
+        setTimeout(function () { if (document.body.contains(btn)) btn.innerHTML = "Kopieer adres" + icon("copy"); }, 2500);
+      }
+      function fallback() {
+        var ta = document.createElement("textarea"), ok = false;
+        ta.value = MELD_ADRES; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+        document.body.removeChild(ta); btn.focus({ preventScroll: true });
+        done(ok);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(MELD_ADRES).then(function () { done(true); }, fallback);
+      else fallback();
+    };
   }
 
   function restart() { stopTimer(); S = fresh(); render(); window.scrollTo(0, 0); }
@@ -460,10 +659,45 @@
   function render() {
     if (S.screen === "brief") renderBrief();
     else if (S.screen === "sit") renderSit();
+    else if (S.screen === "lockstart") renderLockStart();
     else if (S.screen === "lock") renderLock();
     else if (S.screen === "debrief") renderDebrief();
     else renderEarth();
   }
 
+  /* ---------- Testsprong: ?scherm=briefing|dienst|sluisstart|sluis|debriefing|aarde|uitslag ----------
+     Extra: nr=1..5 bij dienst, kristallen=0..5, voorbeeld=goed|fout voor een ingevulde stand. */
+  function jump() {
+    var q;
+    try { q = new URLSearchParams(window.location.search); } catch (e) { return; }
+    var naam = (q.get("scherm") || "").toLowerCase(), vb = q.get("voorbeeld");
+    var map = { briefing: "brief", dienst: "sit", sluisstart: "lockstart", sluis: "lock", debriefing: "debrief", aarde: "earth", uitslag: "earth" };
+    if (!map[naam]) return;
+    S.screen = map[naam];
+    if (naam === "uitslag") S.earthStep = 1;
+    if (S.screen === "brief") return;
+    var upto = S.screen === "sit" ? Math.max(1, Math.min(SITS.length, parseInt(q.get("nr"), 10) || 1)) - 1 : SITS.length;
+    S.sit = Math.min(upto, SITS.length - 1);
+    if (vb === "goed" || vb === "fout") {
+      SITS.slice(0, upto).forEach(function (s, i) {
+        var want = vb === "goed" || i % 2 === 0 ? "goed" : "fout", o = s.opts.filter(function (x) { return x.r === want; })[0];
+        S.picks[i] = o.k; S.score += POINTS[o.r]; hit(SHIELD_HIT[o.r]);
+        if (s.crystal && s.crystal.on === o.k) S.crystals.push(s.crystal.name);
+        if (o.memo && S.memos.indexOf(o.memo) === -1) S.memos.push(o.memo);
+      });
+    }
+    if (q.get("kristallen") !== null) {
+      var k = Math.max(0, Math.min(CRYSTALS_MAX, parseInt(q.get("kristallen"), 10) || 0));
+      S.crystals = SITS.filter(function (s) { return s.crystal; }).slice(0, k).map(function (s) { return s.crystal.name; });
+    }
+    if ((S.screen === "debrief" || S.screen === "earth") && vb) {
+      DOSSIERS.forEach(function (d, i) { S.lock.assign[d.id] = vb === "goed" || i % 3 ? d.ans : (d.ans === "wet" ? "toe" : "wet"); });
+      checkLock();
+      if (!S.lock.solved) { S.lock.revealed = true; S.lock.msg = null; S.lock.wrong = {}; }
+    }
+    if (S.screen === "lock") startTimer();
+  }
+
+  jump();
   render();
 })();

@@ -22,8 +22,18 @@
     refresh: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
     pause: '<rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/>',
     play: '<path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>',
-    eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>'
+    eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+    shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+    copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+    tick: '<path d="M20 6 9 17l-5-5"/>',
+    cross: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    swap: '<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
+    inbox: '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+    filter: '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
+    bot: '<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>'
   };
+  /* ARIA as the round lens, for the speech balloons with clues */
+  var ARIA_AVATAR = '<svg class="aria-av" role="img" aria-label="ARIA" viewBox="0 0 96 96"><circle cx="48" cy="48" r="48" fill="#0c2f5f"/><ellipse cx="48" cy="50" rx="30" ry="24" fill="#e8eef6"/><ellipse cx="48" cy="50" rx="30" ry="24" fill="none" stroke="#8fa0b8" stroke-width="2"/><circle cx="48" cy="50" r="13" fill="#04142b"/><circle cx="48" cy="50" r="8" fill="#15aaff"/><circle cx="45" cy="47" r="2.5" fill="#fff"/><rect x="10" y="44" width="10" height="12" rx="4" fill="#8fa0b8"/><rect x="76" y="44" width="10" height="12" rx="4" fill="#8fa0b8"/><path d="M48 26v-9" stroke="#8fa0b8" stroke-width="3" stroke-linecap="round"/><circle cx="48" cy="15" r="3" fill="#ffb900"/></svg>';
   function icon(name, cls) {
     return '<svg class="vcsw-icon' + (cls ? " " + cls : "") + '" viewBox="0 0 24 24" aria-hidden="true">' + I[name] + "</svg>";
   }
@@ -252,7 +262,9 @@
 
   var POINTS = { good: 10, half: 5, bad: 0 };
   var SHIELD_COST = { good: 0, half: 5, bad: 10 };
-  var EXTRA_HINT_COST = 5;
+  var CLUE_COST = 10;      // one price: a crystal earned in this level is one clue without cost, after that 10 percent shield
+  var RECOVER_COST = 5;    // getting a missed part of the lock code back
+  var CRYSTALS_MAX = SITUATIONS.filter(function (s) { return !!s.crystal; }).length;
   var LOCK_SECONDS = 300;
   var PASS = 0.7;
   var MAX_SCORE = SITUATIONS.length * 10 + MESSAGES.length * 10;
@@ -263,11 +275,11 @@
   var S;
   function reset() {
     S = {
-      screen: "start", step: -1, sit: 0, shield: 100, score: 0, hints: 3,
+      screen: "start", step: -1, sit: 0, shield: 100, score: 0, asked: 0,
       crystals: [], clues: [], sitResults: [], chosen: null, optOrder: [],
-      msgs: [], msgIdx: 0, msgResults: [], answered: false, hintShown: false,
+      msgs: [], msgIdx: 0, msgResults: [], answered: false, clueShown: false,
       code: [], recovered: {}, clickedAttack: false, timeLeft: LOCK_SECONDS, paused: false, timer: null,
-      timedOut: false
+      timedOut: false, earthStep: 1
     };
   }
 
@@ -289,9 +301,8 @@
     var fill = document.getElementById("hud-shield-fill");
     fill.style.width = sh + "%";
     fill.className = "vcsw-progress-fill " + (sh >= 70 ? "success" : sh >= 40 ? "warning" : "error");
-    document.getElementById("hud-score").textContent = S.score + " / " + MAX_SCORE;
-    document.getElementById("hud-hints").textContent = S.hints;
-    document.getElementById("hud-crystals").textContent = S.crystals.length;
+    document.getElementById("hud-score").textContent = S.score + " van " + MAX_SCORE;
+    document.getElementById("hud-crystals").textContent = S.crystals.length + " van " + CRYSTALS_MAX;
     var steps = document.getElementById("steps");
     steps.innerHTML = STEPS.map(function (s, i) {
       var done = i < S.step, cur = i === S.step;
@@ -301,6 +312,31 @@
   }
 
   function hurt(n) { S.shield = Math.max(0, S.shield - n); }
+
+  /* Hook for the shell: always reflects the current state */
+  window.orionStatus = function () {
+    var done = S.screen === "debrief" || S.screen === "earth";
+    return {
+      score: S.score,
+      max: MAX_SCORE,
+      shield: Math.max(0, S.shield),
+      crystals: S.crystals.length,
+      crystalsMax: CRYSTALS_MAX,
+      steps: STEPS.slice(),
+      step: Math.max(0, S.step),
+      done: done,
+      passed: done ? S.score / MAX_SCORE >= PASS : null,
+      pct: done ? Math.round((S.score / MAX_SCORE) * 100) : null
+    };
+  };
+
+  function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
+  function chips(list) { return '<div class="chips">' + list.map(function (c) { return '<span class="chip">' + c + "</span>"; }).join("") + "</div>"; }
+  function ilist(rows) {
+    return '<ul class="ilist">' + rows.map(function (r) {
+      return '<li><span class="ic' + (r[2] ? " " + r[2] : "") + '">' + icon(r[0]) + "</span><span>" + r[1] + "</span></li>";
+    }).join("") + "</ul>";
+  }
 
   function show(html, focusSel) {
     stage.innerHTML = html;
@@ -329,16 +365,15 @@
 
   /* ---------- Screens ---------- */
   function renderStart() {
-    S.step = -1;
+    S.screen = "start"; S.step = -1;
     show(
-      '<p class="overline">Level 4</p>' +
       "<h1>Het vrachtdok</h1>" +
       '<p class="lead">Je leert gegevens veilig te ontvangen en te delen, ze alleen te gebruiken waarvoor ze bedoeld zijn en valse berichten te herkennen.</p>' +
       alertBox("info", "Alles in dit spel is fictief", "Alle namen, planeten, adressen en gegevens zijn verzonnen. Gebruik nooit echte voorbeelden uit dossiers.") +
       '<h3>Zo werkt het</h3><ul>' +
       "<li>Je doorloopt vijf situaties in je dienst. Meestal kies je uit drie opties, en één keer controleer je een mail.</li>" +
-      "<li>Goede keuzes houden je schilden sterk en leveren datakristallen en aanwijzingen op voor de luchtsluis.</li>" +
-      "<li>In de luchtsluis beoordeel je tien binnenkomende berichten. Je hebt vijf minuten en drie gratis hints.</li>" +
+      "<li>Goede keuzes houden je schilden sterk en leveren datakristallen op. Elk kristal is in de luchtsluis één aanwijzing van ARIA zonder kosten.</li>" +
+      "<li>In de luchtsluis beoordeel je tien binnenkomende berichten. Je hebt vijf minuten.</li>" +
       "<li>Je haalt het level met minimaal 70 procent van de punten. Daarna word je Kapitein van de Datawacht.</li>" +
       "</ul>" +
       '<div class="actions">' + btn("Start level 4", "briefing", "", "arrowR") + "</div>"
@@ -346,15 +381,28 @@
   }
 
   function renderBriefing() {
-    S.step = 0;
+    S.screen = "briefing"; S.step = 0;
+    /* The hidden marker tells the bridge that a new run starts here, so it forgets earlier answers. It is never shown. */
     show(
-      '<p class="overline">Briefing</p><h2>Missie: het vrachtdok</h2>' +
+      '<p class="overline" hidden>Briefing</p><h2>Missie: het vrachtdok</h2>' +
       speech("ARIA", BRIEFING) +
       '<div class="actions">' + btn("Begin je dienst", "sit", "", "arrowR") + "</div>"
     );
   }
 
-  function startSit() { S.chosen = null; S.mail = { round: 1, sel: {}, checked: false, e1: 0, e2: 0, grade: null }; renderSit(); }
+  /* What a situation leaves you with: the crystal, and what to remember for the airlock */
+  function rewards(s, good) {
+    var out = "";
+    if (good) {
+      if (s.crystal) out += '<div class="reward">' + icon("gem") + "<div><strong>Datakristal: " + esc(s.crystal.name) + "</strong><br>" + esc(s.crystal.text) + "</div></div>";
+      out += '<div class="reward">' + icon("eye") + "<div><strong>Onthoud dit voor de luchtsluis</strong><br>" + esc(s.clue) + "</div></div>";
+    } else if (s.crystal) {
+      out += '<div class="reward">' + icon("info") + "<div><strong>Geen kristal deze keer</strong><br>Elk kristal is in de luchtsluis één aanwijzing van ARIA zonder kosten. Zonder kristal kost een aanwijzing " + CLUE_COST + " procent schild.</div></div>";
+    }
+    return out;
+  }
+
+  function startSit() { S.screen = "sit"; S.chosen = null; S.mail = { round: 1, sel: {}, checked: false, e1: 0, e2: 0, grade: null }; renderSit(); }
 
   function mailErrors(s, round) {
     var e = 0;
@@ -409,18 +457,13 @@
         var g = M.grade, o = s.react[g];
         var title = g === "good" ? "Goed, +10 punten" : g === "half" ? "Half goed, +5 punten, schild −5%" : "Fout, 0 punten, schild −10%";
         fb += speech(o.who, o.say) + alertBox(g === "good" ? "success" : g === "half" ? "warning" : "error", title, s.goodWhy);
-        if (g === "good") {
-          fb += '<div class="reward">' + icon("gem") + "<div><strong>Datakristal: " + esc(s.crystal.name) + "</strong><br>" + esc(s.crystal.text) + "</div></div>";
-          fb += '<div class="reward">' + icon("bulb") + "<div><strong>Aanwijzing voor de luchtsluis</strong><br>" + esc(s.clue) + "</div></div>";
-        } else {
-          fb += '<div class="reward">' + icon("info") + "<div><strong>Geen aanwijzing deze keer</strong><br>Je kunt in de luchtsluis een hint gebruiken als je twijfelt.</div></div>";
-        }
+        fb += rewards(s, g === "good");
         fb += "</div>" + '<div class="actions">' + btn("Volgende situatie", "nextsit", "", "arrowR") + "</div>";
       }
     }
 
     show(
-      '<p class="overline">Dienst · situatie ' + (S.sit + 1) + " van " + SITUATIONS.length + "</p>" +
+      chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) +
       "<h2>" + esc(s.title) + "</h2><p>" + esc(s.intro) + "</p>" +
       (r === 1 ? speech(s.speaker, s.line) : "") + task +
       '<div class="mailbox"><div class="msg-head">' +
@@ -450,7 +493,7 @@
   }
 
   function renderSit() {
-    S.step = 1;
+    S.screen = "sit"; S.step = 1;
     var s = SITUATIONS[S.sit];
     if (s.type === "mail") return renderMail();
     if (S.chosen === null) S.optOrder = shuffle([0, 1, 2]);
@@ -467,7 +510,7 @@
                     '<span class="verdict no">' + icon("x", "sm") + "Fout</span>";
         }
       }
-      return '<li><button type="button" class="' + cls + '" data-opt="' + oi + '"' + (S.chosen !== null ? " disabled" : "") + ">" +
+      return '<li><button type="button" class="' + cls + '" data-opt="' + oi + '" aria-pressed="' + (S.chosen === oi) + '"' + (S.chosen !== null ? " disabled" : "") + ">" +
         '<span class="letter" aria-hidden="true">' + letters[k] + "</span><span>" + esc(o.text) + "</span>" + verdict + "</button></li>";
     }).join("");
 
@@ -478,19 +521,14 @@
       fb = '<div class="feedback">' +
         speech(o.react.who, o.react.say) +
         alertBox(o.grade === "good" ? "success" : o.grade === "half" ? "warning" : "error", title, o.why);
-      if (o.grade === "good") {
-        if (s.crystal) fb += '<div class="reward">' + icon("gem") + "<div><strong>Datakristal: " + esc(s.crystal.name) + "</strong><br>" + esc(s.crystal.text) + "</div></div>";
-        fb += '<div class="reward">' + icon("bulb") + "<div><strong>Aanwijzing voor de luchtsluis</strong><br>" + esc(s.clue) + "</div></div>";
-      } else {
-        fb += '<div class="reward">' + icon("info") + "<div><strong>Geen aanwijzing deze keer</strong><br>Je kunt in de luchtsluis een hint gebruiken als je twijfelt.</div></div>";
-      }
+      fb += rewards(s, o.grade === "good");
       fb += "</div>";
       var last = S.sit === SITUATIONS.length - 1;
       fb += '<div class="actions">' + btn(last ? "Naar de luchtsluis" : "Volgende situatie", last ? "prelock" : "nextsit", "", "arrowR") + "</div>";
     }
 
     show(
-      '<p class="overline">Dienst · situatie ' + (S.sit + 1) + " van " + SITUATIONS.length + "</p>" +
+      chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) +
       "<h2>" + esc(s.title) + "</h2>" +
       "<p>" + esc(s.intro) + "</p>" +
       speech(s.speaker, s.line) +
@@ -516,29 +554,41 @@
     if (t) { t.setAttribute("tabindex", "-1"); t.focus(); }
   }
 
+  /* Start card of the airlock: the goal in one sentence, how you score, what a mistake costs, one start button */
   function renderPreLock() {
-    S.step = 2;
-    var items = SITUATIONS.map(function (s, i) {
+    S.screen = "prelock"; S.step = 2;
+    var n = S.crystals.length;
+    var tips = SITUATIONS.map(function (s, i) {
       return S.clues[i]
-        ? '<li class="got">' + icon("bulb", "sm") + "<span>" + esc(s.clue) + "</span></li>"
-        : '<li class="missed">' + icon("lock", "sm") + "<span>Aanwijzing gemist bij “" + esc(s.title) + "”.</span></li>";
+        ? '<li class="got">' + icon("eye", "sm") + "<span>" + esc(s.clue) + "</span></li>"
+        : '<li class="missed">' + icon("lock", "sm") + "<span>Gemist bij “" + esc(s.title) + "”.</span></li>";
     }).join("");
     show(
-      '<p class="overline">Luchtsluis</p><h2>De berichtenstroom</h2>' +
-      speech("ARIA", "De Zwarte Nevel bestookt het vrachtdok met berichten. Tien berichten komen één voor één binnen. Alleen de echte berichten bevatten een stukje van de sluiscode.") +
-      "<h3>Zo open je de sluis</h3><ul>" +
-      "<li>Schuif een bericht naar links als het een aanval is, of naar rechts als het echt is. Je kunt ook de knoppen of de pijltjestoetsen gebruiken.</li>" +
-      "<li>Je hebt vijf minuten. De klok staat stil terwijl je de uitleg na een bericht leest, en je kunt hem pauzeren.</li>" +
-      "<li>Je hebt " + S.hints + " gratis hints. Daarna kost een hint " + EXTRA_HINT_COST + "% schildsterkte.</li>" +
-      "</ul>" +
-      "<h3>Je aanwijzingen uit de dienst</h3><ul class=\"clues\">" + items + "</ul>" +
+      '<div class="head">' +
+      chips(["Luchtsluis", icon("timer") + "5 minuten", icon("gem") + plural(n, "kristal", "kristallen") + " uit dit level"]) +
+      "<h2>De berichtenstroom</h2>" +
+      '<p class="lead">Beslis bij tien binnenkomende berichten of ze echt zijn of een aanval van de Zwarte Nevel.</p></div>' +
+      '<div class="two">' +
+      '<section class="acard"><h3>Zo scoor je</h3>' + ilist([
+        ["tick", "Elk goed beoordeeld bericht levert 10 punten op", "good"],
+        ["unlock", "Alleen de echte berichten bevatten een stukje van de sluiscode", "good"],
+        ["swap", "Schuif een bericht naar links als het een aanval is, of naar rechts als het echt is. De knoppen en de pijltjestoetsen werken ook"],
+        ["timer", "Je hebt vijf minuten. De klok staat stil terwijl je de uitleg na een bericht leest, en je kunt hem pauzeren"]
+      ]) + "</section>" +
+      '<section class="acard"><h3>Wat een fout kost</h3>' + ilist([
+        ["cross", "Een aanval voor echt aanzien kost 10 procent schild", "bad"],
+        ["cross", "Een echt bericht voor een aanval aanzien kost 5 procent schild en een stukje van de sluiscode", "bad"],
+        ["gem", "Elk kristal uit dit level is één aanwijzing van ARIA zonder kosten. Jij hebt er " + (n ? n : "geen"), "gold"],
+        ["shield", "Daarna kost een aanwijzing " + CLUE_COST + " procent schild", "bad"]
+      ]) + "</section></div>" +
+      '<section class="acard tips"><h3>Hier let je op</h3><ul class="clues">' + tips + "</ul></section>" +
       '<div class="actions">' + btn("Open de berichtenstroom", "lock", "", "arrowR") + "</div>"
     );
   }
 
   function startLock() {
     S.msgs = shuffle(MESSAGES);
-    S.msgIdx = 0; S.msgResults = []; S.answered = false; S.hintShown = false;
+    S.msgIdx = 0; S.msgResults = []; S.answered = false; S.clueShown = false; S.asked = 0;
     S.timeLeft = LOCK_SECONDS; S.paused = false; S.timedOut = false; S.code = [];
     // Assign code digits to the real messages in order of appearance
     var n = 0;
@@ -565,7 +615,7 @@
   function codeFor(id) { for (var i = 0; i < S.code.length; i++) if (S.code[i].id === id) return S.code[i]; return null; }
 
   function renderLock() {
-    S.step = 2;
+    S.screen = "lock"; S.step = 2;
     var m = S.msgs[S.msgIdx];
     var res = S.msgResults[S.msgIdx];
     var head =
@@ -576,17 +626,32 @@
       (m.link ? '<p class="msg-body mt"><span class="msg-link">' + esc(m.link) + "</span></p>" : "") +
       (m.attach ? '<span class="msg-attach">' + icon("file", "sm") + esc(m.attach) + "</span>" : "");
 
-    var hintLabel = S.hints > 0 ? "Hint gebruiken (" + S.hints + " gratis)" : "Hint gebruiken (kost " + EXTRA_HINT_COST + "% schild)";
+    /* Clues, proposal B: one button. ARIA gives the clue for this message as a speech balloon.
+       One price: every crystal earned in this level is one clue without cost, after that a clue costs CLUE_COST percent shield. */
+    var nGem = S.crystals.length, used = Math.min(S.asked, nGem), free = S.asked < nGem, gems = "";
+    for (var gi = 0; gi < nGem; gi++) gems += '<span class="gem ' + (gi < used ? "used" : "left") + '">' + icon("gem") + "</span>";
+    var cost = S.clueShown
+      ? '<span class="chip cost">' + icon("tick") + "Dit is de aanwijzing bij dit bericht</span>"
+      : free ? '<span class="chip cost free">' + icon("gem") + "De volgende kost niets</span>"
+             : '<span class="chip cost paid">' + icon("shield") + "De volgende kost " + CLUE_COST + " procent schild</span>";
+    var ask =
+      '<section class="ask" aria-labelledby="ask-h"><div class="ask-card"><div class="ask-text">' +
+      '<div class="ask-head"><h3 id="ask-h">Aanwijzingen van ARIA</h3><span class="gems">' + gems +
+      '<span class="gems-txt">' + (nGem ? used + " van " + nGem + " gebruikt" : "Geen kristallen") + "</span></span></div>" +
+      "<p>" + (nGem
+        ? "Je verdiende " + plural(nGem, "kristal", "kristallen") + " in dit level. Elk kristal is één aanwijzing zonder kosten. Daarna kost een aanwijzing " + CLUE_COST + " procent schild."
+        : "Je verdiende geen kristallen in dit level. Een aanwijzing kost " + CLUE_COST + " procent schild.") + "</p></div>" +
+      '<div class="ask-act"><button type="button" class="vcsw-button outline" data-action="clue"' + (S.clueShown ? " disabled" : "") + ">Vraag ARIA om een aanwijzing" + icon("bulb") + "</button>" + cost + "</div></div>" +
+      '<div class="ask-list" aria-live="polite">' + (S.clueShown
+        ? '<div class="clue" tabindex="-1">' + ARIA_AVATAR + '<div><p class="clue-who"><strong>ARIA</strong> <span>boordcomputer</span></p><p class="clue-txt">' + esc(m.hint) + "</p></div></div>"
+        : "") + "</div></section>";
     var controls, fb = "";
     if (!S.answered) {
       controls =
         '<div class="swipe-actions">' +
         '<button type="button" class="vcsw-button destructive" data-action="attack">' + icon("arrowL") + "Aanval</button>" +
         '<button type="button" class="vcsw-button" data-action="real">Echt' + icon("arrowR") + "</button></div>" +
-        '<p class="swipe-help">Schuif de kaart, gebruik de knoppen of druk op pijltje links of rechts.</p>' +
-        '<div class="hint-box">' + (S.hintShown
-          ? '<div class="reward">' + icon("bulb") + "<div><strong>Hint</strong><br>" + esc(m.hint) + "</div></div>"
-          : btn(hintLabel, "hint", "ghost sm", "")) + "</div>";
+        '<p class="swipe-help">Schuif de kaart, gebruik de knoppen of druk op pijltje links of rechts.</p>' + ask;
     } else {
       var correct = res === "ok";
       var c = codeFor(m.id);
@@ -602,14 +667,14 @@
     }
 
     show(
-      '<p class="overline">Luchtsluis</p><h2>De berichtenstroom</h2>' +
+      "<h2>De berichtenstroom</h2>" +
       '<div class="lock-top"><span class="timer' + (S.timeLeft <= 60 ? " low" : "") + '" id="timer" role="timer" aria-label="Resterende tijd">' + icon("timer") + "<span>" + fmt(S.timeLeft) + "</span></span>" +
       '<span class="count">Bericht ' + (S.msgIdx + 1) + " van " + S.msgs.length + "</span>" +
       btn(S.paused ? "Hervat" : "Pauzeer", "pause", "outline sm", "", ' aria-pressed="' + S.paused + '"') + "</div>" +
       (S.paused
         ? alertBox("info", "Gepauzeerd", "De klok staat stil. Kies Hervat om verder te gaan.")
         : '<div class="deck"><article class="msg" id="msgcard" aria-label="Binnenkomend bericht ' + (S.msgIdx + 1) + '">' +
-          '<span class="stamp left" aria-hidden="true">AANVAL</span><span class="stamp right" aria-hidden="true">ECHT</span>' +
+          '<span class="stamp left" aria-hidden="true">Aanval</span><span class="stamp right" aria-hidden="true">Echt</span>' +
           head + body + "</article></div>" + controls),
       S.answered ? ".lock-feedback .vcsw-alert-title" : "h2"
     );
@@ -663,12 +728,14 @@
     card.addEventListener("pointercancel", end);
   }
 
-  function useHint() {
-    if (S.hints > 0) S.hints--; else hurt(EXTRA_HINT_COST);
-    S.hintShown = true;
+  function askClue() {
+    if (S.answered || S.paused || S.clueShown) return;
+    if (S.asked >= S.crystals.length) hurt(CLUE_COST);
+    S.asked++;
+    S.clueShown = true;
     renderLock();
-    var r = stage.querySelector(".hint-box .reward");
-    if (r) { r.setAttribute("tabindex", "-1"); r.focus(); }
+    var r = stage.querySelector(".ask-list .clue");
+    if (r) { r.focus({ preventScroll: true }); r.scrollIntoView({ block: "nearest" }); }
   }
 
   function renderCode(errorMsg) {
@@ -682,13 +749,13 @@
     var missing = S.code.filter(function (c) { return !(c.got || S.recovered[c.id]); });
     var unanswered = S.msgs.length - S.msgResults.filter(Boolean).length;
     var rec = missing.length
-      ? "<h3>Ontbrekende delen terughalen</h3><p>Bekijk het echte bericht opnieuw om het cijfer terug te halen. Dat kost " + EXTRA_HINT_COST + "% schildsterkte per deel.</p>" +
+      ? "<h3>Ontbrekende delen terughalen</h3><p>Bekijk het echte bericht opnieuw om het cijfer terug te halen. Dat kost " + RECOVER_COST + "% schildsterkte per deel.</p>" +
         '<div class="actions" style="margin-top:8px">' + missing.map(function (c) {
           return btn("Deel " + c.part + " terughalen", "recover", "outline", "", ' data-id="' + c.id + '"');
         }).join("") + "</div>"
       : "";
     show(
-      '<p class="overline">Luchtsluis</p><h2>Het codepaneel</h2>' +
+      "<h2>Het codepaneel</h2>" +
       (S.timedOut ? alertBox("warning", "De tijd is op", unanswered + " berichten zijn niet beoordeeld en leveren geen punten op.") : "") +
       "<p>Voer de " + S.code.length + " cijfers van de sluiscode in, in de volgorde van de delen.</p>" +
       '<div class="fragments">' + frags + "</div>" + rec +
@@ -730,33 +797,125 @@
       ? "Sterk werk. De sluis staat open en de Zwarte Nevel blijft buiten. Hier is wat goed ging en waarom."
       : "De sluis is open, maar het vertrouwen aan boord is nog niet groot genoeg. Je speelt de dienst opnieuw. Hier is waarom.";
     show(
-      '<p class="overline">Debriefing</p><h2>' + (passed ? "Level gehaald. Je bent nu Kapitein" : "Nog niet gehaald") + "</h2>" +
+      "<h2>" + (passed ? "Level gehaald. Je bent nu Kapitein" : "Nog niet gehaald") + "</h2>" +
       speech("ARIA", summary) +
-      '<div class="vcsw-stats cols-3 mt">' +
-      '<div class="vcsw-stat"><p class="vcsw-stat-label">Score</p><p class="vcsw-stat-value">' + pct + '%</p><p class="vcsw-stat-note">' + S.score + " van " + MAX_SCORE + " punten, 70% nodig</p></div>" +
-      '<div class="vcsw-stat"><p class="vcsw-stat-label">Schildsterkte</p><p class="vcsw-stat-value">' + S.shield + "%</p></div>" +
-      '<div class="vcsw-stat"><p class="vcsw-stat-label">Berichten goed beoordeeld</p><p class="vcsw-stat-value">' + okMsgs + " van " + MESSAGES.length + "</p></div></div>" +
+      chips(["Score " + pct + "%, " + S.score + " van " + MAX_SCORE + " punten, 70% nodig", icon("shield") + "Schildsterkte " + S.shield + "%", okMsgs + " van " + MESSAGES.length + " berichten goed beoordeeld"]) +
       "<h3>Je dienst</h3><ul class=\"result-list\">" + sitLines + "</ul>" +
       "<h3>Datakristallen</h3>" + crystals +
       '<div class="mt">' + carry + "</div>" +
       "<h3>Drie kernregels</h3><ol class=\"rules\">" + RULES.map(function (r) { return "<li><span>" + esc(r) + "</span></li>"; }).join("") + "</ol>" +
-      '<div class="actions">' + (passed ? btn("Terug op aarde", "earth", "", "arrowR") : btn("Level opnieuw spelen", "restart", "", "refresh")) + "</div>"
+      '<div class="actions">' + btn("Terug op aarde", "earth", "", "arrowR") + "</div>"
     );
   }
 
+  /* Terug op aarde, in two steps so each fits the panel: first the two lists, then the report route and the result */
+  function meter(label, value, fill, cls, note, mark, aria) {
+    return '<div class="meter"><p class="m-label">' + label + '</p><p class="m-value">' + value + "</p>" +
+      '<div class="m-bar ' + cls + '" role="img" aria-label="' + aria + '"><span class="m-fill" style="width:' + fill + '%"></span>' +
+      (mark ? '<span class="m-mark" style="left:' + mark + '%"></span>' : "") + "</div>" +
+      '<p class="m-note">' + note + "</p></div>";
+  }
+  function topic(ic, title, text) {
+    return '<li><span class="ic">' + icon(ic) + "</span><span><strong>" + title + "</strong>" + text + "</span></li>";
+  }
   function renderEarth() {
     S.screen = "earth"; S.step = 4;
+    var pct = Math.round((S.score / MAX_SCORE) * 100);
+    var passed = S.score / MAX_SCORE >= PASS;
+    var n = S.crystals.length, sh = Math.max(0, S.shield);
+    if (S.earthStep !== 2) {
+      show(
+        '<div class="aarde"><div class="head">' + chips(["Stap 1 van 2"]) +
+        "<h2>Wat betekent dit voor je werk bij VCSW?</h2>" +
+        '<p class="lead">Het station is verzonnen. Dit neem je mee naar je werk.</p></div>' +
+        '<div class="two">' +
+        '<section class="acard"><h3>Ontvangen en gebruiken</h3><ul class="ilist topics">' +
+        topic("inbox", "Veilig ontvangen", "Denk aan de Excel met BSN’s die een klant mailt voor een Whk-controle. Sla zo’n bestand op in de beveiligde omgeving, verwijder de mail en wijs de klant vriendelijk op de beveiligde weg voor de volgende keer.") +
+        topic("filter", "Niet meer opvragen dan nodig", "Bij een Besparingscheck vraag je niet meer op dan nodig is voor de check. Gegevens van de ene klant zijn nooit voorbeeldmateriaal voor een andere.") +
+        topic("bot", "Goedgekeurde AI", "Goedgekeurde AI binnen VCSW is Claude en Libra. Daar mogen geen persoonsgegevens in, behalve zakelijke gegevens en geanonimiseerde of gepseudonimiseerde gegevens. Alleen namen weghalen maakt een bestand nog niet anoniem.") +
+        "</ul></section>" +
+        '<section class="acard"><h3>Versturen en controleren</h3><ul class="ilist topics">' +
+        topic("mail", "Veilig mailen", "BSN’s, verzuimgegevens, gezondheidsgegevens en andere gevoelige gegevens verstuur je nooit via een gewone mail. Via Zivver of aangetekend mailen mag het wel. Let ook dan op wat je meestuurt, ook in bijlagen. Stuur alleen wat de ontvanger echt nodig heeft, en laat zaken als een rekeningnummer of privéomstandigheden weg als die niet nodig zijn. Medische informatie, zoals een diagnose, is alleen voor de bedrijfsarts en stuur je ook via Zivver niet naar een werkgever.") +
+        topic("warn", "Valse berichten", "Afwijkende afzender, spoed of geheimhouding? Stop en controleer via een andere weg, bijvoorbeeld door de afzender te bellen op een nummer dat je al kent.") +
+        "</ul></section></div>" +
+        '<div class="actions">' + btn("Naar de meldroute en je resultaat", "earth2", "", "arrowR") + "</div></div>"
+      );
+      return;
+    }
     show(
-      '<p class="overline">Terug op aarde</p><h2>Wat betekent dit voor je werk bij VCSW?</h2>' +
-      "<h3>Veilig ontvangen</h3><p>Denk aan de Excel met BSN’s die een klant mailt voor een Whk-controle. Sla zo’n bestand op in de beveiligde omgeving, verwijder de mail en wijs de klant vriendelijk op de beveiligde weg voor de volgende keer.</p>" +
-      "<h3>Niet meer opvragen dan nodig</h3><p>Bij een Besparingscheck vraag je niet meer op dan nodig is voor de check. Gegevens van de ene klant zijn nooit voorbeeldmateriaal voor een andere.</p>" +
-      "<h3>Veilig mailen</h3><p>BSN’s, verzuimgegevens, gezondheidsgegevens en andere gevoelige gegevens verstuur je nooit via een gewone mail. Via Zivver of aangetekend mailen mag het wel. Let ook dan op wat je meestuurt, ook in bijlagen. Stuur alleen wat de ontvanger echt nodig heeft, en laat zaken als een rekeningnummer of privéomstandigheden weg als die niet nodig zijn. Medische informatie, zoals een diagnose, is alleen voor de bedrijfsarts en stuur je ook via Zivver niet naar een werkgever.</p>" +
-      "<h3>Goedgekeurde AI</h3><p>Goedgekeurde AI binnen VCSW is Claude en Libra. Daar mogen geen persoonsgegevens in, behalve zakelijke gegevens en geanonimiseerde of gepseudonimiseerde gegevens. Alleen namen weghalen maakt een bestand nog niet anoniem.</p>" +
-      "<h3>Valse berichten</h3><p>Afwijkende afzender, spoed of geheimhouding? Stop en controleer via een andere weg, bijvoorbeeld door de afzender te bellen op een nummer dat je al kent.</p>" +
-      '<div class="vcsw-alert actionable mt" role="note">' + icon("mail") +
-      '<div><p class="vcsw-alert-title">Twijfel of een incident? Meld het direct</p><p class="vcsw-alert-text">Bij Tarik, Dagmar of via <a href="mailto:jz@vcsw.nl">jz@vcsw.nl</a>.</p></div></div>' +
-      '<div class="actions">' + btn("Level opnieuw spelen", "restart", "secondary", "refresh") + "</div>"
+      '<div class="aarde"><div class="head">' + chips(["Stap 2 van 2"]) +
+      "<h2>Melden en je resultaat</h2></div>" +
+      '<section class="acard meld"><div class="meld-text"><h3>Meldroute</h3><p>Twijfel of een incident? Meld het direct bij Tarik, Dagmar of via het meldpunt.</p></div>' +
+      '<div class="meld-act"><code id="mailaddr">jz@vcsw.nl</code>' +
+      '<button type="button" class="vcsw-button outline" data-action="copy">Kopieer adres' + icon("copy") + "</button></div>" +
+      '<p class="vcsw-sr-only" id="copy-status" aria-live="polite"></p></section>' +
+      '<section class="acard result"><div class="result-head"><h3>Resultaat level 4</h3>' +
+      '<span class="verdict-badge ' + (passed ? "ok" : "warn") + '">' + icon(passed ? "tick" : "half") + (passed ? "Gehaald" : "Nog niet gehaald") + "</span></div>" +
+      '<p class="result-line">' + (passed ? "Je bent nu Kapitein van de Datawacht." : "Je haalt het level met minimaal 70 procent van de punten.") + "</p>" +
+      '<div class="meters">' +
+      meter("Score", S.score + " van " + MAX_SCORE + " punten", pct, "score", pct + " procent. " + (passed ? "Je had 70 procent nodig." : "Je hebt 70 procent nodig."), 70, "Score " + pct + " procent, de grens ligt bij 70 procent") +
+      meter("Schild", sh + " procent", sh, "shield", "Het schild telt niet mee voor halen. Het laat zien hoe zeker je speelde.", 0, "Schild " + sh + " procent") +
+      meter("Kristallen", n + " van " + CRYSTALS_MAX, Math.round((n / CRYSTALS_MAX) * 100), "crystals", "Elk kristal is één aanwijzing zonder kosten in de luchtsluis.", 0, n + " van " + CRYSTALS_MAX + " kristallen") +
+      "</div>" +
+      '<div class="actions">' + btn("Speel level 4 opnieuw", "restart", "", "refresh") + "</div></section></div>"
     );
+  }
+
+  function copyAddress(btnEl) {
+    var st = document.getElementById("copy-status");
+    function selectIt() {
+      var r = document.createRange(); r.selectNodeContents(document.getElementById("mailaddr"));
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      btnEl.textContent = "Geselecteerd, kopieer met Ctrl+C";
+      if (st) st.textContent = "Het adres is geselecteerd. Kopieer het met Ctrl+C.";
+    }
+    try {
+      navigator.clipboard.writeText("jz@vcsw.nl").then(function () {
+        btnEl.innerHTML = "Gekopieerd" + icon("tick");
+        if (st) st.textContent = "Het adres jz@vcsw.nl is gekopieerd.";
+      }, selectIt);
+    } catch (e) { selectIt(); }
+  }
+
+  /* ---------- Test jump: ?scherm=<naam> opens the level on one screen, with a plausible state ---------- */
+  var SCHERMEN = ["start", "briefing", "dienst", "mail", "dienst5", "luchtsluis", "berichten", "code", "debriefing", "aarde", "uitslag", "uitslag-gehaald"];
+  function jump(name) {
+    if (SCHERMEN.indexOf(name) < 0) return false;
+    stopTimer(); reset();
+    function grade(i, g) {   // the same bookkeeping as choose() and checkMail()
+      var s = SITUATIONS[i];
+      S.score += POINTS[g]; hurt(SHIELD_COST[g]); S.sitResults[i] = g;
+      if (g === "good") { if (s.crystal) S.crystals.push(s.crystal.name); S.clues[i] = true; }
+    }
+    function dienst(k, all) {   // answers the first k situations; mixed result unless all is true
+      var mixed = ["half", "good", "good", "bad", "good"];
+      for (var i = 0; i < k; i++) grade(i, all ? "good" : mixed[i]);
+    }
+    function stream(all) {   // judges the ten messages, in the fixed order of MESSAGES
+      S.msgs = MESSAGES.slice(); S.code = []; S.msgResults = [];
+      var k = 0;
+      S.msgs.forEach(function (m) { if (m.real) { k++; S.code.push({ id: m.id, part: k, digit: (k * 3) % 10, got: false }); } });
+      S.msgs.forEach(function (m, i) {
+        var ok = all || (i !== 1 && i !== 2 && i !== 5 && i !== 7);
+        S.msgResults[i] = ok ? "ok" : "no";
+        if (ok) { S.score += 10; if (m.real) codeFor(m.id).got = true; }
+        else if (!m.real) { S.clickedAttack = true; hurt(10); } else hurt(5);
+      });
+      S.msgIdx = S.msgs.length - 1; S.answered = true; S.timeLeft = 96;
+    }
+    if (name === "start") renderStart();
+    else if (name === "briefing") renderBriefing();
+    else if (name === "dienst") { S.sit = 0; startSit(); }
+    else if (name === "mail") { dienst(1); S.sit = 1; startSit(); }
+    else if (name === "dienst5") { dienst(4); S.sit = 4; startSit(); }
+    else if (name === "luchtsluis") { dienst(5); renderPreLock(); }
+    else if (name === "berichten") { dienst(5); startLock(); }
+    else if (name === "code") { dienst(5); stream(false); renderCode(); }
+    else if (name === "debriefing") { dienst(5); stream(false); renderDebrief(true); }
+    else if (name === "aarde") { dienst(5); stream(false); S.earthStep = 1; renderEarth(); }
+    else if (name === "uitslag") { dienst(5); stream(false); S.earthStep = 2; renderEarth(); }
+    else if (name === "uitslag-gehaald") { dienst(5, true); stream(true); S.earthStep = 2; renderEarth(); }
+    return true;
   }
 
   /* ---------- Events ---------- */
@@ -784,12 +943,14 @@
     else if (a === "lock") startLock();
     else if (a === "attack") classify(false);
     else if (a === "real") classify(true);
-    else if (a === "hint") useHint();
-    else if (a === "nextmsg") { S.msgIdx++; S.answered = false; S.hintShown = false; renderLock(); }
+    else if (a === "clue") askClue();
+    else if (a === "nextmsg") { S.msgIdx++; S.answered = false; S.clueShown = false; renderLock(); }
     else if (a === "pause") { S.paused = !S.paused; renderLock(); var p = stage.querySelector('[data-action="pause"]'); if (p) p.focus(); }
     else if (a === "code") renderCode();
-    else if (a === "recover") { hurt(EXTRA_HINT_COST); S.recovered[b.getAttribute("data-id")] = true; renderCode(); }
-    else if (a === "earth") renderEarth();
+    else if (a === "recover") { hurt(RECOVER_COST); S.recovered[b.getAttribute("data-id")] = true; renderCode(); }
+    else if (a === "earth") { S.earthStep = 1; renderEarth(); }
+    else if (a === "earth2") { S.earthStep = 2; renderEarth(); }
+    else if (a === "copy") copyAddress(b);
     else if (a === "restart") { stopTimer(); reset(); document.getElementById("hud-rank").textContent = "Commandeur"; renderStart(); }
   });
   stage.addEventListener("keydown", function (e) {
@@ -808,5 +969,7 @@
   });
 
   reset();
-  renderStart();
+  var want = null;
+  try { want = new URLSearchParams(location.search).get("scherm"); } catch (e) { want = null; }
+  if (!want || !jump(want)) renderStart();
 })();

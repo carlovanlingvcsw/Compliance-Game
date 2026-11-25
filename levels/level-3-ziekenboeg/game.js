@@ -10,31 +10,36 @@
     x: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
     right: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
     refresh: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
-    mail: '<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/>',
-    search: '<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>'
+    tick: '<path d="M20 6 9 17l-5-5"/>',
+    cross: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    clipboard: '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+    medic: '<path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2z"/>',
+    shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    gem: '<path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>',
+    bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+    lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    dot: '<circle cx="12" cy="12" r="3"/>'
   };
   function icon(name, cls) { return '<svg class="vcsw-icon' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + P[name] + '</svg>'; }
-
-  /* ---------- Theme toggle ---------- */
-  var themeBtns = document.querySelectorAll("[data-theme-btn]");
-  function setTheme(t) {
-    document.documentElement.setAttribute("data-theme", t);
-    themeBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-theme-btn") === t)); });
-  }
-  themeBtns.forEach(function (b) { b.addEventListener("click", function () { setTheme(b.getAttribute("data-theme-btn")); }); });
+  var ARIA_FACE = '<svg class="ox-face" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="48" fill="#0c2f5f"/><ellipse cx="48" cy="50" rx="30" ry="24" fill="#e8eef6"/><ellipse cx="48" cy="50" rx="30" ry="24" fill="none" stroke="#8fa0b8" stroke-width="2"/><circle cx="48" cy="50" r="13" fill="#04142b"/><circle cx="48" cy="50" r="8" fill="#15aaff"/><circle cx="45" cy="47" r="2.5" fill="#fff"/><rect x="10" y="44" width="10" height="12" rx="4" fill="#8fa0b8"/><rect x="76" y="44" width="10" height="12" rx="4" fill="#8fa0b8"/><path d="M48 26v-9" stroke="#8fa0b8" stroke-width="3" stroke-linecap="round"/><circle cx="48" cy="15" r="3" fill="#ffb900"/></svg>';
 
   /* ---------- Characters ---------- */
   var PEOPLE = {
-    aria: { name: "ARIA", initials: "AR", cls: "aria", role: "Boordcomputer" },
-    vega: { name: "Kapitein Vega", initials: "KV", cls: "vega", role: "Kolonie Nova Terra" },
-    bram: { name: "Bram", initials: "BR", cls: "bram", role: "Monteur" },
-    joran: { name: "Joran", initials: "JO", cls: "joran", role: "Technicus van Nova Terra" }
+    aria: { name: "ARIA", initials: "AR", cls: "aria", role: "boordcomputer" },
+    vega: { name: "Kapitein Vega", initials: "KV", cls: "vega", role: "kolonie Nova Terra" },
+    bram: { name: "Bram", initials: "BR", cls: "bram", role: "monteur" },
+    joran: { name: "Joran", initials: "JO", cls: "joran", role: "technicus van Nova Terra" }
   };
-  function say(who, text) {
+  function say(who, text, extra) {
     var p = PEOPLE[who];
-    return '<div class="speaker"><span class="vcsw-avatar ' + p.cls + '" aria-hidden="true">' + p.initials + '</span>' +
-      '<div class="bubble"><div class="speaker-name">' + p.name + ' <span class="vcsw-caption">· ' + p.role + '</span></div>' +
-      '<p class="speaker-text">' + text + '</p></div></div>';
+    var face = who === "aria" ? ARIA_FACE : '<span class="ox-av ' + p.cls + '" aria-hidden="true">' + p.initials + '</span>';
+    return '<div class="ox-say">' + face +
+      '<div class="ox-say-body"><div class="ox-say-who"><span class="ox-say-name">' + p.name + '</span><span class="ox-say-role">' + p.role + '</span>' + (extra || "") + '</div>' +
+      '<p class="ox-say-text">' + text + '</p></div></div>';
   }
 
   /* ---------- Content (from the game design, level 3) ---------- */
@@ -69,7 +74,7 @@
     {
       id: "s3", title: "Situatie 3: Het verkeerde kanaal",
       intro: '<p>In het algemene kanaal van de module verschijnt een bericht. Het is een rapport van de scheepsarts met medische details over een crewlid. Het hoort daar niet.</p>' +
-        '<div class="vcsw-card basic mt-16"><p class="vcsw-caption">Algemeen kanaal · Ziekenboeg</p><p><strong>Scheepsarts:</strong> Rapport crewlid 0417, bevindingen en behandelplan (bijlage)</p></div>',
+        '<div class="ox-card kanaal mt-16"><span class="ox-chip neutral">Algemeen kanaal van de ziekenboeg</span><p><strong>Scheepsarts:</strong> Rapport crewlid 0417, bevindingen en behandelplan (bijlage)</p></div>',
       options: [
         { text: "Doorsturen naar de hele ploeg, zodat iedereen weet hoe het zit.", grade: "fout", why: "Zo verspreid je medische gegevens nog verder. Elke extra ontvanger maakt het lek groter.",
           react: say("aria", "Ik tel nu 46 ontvangers in plaats van 23. Knap werk, maar niet het soort werk dat ik bedoel.") },
@@ -96,10 +101,11 @@
   ];
 
   var HATCHES = [
-    { id: "chef", name: "Sectorchef" },
-    { id: "admin", name: "Crewadministratie" },
-    { id: "arts", name: "Scheepsarts" }
+    { id: "chef", name: "Sectorchef", icon: "user" },
+    { id: "admin", name: "Crewadministratie", icon: "clipboard" },
+    { id: "arts", name: "Scheepsarts", icon: "medic" }
   ];
+  function hatch(id) { return HATCHES.filter(function (h) { return h.id === id; })[0]; }
   var LOCK_ITEMS = [
     { t: "Verwachte terugkeer over twee weken", a: "chef" },
     { t: "Kan vier uur per dag licht werk doen", a: "chef" },
@@ -115,46 +121,80 @@
     admin: "De crewadministratie regelt vergoeding, verzekering en de formele kant van de ziekmelding.",
     arts: "Medische gegevens zijn alleen voor de scheepsarts."
   };
+  var CRYSTALS_MAX = 3;   /* situatie 1, 3 en 4 */
 
   /* Scoring rules from the design: good 10, half 5, wrong 0. Pass at 70 percent. */
   var MAX_POINTS = 40 + LOCK_ITEMS.length * 5;
   var SHIELD_COST = { goed: 0, half: 5, fout: 10 };
-  var EXTRA_HINT_COST = 10;
+  var HINT_COST = 10;
   var LOCK_SECONDS = 300;
+  var STEPS = ["Briefing", "Dienst", "Luchtsluis", "Resultaat", "Terug op aarde"];
+  var STEP_OF = { start: 0, briefing: 0, dienst: 1, luchtsluis: 2, resultaat: 3, aarde: 4 };
+  function pctNow() { return Math.round(S.points / MAX_POINTS * 100); }
+  function passMark() { for (var p = 0; p <= MAX_POINTS; p++) if (Math.round(p / MAX_POINTS * 100) >= 70) return p; return MAX_POINTS; }
 
   /* ---------- State (in memory only) ---------- */
   var S;
   function reset() {
-    S = { shield: 100, points: 0, hintsFree: 3, crystals: [], flags: {}, results: {}, lock: null, rank: "Luitenant", passed: false };
+    S = { screen: "start", shield: 100, points: 0, crystals: [], flags: {}, results: {}, lock: null, rank: "Luitenant", passed: false };
   }
   reset();
+  function shieldNow() { return Math.max(0, Math.min(100, S.shield)); }
+
+  /* De schil leest hier de stand van het level uit. */
+  window.orionStatus = function () {
+    var done = S.screen === "resultaat" || S.screen === "aarde";
+    var pct = pctNow();
+    return {
+      score: S.points, max: MAX_POINTS, shield: shieldNow(),
+      crystals: S.crystals.length, crystalsMax: CRYSTALS_MAX,
+      steps: STEPS.slice(), step: STEP_OF[S.screen] || 0,
+      done: done, passed: done ? pct >= 70 : null, pct: done ? pct : null
+    };
+  };
 
   var screenEl = document.getElementById("screen");
   var hudEl = document.getElementById("hud");
   var liveEl = document.getElementById("live");
   function announce(msg) { liveEl.textContent = ""; setTimeout(function () { liveEl.textContent = msg; }, 50); }
+  function shieldTone(sh) { return sh >= 70 ? "ok" : (sh >= 40 ? "warn" : "bad"); }
 
+  /* Eigen statusrij en stappenbalk (.own-status). In de schil neemt de schil dit over. */
   function renderHud() {
-    var sh = Math.max(0, S.shield);
-    var fillCls = sh >= 70 ? "" : (sh >= 40 ? " warning" : " error");
+    var sh = shieldNow(), cur = STEP_OF[S.screen] || 0;
+    var steps = STEPS.map(function (s, i) {
+      var cls = i < cur ? "done" : (i === cur ? "now" : "");
+      return '<li class="' + cls + '"' + (i === cur ? ' aria-current="step"' : '') + '><span class="bar" aria-hidden="true"></span><span>' + s + (i < cur ? '<span class="vcsw-sr-only"> (afgerond)</span>' : '') + '</span></li>';
+    }).join("");
+    var pips = "";
+    for (var i = 0; i < CRYSTALS_MAX; i++) pips += '<span class="pip' + (i < S.crystals.length ? " on" : "") + '"></span>';
     hudEl.innerHTML =
-      '<div class="hud-item hud-shield"><div class="vcsw-progress"><div class="vcsw-progress-label"><span>Schildsterkte</span><span class="value">' + sh + ' procent</span></div>' +
-      '<div class="vcsw-progress-track" role="progressbar" aria-label="Schildsterkte" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + sh + '"><div class="vcsw-progress-fill' + fillCls + '" style="width:' + sh + '%"></div></div></div></div>' +
-      '<div class="hud-item"><span>Punten</span><strong>' + S.points + ' / ' + MAX_POINTS + '</strong></div>' +
-      '<div class="hud-item"><span>Gratis hints</span><strong>' + S.hintsFree + '</strong></div>' +
-      '<div class="hud-item"><span>Datakristallen</span><strong>' + S.crystals.length + '</strong></div>' +
-      '<div class="hud-item"><span>Rang</span><strong>' + S.rank + '</strong></div>';
+      '<ol class="ox-steps">' + steps + '</ol>' +
+      '<div class="ox-meters">' +
+      '<div class="ox-meter"><div class="top">' + icon("target") + '<span>Score</span><b>' + S.points + ' van ' + MAX_POINTS + '</b></div>' +
+      '<div class="track"><div class="fill" style="width:' + Math.min(100, S.points / MAX_POINTS * 100) + '%"></div><span class="mark"></span></div>' +
+      '<span class="note">Gehaald vanaf ' + passMark() + ' punten</span></div>' +
+      '<div class="ox-meter"><div class="top">' + icon("shield") + '<span>Schild</span><b>' + sh + '%</b></div>' +
+      '<div class="track" role="progressbar" aria-label="Schild" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + sh + '"><div class="fill ' + shieldTone(sh) + '" style="width:' + sh + '%"></div></div>' +
+      '<span class="note">Elke fout kost schild</span></div>' +
+      '<div class="ox-meter narrow"><div class="top">' + icon("gem") + '<span>Kristallen</span><b>' + S.crystals.length + ' van ' + CRYSTALS_MAX + '</b></div>' +
+      '<div class="pips" aria-hidden="true">' + pips + '</div>' +
+      '<span class="note">Rang: ' + S.rank + '</span></div>' +
+      '</div>';
   }
 
-  function show(html, headingText) {
+  function show(name, html) {
+    S.screen = STEP_OF[name] === undefined ? S.screen : name;
     screenEl.innerHTML = html;
     renderHud();
     var h = screenEl.querySelector("h2");
     if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
     window.scrollTo({ top: Math.max(0, screenEl.offsetTop - 16), behavior: "auto" });
   }
-  function head(over, title) {
-    return '<div class="screen-head"><p class="vcsw-overline">' + over + '</p><h2>' + title + '</h2></div>';
+  function chip(text, tone, ic) { return '<span class="ox-chip' + (tone ? " " + tone : "") + '">' + (ic ? icon(ic) : "") + text + '</span>'; }
+  function head(title, chips, inline) {
+    if (inline) return '<div class="screen-head rij"><h2>' + title + '</h2><div class="ox-chips">' + chips + '</div></div>';
+    return '<div class="screen-head">' + (chips ? '<div class="ox-chips">' + chips + '</div>' : '') + '<h2>' + title + '</h2></div>';
   }
   function gradeAlert(grade, title, text) {
     var map = { goed: ["success", "check", "Goed"], half: ["warning", "alert", "Half goed"], fout: ["error", "x", "Fout"] };
@@ -163,33 +203,45 @@
       '<div><p class="vcsw-alert-title">' + m[2] + (title ? ": " + title : "") + '</p><p class="vcsw-alert-text">' + text + '</p></div></div>';
   }
   function crystalAlert(name) {
-    return '<div class="vcsw-alert success">' + icon("check") +
-      '<div><p class="vcsw-alert-title">Datakristal verdiend: ' + name + '</p><p class="vcsw-alert-text">Het kristal geeft je een extra aanwijzing in de luchtsluis.</p></div></div>';
+    return '<div class="ox-reward">' + icon("gem") +
+      '<div><p class="ox-reward-title">Datakristal verdiend: ' + name + '</p><p>Het kristal is in de luchtsluis één aanwijzing zonder kosten.</p></div></div>';
   }
-  function nextBtn(label, id) {
-    return '<button type="button" class="vcsw-button lg" id="' + id + '">' + label + icon("right") + '</button>';
+  function nextBtn(label, id, lg) {
+    return '<button type="button" class="ox-btn' + (lg === false ? "" : " lg") + '" id="' + id + '">' + label + icon("right") + '</button>';
   }
+  function row(ic, tone, text) { return '<li><span class="ic ' + tone + '">' + icon(ic) + '</span><span>' + text + '</span></li>'; }
   function addCrystal(name) { if (S.crystals.indexOf(name) === -1) S.crystals.push(name); }
 
   /* ---------- Screens ---------- */
   function screenStart() {
-    show(
-      head("Start", "Welkom in de ziekenboeg") +
-      '<div class="vcsw-stack">' +
-      '<div class="vcsw-alert">' + icon("info") + '<div><p class="vcsw-alert-title">Prototype met fictieve gegevens</p><p class="vcsw-alert-text">De goede antwoorden wachten nog op goedkeuring door de Privacy Officer, zie de open punten in het ontwerp.</p></div></div>' +
-      '<div class="vcsw-card"><h3>In dit level</h3><p class="mt-16">Je leert dat gezondheidsgegevens extra bescherming krijgen en dat een leidinggevende niet mag weten wat een ziek crewlid mankeert. Je speelt vier situaties en opent daarna de luchtsluis De drie luiken.</p>' +
-      '<ul class="rules"><li>Goed antwoord 10 punten, half goed 5 punten, fout 0 punten met uitleg.</li><li>Foute keuzes verzwakken je schilden. Half goed kost 5 procent, fout 10 procent.</li><li>Je hebt drie gratis hints. Elke extra hint kost ' + EXTRA_HINT_COST + ' procent schildsterkte.</li><li>Je haalt het level met minimaal 70 procent van de punten. Daarna ben je Commandeur.</li></ul></div>' +
-      '</div><div class="actions">' + nextBtn("Start level 3", "go") + '</div>'
+    stopTimer();
+    show("start",
+      '<div class="title-screen ox-stack">' +
+      head("Welkom in de ziekenboeg", chip("Level 3") + chip("Vier situaties en een luchtsluis", "neutral")) +
+      '<p class="ox-lead">Je leert dat gezondheidsgegevens extra bescherming krijgen en dat een leidinggevende niet mag weten wat een ziek crewlid mankeert. Je speelt vier situaties en opent daarna de luchtsluis De drie luiken.</p>' +
+      '<div class="ox-two">' +
+      '<div class="ox-card"><h3>Zo scoor je</h3><ul class="ox-rows">' +
+      row("tick", "green", "Goed antwoord 10 punten, half goed 5 punten, fout 0 punten met uitleg.") +
+      row("shield", "red", "Foute keuzes verzwakken je schilden. Half goed kost 5 procent, fout 10 procent.") +
+      '</ul></div>' +
+      '<div class="ox-card"><h3>Goed om te weten</h3><ul class="ox-rows">' +
+      row("gem", "gold", "Elk kristal dat je in dit level verdient, is in de luchtsluis één aanwijzing zonder kosten. Daarna kost een aanwijzing " + HINT_COST + " procent schild.") +
+      row("target", "blue", "Je haalt het level met minimaal 70 procent van de punten. Daarna ben je Commandeur.") +
+      '</ul></div></div>' +
+      '<div class="actions">' + nextBtn("Start level 3", "go") + '</div>' +
+      '<p class="ox-foot">' + icon("info") + '<span><strong>Prototype met fictieve gegevens.</strong> De goede antwoorden wachten nog op goedkeuring door de Privacy Officer, zie de open punten in het ontwerp.</span></p>' +
+      '</div>'
     );
     document.getElementById("go").onclick = screenBriefing;
   }
 
   function screenBriefing() {
-    show(
-      head("Briefing", "Opdracht van ARIA") +
+    show("briefing",
+      '<div class="title-screen ox-stack">' +
+      head("Opdracht van ARIA", chip("Briefing")) +
       say("aria", "Welkom in de ziekenboeg, het gevoeligste deel van het station. Bij ziekte wil iedereen alles weten. De sectorchef, de collega’s, soms zelfs de kapitein van de kolonie. Medische details zijn voor de scheepsarts, niet voor de rest.") +
-      '<div class="mt-16">' + say("aria", "Vandaag val je in bij de crewadministratie. Ik kijk mee. Ik kijk altijd mee.") + '</div>' +
-      '<div class="actions">' + nextBtn("Begin je dienst", "go") + '</div>'
+      say("aria", "Vandaag val je in bij de crewadministratie. Ik kijk mee. Ik kijk altijd mee.") +
+      '<div class="actions">' + nextBtn("Begin je dienst", "go") + '</div></div>'
     );
     document.getElementById("go").onclick = screenSickReport;
   }
@@ -202,14 +254,14 @@
         '<button type="button" data-row="' + i + '" data-val="nee" aria-pressed="false">Niet vastleggen</button></div>' +
         '<div class="verdict" id="v' + i + '"></div></li>';
     }).join("");
-    show(
-      head("Dienst · situatie 1 van 4", "Situatie 1: De ziekmelding") +
+    show("dienst",
+      head("Situatie 1: De ziekmelding", chip("Situatie 1 van 4"), true) +
       say("joran", "Hoi, met Joran. Ik voel me echt niet goed, ik kom vandaag en waarschijnlijk de rest van de week niet.") +
       '<p class="mt-16">Jij legt de melding vast. Kies per veld of je het mag vastleggen.</p>' +
       '<ul class="toggle-list">' + rows + '</ul>' +
-      '<p class="vcsw-small mt-16" id="sickCount">0 van ' + SICK_FIELDS.length + ' velden gekozen</p>' +
       '<div class="feedback" id="fb"></div>' +
-      '<div class="actions" id="act"><button type="button" class="vcsw-button lg" id="check" aria-disabled="true">Melding opslaan</button></div>'
+      '<div class="actions" id="act"><button type="button" class="ox-btn lg" id="check" aria-disabled="true">Melding opslaan' + icon("tick") + '</button>' +
+      '<span class="ox-muted" id="sickCount">0 van ' + SICK_FIELDS.length + ' velden gekozen</span></div>'
     );
     var answers = {};
     var locked = false;
@@ -260,8 +312,8 @@
     var opts = sit.options.map(function (o, i) {
       return '<button type="button" class="choice" data-opt="' + i + '"><span class="key" aria-hidden="true">' + letters[i] + '</span><span><span class="vcsw-sr-only">Optie ' + letters[i] + ': </span>' + o.text + '</span></button>';
     }).join("");
-    show(
-      head("Dienst · situatie " + (idx + 2) + " van 4", sit.title) +
+    show("dienst",
+      head(sit.title, chip("Situatie " + (idx + 2) + " van 4"), true) +
       sit.intro +
       '<div class="choices" role="group" aria-label="Wat doe je?">' + opts + '</div>' +
       '<div class="feedback" id="fb"></div><div class="actions" id="act"></div>'
@@ -297,56 +349,90 @@
     });
   }
 
+  /* ---------- Luchtsluis: De drie luiken ---------- */
+  function pills(counts) {
+    return HATCHES.map(function (h) {
+      return '<span class="luik-pil h-' + h.id + '">' + icon(h.icon) + '<span>' + h.name + '</span>' + (counts ? '<b id="cnt-' + h.id + '">0</b><span class="vcsw-sr-only"> stukjes</span>' : '') + '</span>';
+    }).join("");
+  }
+
+  /* Startkaart: doel, hoe je scoort, wat een fout kost, en één startknop. */
   function screenLockIntro() {
+    stopTimer();
     var n = S.crystals.length;
-    show(
-      head("Luchtsluis", "De drie luiken") +
+    show("luchtsluis",
+      '<div class="ox-stack">' +
+      head("De drie luiken", chip("Luchtsluis") + chip(Math.floor(LOCK_SECONDS / 60) + " minuten", "", "clock") + chip("Hoort bij level 3", "neutral")) +
+      '<p class="ox-lead">Schuif elk stukje informatie over een ziek crewlid door het juiste luik.</p>' +
+      '<div class="ox-card intro-demo">' +
       say("aria", "Einde dienst. Op je console ligt nog informatie over een ziek crewlid die daar deels niet thuishoort. Schuif elk stukje door het juiste luik: sectorchef, crewadministratie of scheepsarts. Het luik van de scheepsarts heeft een extra slot. Je mag er alleen iets in schuiven, nooit zelf iets uit halen.") +
-      '<div class="vcsw-card basic mt-16"><h4>Zo werkt het</h4><ul class="rules"><li>Kies bij elk stukje informatie een luik. Daarna controleer je de verdeling.</li><li>Elk stukje dat bij de eerste controle goed ligt, levert 5 punten op. Elk fout stukje kost 5 procent schildsterkte.</li><li>Je hebt ' + Math.floor(LOCK_SECONDS / 60) + ' minuten. Als de juiste verdeling klopt, licht de sluiscode op.</li><li>Je datakristallen geven ' + n + (n === 1 ? " aanwijzing" : " aanwijzingen") + '. Daarna gebruik je je gratis hints.</li></ul></div>' +
-      '<div class="actions">' + nextBtn("Open de luchtsluis", "go") + '</div>'
+      '<div class="luik-pills" aria-hidden="true">' + pills(false) + '</div></div>' +
+      '<div class="ox-two">' +
+      '<div class="ox-card"><h3>Zo scoor je</h3><ul class="ox-rows">' +
+      row("tick", "green", "Elk stukje dat bij de eerste controle goed ligt, levert 5 punten op.") +
+      row("shield", "red", "Elk fout stukje kost 5 procent schild.") +
+      row("refresh", "blue", "Kies bij elk stukje een luik. Daarna controleer je de verdeling.") +
+      '</ul></div>' +
+      '<div class="ox-card"><h3>Goed om te weten</h3><ul class="ox-rows">' +
+      row("clock", "blue", "Je hebt " + Math.floor(LOCK_SECONDS / 60) + " minuten. Als de verdeling klopt, licht de sluiscode op.") +
+      row("gem", "gold", "Elk kristal uit dit level is één aanwijzing van ARIA zonder kosten. Je hebt er " + n + ".") +
+      row("bulb", "blue", "Daarna kost een aanwijzing " + HINT_COST + " procent schild.") +
+      '</ul></div></div>' +
+      '<div class="actions">' + nextBtn("Open de luchtsluis", "go") + '</div></div>'
     );
     document.getElementById("go").onclick = screenLock;
   }
 
   var timerId = null;
+  function fmt(n) { return Math.floor(n / 60) + ":" + (n % 60 < 10 ? "0" : "") + (n % 60); }
+
   function screenLock() {
-    S.lock = { place: {}, checks: 0, firstScored: false, clues: S.crystals.length, remaining: LOCK_SECONDS, revealed: {}, done: false, triedOpen: false };
+    S.lock = { place: {}, verdict: {}, checks: 0, firstScored: false, used: 0, remaining: LOCK_SECONDS, revealed: {}, done: false };
     var cards = LOCK_ITEMS.map(function (it, i) {
       var btns = HATCHES.map(function (h) {
-        return '<button type="button" class="vcsw-button outline sm" data-card="' + i + '" data-hatch="' + h.id + '" aria-pressed="false">' + h.name + '</button>';
+        return '<button type="button" class="luik-btn h-' + h.id + '" data-card="' + i + '" data-hatch="' + h.id + '" aria-pressed="false">' + icon(h.icon, "ic-luik") + icon("tick", "ic-on") + '<span>' + h.name + '</span></button>';
       }).join("");
-      return '<div class="info-card" id="card' + i + '"><div><div class="label" id="lbl' + i + '">' + it.t + '</div><div class="card-verdict" id="cv' + i + '"></div></div><div class="btns" role="group" aria-labelledby="lbl' + i + '">' + btns + '</div></div>';
+      return '<div class="luik-card" id="card' + i + '"><div class="luik-head"><span class="luik-teken" id="tk' + i + '" aria-hidden="true"></span>' +
+        '<div class="luik-txt"><span class="luik-label" id="lbl' + i + '">' + it.t + '</span><span class="luik-sub" id="sub' + i + '">Nog kiezen</span></div></div>' +
+        '<div class="luik-btns" role="group" aria-labelledby="lbl' + i + '">' + btns + '</div></div>';
     }).join("");
-    var hatches = HATCHES.map(function (h) {
-      var lock = h.id === "arts" ? '<p class="lock-note">Extra slot. Alleen inschuiven.</p><button type="button" class="vcsw-button ghost sm mt-16" id="openArts">Luik zelf openen</button>' : "";
-      return '<div class="hatch"><h3><span>' + h.name + '</span><span class="vcsw-badge neutral" id="cnt-' + h.id + '">0</span></h3><ul id="list-' + h.id + '"></ul>' + lock + '</div>';
+    var pil = HATCHES.map(function (h) {
+      var base = icon(h.icon) + '<span>' + h.name + '</span><b id="cnt-' + h.id + '">0</b><span class="vcsw-sr-only"> stukjes</span>';
+      if (h.id !== "arts") return '<span class="luik-pil h-' + h.id + '">' + base + '</span>';
+      return '<span class="luik-pil h-arts slot">' + base +
+        '<button type="button" class="luik-open" id="openArts" title="Extra slot. Alleen inschuiven.">' + icon("lock") + '<span>Luik zelf openen</span><span class="vcsw-sr-only">. Het luik van de scheepsarts heeft een extra slot.</span></button></span>';
     }).join("");
-    show(
-      head("Luchtsluis", "De drie luiken") +
-      '<div class="top-bar"><p class="vcsw-small">Resterende tijd: <strong class="timer" id="timer">5:00</strong></p>' +
-      '<button type="button" class="vcsw-button secondary sm" id="hint">' + icon("search") + '<span id="hintLabel"></span></button></div>' +
-      '<div class="feedback" id="hintBox"></div>' +
-      '<div class="cards">' + cards + '</div>' +
-      '<div class="hatches" aria-label="De drie luiken">' + hatches + '</div>' +
-      '<div class="feedback" id="fb"></div>' +
-      '<div class="actions" id="act"><button type="button" class="vcsw-button lg" id="check" aria-disabled="true">Verdeling controleren</button></div>'
+    show("luchtsluis",
+      '<div class="luik">' +
+      '<div class="luik-top"><h2>De drie luiken</h2>' +
+      '<span class="ox-chip" id="gekozen">' + icon("tick") + '<span>0 van ' + LOCK_ITEMS.length + ' gekozen</span></span>' +
+      '<span class="ox-chip ok" id="schildChip"></span>' +
+      '<span class="ox-clock timer" id="timer" aria-label="Resterende tijd">' + icon("clock") + '<span>' + fmt(LOCK_SECONDS) + '</span></span></div>' +
+      '<div class="luik-pills" role="group" aria-label="De drie luiken">' + pil + '<span class="luik-rest" id="rest"></span></div>' +
+      '<div class="luik-grid">' + cards + '</div>' +
+      '<div class="luik-acts" id="act">' +
+      '<button type="button" class="ox-btn" id="check" aria-disabled="true">Verdeling controleren' + icon("tick") + '</button>' +
+      '<button type="button" class="ox-btn ghost" id="hint">Vraag ARIA om een aanwijzing' + icon("bulb") + '</button>' +
+      '<div class="aw-meta"><span class="aw-gems" id="gems"></span><span class="aw-cost" id="hintCost"></span></div>' +
+      '</div>' +
+      '<div class="aw-list" id="msg"></div>' +
+      '</div>'
     );
-    updateHintLabel();
+    paintLock();
     screenEl.querySelectorAll("[data-card]").forEach(function (b) {
       b.addEventListener("click", function () {
         if (S.lock.done) return;
-        var i = b.getAttribute("data-card");
+        var i = +b.getAttribute("data-card");
         S.lock.place[i] = b.getAttribute("data-hatch");
-        screenEl.querySelectorAll('[data-card="' + i + '"]').forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
-        document.getElementById("card" + i).classList.remove("wrong");
-        document.getElementById("cv" + i).innerHTML = "";
-        renderHatches();
+        delete S.lock.verdict[i];
+        paintLock();
       });
     });
     document.getElementById("openArts").onclick = function () {
+      if (S.lock.done) return;
       S.shield -= 10;
-      renderHud();
-      document.getElementById("hintBox").innerHTML = say("aria", "Dat luik gaat niet open voor jou, en dat is precies de bedoeling. Dat kost je 10 procent schildsterkte.");
+      ariaSays("Dat luik gaat niet open voor jou, en dat is precies de bedoeling. Dat kost je 10 procent schildsterkte.", chip("Kostte 10 procent schild", "warn", "shield"));
+      paintLock();
       announce("Het luik van de scheepsarts blijft dicht. Min 10 procent schildsterkte.");
     };
     document.getElementById("hint").onclick = useHint;
@@ -354,61 +440,94 @@
     startTimer();
   }
 
-  function renderHatches() {
-    HATCHES.forEach(function (h) {
-      var items = [];
-      LOCK_ITEMS.forEach(function (it, i) { if (S.lock.place[i] === h.id) items.push(it.t); });
-      document.getElementById("list-" + h.id).innerHTML = items.map(function (t) { return "<li>" + t + "</li>"; }).join("");
-      document.getElementById("cnt-" + h.id).textContent = items.length;
+  /* Eén vak onder de knoppen voor het laatste bericht: de tekstballon van ARIA of de uitslag van een controle.
+     Een aanwijzing blijft daarnaast op de kaart zelf staan. */
+  function lockMsg(html) {
+    var box = document.getElementById("msg");
+    if (!box) return;
+    box.innerHTML = html;
+    var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (box.scrollIntoView) box.scrollIntoView({ block: "nearest", behavior: calm ? "auto" : "smooth" });
+  }
+  function ariaSays(text, extra) { lockMsg('<div class="ox-card aw-bubble">' + say("aria", text, extra) + '</div>'); }
+
+  function paintLock() {
+    var L = S.lock, n = Object.keys(L.place).length, total = LOCK_ITEMS.length;
+    LOCK_ITEMS.forEach(function (it, i) {
+      var at = L.place[i], h = at ? hatch(at) : null, v = L.verdict[i];
+      var card = document.getElementById("card" + i);
+      card.className = "luik-card" + (h ? " at h-" + at : "") + (v === false ? " wrong" : "");
+      var tk = document.getElementById("tk" + i);
+      tk.className = "luik-teken" + (h ? " on" : "");
+      tk.innerHTML = h ? icon(h.icon) : "";
+      var sub = h ? "Ligt bij: " + h.name : "Nog kiezen";
+      if (v === false) sub = '<span class="st bad">' + icon("cross") + 'Fout, probeer een ander luik</span>';
+      else if (v === true) sub = '<span class="st good">' + icon("tick") + 'Goed. Ligt bij: ' + h.name + '</span>';
+      if (L.revealed[i] && at !== it.a) sub += '<span class="st tip">' + icon("bulb") + 'ARIA: hoort bij ' + hatch(it.a).name + '</span>';
+      document.getElementById("sub" + i).innerHTML = sub;
+      card.querySelectorAll("[data-card]").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.getAttribute("data-hatch") === at));
+        if (L.done) b.disabled = true;
+      });
     });
-    var n = Object.keys(S.lock.place).length;
+    HATCHES.forEach(function (h) {
+      var c = 0;
+      LOCK_ITEMS.forEach(function (it, i) { if (L.place[i] === h.id) c++; });
+      document.getElementById("cnt-" + h.id).textContent = c;
+    });
+    document.querySelector("#gekozen span").textContent = n + " van " + total + " gekozen";
+    document.getElementById("rest").textContent = n === total ? "Alles gekozen" : "Nog " + (total - n) + " te kiezen";
+    var sh = shieldNow(), sc = document.getElementById("schildChip");
+    sc.className = "ox-chip " + shieldTone(sh);
+    sc.innerHTML = icon("shield") + "Schild " + sh + "%";
     var c = document.getElementById("check");
-    if (c) { if (n === LOCK_ITEMS.length) c.removeAttribute("aria-disabled"); else c.setAttribute("aria-disabled", "true"); }
+    if (c) { if (n === total) c.removeAttribute("aria-disabled"); else c.setAttribute("aria-disabled", "true"); }
+    /* Teller van kristallen en de prijs van de volgende aanwijzing */
+    var have = S.crystals.length, usedFree = Math.min(L.used, have), gems = "";
+    for (var g = 0; g < have; g++) gems += '<span class="gem' + (g < usedFree ? " used" : "") + '">' + icon("gem") + '</span>';
+    document.getElementById("gems").innerHTML = gems + '<span>' + (have ? usedFree + " van " + have + " gebruikt" : "Geen kristallen verdiend") + '</span>';
+    var free = L.used < have, cost = document.getElementById("hintCost");
+    cost.className = "aw-cost " + (free ? "free" : "paid");
+    cost.innerHTML = icon(free ? "gem" : "shield") + (free ? "Volgende: zonder kosten" : "Volgende: " + HINT_COST + " procent schild");
+    renderHud();
   }
 
-  function updateHintLabel() {
-    var el = document.getElementById("hintLabel");
-    if (!el) return;
-    if (S.lock.clues > 0) el.textContent = "Aanwijzing uit kristal (" + S.lock.clues + " over)";
-    else if (S.hintsFree > 0) el.textContent = "Hint (" + S.hintsFree + " gratis over)";
-    else el.textContent = "Extra hint (kost " + EXTRA_HINT_COST + " procent)";
-  }
-
+  /* Eén prijs: elk kristal uit dit level is één aanwijzing zonder kosten, daarna 10 procent schild. */
   function useHint() {
-    if (S.lock.done) return;
-    var target = -1;
-    for (var i = 0; i < LOCK_ITEMS.length; i++) {
-      if (!S.lock.revealed[i] && S.lock.place[i] !== LOCK_ITEMS[i].a) { target = i; break; }
+    var L = S.lock;
+    if (L.done) return;
+    var target = -1, i;
+    for (i = 0; i < LOCK_ITEMS.length; i++) {
+      if (!L.revealed[i] && L.place[i] !== LOCK_ITEMS[i].a) { target = i; break; }
     }
     if (target === -1) {
-      document.getElementById("hintBox").innerHTML = say("aria", "Alles wat je nu hebt neergelegd klopt. Controleer de verdeling maar.");
+      var open = LOCK_ITEMS.some(function (it, k) { return L.place[k] !== it.a; });
+      ariaSays(open ? "Je hebt al mijn aanwijzingen gekregen. Ze staan bij de stukjes zelf." : "Alles wat je nu hebt neergelegd klopt. Controleer de verdeling maar.");
       return;
     }
-    var source;
-    if (S.lock.clues > 0) { S.lock.clues--; source = "Je datakristal geeft een aanwijzing."; }
-    else if (S.hintsFree > 0) { S.hintsFree--; source = "Gratis hint gebruikt."; }
-    else { S.shield -= EXTRA_HINT_COST; source = "Extra hint gebruikt, min " + EXTRA_HINT_COST + " procent schildsterkte."; }
-    S.lock.revealed[target] = true;
-    var it = LOCK_ITEMS[target];
-    var hname = HATCHES.filter(function (h) { return h.id === it.a; })[0].name;
-    document.getElementById("hintBox").innerHTML = say("aria", source + " “" + it.t + "” hoort bij: " + hname + ". " + LOCK_WHY[it.a]);
-    updateHintLabel();
-    renderHud();
-    announce(it.t + " hoort bij " + hname + ".");
+    var free = L.used < S.crystals.length;
+    if (!free) S.shield -= HINT_COST;
+    L.used++;
+    L.revealed[target] = true;
+    var it = LOCK_ITEMS[target], hname = hatch(it.a).name;
+    ariaSays("“" + it.t + "” hoort bij: " + hname + ". " + LOCK_WHY[it.a],
+      free ? chip("Zonder kosten, kristal gebruikt", "gold", "gem") : chip("Kostte " + HINT_COST + " procent schild", "warn", "shield"));
+    paintLock();
+    announce(it.t + " hoort bij " + hname + ". " + (free ? "Zonder kosten." : "Min " + HINT_COST + " procent schild."));
   }
 
   function startTimer() {
     stopTimer();
-    var el = document.getElementById("timer");
     timerId = setInterval(function () {
-      if (!S.lock || S.lock.done) { stopTimer(); return; }
+      if (!S.lock || S.lock.done || S.screen !== "luchtsluis") { stopTimer(); return; }
+      var el = document.getElementById("timer");
+      if (S.lock.remaining === 0) return;
       S.lock.remaining = Math.max(0, S.lock.remaining - 1);
-      var m = Math.floor(S.lock.remaining / 60), s = S.lock.remaining % 60;
-      if (el) el.textContent = m + ":" + (s < 10 ? "0" : "") + s;
+      if (el) { el.querySelector("span").textContent = fmt(S.lock.remaining); el.classList.toggle("low", S.lock.remaining <= 60); }
       if (S.lock.remaining === 60) announce("Nog een minuut.");
       if (S.lock.remaining === 0) {
         stopTimer();
-        document.getElementById("hintBox").innerHTML = say("aria", "De tijd is om. Maak de verdeling af, de sluis wacht op je.");
+        ariaSays("De tijd is om. Maak de verdeling af, de sluis wacht op je.");
         announce("De tijd is om.");
       }
     }, 1000);
@@ -416,46 +535,53 @@
   function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
 
   function checkLock() {
-    if (S.lock.done) return;
-    if (Object.keys(S.lock.place).length < LOCK_ITEMS.length) { announce("Leg eerst elk stukje informatie in een luik."); return; }
-    S.lock.checks++;
+    var L = S.lock;
+    if (L.done) return;
+    if (Object.keys(L.place).length < LOCK_ITEMS.length) { announce("Leg eerst elk stukje informatie in een luik."); return; }
+    L.checks++;
     var wrong = 0;
     LOCK_ITEMS.forEach(function (it, i) {
-      var ok = S.lock.place[i] === it.a;
-      var card = document.getElementById("card" + i);
-      var cv = document.getElementById("cv" + i);
-      card.classList.toggle("wrong", !ok);
-      cv.innerHTML = '<span class="inline-verdict ' + (ok ? "verdict-good" : "verdict-bad") + '">' + icon(ok ? "check" : "x", "sm") + (ok ? "Goed" : "Fout, probeer een ander luik") + '</span>';
+      var ok = L.place[i] === it.a;
+      L.verdict[i] = ok;
       if (!ok) wrong++;
     });
-    if (!S.lock.firstScored) {
-      S.lock.firstScored = true;
+    if (!L.firstScored) {
+      L.firstScored = true;
       var good = LOCK_ITEMS.length - wrong;
       S.points += good * 5;
       S.shield -= wrong * 5;
       S.results.lock = { good: good };
     }
-    renderHud();
     if (wrong > 0) {
-      document.getElementById("fb").innerHTML = gradeAlert(wrong <= 2 ? "half" : "fout", wrong + (wrong === 1 ? " stukje ligt" : " stukjes liggen") + " in het verkeerde luik", "Leg ze in een ander luik en controleer opnieuw. Punten tellen alleen bij de eerste controle.");
+      paintLock();
+      lockMsg(gradeAlert(wrong <= 2 ? "half" : "fout", wrong + (wrong === 1 ? " stukje ligt" : " stukjes liggen") + " in het verkeerde luik", "Leg ze in een ander luik en controleer opnieuw. Punten tellen alleen bij de eerste controle."));
       announce(wrong + " fout. Probeer opnieuw.");
       return;
     }
-    S.lock.done = true;
+    L.done = true;
     stopTimer();
-    screenEl.querySelectorAll("[data-card]").forEach(function (b) { b.disabled = true; });
-    var arts = document.getElementById("openArts"); if (arts) arts.disabled = true;
-    document.getElementById("hint").disabled = true;
-    var counts = HATCHES.map(function (h) {
-      var n = LOCK_ITEMS.filter(function (it) { return it.a === h.id; }).length;
-      return '<div class="code-digit" aria-hidden="true">' + n + '<small>' + h.name + '</small></div>';
+    screenLockOpen();
+  }
+
+  /* De verdeling klopt: de sluiscode licht op. Eigen stap, zodat het in één scherm past. */
+  function screenLockOpen() {
+    var cols = HATCHES.map(function (h) {
+      var items = LOCK_ITEMS.filter(function (it) { return it.a === h.id; });
+      return '<div class="ox-card luik-kolom h-' + h.id + '"><div class="kolom-kop"><span class="luik-teken on" aria-hidden="true">' + icon(h.icon) + '</span>' +
+        '<div><h3>' + h.name + '</h3><span class="kolom-code" aria-hidden="true">' + items.length + '</span></div></div>' +
+        '<p class="kolom-why">' + LOCK_WHY[h.id] + '</p>' +
+        '<ul>' + items.map(function (it) { return '<li>' + icon("tick") + '<span>' + it.t + '</span></li>'; }).join("") + '</ul></div>';
     }).join("");
     var codeText = HATCHES.map(function (h) { return LOCK_ITEMS.filter(function (it) { return it.a === h.id; }).length; }).join(", ");
-    document.getElementById("fb").innerHTML =
+    show("luchtsluis",
+      '<div class="ox-stack">' +
+      head("De sluis is open", chip("Luchtsluis") + chip("Sluiscode " + codeText.replace(/, /g, " "), "ok", "tick")) +
       gradeAlert("goed", "De verdeling klopt", "Elk luik krijgt alleen wat het nodig heeft. De sluiscode licht op.") +
-      '<div><p class="vcsw-small">Sluiscode</p><div class="code-display">' + counts + '</div><p class="vcsw-sr-only">Sluiscode ' + codeText + '</p></div>' +
-      say("aria", "Sluis open. Mooi werk. Dan nog even de debriefing, daarna mag je terug naar de aarde. Figuurlijk.");
-    document.getElementById("act").innerHTML = nextBtn("Naar de debriefing", "go");
+      '<p class="vcsw-sr-only">Sluiscode ' + codeText + '</p>' +
+      '<div class="luik-kolommen">' + cols + '</div>' +
+      say("aria", "Sluis open. Mooi werk. Dan nog even de debriefing, daarna mag je terug naar de aarde. Figuurlijk.") +
+      '<div class="actions">' + nextBtn("Naar de debriefing", "go") + '</div></div>'
+    );
     document.getElementById("go").onclick = screenDebrief;
     announce("De verdeling klopt. De sluis is open.");
   }
@@ -466,8 +592,9 @@
   }
 
   function screenDebrief() {
+    stopTimer();
     S.shield = Math.max(0, S.shield);
-    var pct = Math.round(S.points / MAX_POINTS * 100);
+    var pct = pctNow();
     S.passed = pct >= 70;
     if (S.passed) S.rank = "Commandeur";
     var r = S.results;
@@ -477,41 +604,111 @@
       '<tr><th scope="row">Situatie 3: Het verkeerde kanaal</th><td>' + gradeBadge(r.s3.grade) + '</td><td>Optie ' + r.s3.pick + '</td></tr>' +
       '<tr><th scope="row">Situatie 4: De crewchat</th><td>' + gradeBadge(r.s4.grade) + '</td><td>Optie ' + r.s4.pick + '</td></tr>' +
       '<tr><th scope="row">Luchtsluis: De drie luiken</th><td>' + gradeBadge(r.lock.good === 8 ? "goed" : (r.lock.good >= 6 ? "half" : "fout")) + '</td><td>' + r.lock.good + ' van 8 in één keer goed</td></tr>';
-    var crystals = S.crystals.length ? S.crystals.map(function (c) { return '<span class="vcsw-badge">' + c + '</span>'; }).join("") : '<span class="vcsw-small">Nog geen kristallen in dit level.</span>';
+    var crystals = S.crystals.length ? S.crystals.map(function (c) { return chip(c, "gold", "gem"); }).join("") : '<span class="ox-muted">Nog geen kristallen in dit level.</span>';
     var result = S.passed
       ? '<div class="vcsw-alert success">' + icon("check") + '<div><p class="vcsw-alert-title">Level gehaald met ' + pct + ' procent</p><p class="vcsw-alert-text">ARIA bevordert je tot Commandeur.</p></div></div>'
-      : '<div class="vcsw-alert actionable error">' + icon("x") + '<div><p class="vcsw-alert-title">Nog niet gehaald, je hebt ' + pct + ' procent</p><p class="vcsw-alert-text">Je hebt minimaal 70 procent nodig. Speel de dienst opnieuw.</p></div></div>';
-    var flag = S.flags.joran ? '<div class="vcsw-alert warning">' + icon("alert") + '<div><p class="vcsw-alert-title">Onthouden voor de eindmissie</p><p class="vcsw-alert-text">Je vertelde Kapitein Vega dat Joran overspannen is. Joran dient daarover later een klacht in.</p></div></div>' : "";
-    show(
-      head("Debriefing", "Wat ARIA je meegeeft") +
-      '<div class="vcsw-stack">' + result +
-      '<dl class="vcsw-stats cols-3"><div class="vcsw-stat"><dt>Punten</dt><dd><span class="vcsw-stat-value">' + S.points + ' / ' + MAX_POINTS + '</span></dd></div>' +
-      '<div class="vcsw-stat"><dt>Schildsterkte</dt><dd><span class="vcsw-stat-value">' + S.shield + '%</span></dd></div>' +
-      '<div class="vcsw-stat"><dt>Rang</dt><dd><span class="vcsw-stat-value">' + S.rank + '</span></dd></div></dl>' +
-      '<div class="vcsw-table-wrap"><table class="vcsw-table"><caption>Je resultaat per onderdeel</caption><thead><tr><th scope="col">Onderdeel</th><th scope="col">Oordeel</th><th scope="col">Toelichting</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
-      '<div class="vcsw-card">' + say("aria", "Drie regels voor in je geheugenbank.") +
+      : '<div class="vcsw-alert error">' + icon("x") + '<div><p class="vcsw-alert-title">Nog niet gehaald, je hebt ' + pct + ' procent</p><p class="vcsw-alert-text">Je hebt minimaal 70 procent nodig. Speel de dienst opnieuw.</p></div></div>';
+    var flag = S.flags.joran ? '<div class="onthoud">' + icon("alert") + '<p><strong>Onthouden voor de eindmissie.</strong> Je vertelde Kapitein Vega dat Joran overspannen is. Joran dient daarover later een klacht in.</p></div>' : "";
+    show("resultaat",
+      '<div class="ox-stack tight">' +
+      head("Wat ARIA je meegeeft") +
+      result +
+      '<div class="ox-card flush"><table class="ox-table"><caption class="vcsw-sr-only">Je resultaat per onderdeel</caption><thead><tr><th scope="col">Onderdeel</th><th scope="col">Oordeel</th><th scope="col">Toelichting</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<div class="ox-two">' +
+      '<div class="ox-card"><h3>Drie regels voor in je geheugenbank</h3>' +
       '<ol class="rules"><li>Vraag nooit naar de diagnose of oorzaak van ziekte, ook niet indirect.</li><li>Wat iemand je vertrouwelijk vertelt, geef je niet door.</li><li>Gevoelige gegevens alleen voor wie ze nodig heeft, en nooit in een chat of groepsapp.</li></ol></div>' +
-      '<div class="vcsw-card basic"><h4>Datakristallen uit dit level</h4><div class="crystal-list">' + crystals + '</div></div>' + flag +
-      '</div><div class="actions">' +
-      (S.passed ? nextBtn("Terug op aarde", "go") : '<button type="button" class="vcsw-button lg" id="retry">' + icon("refresh") + 'Dienst opnieuw spelen</button>') +
-      '</div>'
+      '<div class="ox-card"><h3>Datakristallen uit dit level</h3><div class="crystal-list">' + crystals + '</div>' + flag + '</div></div>' +
+      '<div class="actions">' + nextBtn("Terug op aarde", "go") +
+      (S.passed ? "" : '<button type="button" class="ox-btn ghost lg" id="retry">Dienst opnieuw spelen' + icon("refresh") + '</button>') +
+      '</div></div>'
     );
-    if (S.passed) document.getElementById("go").onclick = screenEarth;
-    else document.getElementById("retry").onclick = function () { reset(); screenBriefing(); };
+    document.getElementById("go").onclick = screenEarth;
+    var retry = document.getElementById("retry");
+    if (retry) retry.onclick = function () { reset(); screenBriefing(); };
+  }
+
+  function copyAddress(btn) {
+    var label = btn.querySelector("span"), addr = "jz@vcsw.nl";
+    function done(ok) {
+      label.textContent = ok ? "Adres gekopieerd" : "Kopiëren lukt niet";
+      announce(ok ? "Het adres jz@vcsw.nl is gekopieerd." : "Kopiëren lukt niet. Selecteer het adres en kopieer het zelf.");
+      setTimeout(function () { label.textContent = "Kopieer adres"; }, 2500);
+    }
+    function fallback() {
+      var ok = false, t = document.createElement("textarea");
+      t.value = addr; t.setAttribute("readonly", ""); t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select();
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(t); btn.focus();
+      done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(addr).then(function () { done(true); }, fallback);
+    else fallback();
   }
 
   function screenEarth() {
-    show(
-      head("Terug op aarde", "Wat dit betekent voor je werk") +
-      '<div class="vcsw-card earth"><div class="vcsw-prose">' +
-      '<p>Op je werk gaat dit over verzuim. Een werkgever mag niet naar de diagnose vragen. Medische informatie is voor de bedrijfsarts.</p>' +
-      '<p>Gegevens zoals de no-riskpolis en registratie in het doelgroepregister zijn gevoelig en horen alleen in het beveiligde systeem, bij wie ze nodig heeft voor bijvoorbeeld LKV of de no-riskpolis.</p>' +
+    stopTimer();
+    var pct = pctNow(), passed = pct >= 70, sh = shieldNow(), cr = S.crystals.length;
+    show("aarde",
+      '<div class="ox-stack aarde">' +
+      '<div class="screen-head"><h2>Wat dit betekent voor je werk</h2><p class="ox-lead">Het station is verzonnen. Dit neem je mee naar je werk.</p></div>' +
+      '<div class="ox-two">' +
+      '<div class="ox-card"><h3>Hier gaat het om</h3><ul class="ox-rows top">' +
+      row("dot", "blue", "Op je werk gaat dit over verzuim.") +
+      row("dot", "blue", "Een werkgever mag niet naar de diagnose vragen. Medische informatie is voor de bedrijfsarts.") +
+      row("dot", "blue", "Gegevens zoals de no-riskpolis en registratie in het doelgroepregister zijn gevoelig en horen alleen in het beveiligde systeem, bij wie ze nodig heeft voor bijvoorbeeld LKV of de no-riskpolis.") +
+      '</ul></div>' +
+      '<div class="ox-card"><h3>Dit doe je morgen</h3><ul class="ox-rows top">' +
+      row("tick", "blue", "Vraag nooit naar de diagnose of oorzaak van ziekte, ook niet indirect.") +
+      row("tick", "blue", "Wat iemand je vertrouwelijk vertelt, geef je niet door.") +
+      row("tick", "blue", "Gevoelige gegevens alleen voor wie ze nodig heeft, en nooit in een chat of groepsapp.") +
+      '</ul></div></div>' +
+      '<div class="ox-card meldroute"><div class="meld-txt"><h3>Meldroute</h3><p>Twijfel of een vermoedelijk datalek? Meld het direct bij Tarik, Dagmar of via het meldpunt.</p></div>' +
+      '<span class="meld-adres">jz@vcsw.nl</span>' +
+      '<button type="button" class="ox-btn ghost" id="copy"><span>Kopieer adres</span>' + icon("copy") + '</button></div>' +
+      '<div class="ox-card uitslag"><div class="uitslag-kop"><h3>Resultaat level 3</h3>' + chip(passed ? "Gehaald" : "Nog niet gehaald", passed ? "ok" : "warn", passed ? "tick" : "") +
+      '<button type="button" class="ox-btn" id="again">Speel level 3 opnieuw' + icon("refresh") + '</button></div>' +
+      '<div class="uitslag-grid">' +
+      '<div><p class="lbl">Score</p><p class="val">' + S.points + ' van ' + MAX_POINTS + ' punten</p><div class="track"><div class="fill" style="width:' + Math.min(100, pct) + '%"></div><span class="mark"></span></div>' +
+      '<p class="note">' + pct + ' procent. ' + (passed ? "De grens is 70 procent." : "Je hebt 70 procent nodig.") + '</p></div>' +
+      '<div><p class="lbl">Schild</p><p class="val">' + sh + ' procent</p><div class="track"><div class="fill ' + shieldTone(sh) + '" style="width:' + sh + '%"></div></div>' +
+      '<p class="note">Het schild telt niet mee voor halen. Het laat zien hoe zeker je speelde.</p></div>' +
+      '<div><p class="lbl">Kristallen</p><p class="val">' + cr + ' van ' + CRYSTALS_MAX + '</p><div class="track"><div class="fill gold" style="width:' + (cr / CRYSTALS_MAX * 100) + '%"></div></div>' +
+      '<p class="note">Elk kristal was één aanwijzing zonder kosten.</p></div>' +
       '</div></div>' +
-      '<div class="vcsw-alert actionable mt-24">' + icon("mail") + '<div><p class="vcsw-alert-title">Twijfel of een vermoedelijk datalek? Meld het direct</p><p class="vcsw-alert-text">Bij Tarik, Dagmar of via <a href="mailto:jz@vcsw.nl">jz@vcsw.nl</a>.</p></div></div>' +
-      '<div class="actions"><button type="button" class="vcsw-button outline" id="again">' + icon("refresh") + 'Level opnieuw spelen</button></div>'
+      '</div>'
     );
+    document.getElementById("copy").onclick = function () { copyAddress(this); };
     document.getElementById("again").onclick = function () { reset(); screenStart(); };
   }
 
-  screenStart();
+  /* ---------- Testsprong: ?scherm=<naam> begint direct op een scherm, met een voorbeeldstand ---------- */
+  function demo(low, withLock) {
+    reset();
+    if (low) {
+      S.points = 5; S.shield = 64; S.flags.joran = true;
+      S.results = { s1: { grade: "half", good: 7 }, s2: { grade: "fout", pick: "A" }, s3: { grade: "fout", pick: "C" }, s4: { grade: "fout", pick: "A" } };
+      if (withLock) { S.points += 20; S.shield -= 20; S.results.lock = { good: 4 }; }
+    } else {
+      S.points = 30; S.shield = 90; S.crystals = ["Wat mag je vragen bij ziekte", "Need to know"];
+      S.results = { s1: { grade: "goed", good: 9 }, s2: { grade: "goed", pick: "B" }, s3: { grade: "fout", pick: "A" }, s4: { grade: "goed", pick: "B" } };
+      if (withLock) { S.points += 35; S.shield -= 5; S.results.lock = { good: 7 }; }
+    }
+  }
+  function jump() {
+    var q; try { q = new URLSearchParams(location.search); } catch (e) { return false; }
+    var name = q.get("scherm"), low = q.get("stand") === "laag";
+    if (!name) return false;
+    if (name === "briefing") { screenBriefing(); return true; }
+    if (name === "dienst") { screenSickReport(); return true; }
+    if (/^situatie[234]$/.test(name)) { demo(low); screenChoice(+name.slice(-1) - 2); return true; }
+    if (name === "luchtsluis") { demo(low); screenLockIntro(); return true; }
+    if (name === "sluis") { demo(low); screenLock(); return true; }
+    if (name === "sluisopen") { demo(low, true); S.screen = "luchtsluis"; screenLockOpen(); return true; }
+    if (name === "resultaat") { demo(low, true); screenDebrief(); return true; }
+    if (name === "aarde") { demo(low, true); S.passed = pctNow() >= 70; if (S.passed) S.rank = "Commandeur"; screenEarth(); return true; }
+    return false;
+  }
+
+  if (!jump()) screenStart();
 })();

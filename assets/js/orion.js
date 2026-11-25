@@ -292,7 +292,7 @@
     var steps = (s.steps || []).map(function (n, i) { return '<div class="st-step' + (i < s.step ? " done" : i === s.step ? " cur" : "") + '"' + (i === s.step ? ' aria-current="step"' : "") + "><i></i><span>" + esc(n) + "</span></div>"; }).join("");
     var gems = ""; for (var i = 0; i < (s.crystalsMax || 0); i++) gems += '<i class="' + (i < s.crystals ? "on" : "") + '"></i>';
     var last = s.steps && s.step >= s.steps.length - 1, nx = ROUTE[cur + 1];
-    statusEl.innerHTML = (steps ? '<div class="st-steps" role="list" aria-label="Stappen van dit level">' + steps + "</div>" : "") + '<div class="st-row">' +
+    statusEl.innerHTML = (steps ? '<div class="st-steps" role="list" aria-label="Stappen van dit level">' + steps + "</div>" : "") + '<div class="st-row' + (last && nx ? " end" : "") + '">' +
       '<div class="st-stat"><div class="st-top">' + icon("target") + "<span>Score</span>" + (d && d.score ? '<em class="up">plus ' + d.score + "</em>" : "") + "<b>" + s.score + " van " + s.max + "</b></div>" + sbar(pct, "", 70, was) + "<small>Gehaald vanaf " + Math.ceil(s.max * 0.7) + " punten</small></div>" +
       '<div class="st-stat"><div class="st-top">' + icon("shield") + "<span>Schild</span>" + (d && d.shield ? '<em class="down">min ' + (-d.shield) + "%</em>" : "") + "<b>" + s.shield + "%</b></div>" + sbar(s.shield, s.shield > 50 ? "ok" : "warn", 0, d && d.shield ? s.shield - d.shield : undefined) + "<small>Elke fout kost schild</small></div>" +
       (s.crystalsMax ? '<div class="st-stat gems"><div class="st-top">' + icon("gem") + "<span>Kristallen</span><b>" + s.crystals + " van " + s.crystalsMax + '</b></div><div class="st-gems">' + gems + "</div><small>Openen aanwijzingen</small></div>" : "") +
@@ -301,11 +301,23 @@
     var nb = document.getElementById("st-next"); if (nb) nb.onclick = function () { go(cur + 1); };
     stageEl.style.setProperty("--status-h", statusEl.offsetHeight + "px");
   }
+  /* The attack in the final mission: the camera follows the Zwarte Nevel from module to module. */
+  var nevelAt = -1;
+  function nevelView(boss) {
+    var at = boss ? Math.max(0, Math.min(5, boss.i | 0)) : -1, here = ROUTE[cur] && ROUTE[cur].type === "level" && ROUTE[cur].n === 5;
+    station(function (S) { if (S.nevel) S.nevel(boss && here ? boss : null); });
+    if (!here || at === nevelAt) return; nevelAt = at;
+    var L = LEVELS[at < 0 ? 5 : at];
+    document.getElementById("m-title").textContent = L.place;
+    document.getElementById("m-place").textContent = at < 0 ? label(ROUTE[cur]).title : "Aanval " + (at + 1) + " van 6 op deze module";
+    document.getElementById("m-aria").textContent = at < 0 ? LEVELS[5].aria : "De Zwarte Nevel ligt over " + L.place + ". Een goed antwoord blaast hem weg.";
+    station(function (S) { S.focus(LEVELS[at < 0 ? 5 : at].module, window.innerWidth > 900 ? "left" : null); S.alarm(at >= 0); });
+  }
   function onStatus(n, s) {
     var old = ST[n]; ST[n] = s;
     if (old && (s.score > old.score || s.shield < old.shield)) { DELTA[n] = { score: s.score - old.score, shield: s.shield - old.shield, until: Date.now() + 5000 }; setTimeout(renderStatus, 5100); }
     if (n === 5 && s.part && s.part !== P.epart) { P.epart = s.part; renderRoute(); }
-    if (n === 5) station(function (S) { if (S.nevel) S.nevel(s.part === 2 && s.boss ? s.boss : null); });
+    if (n === 5) nevelView(s.part === 2 && s.boss ? s.boss : null);
     if (s.done && s.pct !== null && s.pct !== undefined) { P.results = P.results || {}; var b = P.results[n]; if (!b || s.pct >= b.pct) { P.results[n] = { pct: s.pct, passed: !!s.passed, shield: s.shield, crystals: s.crystals, crystalsMax: s.crystalsMax }; save(); } }
     renderStatus(); fitPanel();
   }
@@ -350,13 +362,15 @@
   function loadFrame(n) {
     var f = document.createElement("iframe");
     f.title = LEVELS[n].title;
-    f.src = LEVELS[n].src;
+    /* Test jump: index.html?ls=3&scherm=sluis opens level 3 at that screen. */
+    var jump = /[?&]ls=(\d)/.exec(location.search);
+    f.src = LEVELS[n].src + (jump && +jump[1] === n + 1 ? location.search : "");
     stageEl.insertBefore(f, fx);
     return f;
   }
   function go(i) {
     if (i < 0 || i >= ROUTE.length) return;
-    stopGame(); endPanic();
+    stopGame(); endPanic(); nevelAt = -1; station(function (S) { if (S.nevel) S.nevel(null); });
     var r = ROUTE[i], first = view !== "mission";
     cur = i; view = "mission"; P.last = i;
     document.body.setAttribute("data-view", "mission");
@@ -386,6 +400,7 @@
     document.getElementById("next").disabled = i === ROUTE.length - 1;
     document.title = label(r).title + " · AVG-game Ruimtestation Orion";
     renderRoute(); syncStation(); renderStatus(); fitPanel();
+    if (r.type === "level" && r.n === 5 && ST[5]) nevelView(ST[5].part === 2 && ST[5].boss ? ST[5].boss : null);
     var node = routeEl.querySelector('[data-i="' + i + '"]'); if (node) node.scrollIntoView({ block: "nearest", inline: "center" });
     if (first) missionEl.focus({ preventScroll: true });
   }
