@@ -159,6 +159,8 @@ function speak(container, text, onDone) {
     vis.textContent = text; av && av.classList.remove('speaking'); if (skip) skip.hidden = true; onDone && onDone();
   };
   if (reduce) { finish(); return; }
+  /* Reserve the room of the whole sentence first, so the answers below do not move while the text appears. */
+  vis.style.minHeight = ''; vis.textContent = text; const full = vis.offsetHeight; if (full) vis.style.minHeight = full + 'px';
   let i = 0; vis.textContent = ''; av && av.classList.add('speaking'); if (skip) { skip.hidden = false; skip.onclick = finish; }
   typing = { id: setInterval(() => { i += 2; vis.textContent = text.slice(0, i); if (i >= text.length) finish(); }, 28) };
 }

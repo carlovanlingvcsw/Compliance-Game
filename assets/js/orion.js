@@ -207,6 +207,7 @@
       if (s > 0) done++;
       return '<li><button type="button" class="stop" data-i="' + i + '" data-m="' + L.module + '"><span class="num">' + (n === 5 ? "E" : n + 1) + '</span><span class="txt"><b>' + esc(L.name) + "</b>" + (b >= 0 ? "<small>Met bonusronde</small>" : "") + '</span>' + (P.opened[n] || s ? '<span class="stars" role="img" aria-label="' + s + ' van 3 sterren">' + stars(s) + "</span>" : "") + "</button></li>";
     }).join("");
+    hotBox = null;
     hotEl.innerHTML = LEVELS.map(function (L, n) {
       var st = P.levelStars[n] || 0, seen = P.opened[n];
       return '<button type="button" class="hot' + (seen ? " seen" : "") + '" data-i="' + routeIndexOfLevel(n) + '" data-m="' + L.module + '" aria-label="' + esc(L.title) + (seen ? ", " + st + " van 3 sterren" : "") + '"><span class="dot"></span><span class="lead"></span><span class="tag">' + (n === 5 ? "E" : n + 1) + " · " + esc(L.place) + "</span></button>";
@@ -225,22 +226,30 @@
   document.getElementById("start").onclick = function () { go(P.last >= 0 ? P.last : 0); };
 
   /* Labels that float next to the modules in 3D */
+  /* The labels follow the station on every picture. Sizes are read once and kept, and a label is only moved when its place
+     really changed: reading a size right after moving a label made the browser lay out the page six times per picture. */
+  var hotBox = null;
+  window.addEventListener("resize", function () { hotBox = null; });
   function placeHotspots() {
     var S = window.OrionStation;
     if (!S || view !== "home") return;
-    var pts = S.project(), btns = hotEl.children, mid = S.centre ? S.centre() : { x: window.innerWidth / 2 };
-    var copy = document.getElementById("home-title"), cr = copy ? copy.getBoundingClientRect() : null;
+    var btns = hotEl.children;
+    if (!hotBox || !hotBox.w[0]) {
+      var copy = document.getElementById("home-title");
+      hotBox = { cr: copy ? copy.getBoundingClientRect() : null, w: [].map.call(btns, function (x) { return x.offsetWidth; }) };
+    }
+    var pts = S.project(), mid = S.centre ? S.centre() : { x: window.innerWidth / 2 }, cr = hotBox.cr;
     LEVELS.forEach(function (L, n) {
       var p = pts[L.module], b = btns[n]; if (!p || !b) return;
       var left = p.x < mid.x - 20;
-      var low = left && cr && p.y > cr.top - 30 && p.x - b.offsetWidth < cr.right + 24; // not across the title: hang it below the module
+      var low = left && cr && p.y > cr.top - 30 && p.x - hotBox.w[n] < cr.right + 24; // not across the title: hang it below the module
       if (low) left = false;
-      b.classList.toggle("left", left);
-      b.style.transform = "translate(" + Math.round(p.x) + "px," + Math.round(p.y) + "px)" + (left ? " translateX(-100%)" : "") + (low ? " translateY(54px)" : "");
-      b.classList.toggle("behind", !p.front);
+      var tr = "translate(" + Math.round(p.x) + "px," + Math.round(p.y) + "px)" + (left ? " translateX(-100%)" : "") + (low ? " translateY(54px)" : ""), key = tr + (left ? "L" : "") + (p.front ? "" : "B");
+      if (b._at === key) return;
+      b._at = key; b.classList.toggle("left", left); b.style.transform = tr; b.classList.toggle("behind", !p.front);
     });
     var et = document.getElementById("earth-tag");
-    if (et && S.earth) { var e = S.earth(); et.style.transform = "translate(" + Math.round(e.x) + "px," + Math.round(e.y) + "px)"; et.classList.toggle("off", !e.front); }
+    if (et && S.earth) { var e = S.earth(), ek = Math.round(e.x) + "," + Math.round(e.y) + (e.front ? "" : "B"); if (et._at !== ek) { et._at = ek; et.style.transform = "translate(" + Math.round(e.x) + "px," + Math.round(e.y) + "px)"; et.classList.toggle("off", !e.front); } }
   }
 
   /* ---------- Station link ---------- */
@@ -915,34 +924,106 @@
   }
   document.getElementById("sound").addEventListener("click", function () { ambient(P.sound); });
 
-  /* ---------- Opening screen: explains the game while the station loads ---------- */
+  /* ---------- Opening screen: the scan gate of the arrival airlock ---------- */
   (function () {
     var boot = document.getElementById("boot"); if (!boot) return;
     var rest = [document.querySelector("header.bar"), document.querySelector("main")];
-    function close() { boot.hidden = true; document.body.classList.remove("booting"); rest.forEach(function (el) { if (el) el.inert = false; }); }
-    var sel = document.getElementById("boot-user");
-    sel.innerHTML = USERS.map(function (u) { return '<option value="' + u.id + '"' + (u.id === P.user ? " selected" : "") + ">" + esc(u.name) + " · " + esc(u.label) + ", " + esc(u.dept) + "</option>"; }).join("");
-    function login() { P.user = sel.value; save(); paintUser(); }
-    var gate = document.getElementById("gate"), stEl = document.getElementById("boot-status"), gT = [];
-    function resetGate() { gT.forEach(clearTimeout); gT = []; boot.classList.remove("scan", "open", "out"); stEl.textContent = "Wacht op je pas"; }
-    document.getElementById("user-btn").onclick = function () { resetGate(); boot.hidden = false; document.body.classList.add("booting"); boot.classList.add("relog"); rest.forEach(function (el) { if (el) el.inert = true; }); document.getElementById("boot-go").disabled = false; sel.focus(); };
-    function enter() { close(); resetGate(); if (view === "admin" && !me().admin) showHome(); document.getElementById("start").focus({ preventScroll: true }); }
-    document.getElementById("boot-go").onclick = function () {
-      login(); boot.classList.add("ready");
-      if (reduce) { enter(); return; }
-      this.disabled = true; boot.classList.add("scan"); stEl.textContent = "Pas wordt gelezen";
-      gT.push(setTimeout(function () { boot.classList.add("open"); stEl.textContent = "Welkom aan boord, " + me().name.split(" ")[0]; SFX.good(); }, 650));
-      gT.push(setTimeout(function () { boot.classList.add("out"); }, 1500));
-      gT.push(setTimeout(enter, 1950));
-    };
+    var sel = document.getElementById("boot-user"), msBtn = document.getElementById("gate-ms"), passes = document.getElementById("passes");
+    var bay = document.getElementById("bay"), statusEl = document.getElementById("boot-status");
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    sel.innerHTML = USERS.map(function (u) { return '<option value="' + u.id + '"' + (u.id === P.user ? " selected" : "") + ">" + esc(u.name) + "</option>"; }).join("");
+    function initials(n) { return n.replace(/\(.*\)/, "").trim().split(/\s+/).filter(function (w) { return /^[A-Z]/.test(w); }).map(function (w) { return w[0]; }).slice(0, 2).join(""); }
+    passes.innerHTML = USERS.map(function (u) {
+      return '<li><button type="button" class="pass-card' + (u.admin ? " is-admin" : "") + '" data-id="' + u.id + '"><span class="av" aria-hidden="true">' + esc(initials(u.name)) + "</span><span><b>" + esc(u.name) + "</b><small>" + esc(u.label) + ", " + esc(u.dept) + "</small></span></button></li>";
+    }).join("");
+    /* Wear for the metal: scratches, grime and grain, drawn once in code so the door does not look like a vector drawing. */
+    (function wear() {
+      try {
+        var c = document.createElement("canvas"), n = 512; c.width = c.height = n;
+        var x = c.getContext("2d"), seed = 7, rnd = function () { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+        for (var i = 0; i < 2600; i++) { x.fillStyle = "rgba(255,255,255," + (rnd() * 0.05).toFixed(3) + ")"; x.fillRect(rnd() * n, rnd() * n, 1, 1); }
+        for (i = 0; i < 1600; i++) { x.fillStyle = "rgba(0,0,0," + (rnd() * 0.12).toFixed(3) + ")"; x.fillRect(rnd() * n, rnd() * n, 1 + rnd() * 1.5, 1); }
+        for (i = 0; i < 26; i++) {
+          var gx = rnd() * n, gy = rnd() * n, r = 10 + rnd() * 50, g = x.createRadialGradient(gx, gy, 0, gx, gy, r);
+          g.addColorStop(0, "rgba(0,0,0," + (0.06 + rnd() * 0.1).toFixed(3) + ")"); g.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = g; x.fillRect(gx - r, gy - r, r * 2, r * 2);
+        }
+        x.lineCap = "round";
+        for (i = 0; i < 140; i++) {
+          var sx = rnd() * n, sy = rnd() * n, a = (rnd() - 0.5) * 1.2 + (rnd() < 0.5 ? 0 : Math.PI / 2 * 0.2), l = 6 + rnd() * 40;
+          x.strokeStyle = "rgba(220,235,250," + (0.05 + rnd() * 0.16).toFixed(3) + ")"; x.lineWidth = 0.5 + rnd() * 0.7;
+          x.beginPath(); x.moveTo(sx, sy); x.quadraticCurveTo(sx + Math.cos(a) * l * 0.5 + (rnd() - 0.5) * 4, sy + Math.sin(a) * l * 0.5, sx + Math.cos(a) * l, sy + Math.sin(a) * l); x.stroke();
+        }
+        boot.style.setProperty("--wear", 'url("' + c.toDataURL("image/png") + '")');
+      } catch (e) {}
+    })();
+    function step(name) { boot.querySelectorAll(".reader-step").forEach(function (s) { s.hidden = s.getAttribute("data-step") !== name; }); }
+    /* The wall has a hole where the door bay is, so the station shows through when the leaves part. */
+    function hole() {
+      var r = bay.getBoundingClientRect();
+      boot.style.setProperty("--hx", r.left + "px"); boot.style.setProperty("--hy", r.top + "px");
+      boot.style.setProperty("--hw", r.width + "px"); boot.style.setProperty("--hh", r.height + "px");
+      boot.style.setProperty("--gx", ((r.left + r.width / 2) / window.innerWidth * 100) + "%");
+      boot.style.setProperty("--gy", ((r.top + r.height / 2) / window.innerHeight * 100) + "%");
+      /* the recess around the door gets a real opening (clip-path, so it holds while the hall scales) */
+      var rc = boot.querySelector(".recess");
+      if (rc && !boot.classList.contains("leaving")) {
+        var q = rc.getBoundingClientRect(), w = rc.offsetWidth, hh2 = rc.offsetHeight, x = r.left - q.left, y = r.top - q.top;
+        if (w > 0 && hh2 > 0) rc.style.clipPath = 'path(evenodd, "M60 0 H' + (w - 60) + ' L' + w + ' 60 V' + hh2 + ' H0 V60 Z M' + x + ' ' + y + ' h' + r.width + ' v' + r.height + ' h' + (-r.width) + ' Z")';
+      }
+      /* the hall pushes in towards the door: the wall scales around the same point as the door stage */
+      var st = boot.querySelector(".door-stage").getBoundingClientRect();
+      boot.style.setProperty("--ox", (r.left + r.width / 2) + "px"); boot.style.setProperty("--oy", (r.top + r.height / 2) + "px");
+      boot.style.setProperty("--sox", (r.left + r.width / 2 - st.left) + "px"); boot.style.setProperty("--soy", (r.top + r.height / 2 - st.top) + "px");
+    }
+    window.addEventListener("resize", hole); boot.addEventListener("scroll", hole, { passive: true });
+    function lock(on) { rest.forEach(function (el) { if (el) el.inert = on; }); }
+    function close() { boot.hidden = true; lock(false); boot.classList.remove("scanning", "granted", "unlock", "folding", "opening", "leaving"); }
+    function open() {
+      boot.hidden = false; lock(true); boot.classList.remove("scanning", "granted", "unlock", "folding", "opening", "leaving");
+      step("start"); hole(); statusEl.textContent = ready ? "Wacht op je pas" : "Het station wordt opgebouwd";
+      if (window.OrionStation && OrionStation.lowPower) OrionStation.lowPower(3);
+    }
+    document.getElementById("user-btn").onclick = function () { boot.classList.add("relog"); open(); step("pick"); var c = passes.querySelector('[data-id="' + P.user + '"]') || passes.querySelector("button"); c.focus(); };
     if (/[?&]boot=uit/.test(location.search)) { if (!P.user) P.user = USERS[0].id; paintUser(); close(); return; }
-    var bar = document.getElementById("boot-bar"), st = document.getElementById("boot-status"), goBtn = document.getElementById("boot-go"), ready = false;
-    rest.forEach(function (el) { if (el) el.inert = true; }); document.body.classList.add("booting");
+    /* The first unplayed level loads in the background once the player is in, so "Start de missie" opens at once. */
+    function warmNext() {
+      var idle = window.requestIdleCallback || function (f) { return setTimeout(f, 600); };
+      idle(function () { try { if (view !== "home") return; var r = ROUTE[P.last >= 0 ? P.last : 0]; if (r && r.type === "level" && !frames[r.n]) { frames[r.n] = loadFrame(r.n); frames[r.n].hidden = true; } } catch (e) {} }, { timeout: 2500 });
+    }
+    var bar = document.getElementById("boot-bar"), ready = false;
+    lock(true); hole(); requestAnimationFrame(hole);
     function prog(f) { bar.firstElementChild.style.width = Math.round(f * 100) + "%"; bar.setAttribute("aria-valuenow", Math.round(f * 100)); }
-    function done(text) { if (ready) return; ready = true; prog(1); st.textContent = text; boot.classList.add("ready"); goBtn.disabled = false; goBtn.focus({ preventScroll: true }); }
+    function done(text) { if (ready) return; ready = true; prog(1); statusEl.textContent = text; boot.classList.add("loaded"); msBtn.disabled = false; msBtn.focus({ preventScroll: true, focusVisible: false }); }
     window.addEventListener("orion-load", function (e) { if (!ready) prog(e.detail * 0.9); });
-    window.addEventListener("orion-station-ready", function () { done("Wacht op je pas"); });
-    var iv = setInterval(function () { if (ready) { clearInterval(iv); return; } if (document.documentElement.classList.contains("no-3d")) done("Wacht op je pas. Je speelt zonder 3D-beeld."); }, 300);
+    window.addEventListener("orion-station-ready", function () { done("Wacht op je pas"); if (!boot.hidden && window.OrionStation && OrionStation.lowPower) OrionStation.lowPower(3); });
+    var iv = setInterval(function () { if (ready) { clearInterval(iv); return; } if (document.documentElement.classList.contains("no-3d")) done("Wacht op je pas"); }, 300);
+    msBtn.onclick = function () { statusEl.textContent = "Kies je pas"; step("pick"); var c = passes.querySelector('[data-id="' + P.user + '"]') || passes.querySelector("button"); c.focus(); };
+    document.getElementById("pick-back").onclick = function () { statusEl.textContent = "Wacht op je pas"; step("start"); msBtn.focus(); };
+    /* ?traag=10 plays the opening ten times slower, for checking the motion frame by frame. */
+    var slow = Number((location.search.match(/[?&]traag=(\d+)/) || [])[1]) || 1;
+    var T = function (f, ms) { return setTimeout(f, (reduce ? Math.min(ms, 120) : ms) * slow); };
+    passes.addEventListener("click", function (e) {
+      var b = e.target.closest(".pass-card"); if (!b || boot.classList.contains("scanning")) return;
+      sel.value = b.getAttribute("data-id"); P.user = sel.value; save(); paintUser();
+      var u = me();
+      boot.classList.add("scanning"); statusEl.textContent = "Pas wordt gelezen";
+      T(function () {
+        step("ok"); document.getElementById("ok-name").textContent = "Welkom aan boord, " + u.name.replace(/\s*\(demo\)/, "") + ".";
+        boot.classList.add("granted"); statusEl.textContent = "Toegang verleend";
+        if (window.OrionStation && OrionStation.pulse) OrionStation.pulse("good");
+      }, 700);
+      /* The station stays almost still behind the closed doors and wakes up while they unlock, so the gangway has the
+         graphics card to itself and the station is at full pace the moment it comes into view. */
+      T(function () { boot.classList.add("unlock"); hole(); if (window.OrionStation && OrionStation.lowPower) OrionStation.lowPower(2); }, 1250);
+      T(function () { boot.classList.add("folding", "opening"); }, 1650);
+      T(function () { hole(); boot.classList.add("leaving"); }, 2950);
+      T(function () {
+        close(); boot.classList.remove("relog");
+        syncStation(); warmNext();
+        if (view === "admin" && !me().admin) showHome();
+        document.getElementById("start").focus({ preventScroll: true });
+      }, 4450);
+    });
     paintUser();
   })();
 

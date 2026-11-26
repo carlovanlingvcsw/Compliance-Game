@@ -69,28 +69,26 @@
     var ov = document.querySelector("#stage .vcsw-overline, #stage .overline, #stage .ov, #screen .vcsw-overline");
     if ((ov && /briefing/i.test(ov.textContent)) || document.querySelector(".title-screen")) seen = {};
   }
-  /* Tell the shell how tall the content is, so the panel can end where the content ends. */
-  var lastH = 0, sizeT = 0;
+  /* Tell the shell how tall the content is, so the panel can end where the content ends.
+     The answer may never depend on the height of the frame itself: the shell sets that height from this answer,
+     so any link between the two makes the panel creep. Only the content counts: the lowest visible element plus
+     the padding, border and margin of the boxes around it, read from the styles and not from where those boxes end. */
+  var lastH = 0, sizeT = 0, floorSig = "", floorH = 0, floorN = 0;
   function measure() {
-    var els = document.body.querySelectorAll("*"), max = 0, low = null, i, el, b, leaf;
+    var els = document.body.querySelectorAll("*"), max = 0, low = null, i, el, b, cs, pad = 0;
     for (i = 0; i < els.length; i++) { el = els[i]; if (el.children.length || !el.offsetParent) continue; b = el.getBoundingClientRect().bottom + window.pageYOffset; if (b > max) { max = b; low = el; } }
-    /* The space below the lowest element belongs to the page too: the padding of the boxes around it.
-       A box that ends far below it is stretched to the window and says nothing about the content. */
-    leaf = max;
-    for (el = low && low.parentElement; el && el !== document.documentElement; el = el.parentElement) {
-      b = el.getBoundingClientRect().bottom + window.pageYOffset;
-      if (b - leaf <= 96 && b > max) max = b;
+    for (el = low; el && el !== document.documentElement; el = el.parentElement) {
+      cs = getComputedStyle(el);
+      pad += (parseFloat(cs.marginBottom) || 0) + (el === low ? 0 : (parseFloat(cs.paddingBottom) || 0) + (parseFloat(cs.borderBottomWidth) || 0));
     }
-    /* When the page overflows its frame, the browser knows the exact height. Keep that height for as long as
-       the same screen is shown, so the panel does not shrink back and start to scroll again. */
-    var est = Math.ceil(max), sh = document.documentElement.scrollHeight, t = document.querySelector("h1, h2"),
+    var est = Math.ceil(max + Math.min(Math.max(pad, 0), 160)), sh = document.documentElement.scrollHeight, t = document.querySelector("h1, h2"),
       sig = (t ? t.textContent : "") + ":" + document.querySelectorAll("h1, h2, h3, button").length;
-    if (sh > window.innerHeight + 1) { floorH = sig === floorSig ? Math.max(sh, floorH) : sh; floorSig = sig; return floorH; }
-    if (sig === floorSig) return Math.max(est, floorH);
-    floorSig = ""; floorH = 0;
-    return est;
+    if (sig !== floorSig) { floorSig = sig; floorH = 0; floorN = 0; }
+    /* When the page still overflows its frame, the browser knows the exact height. It is taken over at most twice
+       per screen and only when it is close to the estimate, so it can correct a small shortfall but never keep growing. */
+    if (sh > window.innerHeight + 1 && sh > est && sh - est <= 160 && floorN < 2) { floorH = Math.max(floorH, sh); floorN++; }
+    return Math.max(est, floorH);
   }
-  var floorSig = "", floorH = 0;
   function size() { clearTimeout(sizeT); sizeT = setTimeout(function () { var h = measure(); if (h && Math.abs(h - lastH) > 6) { lastH = h; try { window.parent.postMessage({ orion: "size", h: h }, "*"); } catch (e) {} } }, 140); }
   window.addEventListener("load", size); window.addEventListener("resize", size);
   /* The level's own state for the status bar of the shell. Each level offers window.orionStatus(). */

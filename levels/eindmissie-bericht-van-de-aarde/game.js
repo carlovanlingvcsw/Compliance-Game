@@ -301,7 +301,7 @@
       var o = s.opts.filter(function (x) { return x.k === pick; })[0];
       html += '<div class="feedback">' + speech(s.who === "aria" ? "aria" : s.who, o.reactie) + speech("aria", (o.r === "goed" ? "Goed. " : o.r === "half" ? "Half goed. " : "Fout. ") + o.uitleg);
       if (s.crystal && s.crystal.on === pick) html += '<div class="reward">' + icon("gem") + "<div><strong>Datakristal " + esc(s.crystal.name) + "</strong><br><span>" + esc(s.crystal.desc) + "</span></div></div>";
-      else if (s.crystal) html += '<p class="muted">Geen datakristal ' + esc(s.crystal.name) + ". In de hoofdsluis kun je hem terugverdienen.</p>";
+      else if (s.crystal) html += '<p class="muted">Geen datakristal ' + esc(s.crystal.name) + ". Daardoor heb je bij de aanval van de Zwarte Nevel een joker minder.</p>";
       html += '</div><div class="actions"><button class="vcsw-button lg" id="next">Verder' + icon("next") + "</button></div>";
     }
     show(html);

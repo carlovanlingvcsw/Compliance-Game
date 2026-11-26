@@ -7,7 +7,7 @@ Status: prototype. Alle namen, planeten en gegevens in het spel zijn fictief. De
 ## Zo werkt het spel
 
 - **Station als wereld.** Het startscherm toont Ruimtestation Orion in 3D, met de stationskaart ernaast. Elke missie hoort bij een module. Kies je een missie, dan vliegt de camera naar die module en opent de missie in een paneel ernaast.
-- **Toegangspoort.** Het spel opent met een welkomstscherm: wat de bedoeling is, wat score, schild, kristallen en tijd betekenen, en een poort waar je een demo-account kiest. In de eindversie komt hier de Microsoft-login.
+- **Toegangspoort.** Het spel opent in de aankomsthal van het station. Links staat wat de bedoeling is en wat score, schild, kristallen en tijd betekenen. Rechts houd je je pas voor de lezer: in de demo kies je een verzonnen account, in de eindversie komt hier de Microsoft-inlog. Daarna gaan de deuren open.
 - **Statusbalk.** Boven elk level staat een vaste balk met de stappen van het level, de score met de grens van 70 procent, het schild en de kristallen. Na elk antwoord toont de balk vijf seconden wat erbij kwam of eraf ging. Op het laatste scherm staat hier de knop naar het volgende onderdeel.
 - **Aanwijzingen.** In een luchtsluis vraag je ARIA om een aanwijzing. Elk kristal uit het level is één aanwijzing zonder kosten, daarna kost een aanwijzing 10 procent schild.
 - **Eindmissie in drie delen.** Het bericht, de aanval van de Zwarte Nevel (rook over de modules in het station, zes vragen op tijd) en de hoofdsluis met vijf grendels van drie kernregels.
@@ -86,9 +86,17 @@ Wil je het spel als één bestand versturen of in een leeromgeving zetten:
 npm run bundle
 ```
 
-Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 2,6 MB). Het werkt met dubbelklikken en zonder internet; alleen de lettertypen komen dan uit het systeem. De map `dist/` gaat niet mee naar GitHub.
+Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 6,4 MB). Het werkt met dubbelklikken en zonder internet; alleen de lettertypen komen dan uit het systeem. De map `dist/` gaat niet mee naar GitHub.
 
 ## Wijzigingen
+
+### 26 november 2026: nieuwe voorpagina, rustig paneel en meer tempo (ronde 29)
+
+- **Voorpagina.** Het openingsscherm is de aankomsthal van het station: een deur met twee bladen en een lichtnaad in een nis, met vloer, leidingen en lampen. De stijl staat in `assets/css/gate.css`, de hal en de gang achter de deur in `assets/js/hall.js`. Op schermen vanaf 1280 pixels breed hangt de paslezer als losse terminal aan de wand, op kleinere schermen zit hij op de deur. De knop Inloggen met Microsoft opent in de demo een keuze uit verzonnen pasjes. Met `?traag=10` speel je de opening tien keer zo langzaam af.
+- **Paneel staat stil.** De hoogte van het missiepaneel hing af van de hoogte van het paneel zelf, waardoor het in level 1 elke halve seconde tien pixels groeide en na ruim twee seconden terugsprong. De meting in `assets/js/orion-bridge.js` kijkt nu alleen naar de inhoud. In level 1 reserveert de sprekende tekst vooraf de ruimte van de hele zin en staat de knop Tekst direct tonen in de hoek van het tekstvak, zodat de antwoorden niet meer verspringen.
+- **Station beweegt gelijkmatig.** Tijdens een missie tekende het station om en om na 33 en 50 milliseconden een beeld. Dat is nu elk tweede beeld van het scherm. De zweefbeweging van de camera is een vaste functie van de tijd en hangt niet meer af van het beeldritme.
+- **Tempo.** Achter de gesloten poort tekent het station twee beelden per seconde. De gang achter de deur bouwt zijn tekenbuffer niet meer bij elk beeld opnieuw op. De vlakken boven het 3D-beeld vervagen de achtergrond niet meer. Schaduwen worden alleen opnieuw getekend als er iets zichtbaar bewogen heeft. Het eerste level laadt op de achtergrond zodra je binnen bent.
+- **Kwaliteit volgt de machine.** Zakt het scherm onder ongeveer 45 beelden per seconde, dan wordt het beeld eerst minder scherp. Onder ongeveer 28 gaat de gloed uit. Het bereikte niveau blijft een week bewaard in de browser. Met `?fx=nieuw` meet het spel opnieuw, met `?perf=1` zie je een meter.
 
 - Ronde 23 tot en met 25 (25 november 2026): statusbalk in de schil, route met de eindmissie in drie delen en een resultaatvlag, welkomstscherm met scanpoort, cryo-archief als archiefkast, luiken met een keuze per gegeven, aanwijzingen via ARIA, hoofdsluis met vijf grendels, de Zwarte Nevel als rook in het station, level 5 dat met alarm opent, logboek als eindscherm, portretten bij alle personen, een startkaart bij elke oefenronde, Phishing Invaders tien procent rustiger en de losse HTML als één script zodat die ook in een afgeschermde voorvertoning start.
 - Testsprong: `index.html?boot=uit&ls=3&scherm=sluis` opent level 3 direct op de luchtsluis. De schermnamen staan onderaan elke `game.js`. Met `?paniek=uit` sla je de alarmopening van level 5 over.

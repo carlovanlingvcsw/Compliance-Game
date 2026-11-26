@@ -279,3 +279,11 @@ html.in-orion body { min-height: 0 !important; margin: 0 !important; }
 
 /* In de schil staat de stap al in de statusbalk. */
 html.in-orion .alleen-los { display: none !important; }
+
+/* Inside the shell the level sits on the mission panel, which is already dark and solid: blurring what lies behind a card
+   changes nothing you can see there and costs graphics work on every picture. */
+html.in-orion *, html.in-orion *::before, html.in-orion *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+
+/* An answer no longer slides sideways under the pointer. With the pointer on its left edge the bar moved out from under it,
+   lost the hover, moved back and started again. The colour of the edge and the letter still show which answer you are on. */
+.option:hover:not([disabled]), .choice:hover:not([disabled]) { transform: none; }

@@ -707,77 +707,7 @@ body.panicking .mission { opacity: 0; }
 .panic.calm { background: radial-gradient(120% 90% at 50% 50%, color-mix(in srgb, var(--vcsw-blue-800) 94%, transparent), color-mix(in srgb, var(--vcsw-blue-950) 97%, #000)); }
 .p-msgs li { background: color-mix(in srgb, #1a0306 82%, transparent); }
 
-/* ---------- Ronde 23: welkomstscherm met scanpoort ---------- */
-.boot { place-items: center; padding: 20px 32px; transition: opacity 420ms ease; }
-.boot.out { opacity: 0; }
-.boot-in { width: min(1220px, 100%); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 540px); gap: 20px 56px; align-items: center; }
-.boot-text .wordmark { height: 22px; width: auto; display: block; margin-bottom: 22px; }
-.boot-text h1 { margin: 0 0 14px; font: 800 clamp(2rem, 3.6vw, 2.875rem)/1.08 var(--vcsw-font-heading); letter-spacing: -0.03em; color: #fff; max-width: 14ch; }
-.boot-text .boot-lead { margin: 0 0 22px; font-size: 1.125rem; line-height: 1.5; color: var(--vcsw-gray-100); max-width: 52ch; }
-.boot-text h2 { margin: 0 0 12px; font: 700 1.25rem/1.2 var(--vcsw-font-heading); color: #fff; }
-.boot-in .boot-steps { grid-template-columns: 1fr; gap: 12px; margin: 0; }
-.boot-in .boot-steps li { grid-template-columns: 36px 1fr; column-gap: 14px; }
-.boot-in .boot-steps li::before { width: 36px; height: 36px; background: var(--vcsw-blue-300); color: var(--vcsw-blue-950); font: 700 1rem/1 var(--vcsw-font-heading); border: 0; }
-.boot-in .boot-steps span { color: var(--vcsw-gray-200); max-width: 60ch; }
-.gate { border-radius: 22px; padding: 12px; border: 2px solid var(--vcsw-blue-600); background: linear-gradient(180deg, #0d2140, #071326); box-shadow: 0 30px 80px -40px var(--vcsw-blue-500), inset 0 0 0 1px color-mix(in srgb, #fff 6%, transparent); }
-.gate-top { position: relative; display: flex; align-items: center; gap: 12px; padding: 9px 14px 11px; border-radius: 10px; border: 1px solid var(--o-edge-strong); background: #050d1c; overflow: hidden; }
-.gate-top p { margin: 0 0 0 auto; font: 600 .9375rem/1.2 var(--vcsw-font-heading); color: #fff; }
-.gate-leds { display: inline-flex; gap: 8px; }
-.gate-leds i { width: 10px; height: 10px; border-radius: 50%; background: var(--vcsw-blue-800); }
-.gate-leds i:first-child { background: var(--vcsw-amber-300); animation: led 900ms ease-in-out infinite alternate; }
-.boot.ready .gate-leds i:first-child { background: var(--vcsw-blue-400); animation: none; }
-.boot.scan .gate-leds i:nth-child(-n+2) { background: var(--vcsw-blue-400); animation: none; }
-.boot.open .gate-leds i { background: var(--vcsw-green-400); animation: none; }
-@keyframes led { from { opacity: .35; } }
-.gate-top .boot-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 0; background: transparent; }
-.boot.ready .gate-top .boot-bar i { background: var(--vcsw-blue-600); }
-.gate-doors { position: relative; margin-top: 10px; height: clamp(330px, 50vh, 420px); border-radius: 10px; overflow: hidden; background: #030812; display: grid; place-items: center; }
-.gate-beyond { position: absolute; inset: 0; background: radial-gradient(60% 70% at 50% 60%, color-mix(in srgb, var(--vcsw-blue-300) 85%, #fff), var(--vcsw-blue-600) 45%, #041024 85%); opacity: 0; transition: opacity 500ms ease 150ms; }
-.boot.open .gate-beyond { opacity: 1; }
-.gd { position: absolute; top: 0; bottom: 0; width: 50%; transition: transform 780ms cubic-bezier(.7, 0, .2, 1);
-  background: linear-gradient(90deg, #0a2247, #17427c 46%, #0f2f5d 54%, #0a2247), #0d2a55; box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 8%, transparent); }
-.gd.l { left: 0; border-right: 1px solid #06142b; } .gd.r { right: 0; border-left: 1px solid #06142b; }
-.gd::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, #fff 2.5%, transparent) 3px 4px); }
-.gd-win { position: absolute; left: 9%; right: 9%; top: 18px; height: 40px; border-radius: 8px; border: 2px solid #1c4a86; background: radial-gradient(1px 1px at 22% 40%, #fff, transparent), radial-gradient(1px 1px at 48% 68%, #cfe8ff, transparent), radial-gradient(1.4px 1.4px at 71% 30%, #fff, transparent), radial-gradient(1px 1px at 86% 62%, #fff, transparent), #02060e; }
-.gd-rib { position: absolute; left: 6%; right: 0; top: 30%; height: 2px; background: #071a38; box-shadow: 0 1px 0 color-mix(in srgb, #fff 9%, transparent); }
-.gd.r .gd-rib { left: 0; right: 6%; } .gd-rib.b { top: 61%; }
-.gd-haz { position: absolute; left: 6%; right: 6%; bottom: 46px; height: 16px; background: repeating-linear-gradient(-55deg, var(--vcsw-amber-300) 0 14px, transparent 14px 28px); clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); }
-.gate-seam { position: absolute; top: 0; bottom: 0; left: calc(50% - 1.5px); width: 3px; background: var(--vcsw-blue-400); box-shadow: 0 0 14px 1px var(--vcsw-blue-400); transition: opacity 200ms; }
-.boot.open .gd.l { transform: translateX(-101%); } .boot.open .gd.r { transform: translateX(101%); } .boot.open .gate-seam { opacity: 0; }
-.gate-card { position: relative; z-index: 2; width: min(360px, calc(100% - 40px)); padding: 18px 20px; border-radius: 14px; border: 1px solid var(--o-edge-strong); border-top: 3px solid var(--vcsw-blue-300); background: #061226; display: grid; gap: 10px; overflow: hidden; transition: opacity 300ms ease, transform 300ms ease; }
-.boot.open .gate-card { opacity: 0; transform: scale(.96); }
-.gc-head { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: center; margin-bottom: 4px; }
-.gc-ico { width: 56px; height: 56px; border-radius: 10px; display: grid; place-items: center; border: 1px solid var(--o-edge-strong); background: var(--vcsw-blue-900); color: var(--vcsw-blue-300); }
-.gc-ico .vcsw-icon { width: 28px; height: 28px; }
-.gate-card h2 { margin: 0; font: 700 1.1875rem/1.2 var(--vcsw-font-heading); color: #fff; }
-.gc-head p { margin: 3px 0 0; font-size: .875rem; color: var(--vcsw-gray-300); }
-.gate-card label { font-size: .875rem; color: var(--vcsw-gray-200); margin-bottom: -4px; }
-.gate-card select { width: 100%; min-height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--o-edge-strong); background: #0a1c3a; color: #fff; font: 400 1rem/1 var(--vcsw-font-body); }
-.gate-card .go { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 16px; }
-.gate-card .go .vcsw-icon { width: 18px; height: 18px; }
-.gc-note { margin: 0; font-size: .8125rem; line-height: 1.4; color: var(--vcsw-gray-300); }
-.gate-scan { position: absolute; left: 0; right: 0; top: 0; height: 46px; pointer-events: none; opacity: 0; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--vcsw-blue-300) 55%, transparent) 85%, #fff); }
-.boot.scan .gate-scan { opacity: 1; animation: scan 620ms ease-in-out; }
-@keyframes scan { from { transform: translateY(-46px); } to { transform: translateY(300px); } }
-.boot-tiles { grid-column: 1 / -1; list-style: none; margin: 4px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-.boot-tiles li { display: grid; grid-template-columns: 22px 1fr; gap: 4px 10px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--o-edge); background: var(--o-glass-2); }
-.boot-tiles .vcsw-icon { width: 22px; height: 22px; color: var(--vcsw-blue-300); }
-.boot-tiles li:nth-child(2) .vcsw-icon { color: var(--vcsw-green-300); } .boot-tiles li:nth-child(3) .vcsw-icon { color: var(--vcsw-amber-300); }
-.boot-tiles b { font: 700 1.0625rem/1.3 var(--vcsw-font-heading); color: #fff; }
-.boot-tiles span { grid-column: 1 / -1; font-size: .875rem; line-height: 1.45; color: var(--vcsw-gray-200); }
-.boot-in .boot-note { grid-column: 1 / -1; margin: 0; font-size: .8125rem; color: var(--vcsw-gray-300); }
-@media (max-height: 800px) { .boot-text .wordmark { margin-bottom: 14px; } .boot-text .boot-lead { margin-bottom: 14px; font-size: 1.0625rem; } .boot-in { gap: 14px 48px; } .gate-doors { height: 318px; } .boot-tiles li { padding: 10px 14px; } .boot-in .boot-steps { gap: 8px; } .gate-card { padding: 14px 18px; gap: 8px; } }
-@media (max-width: 980px) { .boot { place-items: start center; } .boot-in { grid-template-columns: 1fr; } .boot-tiles { grid-template-columns: 1fr 1fr; } .boot-text h1 { max-width: none; } }
-@media (max-width: 520px) { .boot-tiles { grid-template-columns: 1fr; } .boot { padding: 16px; } }
-@media (prefers-reduced-motion: reduce) { .gd, .gate-beyond, .gate-card, .boot { transition: none; } .gate-leds i:first-child, .boot.scan .gate-scan { animation: none; } }
-.gd-win { top: 12px; height: 28px; } .gd-haz { bottom: 18px; height: 14px; }
-.gate-foot { margin: 10px 4px 2px; font-size: .8125rem; line-height: 1.4; color: var(--vcsw-gray-300); }
-.boot-tiles { align-items: stretch; } .boot-tiles li { align-content: start; }
-.boot-tiles li, .gi-box li, .p-msgs li { margin-top: 0; margin-bottom: 0; }
-.gate-beyond { background:
-  radial-gradient(130% 120% at 50% 150%, #0a3a7a 0 55%, #1f7fe0 59.2%, #9fd6ff 60%, color-mix(in srgb, var(--vcsw-blue-400) 40%, transparent) 60.6%, transparent 64%),
-  radial-gradient(1.4px 1.4px at 12% 22%, #fff, transparent), radial-gradient(1px 1px at 27% 48%, #cfe8ff, transparent), radial-gradient(1.6px 1.6px at 44% 16%, #fff, transparent),
-  radial-gradient(1px 1px at 61% 38%, #fff, transparent), radial-gradient(1.4px 1.4px at 78% 20%, #cfe8ff, transparent), radial-gradient(1px 1px at 90% 52%, #fff, transparent), radial-gradient(1px 1px at 35% 30%, #fff, transparent), #02060e; }
+.gi-box li, .p-msgs li { margin-top: 0; margin-bottom: 0; }
 
 /* ---------- Ronde 23: compacte statusbalk op lage schermen ---------- */
 @media (max-height: 800px) {
@@ -810,42 +740,6 @@ body.panicking .mission { opacity: 0; }
 @media (max-width: 1640px) { .brand-name { display: none; } }
 .route .node.flag { flex: none; }
 
-/* ---------- Ronde 24: de toegangspoort als deur van het station ---------- */
-body.booting .home, body.booting .mission { visibility: hidden; }
-.boot { background: linear-gradient(90deg, rgb(2 8 20 / .93) 0 38%, rgb(2 8 20 / .78) 62%, rgb(2 8 20 / .86)); background-size: auto; }
-.no-3d .boot { background: var(--o-space); }
-.gate { padding: 14px; border-radius: 18px; border: 0; background: linear-gradient(180deg, #2a3d58, #17273f 30%, #0d1a2e); box-shadow: 0 30px 70px -30px #000, inset 0 1px 0 rgb(255 255 255 / .18), inset 0 0 0 1px #0a1424; position: relative; }
-.gate::before, .gate::after { content: ""; position: absolute; left: 10px; right: 10px; height: 5px; background: radial-gradient(circle at 2.5px 2.5px, #6d7f99 0 2px, transparent 2.6px) 0 0 / 46px 5px repeat-x; opacity: .7; }
-.gate::before { top: 5px; } .gate::after { bottom: 5px; }
-.gate-top { border-radius: 6px; border: 1px solid #060e1c; background: linear-gradient(180deg, #071224, #0a1a33); padding: 10px 14px 12px; box-shadow: inset 0 2px 6px rgb(0 0 0 / .6); }
-.gate-top p { margin: 0; font: 600 1rem/1.2 var(--vcsw-font-heading); }
-.gate-leds { margin-left: auto; gap: 5px; }
-.gate-leds i { width: 26px; height: 8px; border-radius: 2px; background: #10294d; box-shadow: inset 0 1px 2px rgb(0 0 0 / .7); }
-.gate-doors { border-radius: 6px; box-shadow: inset 0 0 0 2px #060e1c, inset 0 10px 24px rgb(0 0 0 / .55); }
-.gd { background: linear-gradient(90deg, #1b3157, #34598f 22%, #2a4a7b 50%, #1d3660 82%, #15294a), #1d3660; box-shadow: inset 0 1px 0 rgb(255 255 255 / .16), inset 0 -18px 30px rgb(0 0 0 / .35); }
-.gd.r { background: linear-gradient(270deg, #1b3157, #34598f 22%, #2a4a7b 50%, #1d3660 82%, #15294a), #1d3660; }
-.gd.l { border-right: 2px solid #050c18; } .gd.r { border-left: 2px solid #050c18; }
-.gd::after { content: ""; position: absolute; top: 8px; bottom: 8px; width: 5px; background: radial-gradient(circle at 2.5px 2.5px, #8fa3c0 0 1.8px, transparent 2.4px) 0 0 / 5px 34px repeat-y; opacity: .75; }
-.gd.l::after { left: 8px; } .gd.r::after { right: 8px; }
-.gd-win { border: 3px solid #0c1a30; box-shadow: 0 0 0 2px #4a6c9c, inset 0 4px 10px #000; border-radius: 10px; left: 14%; right: 12%; }
-.gd-rib { height: 3px; background: #0c1d38; box-shadow: 0 1px 0 rgb(255 255 255 / .14); }
-.gd-plate { position: absolute; left: 16%; right: 16%; top: 66%; height: 12%; border-radius: 4px; background: linear-gradient(180deg, #223d68, #182e52); box-shadow: inset 0 1px 0 rgb(255 255 255 / .12), 0 1px 0 #0a1830; }
-.gd-grip { position: absolute; top: 38%; height: 20%; width: 9px; border-radius: 5px; background: linear-gradient(90deg, #dbe4f0, #8898b0); box-shadow: 2px 3px 6px rgb(0 0 0 / .5); }
-.gd.l .gd-grip { right: 22px; } .gd.r .gd-grip { left: 22px; }
-.gate-seam { width: 2px; left: calc(50% - 1px); box-shadow: 0 0 10px var(--vcsw-blue-400); }
-.gate-card { border: 1px solid #0b1a31; border-top: 0; border-radius: 10px; background: linear-gradient(180deg, #0c1c36, #071226); box-shadow: 0 18px 40px rgb(0 0 0 / .6), inset 0 1px 0 rgb(255 255 255 / .1); padding-top: 30px; }
-.gc-slot { position: absolute; left: 0; right: 0; top: 0; height: 18px; background: #030912; border-bottom: 1px solid #1c3a66; display: grid; place-items: center; }
-.gc-slot i { width: 46%; height: 4px; border-radius: 2px; background: var(--vcsw-blue-400); box-shadow: 0 0 8px var(--vcsw-blue-400); }
-.boot.open .gc-slot i { background: var(--vcsw-green-400); box-shadow: 0 0 8px var(--vcsw-green-400); }
-.gate-foot { color: #b9c7da; }
-/* de vier begrippen als één strook in plaats van vier kaarten */
-.boot-tiles { gap: 0; border: 1px solid var(--o-edge); border-radius: 12px; background: rgb(6 22 47 / .72); }
-.boot-tiles li { border: 0; border-radius: 0; background: none; padding: 14px 20px; }
-.boot-tiles li + li { border-left: 1px solid var(--o-edge); }
-@media (max-width: 980px) { .boot-tiles li + li { border-left: 0; } .boot-tiles li:nth-child(even) { border-left: 1px solid var(--o-edge); } .boot-tiles li:nth-child(n+3) { border-top: 1px solid var(--o-edge); } }
-@media (max-width: 520px) { .boot-tiles li:nth-child(even) { border-left: 0; } .boot-tiles li + li { border-top: 1px solid var(--o-edge); } }
-body.booting header.bar { visibility: hidden; }
-.note-3d { display: none; } .no-3d .note-3d { display: block; color: var(--vcsw-amber-200); }
 
 /* ---------- Ronde 25 ---------- */
 @media (max-height: 960px) {
@@ -858,16 +752,24 @@ body.booting header.bar { visibility: hidden; }
   .lb-sheet th, .lb-sheet td { padding-top: 13px; padding-bottom: 13px; font-size: 1rem; }
   .lb-star { color: #5273a6; } .lb-star .vcsw-icon { width: 20px; height: 20px; }
 }
-.gate-card select { appearance: none; -webkit-appearance: none; padding-right: 40px; border-color: #1c3a66; background: #04101f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2367caff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 12px center / 18px no-repeat; box-shadow: inset 0 2px 5px rgb(0 0 0 / .6); }
 .lb-nr { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 12px; border-radius: 50%; font: 700 .9375rem/1 var(--vcsw-font-heading); background: #06224c; color: #fff; vertical-align: middle; }
 .lb-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font: 600 .875rem/1.2 var(--vcsw-font-body); background: #e8eef6; color: #3b4d6e; }
 .lb-chip .vcsw-icon { width: 14px; height: 14px; } .lb-chip.ok { background: #dcf5e6; color: #0a6b3a; } .lb-chip.low { background: #fdeccf; color: #8a4a00; }
 @media screen {
   .lb-nr { background: var(--vcsw-blue-600); }
   .lb-chip { background: #12305c; color: #c7d6ea; } .lb-chip.ok { background: rgb(123 241 168 / .16); color: #7bf1a8; } .lb-chip.low { background: rgb(255 185 0 / .16); color: var(--vcsw-amber-200); }
-  .boot { background: linear-gradient(90deg, rgb(2 8 20 / .9) 0 36%, rgb(2 8 20 / .64) 62%, rgb(2 8 20 / .74)); }
-  .no-3d .boot { background: var(--o-space); }
 }
 .inv { width: 29%; margin-left: 1%; }
 .lb-sheet tr.lb-low th { box-shadow: inset 4px 0 0 #c77700; padding-left: 12px; }
 @media screen { .lb-sheet tr.lb-low th { box-shadow: inset 4px 0 0 var(--vcsw-amber-300); } .lb-sheet tr.lb-low { background: rgb(255 185 0 / .06); } .lb-sheet tr.lb-low .lb-nr { background: #7a4a00; } }
+
+/* melding als het 3D-beeld niet kan starten */
+.note-3d { display: none; } .no-3d .note-3d { display: block; color: var(--vcsw-amber-200); }
+
+/* ---------- Ronde 29: geen vervaging boven het bewegende 3D-beeld ----------
+   Een vlak dat de achtergrond vervaagt, moet bij elk nieuw beeld van het station opnieuw worden berekend.
+   Het paneel van een missie beslaat ruim de helft van het scherm, dus dat kostte op een gewone laptop merkbaar tempo.
+   De vlakken zijn nu iets dichter van kleur, zodat de tekst even goed leesbaar blijft. */
+.bar { background: color-mix(in srgb, var(--o-space) 92%, transparent); backdrop-filter: none; }
+.panel { background: color-mix(in srgb, var(--o-space) 94%, transparent); backdrop-filter: none; }
+.briefing, .map-card, .home-card, .status, .toast { backdrop-filter: none; }

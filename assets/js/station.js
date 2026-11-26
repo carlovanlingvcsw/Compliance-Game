@@ -10,6 +10,7 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
 import { loadTextures, loadEnv, pbr, tex } from "orion/tex.js";
 import "orion/arcade3d.js";
+import "orion/hall.js";
 
 await loadTextures();
 
@@ -17,14 +18,17 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canvas = document.getElementById("world");
 
 /* ---------- Renderer ---------- */
+/* With the bloom on, the scene is drawn into its own anti-aliased buffer and the canvas only receives the finished picture.
+   Anti-aliasing the canvas as well would be double work, so it is on only when the scene goes straight to the canvas (?fx=uit). */
+const fxMode = (/[?&]fx=(uit|aan)/.exec(location.search) || [])[1];
 let renderer;
 try {
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: fxMode === "uit", powerPreference: "high-performance" });
 } catch (e) {
   document.documentElement.classList.add("no-3d");
   throw e;
 }
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));   // a quarter extra is sharp enough on a laptop screen and a third fewer points than 1.5
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
@@ -625,11 +629,12 @@ function focusGoal(i) {
   const pos = moduleWorld(m, m.fixed ? m.cam : m.anchor.clone().add(m.view || VIEW));
   return { pos, target };
 }
+const bob = new THREE.Vector3(); let bobK = 0;
 function setGoal(i, instant) {
   const g = focusGoal(i);
   cam.fromPos.copy(camera.position); cam.fromTarget.copy(cam.target);
   cam.goalIndex = i; cam.t = instant || reduce ? 1 : 0;
-  if (cam.t === 1) { camera.position.copy(g.pos); cam.target.copy(g.target); }
+  if (cam.t === 1) { bob.set(0, 0, 0); bobK = 0; camera.position.copy(g.pos); cam.target.copy(g.target); }
 }
 const SHOW = 0.1, TAU = Math.PI * 2;
 function ringWant() { const m = focus >= 0 ? MODULES[focus] : null; return m && !m.fixed ? m.group.userData.angle - SHOW : null; }
@@ -658,37 +663,58 @@ function applyOffset() {
 }
 
 /* ---------- Bloom: lamps, windows and the planet rim glow a little. Add ?fx=uit to switch it off. ---------- */
-const fxMode = (/[?&]fx=(uit|aan)/.exec(location.search) || [])[1];
+let bloomPass = null;
 if (fxMode !== "uit") {
   try {
-    composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: 4 }));
+    /* Four samples per point at normal sharpness; two when the screen is already drawn finer than its points. */
+    composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: renderer.getPixelRatio() > 1.1 ? 2 : 4 }));
     composer.addPass(new RenderPass(scene, camera));
     /* Contact shadow where parts meet: ambient occlusion from the depth of the scene. */
     gtao = new GTAOPass(scene, camera, 4, 4);
     gtao.updateGtaoMaterial({ radius: 0.45, distanceExponent: 1, thickness: 1, scale: 1.1, samples: 12 });
     gtao.blendIntensity = 0.9;
     composer.addPass(gtao);
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(4, 4), 0.34, 0.5, 1.3));
+    bloomPass = new UnrealBloomPass(new THREE.Vector2(4, 4), 0.34, 0.5, 1.3);
+    composer.addPass(bloomPass);
     composer.addPass(new OutputPass());
     resize();
   } catch (e) { composer = null; }
 }
-/* On a slow machine the bloom goes first: measured over two seconds of frames. */
-let slowT = 0, slowN = 0;
-function watchSpeed(dt) {
+/* Quality follows the machine. The pace of the screen itself is measured (not the station's own, slower pace during a mission).
+   Below about 45 pictures a second the picture gets a little less sharp; only below about 28 the glow goes, and after that the sharpness once more.
+   The first seconds after loading do not count, because shaders are still being built then. The level that was reached is kept for a week,
+   so the next visit starts at a pace this machine can hold instead of finding it out again. */
+const QKEY = "orion-beeldkwaliteit";
+let rawT = 0, rawN = 0, settle = 2, quality = 0;
+function applyQuality(q) {
+  const dpr = window.devicePixelRatio || 1, pr = Math.min(dpr, q >= 3 ? 0.8 : q >= 1 ? 1 : 1.25);
+  let changed = false;
+  if (Math.abs(renderer.getPixelRatio() - pr) > 0.01) { renderer.setPixelRatio(pr); resize(); changed = true; }
+  if (q >= 2 && composer && bloomPass) { composer.removePass(bloomPass); bloomPass.dispose(); bloomPass = null; changed = true; }
+  quality = q;
+  return changed;
+}
+if (/[?&]fx=nieuw/.test(location.search)) { try { localStorage.removeItem(QKEY); } catch (e) {} }   // ?fx=nieuw forgets the kept level and measures again
+if (fxMode !== "aan") {
+  try { const k = JSON.parse(localStorage.getItem(QKEY) || "null"); if (k && Date.now() - k.t < 7 * 864e5 && k.q > 0 && k.q <= 3) applyQuality(k.q); } catch (e) {}
+}
+function watchSpeed(dtRaw) {
   if (fxMode === "aan") { gtaoOk = true; return; }
-  if (!composer) return;
-  slowT += dt; slowN++;
-  if (slowN < 60) return;
-  /* Contact shadow is extra work, so it only comes on when the overview already runs fast. */
-  /* Contact shadow stays off unless asked for with ?fx=aan: its grain crawled over the hull while the station turned. */
-  if (slowT / slowN > (lowPower ? 1 / 18 : 1 / 24)) { if (shadowEvery === 1) shadowEvery = 2; else if (renderer.getPixelRatio() > 1) { renderer.setPixelRatio(1); resize(); } else { composer.dispose(); composer = null; } }
-  slowT = 0; slowN = 0;
+  if (lowPower >= 2 || dtRaw > 0.5) return;   // idle behind a game or the gate, or a pause that says nothing about the pace
+  rawT += dtRaw; rawN++;
+  if (rawN < 45 && (rawT < 2.5 || rawN < 4)) return;
+  const avg = rawT / rawN; rawT = 0; rawN = 0;
+  if (settle > 0) { settle--; return; }
+  if (avg < 1 / 45 || quality >= 3) return;
+  let q = quality, changed = false;
+  while (!changed && q < 3) { q++; if (q >= 2 && avg < 1 / 28) return; changed = applyQuality(q); }
+  settle = 1;
+  try { localStorage.setItem(QKEY, JSON.stringify({ q: quality, t: Date.now() })); } catch (e) {}
 }
 
 /* ---------- Loop ---------- */
 const clock = new THREE.Clock();
-let running = true, lowPower = 0, acc = 0, frameNo = 0, shadowEvery = 1;
+let running = true, lowPower = 0, acc = 0, skipped = 0, force = false, rawAvg = 1 / 60, shadowAge = 1;
 renderer.shadowMap.autoUpdate = false;
 renderer.info.autoReset = false;
 document.addEventListener("visibilitychange", () => { running = !document.hidden; if (running) clock.getDelta(); });
@@ -696,9 +722,19 @@ const tmp = new THREE.Vector3();
 function tick() {
   requestAnimationFrame(tick);
   if (!running) return;
-  let dt = Math.min(clock.getDelta(), 0.1);
-  if (lowPower) { acc += dt; if (acc < (lowPower > 1 ? 1 / 8 : 1 / 30)) return; dt = acc; acc = 0; }
-  if (lowPower < 2) watchSpeed(dt);
+  const real = clock.getDelta();
+  let dt = Math.min(real, 0.1);
+  watchSpeed(real);
+  /* At a lower pace the station is drawn on every second (or eighth) picture of the screen, counted in whole pictures.
+     Measuring in milliseconds made the gaps uneven, 33 and 50 ms in turn, and that showed as a tremble. */
+  rawAvg += (Math.min(dt, 0.05) - rawAvg) * 0.05;
+  if (lowPower) {
+    const every = Math.max(1, Math.round((lowPower > 2 ? 1 / 2 : lowPower > 1 ? 1 / 8 : 1 / 30) / rawAvg));
+    acc += dt; skipped++;
+    if (skipped < every && !force) return;
+    dt = Math.min(acc, 0.1); acc = 0; skipped = 0;
+  }
+  force = false;
   const t = clock.elapsedTime;
 
   /* A focused module turns to one fixed spot, so every mission has the same framing with the earth behind it. */
@@ -729,6 +765,7 @@ function tick() {
 
   // Camera: ease towards the goal, the goal follows the rotating ring
   const goal = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex);
+  camera.position.sub(bob);   // the slow float is added on top of the path, never fed back into it
   if (cam.t < 1) {
     cam.t = Math.min(1, cam.t + dt / cam.dur);
     const k = ease(cam.t);
@@ -740,7 +777,11 @@ function tick() {
     camera.position.lerp(goal.pos, 1 - Math.pow(0.001, dt));
     cam.target.lerp(goal.target, 1 - Math.pow(0.001, dt));
   }
-  if (!reduce && cam.t >= 1) { camera.position.x += Math.sin(t * 0.21) * 0.03; camera.position.y += Math.sin(t * 0.17) * 0.03; }
+  /* A slow float of the camera. It is a plain function of time, so its size does not change with the pace of the pictures. */
+  bobK += ((reduce || cam.t < 1 ? 0 : 1) - bobK) * (cam.t < 1 ? 1 : 1 - Math.pow(0.3, dt));
+  const amp = (focus >= 0 ? 0.1 : 0.22) * bobK;
+  bob.set(Math.sin(t * 0.21) * amp, Math.sin(t * 0.17) * amp, 0);
+  camera.position.add(bob);
   camera.lookAt(cam.target);
   offsetX += (offsetTarget - offsetX) * (1 - Math.pow(0.002, dt));
   applyOffset();
@@ -759,13 +800,18 @@ function tick() {
   aria.userData.halo.rotation.z += dt * 0.8;
   aria.userData.eye.material.emissive.setHex(alarm ? 0xff6467 : 0x15aaff);
 
-  frameNo++; renderer.shadowMap.needsUpdate = frameNo % (lowPower > 1 ? 6 : shadowEvery) === 0;   // every frame, so shadows on the hull do not stutter while the ring turns
+  /* Shadows are drawn again when something that casts one has moved far enough to see: every picture while the ring turns
+     to a module or the camera flies, about thirty times a second on the overview, and ten times a second when all is at rest. */
+  shadowAge += dt;
+  const turning = want !== null && Math.abs(turnTo(want)) > 0.002;
+  renderer.shadowMap.needsUpdate = shadowAge >= (turning || cam.t < 1 ? 0 : lowPower > 1 ? 0.5 : want !== null ? 0.1 : 0.03);
+  if (renderer.shadowMap.needsUpdate) shadowAge = 0;
   pulseLevel *= Math.pow(0.02, dt); pulseLight.intensity = pulseLevel; pulseLight.position.copy(aria.position);
   if (pulseLevel > 0.05) aria.userData.eye.material.emissiveIntensity = 1.6 + pulseLevel * 0.3; else aria.userData.eye.material.emissiveIntensity = 1.6;
   if (gtao) gtao.enabled = gtaoOk && lowPower === 0;   // contact shadow only on the overview, where the whole station is in view
   renderer.info.reset();
   if (composer) composer.render(dt); else renderer.render(scene, camera);
-  fpsN++; const nowMs = performance.now(); if (nowMs - fpsT0 >= 1000) { perf.fps = Math.round(fpsN * 1000 / (nowMs - fpsT0)); perf.calls = renderer.info.render.calls; perf.tris = renderer.info.render.triangles; perf.fx = composer ? (gtao && gtao.enabled ? "bloom en contactschaduw" : "bloom") : "uit"; fpsN = 0; fpsT0 = nowMs; if (perfEl) perfEl.textContent = perf.fps + " beelden per seconde · " + perf.calls + " tekenopdrachten · " + Math.round(perf.tris / 1000) + "k driehoeken · effecten " + perf.fx; }
+  fpsN++; const nowMs = performance.now(); if (nowMs - fpsT0 >= 1000) { perf.fps = Math.round(fpsN * 1000 / (nowMs - fpsT0)); perf.calls = renderer.info.render.calls; perf.tris = renderer.info.render.triangles; perf.fx = composer && bloomPass ? (gtao && gtao.enabled ? "bloom en contactschaduw" : "bloom") : "uit"; perf.pr = renderer.getPixelRatio(); perf.q = quality; fpsN = 0; fpsT0 = nowMs; if (perfEl) perfEl.textContent = perf.fps + " beelden per seconde · " + perf.calls + " tekenopdrachten · " + Math.round(perf.tris / 1000) + "k driehoeken · effecten " + perf.fx; }
   if (labelsCb) labelsCb();
 }
 
@@ -786,14 +832,15 @@ window.OrionStation = {
   nevel(boss) {
     if (!boss) { nevel.on = false; return; }
     nevel.on = true; nevel.i = Math.max(0, Math.min(5, boss.i | 0)); nevel.results = (boss.results || []).slice(0, 6);
-    if (lowPower) acc = 1;
+    force = true;
   },
   /* Jump to the current goal without the flight (used for test stills). */
-  snap() { const w = ringWant(); if (w !== null) { ring.rotation.y = w; ring.updateMatrixWorld(true); } const g = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex); cam.t = 1; camera.position.copy(g.pos); cam.target.copy(g.target); offsetX = offsetTarget; ariaPos.copy(aria.position); },
+  snap() { const w = ringWant(); if (w !== null) { ring.rotation.y = w; ring.updateMatrixWorld(true); } const g = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex); cam.t = 1; bob.set(0, 0, 0); bobK = 0; camera.position.copy(g.pos); cam.target.copy(g.target); offsetX = offsetTarget; ariaPos.copy(aria.position); },
   /* A short flash of light at ARIA when the player answers: blue for good, red for wrong. */
-  pulse(kind) { pulseLight.color.setHex(kind === "bad" ? 0xff6467 : kind === "gold" ? 0xffd230 : 0x67caff); pulseLevel = kind === "gold" ? 12 : 6; if (lowPower) acc = 1; },
+  pulse(kind) { pulseLight.color.setHex(kind === "bad" ? 0xff6467 : kind === "gold" ? 0xffd230 : 0x67caff); pulseLevel = kind === "gold" ? 12 : 6; force = true; },
   /* 0 = full speed, 1 = thirty frames a second, 2 = a slow idle while an arcade round has the screen. */
-  lowPower(on) { lowPower = on === 2 ? 2 : on ? 1 : 0; },
+  /* 3 = behind the closed gate, where nobody sees the station: two pictures a second keep it ready. */
+  lowPower(on) { const was = lowPower; lowPower = on === 3 ? 3 : on === 2 ? 2 : on ? 1 : 0; if (lowPower < was) { force = true; settle = Math.max(settle, 1); rawT = 0; rawN = 0; } },
   /* Screen positions of the module labels, for the HTML buttons on the overview. */
   project() {
     const w = canvas.clientWidth, h = canvas.clientHeight;

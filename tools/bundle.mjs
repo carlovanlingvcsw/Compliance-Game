@@ -48,7 +48,7 @@ js = swap(js, "f.src = LEVELS[n].src;", `if (LEVELS[n].b64) {
 const modFiles = { three: "assets/vendor/three.module.js" };
 const addonRoot = path.join(root, "assets/vendor/addons");
 for (const dir of fs.readdirSync(addonRoot)) for (const file of fs.readdirSync(path.join(addonRoot, dir))) modFiles[`three/addons/${dir}/${file}`] = `assets/vendor/addons/${dir}/${file}`;
-for (const mod of ["tex.js", "arcade3d.js", "station.js"]) modFiles[`orion/${mod}`] = `assets/js/${mod}`;
+for (const mod of ["tex.js", "arcade3d.js", "hall.js", "station.js"]) modFiles[`orion/${mod}`] = `assets/js/${mod}`;
 const resolveId = (from, spec) => spec.startsWith(".") ? path.posix.join(path.posix.dirname(from), spec) : spec;
 const names = (list) => list.split(",").map((x) => x.trim()).filter(Boolean).map((x) => x.split(/\s+as\s+/));
 function linkModule(id) {
@@ -70,6 +70,11 @@ const stationScript = "window.__orionStation = async function () {\nconst __m = 
 let index = read("index.html");
 index = swap(index, '<link rel="stylesheet" href="assets/css/vcsw-brand.css">\n<link rel="stylesheet" href="assets/css/orion.css">',
   "<style>\n" + brand + "\n" + read("assets/css/orion.css") + "\n</style>");
+// Gate styles: the hull texture is used many times, so it is baked in once as a custom property.
+const gateCss = ":root { --gate-hull: url(\"" + dataUri("assets/textures/hull_dark/color.jpg", "image/jpeg") + "\"); }\n" +
+  read("assets/css/gate.css").replace(/url\("\.\.\/textures\/hull_dark\/color\.jpg"\)/g, "var(--gate-hull)");
+if (/url\("\.\.\//.test(gateCss)) throw new Error("Niet alles ingebakken in gate.css");
+index = swap(index, '<link rel="stylesheet" href="assets/css/gate.css">', "<style>\n" + gateCss + "\n</style>");
 const texRoot = path.join(root, "assets/textures"), tex = {};
 for (const set of fs.readdirSync(texRoot)) if (fs.statSync(path.join(texRoot, set)).isDirectory())
   for (const file of fs.readdirSync(path.join(texRoot, set))) tex[`${set}/${file.replace(".jpg", "")}`] = dataUri(`assets/textures/${set}/${file}`, "image/jpeg");

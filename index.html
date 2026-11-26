@@ -6,49 +6,97 @@
 <title>AVG-game Ruimtestation Orion</title>
 <link rel="stylesheet" href="assets/css/vcsw-brand.css">
 <link rel="stylesheet" href="assets/css/orion.css">
+<link rel="stylesheet" href="assets/css/gate.css">
 <script type="importmap">{ "imports": { "three": "./assets/vendor/three.module.js", "three/addons/": "./assets/vendor/addons/", "orion/": "./assets/js/" } }</script>
 </head>
 <body class="vcsw orion" data-view="home">
 <a class="skip" href="#main">Naar de inhoud</a>
-<div class="boot" id="boot" role="dialog" aria-modal="true" aria-labelledby="boot-title">
-  <div class="boot-in">
-    <div class="boot-text">
+<div class="boot gate" id="boot" role="dialog" aria-modal="true" aria-labelledby="boot-title">
+  <div class="wall" aria-hidden="true"><i class="sidewall"></i><i class="panels"></i><span class="wall-leds"><i></i><i></i><i></i><i></i></span><i class="ceiling"></i><i class="deck"></i><i class="haze h1"></i><i class="haze h2"></i><i class="wall-light"></i><i class="pipes top"></i><i class="pipes low"></i></div>
+  <div class="gate-grid">
+    <div class="gate-copy">
+      <div class="plate-top" aria-hidden="true"><i></i><i></i><i></i></div>
       <img class="wordmark" src="assets/img/vcsw-wordmark-on-dark.png" alt="VCSW">
-      <h1 id="boot-title">Welkom op Ruimtestation Orion</h1>
-      <p class="boot-lead">Je oefent hoe je bij VCSW met persoonsgegevens omgaat. Het station is verzonnen. De situaties komen uit je werk.</p>
-      <h2>Dit is de bedoeling</h2>
-      <ol class="boot-steps">
+      <h1 id="boot-title">Welkom op Ruimtestation&nbsp;Orion</h1>
+      <p class="gate-lead">Je oefent hoe je bij VCSW met persoonsgegevens omgaat. Het station is verzonnen. De situaties komen uit je werk.</p>
+      <h2 class="gate-h2">Dit is de bedoeling</h2>
+      <ol class="gate-steps">
         <li><b>Speel zes missies</b><span>Elke missie hoort bij een module van het station en gaat over één onderwerp van de AVG.</span></li>
         <li><b>Haal per missie 70 procent</b><span>Je kiest wat je doet in situaties uit het werk. Goede keuzes leveren punten op.</span></li>
         <li><b>Sluit af met je resultaat</b><span>Aan het eind zie je per missie hoe het ging en wat je nog kunt nalezen.</span></li>
       </ol>
     </div>
-    <div class="gate" id="gate">
-      <div class="gate-top"><p id="boot-status" aria-live="polite">Het station wordt opgebouwd</p><span class="gate-leds" aria-hidden="true"><i></i><i></i><i></i></span>
-        <div class="boot-bar" id="boot-bar" role="progressbar" aria-label="Laden" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div></div>
-      <div class="gate-doors">
-        <div class="gate-beyond" aria-hidden="true"></div>
-        <div class="gd l" aria-hidden="true"><span class="gd-win"></span><span class="gd-rib"></span><span class="gd-rib b"></span><span class="gd-plate"></span><span class="gd-haz"></span><span class="gd-grip"></span></div>
-        <div class="gd r" aria-hidden="true"><span class="gd-win"></span><span class="gd-rib"></span><span class="gd-rib b"></span><span class="gd-plate"></span><span class="gd-haz"></span><span class="gd-grip"></span></div>
-        <span class="gate-seam" aria-hidden="true"></span>
-        <div class="gate-card">
-          <span class="gate-scan" aria-hidden="true"></span>
-          <span class="gc-slot" aria-hidden="true"><i></i></span>
-          <div class="gc-head"><span class="gc-ico" aria-hidden="true"><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span><div><h2>Houd je pas voor de lezer</h2><p>Datawacht Orion, toegangspas</p></div></div>
-          <label for="boot-user">Pas van (demo)</label><select id="boot-user"></select>
-          <button type="button" class="go" id="boot-go" disabled>Scan en ga aan boord<svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+
+    <div class="door-stage">
+      <i class="recess" aria-hidden="true"></i><i class="lamp l" aria-hidden="true"></i><i class="lamp r" aria-hidden="true"></i><i class="floor" aria-hidden="true"></i><i class="steam l" aria-hidden="true"></i><i class="steam r" aria-hidden="true"></i><i class="spill" aria-hidden="true"></i><i class="streak" aria-hidden="true"></i>
+      <div class="gdoor" id="door">
+        <div class="door-head">
+          <span class="leds" aria-hidden="true"><i></i><i></i><i></i></span>
+          <p id="boot-status" aria-live="polite">Het station wordt opgebouwd</p>
+        </div>
+        <div class="bay" id="bay">
+          <svg class="corridor c-back" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none"><defs>
+              <linearGradient id="cf" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0b1d3a"/><stop offset="1" stop-color="#2f6fb3"/></linearGradient>
+              <linearGradient id="cc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050d1b"/><stop offset="1" stop-color="#1d4a80"/></linearGradient>
+              <linearGradient id="cwl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#081529"/><stop offset="1" stop-color="#2a63a3"/></linearGradient>
+              <linearGradient id="cwr" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#081529"/><stop offset="1" stop-color="#2a63a3"/></linearGradient>
+              <radialGradient id="ce" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#cbeaff"/><stop offset="1" stop-color="#67caff"/></radialGradient>
+              <radialGradient id="cg" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#a1deff" stop-opacity=".5"/><stop offset="1" stop-color="#15aaff" stop-opacity="0"/></radialGradient>
+              <radialGradient id="rb" cx=".5" cy=".52" r=".6"><stop offset=".3" stop-color="#2a5d99"/><stop offset="1" stop-color="#0a1628"/></radialGradient>
+            </defs>
+            <polygon points="0,0 100,0 59,43 41,43" fill="url(#cc)"/>
+            <polygon points="0,100 100,100 59,61 41,61" fill="url(#cf)"/>
+            <polygon points="0,0 41,43 41,61 0,100" fill="url(#cwl)"/>
+            <polygon points="100,0 59,43 59,61 100,100" fill="url(#cwr)"/>
+            <line x1="0.0" y1="100" x2="42.50" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="6.0" y1="100" x2="43.40" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="12.0" y1="100" x2="44.30" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="18.0" y1="100" x2="45.20" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="24.0" y1="100" x2="46.10" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="30.0" y1="100" x2="47.00" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="36.0" y1="100" x2="47.90" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="42.0" y1="100" x2="48.80" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="48.0" y1="100" x2="49.70" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="54.0" y1="100" x2="50.60" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="60.0" y1="100" x2="51.50" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="66.0" y1="100" x2="52.40" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="72.0" y1="100" x2="53.30" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="78.0" y1="100" x2="54.20" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="84.0" y1="100" x2="55.10" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="90.0" y1="100" x2="56.00" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/><line x1="96.0" y1="100" x2="56.90" y2="61.00" stroke="#04101f" stroke-opacity=".7" stroke-width=".6"/>
+            <polygon points="48.6,100 51.4,100 50.25,61.00 49.75,61.00" fill="#cbeaff" fill-opacity=".45"/>
+            <circle cx="50" cy="52" r="24" fill="url(#cg)"/>
+            <polygon points="42.98,43.00 57.02,43.00 59.00,44.98 59.00,59.02 57.02,61.00 42.98,61.00 41.00,59.02 41.00,44.98" fill="url(#ce)"/>
+          </svg>
+          <svg class="corridor c-mid" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><radialGradient id="rbc-mid" cx=".5" cy=".52" r=".6"><stop offset=".3" stop-color="#2a5d99"/><stop offset="1" stop-color="#0a1628"/></radialGradient></defs><path d="M33.23,30.50 L66.77,30.50 L71.50,35.23 L71.50,68.77 L66.77,73.50 L33.23,73.50 L28.50,68.77 L28.50,35.23 Z M34.40,32.00 L65.60,32.00 L70.00,36.40 L70.00,67.60 L65.60,72.00 L34.40,72.00 L30.00,67.60 L30.00,36.40 Z" fill="url(#rbc-mid)" fill-rule="evenodd" fill-opacity=".92"/><polygon points="34.40,32.00 65.60,32.00 70.00,36.40 70.00,67.60 65.60,72.00 34.40,72.00 30.00,67.60 30.00,36.40" fill="none" stroke="#a1deff" stroke-opacity=".7" stroke-width=".35"/><polygon points="33.23,30.50 66.77,30.50 71.50,35.23 71.50,68.77 66.77,73.50 33.23,73.50 28.50,68.77 28.50,35.23" fill="none" stroke="#020814" stroke-opacity=".8" stroke-width=".5"/><rect x="30.15" y="48.80" width="0.53" height="6.40" fill="#eaf8ff" fill-opacity=".85"/><rect x="69.32" y="48.80" width="0.53" height="6.40" fill="#eaf8ff" fill-opacity=".85"/><rect x="47.44" y="32.10" width="5.12" height="0.45" fill="#ffd230" fill-opacity=".6"/><path d="M37.52,36.00 L62.48,36.00 L66.00,39.52 L66.00,64.48 L62.48,68.00 L37.52,68.00 L34.00,64.48 L34.00,39.52 Z M38.39,37.12 L61.61,37.12 L64.88,40.39 L64.88,63.61 L61.61,66.88 L38.39,66.88 L35.12,63.61 L35.12,40.39 Z" fill="url(#rbc-mid)" fill-rule="evenodd" fill-opacity=".92"/><polygon points="38.39,37.12 61.61,37.12 64.88,40.39 64.88,63.61 61.61,66.88 38.39,66.88 35.12,63.61 35.12,40.39" fill="none" stroke="#a1deff" stroke-opacity=".7" stroke-width=".35"/><polygon points="37.52,36.00 62.48,36.00 66.00,39.52 66.00,64.48 62.48,68.00 37.52,68.00 34.00,64.48 34.00,39.52" fill="none" stroke="#020814" stroke-opacity=".8" stroke-width=".5"/><rect x="35.27" y="49.62" width="0.39" height="4.76" fill="#eaf8ff" fill-opacity=".85"/><rect x="64.34" y="49.62" width="0.39" height="4.76" fill="#eaf8ff" fill-opacity=".85"/><rect x="48.10" y="37.22" width="3.81" height="0.34" fill="#ffd230" fill-opacity=".6"/><path d="M40.64,40.00 L59.36,40.00 L62.00,42.64 L62.00,61.36 L59.36,64.00 L40.64,64.00 L38.00,61.36 L38.00,42.64 Z M41.30,40.84 L58.70,40.84 L61.16,43.30 L61.16,60.70 L58.70,63.16 L41.30,63.16 L38.84,60.70 L38.84,43.30 Z" fill="url(#rbc-mid)" fill-rule="evenodd" fill-opacity=".92"/><polygon points="41.30,40.84 58.70,40.84 61.16,43.30 61.16,60.70 58.70,63.16 41.30,63.16 38.84,60.70 38.84,43.30" fill="none" stroke="#a1deff" stroke-opacity=".7" stroke-width=".35"/><polygon points="40.64,40.00 59.36,40.00 62.00,42.64 62.00,61.36 59.36,64.00 40.64,64.00 38.00,61.36 38.00,42.64" fill="none" stroke="#020814" stroke-opacity=".8" stroke-width=".5"/><rect x="38.99" y="50.21" width="0.30" height="3.57" fill="#eaf8ff" fill-opacity=".85"/><rect x="60.71" y="50.21" width="0.30" height="3.57" fill="#eaf8ff" fill-opacity=".85"/><rect x="48.57" y="40.94" width="2.86" height="0.25" fill="#ffd230" fill-opacity=".6"/></svg>
+          <svg class="corridor c-front" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><radialGradient id="rbc-front" cx=".5" cy=".52" r=".6"><stop offset=".3" stop-color="#2a5d99"/><stop offset="1" stop-color="#0a1628"/></radialGradient></defs><path d="M11.00,2.00 L89.00,2.00 L100.00,13.00 L100.00,91.00 L89.00,102.00 L11.00,102.00 L0.00,91.00 L0.00,13.00 Z M13.73,5.50 L86.27,5.50 L96.50,15.73 L96.50,88.27 L86.27,98.50 L13.73,98.50 L3.50,88.27 L3.50,15.73 Z" fill="url(#rbc-front)" fill-rule="evenodd" fill-opacity=".92"/><polygon points="13.73,5.50 86.27,5.50 96.50,15.73 96.50,88.27 86.27,98.50 13.73,98.50 3.50,88.27 3.50,15.73" fill="none" stroke="#a1deff" stroke-opacity=".7" stroke-width=".35"/><polygon points="11.00,2.00 89.00,2.00 100.00,13.00 100.00,91.00 89.00,102.00 11.00,102.00 0.00,91.00 0.00,13.00" fill="none" stroke="#020814" stroke-opacity=".8" stroke-width=".5"/><rect x="3.65" y="44.56" width="1.23" height="14.88" fill="#eaf8ff" fill-opacity=".85"/><rect x="95.12" y="44.56" width="1.23" height="14.88" fill="#eaf8ff" fill-opacity=".85"/><rect x="44.05" y="5.60" width="11.90" height="1.05" fill="#ffd230" fill-opacity=".6"/><path d="M20.36,14.00 L79.64,14.00 L88.00,22.36 L88.00,81.64 L79.64,90.00 L20.36,90.00 L12.00,81.64 L12.00,22.36 Z M22.43,16.66 L77.57,16.66 L85.34,24.43 L85.34,79.57 L77.57,87.34 L22.43,87.34 L14.66,79.57 L14.66,24.43 Z" fill="url(#rbc-front)" fill-rule="evenodd" fill-opacity=".92"/><polygon points="22.43,16.66 77.57,16.66 85.34,24.43 85.34,79.57 77.57,87.34 22.43,87.34 14.66,79.57 14.66,24.43" fill="none" stroke="#a1deff" stroke-opacity=".7" stroke-width=".35"/><polygon points="20.36,14.00 79.64,14.00 88.00,22.36 88.00,81.64 79.64,90.00 20.36,90.00 12.00,81.64 12.00,22.36" fill="none" stroke="#020814" stroke-opacity=".8" stroke-width=".5"/><rect x="14.81" y="46.35" width="0.93" height="11.31" fill="#eaf8ff" fill-opacity=".85"/><rect x="84.26" y="46.35" width="0.93" height="11.31" fill="#eaf8ff" fill-opacity=".85"/><rect x="45.48" y="16.76" width="9.05" height="0.80" fill="#ffd230" fill-opacity=".6"/><path d="M27.77,23.50 L72.23,23.50 L78.50,29.77 L78.50,74.23 L72.23,80.50 L27.77,80.50 L21.50,74.23 L21.50,29.77 Z M29.33,25.50 L70.67,25.50 L76.50,31.33 L76.50,72.67 L70.67,78.50 L29.33,78.50 L23.50,72.67 L23.50,31.33 Z" fill="url(#rbc-front)" fill-rule="evenodd" fill-opacity=".92"/><polygon points="29.33,25.50 70.67,25.50 76.50,31.33 76.50,72.67 70.67,78.50 29.33,78.50 23.50,72.67 23.50,31.33" fill="none" stroke="#a1deff" stroke-opacity=".7" stroke-width=".35"/><polygon points="27.77,23.50 72.23,23.50 78.50,29.77 78.50,74.23 72.23,80.50 27.77,80.50 21.50,74.23 21.50,29.77" fill="none" stroke="#020814" stroke-opacity=".8" stroke-width=".5"/><rect x="23.64" y="47.76" width="0.70" height="8.48" fill="#eaf8ff" fill-opacity=".85"/><rect x="75.66" y="47.76" width="0.70" height="8.48" fill="#eaf8ff" fill-opacity=".85"/><rect x="46.61" y="25.60" width="6.79" height="0.60" fill="#ffd230" fill-opacity=".6"/></svg>
+          <div class="leaf left" aria-hidden="true"><i class="port"></i><i class="stencil">Sluis A1</i><i class="grip"></i><i class="inset"></i><i class="vent"></i><i class="hazard"></i></div>
+          <div class="leaf right" aria-hidden="true"><i class="port"></i><i class="stencil">Aankomsthal</i><i class="grip"></i><i class="inset"></i><i class="vent"></i><i class="hazard"></i></div>
+          <i class="seam" aria-hidden="true"></i><i class="burst" aria-hidden="true"></i><i class="flood" aria-hidden="true"></i><span class="lockring" aria-hidden="true"><i class="hub"></i></span>
+
         </div>
       </div>
-      <p class="gate-foot">Dit zijn verzonnen accounts. In de eindversie log je in met je Microsoft-account van VCSW.</p>
+      <div class="reader" id="reader"><div class="term-top" aria-hidden="true"><i class="led"></i><span>Paslezer A1</span></div><i class="screw s1" aria-hidden="true"></i><i class="screw s2" aria-hidden="true"></i><i class="screw s3" aria-hidden="true"></i><i class="screw s4" aria-hidden="true"></i>
+                        <div class="reader-step" data-step="start">
+              <div class="reader-head">
+                <span class="reader-icon" aria-hidden="true"><i class="scan"></i><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16.2c.6-1.5 1.8-2.3 3.2-2.3s2.6.8 3.2 2.3"/><path d="M14.5 10h3.5"/><path d="M14.5 13.5h2.5"/></svg></span>
+                <div><h2>Houd je pas voor de lezer</h2><p>Datawacht Orion</p></div>
+              </div>
+              <div class="boot-bar" id="boot-bar" role="progressbar" aria-label="Het station laden" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+              <button type="button" class="ms-btn" id="gate-ms" disabled>
+                <svg class="ms-logo" viewBox="0 0 21 21" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#f25022"/><rect x="11" y="0" width="10" height="10" fill="#7fba00"/><rect x="0" y="11" width="10" height="10" fill="#00a4ef"/><rect x="11" y="11" width="10" height="10" fill="#ffb900"/></svg>
+                <span>Inloggen met Microsoft</span>
+              </button>
+              <p class="reader-note">Demo: je kiest hierna een verzonnen pas. In de eindversie log je hier in met je VCSW-account.</p>
+            </div>
+            <div class="reader-step" data-step="pick" hidden>
+              <div class="pick-head"><h2 id="pick-title">Kies je pas</h2><button type="button" class="pick-back" id="pick-back">Terug</button></div>
+              <ul class="passes" id="passes" aria-labelledby="pick-title"></ul>
+              <p class="reader-note">Verzonnen accounts voor de demo.</p>
+            </div>
+            <div class="reader-step" data-step="ok" hidden>
+              <span class="ok-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+              <h2 id="ok-title">Toegang verleend</h2>
+              <p id="ok-name"></p>
+            </div>
+          </div>
+      <i class="pillar l" aria-hidden="true"></i><i class="pillar r" aria-hidden="true"></i><i class="floor-glow" aria-hidden="true"></i><i class="reflect" aria-hidden="true"></i>
     </div>
-    <ul class="boot-tiles">
-      <li><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><b>Score</b><span>Punten per goed antwoord. Vanaf 70 procent is de missie gehaald.</span></li>
-      <li><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg><b>Schild</b><span>Begint op 100 procent. Elke fout kost schild. Zo zie je hoe zeker je speelde.</span></li>
-      <li><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg><b>Kristallen</b><span>Verdien je met goede antwoorden. In de luchtsluis openen ze een aanwijzing.</span></li>
-      <li><svg class="vcsw-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><b>Tijd</b><span>Sommige onderdelen hebben een klok. Met de knop Tijdsdruk zet je die uit.</span></li>
+
+    <ul class="gate-facts">
+      <li><span class="fi blue" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></span><div><b>Score</b><span>70 procent haalt de missie.</span></div></li>
+      <li><span class="fi green" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span><div><b>Schild</b><span>Elke fout kost schild.</span></div></li>
+      <li><span class="fi amber" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg></span><div><b>Kristallen</b><span>Voor goede antwoorden.</span></div></li>
+      <li><span class="fi blue" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>Tijd</b><span>De knop Tijdsdruk zet klokken uit.</span></div></li>
     </ul>
-    <p class="boot-note">Prototype met fictieve namen en gegevens. De inhoud wacht op goedkeuring van de Privacy Officer. Je voortgang blijft alleen in deze browser bewaard.</p>
+    <p class="gate-note">Prototype met fictieve namen en gegevens. De inhoud wacht op goedkeuring van de Privacy Officer. Je voortgang blijft alleen in deze browser.</p>
   </div>
+  <div class="vcsw-sr-only"><label for="boot-user">Account (demo)</label><select id="boot-user" tabindex="-1"></select><button type="button" id="boot-go" tabindex="-1" disabled>Inloggen</button></div>
 </div>
 <canvas id="world" aria-hidden="true"></canvas>
 <div class="sky-bg" aria-hidden="true"></div>
