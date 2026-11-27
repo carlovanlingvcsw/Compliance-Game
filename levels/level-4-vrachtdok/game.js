@@ -59,15 +59,15 @@
       speaker: "Vega",
       line: "Hier is het crewbestand voor de kostencontrole. Ik heb het even snel via het open kanaal gestuurd, dan kun je meteen aan de slag.",
       options: [
-        { text: "Doorsturen naar de collega die de controle doet.", grade: "bad",
+        { text: "Het bestand doorsturen naar de collega die de kostencontrole doet, met het verzoek het daarna in de beveiligde databank te zetten.", grade: "bad",
           react: { who: "Vega", say: "Prima, als het maar snel gaat." },
-          why: "Elke extra kopie is een extra risico. Het bestand staat nu op twee plekken onbeveiligd." },
-        { text: "Het bestand opslaan in de beveiligde databank, het bericht wissen en Kapitein Vega vriendelijk wijzen op het beveiligde kanaal voor de volgende keer.", grade: "good",
+          why: "Elke extra kopie is een extra risico. Het bestand staat nu op twee plekken onbeveiligd, en het origineel staat nog in je berichten." },
+        { text: "Het bestand opslaan in de beveiligde databank, het bericht wissen en Kapitein Vega vriendelijk wijzen op het beveiligde kanaal.", grade: "good",
           react: { who: "Vega", say: "Het beveiligde kanaal, genoteerd. Dat gebruik ik voortaan." },
           why: "Het bestand staat nu op één beveiligde plek en de onbeveiligde kopie is weg. Vega weet hoe het de volgende keer moet." },
-        { text: "Terugsturen dat ze dit niet meer moet doen, en het bericht laten staan.", grade: "half",
+        { text: "Het bestand opslaan in de beveiligde databank en Kapitein Vega vriendelijk wijzen op het beveiligde kanaal voor de volgende keer.", grade: "half",
           react: { who: "Vega", say: "Begrepen, volgende keer anders." },
-          why: "De boodschap klopt, maar het bestand staat nog onbeveiligd in je berichten." }
+          why: "Opslaan en Vega wijzen op het beveiligde kanaal klopt. Maar je wist het bericht niet, dus de onbeveiligde kopie staat nog in je berichten." }
       ],
       crystal: { name: "Veilig ontvangen", text: "Persoonsgegevens ontvang je via de beveiligde weg. Een losse bijlage sla je veilig op en wis je daarna uit je berichten." },
       clue: "Kijk naar het kanaal. Een bekende afzender via een ander kanaal dan normaal is een waarschuwing."
@@ -134,15 +134,15 @@
       speaker: "Bram",
       line: "Vraag gewoon alle crewgegevens op, dan hebben we alles.",
       options: [
-        { text: "Alles opvragen.", grade: "bad",
+        { text: "Alle crewgegevens opvragen en afspraken over de verwerking vastleggen, dan hoeven we later niets meer na te vragen.", grade: "bad",
           react: { who: "Bram", say: "Zie je, nu hebben we alles. Handig toch?" },
-          why: "Je verzamelt meer dan nodig. Alles wat je niet nodig hebt, moet je wel beschermen en is een extra risico." },
+          why: "Afspraken vastleggen is goed, maar je verzamelt meer dan nodig. Alles wat je niet nodig hebt, moet je wel beschermen en is een extra risico." },
         { text: "Alleen de gegevens opvragen die nodig zijn voor de scan, en afspraken over de verwerking vastleggen.", grade: "good",
           react: { who: "Bram", say: "Hm. Scheelt mij ook weer werk eigenlijk." },
           why: "Je vraagt alleen op wat de scan nodig heeft en legt vast wat ermee gebeurt. Zo gebruik je gegevens alleen voor het doel waarvoor je ze kreeg." },
-        { text: "Als voorbeeld laten zien wat we bij Nova Terra hebben gevonden, met namen erin.", grade: "bad",
-          react: { who: "Bram", say: "Mooi voorbeeld toch? Dan zien ze meteen wat we kunnen." },
-          why: "Gegevens van de ene kolonie zijn nooit voorbeeldmateriaal voor de andere." }
+        { text: "Alleen de gegevens opvragen die nodig zijn voor de scan, en ze meteen in de beveiligde databank zetten.", grade: "half",
+          react: { who: "Bram", say: "Minder werk, en het staat veilig. Maar wat mogen we er straks eigenlijk mee?" },
+          why: "Alleen opvragen wat nodig is klopt. Maar je legt geen afspraken over de verwerking vast, dus niemand weet waarvoor de gegevens gebruikt mogen worden." }
       ],
       crystal: { name: "Doelbinding", text: "Vraag alleen op wat nodig is voor het doel, en gebruik het alleen daarvoor." },
       clue: "Een verzoek dat je niet verwacht, zoals een reset of een pakket, is een signaal om op te letten."
@@ -153,15 +153,15 @@
       speaker: "Bram",
       line: "Een langsvliegend handelsschip biedt gratis een slimme scanner aan die databestanden in seconden analyseert. Gooi het crewbestand er even in.",
       options: [
-        { text: "Uploaden naar de scanner, het scheelt veel tijd.", grade: "bad",
-          react: { who: "Bram", say: "Klaar in drie seconden. Waar staat die scanner eigenlijk?" },
-          why: "Het systeem is niet goedgekeurd en je weet niet waar de gegevens terechtkomen." },
-        { text: "Alleen de goedgekeurde systemen van het station gebruiken, met alleen organisatiegegevens of gegevens die volgens de regels geanonimiseerd of gepseudonimiseerd zijn.", grade: "good",
+        { text: "Het bestand uploaden naar de scanner van het handelsschip, maar eerst vragen waar de gegevens worden opgeslagen en hoe lang.", grade: "bad",
+          react: { who: "Bram", say: "Ze zeggen dat het veilig is. Klaar in drie seconden." },
+          why: "Het systeem is niet goedgekeurd. Een geruststellend antwoord van de handelaar verandert dat niet, en je weet nog steeds niet waar de gegevens terechtkomen." },
+        { text: "Alleen goedgekeurde systemen gebruiken, met organisatiegegevens of gegevens die volgens de regels geanonimiseerd of gepseudonimiseerd zijn.", grade: "good",
           react: { who: "ARIA", say: "Dank je. Ik werk graag mee, zolang er geen persoonsgegevens in mij belanden die er niet in horen." },
           why: "Je gebruikt alleen goedgekeurde systemen en alleen gegevens die daarin mogen." },
-        { text: "Het volledige bestand met namen in ARIA zetten, want die is goedgekeurd.", grade: "bad",
-          react: { who: "ARIA", say: "Ik ben goedgekeurd. Dat betekent nog niet dat alles in mij mag." },
-          why: "Een goedgekeurd systeem betekent niet dat persoonsgegevens erin mogen." }
+        { text: "Het bestand in ARIA zetten, want die is goedgekeurd, en vooraf de namen van alle crewleden uit het bestand weghalen.", grade: "half",
+          react: { who: "ARIA", say: "Ik ben goedgekeurd. Maar zonder namen kan ik nog steeds zien over wie het gaat." },
+          why: "ARIA is goedgekeurd, dus het systeem klopt. Maar alleen namen weghalen maakt een bestand nog niet anoniem. Er mogen alleen gegevens in die volgens de regels geanonimiseerd of gepseudonimiseerd zijn." }
       ],
       crystal: { name: "Goedgekeurde AI", text: "Alleen goedgekeurde systemen, en daarin geen persoonsgegevens behalve wat volgens de regels mag. Alleen namen weghalen maakt een bestand nog niet anoniem." },
       clue: "Bekijk het adres van de afzender goed. Een adres dat op dat van het station lijkt, is nog niet van het station."
@@ -172,15 +172,15 @@
       speaker: "Gilde",
       line: "Ze hebben zich toch aangemeld? Dan vinden ze ons aanbod vast interessant.",
       options: [
-        { text: "Doen.", grade: "bad",
-          react: { who: "Gilde", say: "Uitstekend, het bericht gaat vandaag nog uit." },
-          why: "Een aanmelding is geen toestemming voor reclame." },
-        { text: "Alleen mensen berichten die daar toestemming voor gaven.", grade: "good",
+        { text: "Alleen mensen berichten die bij hun aanmelding toestemming gaven voor nieuws over Nova Terra.", grade: "half",
+          react: { who: "Gilde", say: "Toestemming is toestemming, toch?" },
+          why: "Je kijkt terecht naar toestemming. Maar die moet over deze reclame van het Handelsgilde gaan. Toestemming voor nieuws over Nova Terra telt daar niet voor." },
+        { text: "Alleen mensen berichten die apart toestemming gaven om reclame van het Handelsgilde te ontvangen.", grade: "good",
           react: { who: "Gilde", say: "Een kleinere lijst dan gehoopt, maar goed." },
           why: "Gegevens uit een aanmelding zijn voor de selectie. Voor reclame is aparte toestemming nodig." },
-        { text: "Alleen mensen berichten van wie de aanmelding lang geleden is.", grade: "bad",
+        { text: "Alleen mensen berichten van wie de aanmelding al lang geleden is, want die gegevens worden toch niet meer gebruikt.", grade: "bad",
           react: { who: "Gilde", say: "Die oude aanmeldingen liggen toch maar stof te vangen." },
-          why: "Die gegevens horen er vaak niet eens meer te zijn. Denk aan de bewaartermijn uit de passagiersmodule." }
+          why: "Een aanmelding is geen toestemming voor reclame. En die oude gegevens horen er vaak niet eens meer te zijn. Denk aan de bewaartermijn uit de passagiersmodule." }
       ],
       crystal: null,
       clue: "Geheimhouding, geld of spoed? Stop en controleer via een andere weg."
@@ -414,15 +414,33 @@
     var s = SITUATIONS[S.sit], M = S.mail, r = M.round;
     var badKey = r === 1 ? "r1" : "r2";
     var nSel = Object.keys(M.sel).filter(function (k) { return M.sel[k]; }).length;
+
+    /* After checking: every item that is discussed gets a number, in reading order (mail first, then the attachment).
+       Discussed means: it may not go this way, or the player judged it wrongly. */
+    var marks = {}, order = [];
+    if (M.checked) {
+      var seq = [];
+      s.body.replace(/\{(\w+)\}/g, function (_, k) { seq.push(k); return _; });
+      if (s.attach) s.attach.rows.forEach(function (row) { row[1].replace(/\{(\w+)\}/g, function (_, k) { seq.push(k); return _; }); });
+      seq.forEach(function (k) {
+        var it = s.items[k];
+        if (marks[k] || !(it[badKey] || !!M.sel[k] !== it[badKey])) return;
+        order.push(k); marks[k] = order.length;
+      });
+    }
+    function judged(k) { return !!M.sel[k] === s.items[k][badKey]; }
+
     function tokens(str) {
       return esc(str).replace(/\n/g, "<br>").replace(/\{(\w+)\}/g, function (_, k) {
-        var it = s.items[k], on = !!M.sel[k], cls = "token", mark = "";
+        var it = s.items[k], on = !!M.sel[k];
         if (M.checked) {
-          var right = on === it[badKey];
-          cls += right ? " right" : " wrong";
-          mark = (right ? icon("check") : icon("half")) + '<span class="vcsw-sr-only">' + (it[badKey] ? " mag niet via deze weg" : " mag wel") + (right ? ", goed beoordeeld" : ", niet goed beoordeeld") + "</span>";
+          /* Feedback: plain text, or a tinted mark that follows the text, with its number in front */
+          if (!marks[k]) return esc(it.text);
+          var i = it.text.indexOf(" "), first = i < 0 ? it.text : it.text.slice(0, i), rest = i < 0 ? "" : it.text.slice(i);
+          return '<mark class="mk ' + (judged(k) ? "is-ok" : "is-no") + '"><span class="mk-lead"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" + esc(first) + "</span>" + esc(rest) +
+            '<span class="vcsw-sr-only"> (toelichting ' + marks[k] + ")</span></mark>";
         }
-        return '<span role="button" tabindex="' + (M.checked ? "-1" : "0") + '" class="' + cls + '" data-tok="' + k + '" aria-pressed="' + on + '"' + (M.checked ? ' aria-disabled="true"' : "") + ">" + (function () { var i = it.text.lastIndexOf(" "); return esc(it.text.slice(0, i + 1)) + '<span style="white-space:nowrap">' + esc(it.text.slice(i + 1)) + mark + "</span>"; })() + "</span>";
+        return '<span role="button" tabindex="0" class="token" data-tok="' + k + '" aria-pressed="' + on + '">' + esc(it.text) + "</span>";
       });
     }
     var body = s.body.split("\n\n").map(function (para) { return "<p>" + tokens(para) + "</p>"; }).join("");
@@ -439,40 +457,74 @@
     var task = r === 1
       ? "<p><strong>Stap 1 van 2.</strong> De mail gaat via de gewone stationsmail. Klik in de mail en de bijlage alle gegevens aan die zo niet verstuurd mogen worden. Klik nog een keer om een keuze ongedaan te maken.</p>"
       : "<p><strong>Stap 2 van 2.</strong> Bram verstuurt de mail nu via Kluispost, het beveiligde kanaal van Orion. Aangetekend verzenden kan ook. Klik aan wat er zelfs via dit kanaal niet in hoort.</p>";
-
-    var fb = "";
-    if (M.checked) {
-      var list = Object.keys(s.items).filter(function (k) { return s.items[k][badKey] || !!M.sel[k] !== s.items[k][badKey]; }).map(function (k) {
-        var it = s.items[k], right = !!M.sel[k] === it[badKey];
-        var why = r === 1 ? it.why1 : (it.r2 ? it.why2 : (it.r1 ? s.why2ok : "Mocht al via de gewone mail, en mag hier dus ook."));
-        return "<li>" + (right ? icon("check", "ok") : icon("x", "no")) + "<span><strong>" + esc(it.text) + "</strong>: " +
-          (it[badKey] ? "mag niet via deze weg" : "mag wel") + (right ? "" : " (jij koos anders)") + ". " + esc(why) + "</span></li>";
-      }).join("");
-      var e = r === 1 ? M.e1 : M.e2;
-      fb = '<div class="feedback">' + alertBox(e === 0 ? "success" : "warning", e === 0 ? "Alles goed beoordeeld" : e + (e === 1 ? " gegeven" : " gegevens") + " niet goed beoordeeld", r === 1 ? "Gevoelige gegevens horen niet in een gewone mail." : "Een beveiligd kanaal is nodig, maar niet genoeg.") +
-        '<ul class="result-list">' + list + "</ul>";
-      if (r === 1) {
-        fb += "</div>" + '<div class="actions">' + btn("Verstuur via Kluispost", "mail2", "", "arrowR") + "</div>";
-      } else {
-        var g = M.grade, o = s.react[g];
-        var title = g === "good" ? "Goed, +10 punten" : g === "half" ? "Half goed, +5 punten, schild −5%" : "Fout, 0 punten, schild −10%";
-        fb += speech(o.who, o.say) + alertBox(g === "good" ? "success" : g === "half" ? "warning" : "error", title, s.goodWhy);
-        fb += rewards(s, g === "good");
-        fb += "</div>" + '<div class="actions">' + btn("Volgende situatie", "nextsit", "", "arrowR") + "</div>";
-      }
-    }
-
-    show(
-      chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) +
-      "<h2>" + esc(s.title) + "</h2><p>" + esc(s.intro) + "</p>" +
-      (r === 1 ? speech(s.speaker, s.line) : "") + task +
-      '<div class="mailbox"><div class="msg-head">' +
+    var mailbox = '<div class="mailbox"><div class="msg-head">' +
       '<div class="row"><span class="k">Aan</span><span class="v">Kapitein Vega &lt;vega@novaterra.space&gt;</span></div>' +
       '<div class="row"><span class="k">Onderwerp</span><span class="v">Uitkomst kostencontrole Nova Terra</span></div>' +
       '<div class="row"><span class="k">Via</span><span class="v">' + via + "</span></div></div>" +
-      '<div class="mail-body">' + body + "</div></div>" +
-      (M.checked ? fb : '<p class="sel-count" aria-live="polite">' + nSel + " gegevens aangeklikt</p>" + '<div class="actions">' + btn("Controleer", "mailcheck", "", "check") + "</div>"),
-      M.checked ? ".feedback .vcsw-alert-title" : "h2"
+      '<div class="mail-body">' + body + "</div></div>";
+
+    if (!M.checked) {
+      show(
+        chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) +
+        "<h2>" + esc(s.title) + "</h2><p>" + esc(s.intro) + "</p>" +
+        (r === 1 ? speech(s.speaker, s.line) : "") + task + mailbox +
+        '<p class="sel-count" aria-live="polite">' + nSel + " gegevens aangeklikt</p>" + '<div class="actions">' + btn("Controleer", "mailcheck", "", "check") + "</div>",
+        "h2"
+      );
+      return;
+    }
+
+    /* One verdict: step 1 is judged on its own errors, step 2 on both steps together (the same grade as the score) */
+    var e = r === 1 ? M.e1 : M.e1 + M.e2;
+    var g = r === 1 ? (e === 0 ? "good" : e <= 2 ? "half" : "bad") : M.grade;
+    var word = g === "good" ? "Goed" : g === "half" ? "Half goed" : "Niet goed";
+    var pts = r === 1 ? "Stap 1 van 2, nog geen punten"
+      : g === "good" ? "+10 punten" : g === "half" ? "+5 punten, schild −5%" : "0 punten, schild −10%";
+    var count = r === 1
+      ? (e === 0 ? "Je beoordeelde alle gegevens goed" : "Je beoordeelde " + plural(e, "gegeven", "gegevens") + " niet goed")
+      : (e === 0 ? "Je beoordeelde in beide stappen alle gegevens goed" : "In stap 1 en 2 samen beoordeelde je " + plural(e, "gegeven", "gegevens") + " niet goed");
+    var lesson = r === 1 ? "Gevoelige gegevens horen niet in een gewone mail, ook niet in een bijlage." : s.goodWhy;
+    var verdict = '<div class="mail-verdict ' + g + '"><p class="verdict-title"><span class="verdict-word">' +
+      icon(g === "good" ? "check" : g === "half" ? "half" : "x") + word + '</span><span class="verdict-pts">' + pts + "</span></p>" +
+      '<p class="verdict-text">' + count + ". " + esc(lesson) + "</p></div>";
+
+    var where = r === 1 ? "via de gewone mail" : "via Kluispost";
+    var notes = order.map(function (k) {
+      var it = s.items[k], ok = judged(k);
+      var why = r === 1 ? it.why1 : (it.r2 ? it.why2 : (it.r1 ? s.why2ok : "Mocht al via de gewone mail, en mag hier dus ook."));
+      var rule = it[badKey] ? "Mag niet " + where + "." : "Mag wel " + where + ".";
+      var you = ok ? "Goed gezien." : it[badKey] ? "Dit miste je." : "Jij klikte dit onterecht aan.";
+      return '<li class="' + (ok ? "is-ok" : "is-no") + '"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" +
+        '<div><p class="note-head"><span class="vcsw-sr-only">Toelichting ' + marks[k] + ": </span><strong>" + esc(it.text) + "</strong></p>" +
+        '<p class="note-text"><span class="note-you">' + you + "</span> " + rule + " " + esc(why) + "</p></div></li>";
+    }).join("");
+
+    var after = "";
+    if (r === 1) {
+      after = '<div class="actions">' + btn("Verstuur via Kluispost", "mail2", "", "arrowR") + "</div>";
+    } else {
+      var o = s.react[g];
+      var lines = [];
+      if (g === "good") {
+        lines.push(["gem", "<strong>Datakristal: " + esc(s.crystal.name) + "</strong> " + esc(s.crystal.text)]);
+        lines.push(["eye", "<strong>Onthoud dit voor de luchtsluis</strong> " + esc(s.clue)]);
+      } else {
+        lines.push(["info", "<strong>Geen kristal deze keer.</strong> Zonder kristal kost een aanwijzing in de luchtsluis " + CLUE_COST + " procent schild."]);
+      }
+      after = speech(o.who, o.say) +
+        '<ul class="mail-after">' + lines.map(function (l) { return "<li>" + icon(l[0], "sm") + "<span>" + l[1] + "</span></li>"; }).join("") + "</ul>" +
+        '<div class="actions">' + btn("Volgende situatie", "nextsit", "", "arrowR") + "</div>";
+    }
+
+    show(
+      chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length, r === 1 ? "Stap 1 van 2, gewone mail" : "Stap 2 van 2, Kluispost"]) +
+      "<h2>" + esc(s.title) + "</h2>" + verdict +
+      '<div class="mail-review">' + mailbox +
+      '<section class="mail-notes" aria-labelledby="notes-h"><h3 id="notes-h">Toelichting per markering</h3>' +
+      '<p class="notes-key"><span class="key-sw is-ok" aria-hidden="true"></span>Goed beoordeeld<span class="key-sw is-no" aria-hidden="true"></span>Niet goed beoordeeld</p>' +
+      (order.length ? '<ol class="notes">' + notes + "</ol>" : "<p>Er was in deze stap niets te markeren.</p>") +
+      after + "</section></div>",
+      ".verdict-title"
     );
   }
 
@@ -674,7 +726,8 @@
       (S.paused
         ? alertBox("info", "Gepauzeerd", "De klok staat stil. Kies Hervat om verder te gaan.")
         : '<div class="deck"><article class="msg" id="msgcard" aria-label="Binnenkomend bericht ' + (S.msgIdx + 1) + '">' +
-          '<span class="stamp left" aria-hidden="true">Aanval</span><span class="stamp right" aria-hidden="true">Echt</span>' +
+          /* The swipe stamps sit on the top edge of the card, outside the text. After a choice there is nothing to swipe, so no stamps. */
+          (S.answered ? "" : '<span class="stamp left" aria-hidden="true">Aanval</span><span class="stamp right" aria-hidden="true">Echt</span>') +
           head + body + "</article></div>" + controls),
       S.answered ? ".lock-feedback .vcsw-alert-title" : "h2"
     );
@@ -784,7 +837,12 @@
       var good = s.type === "mail" ? { text: s.goodText, why: s.goodWhy } : s.options.filter(function (o) { return o.grade === "good"; })[0];
       var ic = g === "good" ? icon("check", "ok") : g === "half" ? icon("half", "mid") : icon("x", "no");
       var lbl = g === "good" ? "Goed" : g === "half" ? "Half goed" : "Fout";
-      return "<li>" + ic + "<span><strong>" + esc(s.title) + "</strong> (" + lbl + "). " + (g === "good" ? "" : "Beter was: " + esc(good.text) + " ") + esc(good.why) + "</span></li>";
+      /* Half goed: say what the half answer missed, before the full answer */
+      var half = s.type === "mail" ? null : s.options.filter(function (o) { return o.grade === "half"; })[0];
+      var missed = g !== "half" ? "" : s.type === "mail"
+        ? "Je zag een of twee gegevens over het hoofd. "
+        : esc(half.why) + " ";
+      return "<li>" + ic + "<span><strong>" + esc(s.title) + "</strong> (" + lbl + "). " + missed + (g === "good" ? "" : "Beter was: " + esc(good.text) + " ") + esc(good.why) + "</span></li>";
     }).join("");
     var okMsgs = S.msgResults.filter(function (r) { return r === "ok"; }).length;
     var crystals = S.crystals.length
@@ -845,7 +903,7 @@
     show(
       '<div class="aarde"><div class="head">' + chips(["Stap 2 van 2"]) +
       "<h2>Melden en je resultaat</h2></div>" +
-      '<section class="acard meld"><div class="meld-text"><h3>Meldroute</h3><p>Twijfel of een incident? Meld het direct bij Tarik, Dagmar of via het meldpunt.</p></div>' +
+      '<section class="acard meld"><div class="meld-text"><h3>Meldroute</h3><p>Twijfel of een incident? Meld het direct bij de security officer, de privacy officer of via het meldpunt.</p></div>' +
       '<div class="meld-act"><code id="mailaddr">jz@vcsw.nl</code>' +
       '<button type="button" class="vcsw-button outline" data-action="copy">Kopieer adres' + icon("copy") + "</button></div>" +
       '<p class="vcsw-sr-only" id="copy-status" aria-live="polite"></p></section>' +

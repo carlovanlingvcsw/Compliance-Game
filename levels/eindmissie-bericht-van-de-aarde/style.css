@@ -117,14 +117,6 @@ p { margin: 0; }
 @media (prefers-reduced-motion: reduce) { .alarm-dot { animation: none; } .vcsw *, .vcsw *::before, .vcsw *::after { transition: none !important; } }
 
 /* Eindmissie */
-.rooms { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-.room { border: 1px solid var(--vcsw-border); border-radius: var(--vcsw-radius-xl); background: var(--vcsw-surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.room.searched { background: var(--vcsw-surface-muted); }
-.room-name { font-family: var(--vcsw-font-heading); font-weight: 600; color: var(--vcsw-title); display: flex; gap: 8px; align-items: center; }
-.finding { border: 1px solid var(--vcsw-border); border-radius: var(--vcsw-radius-lg); background: var(--vcsw-surface); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-.finding.wrong { border-color: var(--vcsw-down); border-width: 2px; padding: 11px 13px; }
-.finding .vcsw-segmented { display: flex; flex-wrap: wrap; border-radius: 12px; }
-.finding .vcsw-segmented button { flex: 1 1 auto; padding-inline: 10px; }
 .holders { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .holder { border: 1px solid var(--vcsw-border); border-radius: var(--vcsw-radius-xl); padding: 14px 16px; background: var(--vcsw-surface); display: flex; flex-direction: column; gap: 10px; }
 .holder.wrong { border-color: var(--vcsw-down); border-width: 2px; padding: 13px 15px; }
@@ -371,8 +363,8 @@ p { margin: 0; }
   .deur *, .ring-arc, .woord { transition: none !important; }
 }
 
-/* Raakvlakken van minstens 44 px in de zoektocht en het antwoord. */
-.room .vcsw-button, .finding .vcsw-segmented button, .logrow .vcsw-segmented button, .screen .actions .vcsw-button { min-height: 44px; }
+/* Raakvlakken van minstens 44 px in het antwoord. */
+.logrow .vcsw-segmented button, .screen .actions .vcsw-button { min-height: 44px; }
 
 /* Ronde 23: de hoofdsluis verder uitgewerkt. Grotere deur met diepte, bogen op het kozijn per grendel. */
 .sluis-grid { grid-template-columns: clamp(250px, 41%, 340px) minmax(0, 1fr); gap: 20px; }
@@ -411,6 +403,7 @@ p { margin: 0; }
 .nevel-kaart.is-fout .ring-arc, .nevel-kaart.is-fout .ring-mark { stroke: var(--vcsw-red-300); }
 #stage .nevel-sub { color: var(--vcsw-amber-200); }
 #stage .nevel-rij li.is-nu { border-color: var(--vcsw-amber-300); color: var(--vcsw-amber-200); }
+#stage .nevel-rij li.is-half { border-color: var(--vcsw-amber-300); color: var(--vcsw-amber-300); }
 .grendels { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .nevel { padding-bottom: 14px; }
 
@@ -420,3 +413,141 @@ html.in-orion[data-screen="end"] main > .vcsw-alert { display: none; }
 /* Alleen omkeren als de kop het laatste kind is, dus als er labels voor staan. Een zin onder de kop blijft eronder. */
 .kop { flex-direction: column; }
 .kop:has(> h1:last-child), .kop:has(> h2:last-child) { flex-direction: column-reverse; }
+
+/* ---------- Fase 3: de stationsscan ----------
+   Links de plattegrond met zeven modules aan een gang, rechts de scannerbak. Maten van de plattegrond in procenten van 360 bij 470. */
+.zk { display: flex; flex-direction: column; gap: 12px; }
+.zk-kop { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+#stage .zk h2 { margin: 0; font-size: 1.5rem; line-height: 1.2; letter-spacing: 0; }
+.zk-kop .timer { padding-top: 2px; }
+.zk-grid { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 16px; align-items: start; }
+
+.zk-kaart { position: relative; width: 100%; aspect-ratio: 360 / 470; background: #04102a; border: 1px solid #1f4f85; border-radius: 12px; overflow: hidden; }
+.zk-plan { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.zk-gang { fill: #0b2548; stroke: #1f4f85; stroke-width: 2; }
+.zk-gang-lijn { fill: none; stroke: #1f4f85; stroke-width: 2; stroke-dasharray: 6 8; }
+.zk-deur { fill: #0b2548; stroke: #1f4f85; stroke-width: 1.5; }
+.zk-deur.is-open { fill: #16335c; stroke: var(--vcsw-blue-400); }
+.zk-dok { fill: #0b2548; stroke: var(--vcsw-blue-300); stroke-width: 2; }
+.zk-dok-kern { fill: var(--vcsw-blue-300); }
+.zk-dok-naam { position: absolute; left: 57%; top: 2.2%; font-size: 0.9375rem; line-height: 1.3; color: #b9cbe3; }
+
+.zk-mod { position: absolute; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 4px; padding: 8px 10px; text-align: left; background: #0b2548; border: 1px solid #1f4f85; border-radius: 10px; color: #ffffff; font: inherit; cursor: pointer; hyphens: manual; transition: background-color 150ms var(--vcsw-ease), border-color 150ms var(--vcsw-ease); }
+.zk-mod:hover:not([disabled]) { background: var(--vcsw-blue-800); border-color: var(--vcsw-blue-300); }
+.zk-mod:focus-visible { outline: 3px solid var(--vcsw-blue-300); outline-offset: 2px; }
+.zk-mod[disabled] { cursor: default; }
+.zk-mod-naam { font: 700 0.9375rem/1.25 var(--vcsw-font-heading); color: #ffffff; overflow-wrap: break-word; }
+.zk-mod-stand { display: inline-flex; gap: 5px; align-items: center; font-size: 0.9375rem; line-height: 1.25; color: #b9cbe3; }
+.zk-mod-stand .vcsw-icon { width: 15px; height: 15px; flex: none; }
+.zk-mod.is-nog:not([disabled]) .zk-mod-stand { color: var(--vcsw-blue-300); }
+.zk-mod.is-nog[disabled] { opacity: 0.6; }
+.zk-mod.is-scan, .zk-mod.is-kies { border: 2px solid var(--vcsw-blue-300); padding: 7px 9px; background: var(--vcsw-blue-800); }
+.zk-mod.is-scan .zk-mod-stand, .zk-mod.is-kies .zk-mod-stand { color: var(--vcsw-blue-200); }
+.zk-mod.is-leeg { background: #06162f; border-style: dashed; }
+.zk-mod.is-goed { border: 2px solid var(--vcsw-green-300); padding: 7px 9px; }
+.zk-mod.is-goed .zk-mod-stand { color: var(--vcsw-green-300); }
+.zk-mod.is-half { border: 2px solid var(--vcsw-amber-300); padding: 7px 9px; }
+.zk-mod.is-half .zk-mod-stand { color: var(--vcsw-amber-300); }
+.zk-mod.is-fout { border: 2px solid var(--vcsw-red-300); padding: 7px 9px; }
+.zk-mod.is-fout .zk-mod-stand { color: var(--vcsw-red-300); }
+/* De scanstraal veegt één keer door de module, na de vlucht van de scanner. */
+.zk-mod.is-scan::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%; background: linear-gradient(90deg, transparent, rgb(103 202 255 / 0.35), transparent); transform: translateX(-100%); animation: zk-veeg var(--scan) linear var(--fly) both; }
+@keyframes zk-veeg { to { transform: translateX(240%); } }
+
+.zk-drone { position: absolute; width: 0; height: 0; z-index: 2; transition: left var(--fly) cubic-bezier(0.45, 0, 0.2, 1), top var(--fly) cubic-bezier(0.45, 0, 0.2, 1); }
+.zk-drone-lijf { position: absolute; left: -15px; top: -15px; width: 30px; height: 30px; border-radius: 50%; background: #04142b; border: 3px solid var(--vcsw-blue-300); }
+.zk-drone-lijf::after { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: var(--vcsw-blue-300); }
+.zk-straal { position: absolute; top: -24px; width: 34px; height: 48px; opacity: 0; transition: opacity 200ms var(--vcsw-ease) var(--fly); }
+.zk-drone.kant-l .zk-straal { right: 12px; background: linear-gradient(to left, rgb(103 202 255 / 0.55), rgb(103 202 255 / 0.05)); clip-path: polygon(100% 42%, 0 0, 0 100%, 100% 58%); }
+.zk-drone.kant-r .zk-straal { left: 12px; background: linear-gradient(to right, rgb(103 202 255 / 0.55), rgb(103 202 255 / 0.05)); clip-path: polygon(0 42%, 100% 0, 100% 100%, 0 58%); }
+.zk-drone.is-scan .zk-straal { opacity: 1; }
+
+.zk-bak { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.zk .speech > div:has(.speech-who) { padding: 10px 16px 10px 18px; }
+#stage .zk .speech-text { font-size: 1rem; line-height: 1.45; }
+.zk-legenda { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+#stage .zk-legenda li { display: flex; gap: 10px; align-items: flex-start; margin: 0; padding: 8px 12px; background: #06162f; border: 1px solid #1f4f85; border-radius: 10px; font-size: 0.9375rem; line-height: 1.4; color: #d5e0ef; }
+#stage .zk-legenda strong { color: #ffffff; margin-right: 4px; }
+.zk-legenda .vcsw-icon { width: 18px; height: 18px; flex: none; margin-top: 1px; color: var(--vcsw-blue-300); }
+#stage .zk-hulp { display: flex; gap: 8px; align-items: center; margin: 0; font-size: 0.9375rem; color: var(--vcsw-blue-200); }
+.zk-hulp .vcsw-icon { width: 18px; height: 18px; }
+
+.zk-scan, .zk-leeg { display: flex; flex-direction: column; gap: 10px; padding: 16px; background: #06162f; border: 1px solid var(--vcsw-blue-400); border-radius: 12px; }
+.zk-leeg { border-style: dashed; border-color: #1f4f85; }
+#stage .zk-scan-kop, #stage .zk-leeg-kop { display: flex; gap: 8px; align-items: center; margin: 0; font: 700 1.0625rem/1.3 var(--vcsw-font-heading); color: #ffffff; }
+.zk-scan-kop .vcsw-icon { color: var(--vcsw-blue-300); }
+.zk-leeg-kop .vcsw-icon { color: var(--vcsw-green-300); }
+#stage .zk-scan-tekst, #stage .zk-leeg p:not(.zk-leeg-kop) { margin: 0; font-size: 0.9375rem; color: #d5e0ef; }
+.zk-scan-balk { height: 8px; border-radius: 999px; background: #16335c; overflow: hidden; }
+.zk-scan-balk span { display: block; height: 100%; background: var(--vcsw-blue-400); transform-origin: left; transform: scaleX(0); animation: zk-vul var(--scan) linear var(--fly) forwards; }
+@keyframes zk-vul { to { transform: scaleX(1); } }
+
+.zk-doc { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; background: #06162f; border: 1px solid #1f4f85; border-radius: 12px; }
+#stage .zk-doc-bron { display: flex; gap: 6px; align-items: center; margin: 0; font-size: 0.9375rem; color: var(--vcsw-blue-300); }
+.zk-doc-bron .vcsw-icon { width: 16px; height: 16px; }
+#stage .zk-doc h3 { margin: 0; font: 700 1.125rem/1.25 var(--vcsw-font-heading); letter-spacing: 0; color: #ffffff; }
+#stage .zk-doc-hulp { margin: 0; font-size: 0.9375rem; line-height: 1.4; color: #b9cbe3; }
+.zk-regels { display: flex; flex-direction: column; gap: 6px; }
+.zk-regel { position: relative; display: block; width: 100%; min-height: 40px; padding: 7px 12px; text-align: left; background: #0b2548; border: 1px dashed color-mix(in srgb, var(--vcsw-blue-300) 45%, transparent); border-radius: 8px; color: #ffffff; font: 400 1rem/1.4 var(--vcsw-font-body); }
+button.zk-regel { cursor: pointer; transition: border-color 150ms var(--vcsw-ease), background-color 150ms var(--vcsw-ease); }
+button.zk-regel:hover:not(.is-zwart) { border-style: solid; border-color: var(--vcsw-blue-300); }
+.zk-regel:focus-visible { outline: 3px solid var(--vcsw-blue-300); outline-offset: 2px; }
+.zk-regel.is-zwart { background: #000000; border: 1px solid #000000; }
+.zk-regel.is-zwart .zk-regel-tekst { visibility: hidden; }
+.zk-regel-balk { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 12px; font: 600 0.9375rem/1.2 var(--vcsw-font-body); color: #8fa0b8; }
+.zk-marks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+#stage .zk-marks li { display: flex; gap: 8px; align-items: flex-start; margin: 0; font-size: 0.9375rem; line-height: 1.4; color: #d5e0ef; }
+#stage .zk-marks strong { margin-right: 4px; }
+#stage .zk-marks li.is-mis strong, .zk-marks li.is-mis .vcsw-icon { color: var(--vcsw-red-300); }
+#stage .zk-marks li.is-teveel strong, .zk-marks li.is-teveel .vcsw-icon { color: var(--vcsw-amber-300); }
+.zk-marks .vcsw-icon { width: 16px; height: 16px; flex: none; margin-top: 2px; }
+.zk-vraagrij { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+#stage .zk-vraag { margin: 0; font: 700 1rem/1.3 var(--vcsw-font-heading); color: #ffffff; }
+.zk-goten { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.zk-goot { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 60px; padding: 6px 8px; text-align: center; background: transparent; border: 1px solid color-mix(in srgb, var(--vcsw-blue-300) 55%, transparent); border-radius: 10px; color: #ffffff; font: 700 0.9375rem/1.2 var(--vcsw-font-heading); cursor: pointer; transition: background-color 150ms var(--vcsw-ease), border-color 150ms var(--vcsw-ease); }
+.zk-goot:hover { background: #0b2548; border-color: var(--vcsw-blue-300); }
+.zk-goot:focus-visible { outline: 3px solid var(--vcsw-blue-300); outline-offset: 2px; }
+.zk-goot .vcsw-icon { width: 20px; height: 20px; color: var(--vcsw-blue-300); }
+.goot-meld .vcsw-icon { color: var(--vcsw-amber-300); }
+.goot-weg .vcsw-icon { color: #b9cbe3; }
+.zk-hint { flex: none; min-height: 44px; padding-inline: 14px; }
+#stage .zk-tip { display: flex; gap: 8px; align-items: flex-start; margin: 0; font-size: 0.9375rem; line-height: 1.4; color: var(--vcsw-amber-200); }
+.zk-tip .vcsw-icon { width: 18px; height: 18px; flex: none; color: var(--vcsw-amber-300); }
+.zk-tip:focus { outline: none; }
+
+.zk-oordeel .option, html.in-orion .zk-oordeel .option { grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 14px !important; border-bottom-width: 2px !important; background: #0b2548 !important; font-size: 0.9375rem !important; line-height: 1.4; }
+#stage .zk-oordeel .tekst { color: #ffffff; }
+.zk-oordeel .option .verdict { margin: 0; }
+.zk .feedback { gap: 10px; }
+.zk .actions .vcsw-button { min-height: 48px; }
+
+.zk-lijst { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+#stage .zk-lijst li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 2px 10px; align-items: center; margin: 0; padding: 7px 12px; background: #06162f; border: 1px solid #1f4f85; border-radius: 10px; }
+.zk-lijst .vcsw-icon { width: 18px; height: 18px; flex: none; color: var(--vcsw-green-300); }
+#stage .zk-lijst li.is-half { border-color: var(--vcsw-amber-300); }
+.zk-lijst li.is-half .vcsw-icon { color: var(--vcsw-amber-300); }
+#stage .zk-lijst li.is-fout { border-color: var(--vcsw-red-300); }
+.zk-lijst li.is-fout .vcsw-icon { color: var(--vcsw-red-300); }
+.zl-naam { flex: 1; min-width: 0; font: 700 0.9375rem/1.3 var(--vcsw-font-heading); color: #ffffff; }
+.zl-keuze { grid-column: 2; font-size: 0.9375rem; line-height: 1.4; color: #d5e0ef; }
+
+.zk-voet { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; padding: 9px 14px; background: #06162f; border: 1px solid #1f4f85; border-radius: 12px; font-size: 0.9375rem; color: #b9cbe3; }
+.zk-voet > span { display: inline-flex; gap: 6px; align-items: center; }
+.zk-voet .vcsw-icon { width: 16px; height: 16px; color: var(--vcsw-blue-300); }
+.zk-voet strong { font: 700 1rem/1 var(--vcsw-font-heading); color: #ffffff; font-variant-numeric: tabular-nums; }
+.zk-voet-rechts { margin-left: auto; }
+.zk-voet .zk-telaat { flex-basis: 100%; color: var(--vcsw-amber-300); }
+.zk-voet .zk-telaat .vcsw-icon { color: var(--vcsw-amber-300); }
+
+@media (max-width: 720px) {
+  .zk-grid { grid-template-columns: minmax(0, 1fr); }
+  .zk-kaart { max-width: 360px; justify-self: center; }
+  .zk-goten { grid-template-columns: minmax(0, 1fr); }
+  .zk-goot { flex-direction: row; min-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zk-drone, .zk-straal, .zk-mod, .zk-regel, .zk-goot { transition: none !important; }
+  .zk-mod.is-scan::after { animation: none; display: none; }
+  .zk-scan-balk span { animation-duration: 1ms !important; animation-delay: 0ms !important; }
+}
+.zk-oordeel .vcsw-badge, .zk .badges .vcsw-badge { font-size: 0.9375rem; padding: 3px 10px; }

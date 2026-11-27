@@ -67,11 +67,11 @@
       { k: "A", t: "Akkoord. Na de rustperiode pakken we het op, dat is vroeg genoeg.", r: "fout", cost: 10,
         uitleg: "De 72 uur lopen ook tijdens de rustperiode door.",
         reactie: "Mooi, dan ga ik slapen. Morgen kijken we wel." },
-      { k: "B", t: "Direct melden bij ARIA, ook al begint de nachtdienst.", r: "goed",
+      { k: "B", t: "Nu direct melden bij ARIA, ook al begint de nachtdienst zo.", r: "goed",
         uitleg: "Een datalek meld je direct. Het meldpunt kan dan meteen beoordelen wat er moet gebeuren.",
         reactie: "Oké, oké. Ik blijf even. Zeg maar wat ik moet doen." },
-      { k: "C", t: "Zelf de Galactische Toezichtraad oproepen.", r: "half",
-        uitleg: "Snel handelen is goed, maar het meldpunt beoordeelt of en hoe er gemeld wordt.",
+      { k: "C", t: "Zelf meteen de Galactische Toezichtraad oproepen en het lek melden.", r: "half",
+        uitleg: "Snel handelen is goed, maar je slaat het meldpunt over. Meld het bij ARIA, want het meldpunt beoordeelt of en hoe er gemeld wordt.",
         reactie: "Wauw, jij gaat er meteen vol in. Weet ARIA hier al van?" }
     ]
   };
@@ -87,9 +87,9 @@
       { k: "B", t: "Het feit laten vastleggen in het incidentlog en je console voortaan altijd vergrendelen.", r: "goed",
         uitleg: "Het log gaat over feiten, niet over schuld. Hoe het lek kon ontstaan, helpt om het in de toekomst te voorkomen.",
         reactie: "Vastgelegd. Dank je voor je eerlijkheid, Kapitein." },
-      { k: "C", t: "Snel de logbestanden van je console wissen, zodat er geen verwarring over ontstaat.", r: "fout",
-        uitleg: "Wie sporen wist, maakt de beoordeling onmogelijk en het lek groter. De feiten moeten juist bewaard blijven.",
-        reactie: "Ik heb een kopie. Dit gaat ook in het log." }
+      { k: "C", t: "Je console voortaan altijd vergrendelen. Dat het bericht van jouw console kwam, laat je verder rusten.", r: "half",
+        uitleg: "Vergrendelen is goed, maar het feit hoort ook in het incidentlog. Het meldpunt heeft alle feiten nodig, ook hoe het lek kon ontstaan.",
+        reactie: "Goed voornemen. Maar dan mist er een feit in mijn log." }
     ]
   };
 
@@ -115,7 +115,7 @@
     say: "Het bericht is net bij Kepler-4 aangekomen. Wat doe je om de schade te beperken?",
     opts: [
       { k: "A", t: "Het bericht terughalen via het systeem en er verder niets mee doen. Dan is het weg bij Kepler-4.", r: "half",
-        uitleg: "Terughalen werkt lang niet altijd buiten het eigen station.",
+        uitleg: "Terughalen werkt lang niet altijd buiten het eigen station. Vraag Kepler-4 daarom ook om het bericht te wissen en dat schriftelijk te bevestigen.",
         reactie: "Terughalen mislukt. Het bericht staat nog in het systeem van Kepler-4." },
       { k: "B", t: "Kepler-4 oproepen, vragen het bericht en eventuele kopieën te wissen en dat schriftelijk te bevestigen.", r: "goed",
         uitleg: "Zo beperk je het lek en heb je bewijs dat de gegevens weg zijn. Die bevestiging gaat ook in het log.",
@@ -155,15 +155,15 @@
       verantwoordelijke: "Iedereen in de kantine heeft het erover. Staan mijn ziektedagen nu bij Kepler-4?"
     },
     opts: [
-      { k: "A", t: "“Er is niets aan de hand.”", r: "fout",
+      { k: "A", t: "Zeggen dat er niets aan de hand is. Zo voorkom je onrust in de crew zolang het meldpunt nog uitzoekt wat er precies is gebeurd.", r: "fout",
         uitleg: "Ontkennen schaadt het vertrouwen nog meer, zeker als later blijkt dat er wel iets is gebeurd.",
         reactie: { verwerker: "Niets? Dat hoor ik anders. Ik bel de commandant.", verantwoordelijke: "Echt niet? Waarom fluistert iedereen dan?" } },
-      { k: "B", t: { verwerker: "Eerlijk zeggen dat er een incident is, dat het met voorrang wordt behandeld en dat de juiste persoon vandaag contact opneemt.", verantwoordelijke: "Eerlijk zeggen dat er een incident is, dat het met voorrang wordt behandeld en dat het meldpunt haar vandaag laat weten wat het voor haar betekent." }, r: "goed",
+      { k: "B", t: { verwerker: "Eerlijk zeggen dat er een incident is, dat het voorrang krijgt en dat de juiste persoon vandaag contact opneemt.", verantwoordelijke: "Eerlijk zeggen dat er een incident is, dat het voorrang krijgt en dat het meldpunt haar vandaag laat weten wat het voor haar betekent." }, r: "goed",
         uitleg: "Je bent eerlijk zonder details te geven die nog niet vaststaan. De beoordeling ligt bij het meldpunt.",
         reactie: { verwerker: "Goed. Ik wacht op dat telefoontje. Vandaag nog.", verantwoordelijke: "Oké. Fijn dat je het gewoon zegt." } },
-      { k: "C", t: "Uitgebreid speculeren over wat er misschien allemaal gebeurd is.", r: "fout",
-        uitleg: "Geef geen informatie die nog niet vaststaat. Dat maakt de onrust groter en kan later niet kloppen.",
-        reactie: { verwerker: "Misschien, misschien. Weet je het nou of niet?", verantwoordelijke: "Dus het kan nog veel erger zijn? Nu maak ik me pas echt zorgen." } }
+      { k: "C", t: { verwerker: "Eerlijk zeggen dat er een incident is en dat het voorrang krijgt. Verder zeg je nu niets, want de details staan nog niet vast.", verantwoordelijke: "Eerlijk zeggen dat er een incident is en dat het voorrang krijgt. Verder zeg je haar nu niets, want de details over haar gegevens staan nog niet vast." }, r: "half",
+        uitleg: "Eerlijk zijn zonder details is goed, maar je laat het open. Zeg ook wanneer en van wie er vandaag meer nieuws komt, anders blijft de onrust.",
+        reactie: { verwerker: "Voorrang, prima. Maar wanneer hoor ik dan iets?", verantwoordelijke: "Oké. Maar hoor ik nog wat het voor mij betekent?" } }
     ]
   };
 
@@ -175,26 +175,26 @@
     },
     opts: {
       verwerker: [
-        { k: "A", t: "Orion meldt altijd zelf bij de Toezichtraad. Wij maakten de fout, dus wij zijn ook degene die het lek moet melden, wat onze rol ook is.", r: "fout",
+        { k: "A", t: "Orion meldt altijd zelf bij de Toezichtraad. Wij maakten de fout, dus wij zijn ook degene die het lek moet melden, wat onze rol bij deze gegevens ook is. Nova Terra hoeft daar niets voor te doen.", r: "fout",
           uitleg: "Dat hangt af van onze rol. Wie de fout maakte, bepaalt niet wie meldt.",
           reactie: "Dan meldt Orion iets wat Nova Terra had moeten beoordelen." },
-        { k: "B", t: "Dat hangt af van onze rol. Verwerken we gegevens in opdracht, dan informeren we Nova Terra zonder onnodige vertraging en meldt Nova Terra. Gaat het om gegevens waarvoor wij zelf verantwoordelijk zijn, zoals die van onze eigen crew, dan melden we zelf.", r: "goed",
+        { k: "B", t: "Dat hangt af van onze rol. In opdracht informeren we Nova Terra zonder onnodige vertraging en meldt Nova Terra. Zijn we zelf verantwoordelijk, zoals voor onze eigen crew, dan melden we zelf.", r: "goed",
           uitleg: "Hier verwerkt Orion in opdracht. Dus informeren we Nova Terra meteen, en Nova Terra beslist over de melding.",
           reactie: "Juist. Ik zet de informatie voor Nova Terra klaar." },
-        { k: "C", t: "Niemand hoeft te melden. Het was maar één bericht met één overzicht, dus dit telt niet als een datalek dat je moet melden.", r: "fout",
-          uitleg: "Ook één bericht kan een datalek zijn. Dat beoordeelt het meldpunt, niet jij.",
-          reactie: "Eén bericht met de ziektedagen van een hele crew." }
+        { k: "C", t: "We verwerken in opdracht, dus Nova Terra meldt. Wij informeren Nova Terra zodra het meldpunt het lek helemaal heeft uitgezocht, zodat ze meteen alle feiten hebben.", r: "half",
+          uitleg: "Nova Terra meldt, dat klopt. Maar je wacht niet tot alles is uitgezocht. Als verwerker informeer je Nova Terra zonder onnodige vertraging.",
+          reactie: "Dan hoort Nova Terra het pas als wij klaar zijn met uitzoeken. Dat is te laat." }
       ],
       verantwoordelijke: [
-        { k: "A", t: "We informeren Nova Terra en die meldt het bij de Toezichtraad. Zo gaat het altijd bij een lek, wie de gegevens ook beheert.", r: "fout",
+        { k: "A", t: "We informeren Nova Terra en die meldt het bij de Toezichtraad. Zo gaat het altijd bij een lek, wie de gegevens ook beheert en van wie ze ook zijn.", r: "fout",
           uitleg: "Het gaat om de eigen crew van Orion. Dan is Orion zelf verantwoordelijk.",
           reactie: "Nova Terra heeft met deze gegevens niets te maken." },
-        { k: "B", t: "Het gaat om onze eigen crew, dus Orion is zelf verantwoordelijk. Het meldpunt beoordeelt het risico en meldt binnen 72 uur bij de Toezichtraad als er risico is.", r: "goed",
+        { k: "B", t: "Het gaat om onze eigen crew, dus Orion is zelf verantwoordelijk. Het meldpunt beoordeelt het risico en meldt binnen 72 uur als er risico is.", r: "goed",
           uitleg: "Bij eigen verantwoordelijkheid meldt Orion zelf, en alleen als er een risico is. Het meldpunt maakt die afweging.",
           reactie: "Juist. Ik zet de melding klaar voor het meldpunt." },
-        { k: "C", t: "Niemand hoeft te melden. Het was maar één bericht met één overzicht, dus dit telt niet als een datalek dat je moet melden.", r: "fout",
-          uitleg: "Ook één bericht kan een datalek zijn. Dat beoordeelt het meldpunt, niet jij.",
-          reactie: "Eén bericht met de ziektedagen van onze hele crew." }
+        { k: "C", t: "Het gaat om onze eigen crew, dus Orion meldt zelf. Het meldpunt meldt het lek binnen 72 uur bij de Toezichtraad, wat het risico ook is. Zo zit je altijd goed.", r: "half",
+          uitleg: "Orion meldt zelf, dat klopt. Maar het meldpunt beoordeelt eerst het risico. Alleen als er risico is, meldt het binnen 72 uur bij de Toezichtraad.",
+          reactie: "Melden zonder te kijken naar het risico? Dan slaan we de beoordeling over." }
       ]
     },
     crystal: { on: "B", name: "Verwerker of verantwoordelijke", desc: "Verwerk je in opdracht, dan informeer je direct de opdrachtgever. Ben je zelf verantwoordelijk, dan meldt het meldpunt binnen 72 uur als er risico is." }
@@ -753,7 +753,7 @@
       item("check", "Direct melden", "Meld een (vermoedelijk) datalek direct, ook op vrijdagmiddag. De 72 uur lopen ook in het weekend door.") +
       item("check", "Niet zelf beoordelen", "Of en hoe er gemeld wordt, beoordeelt het meldpunt. Jij meldt, beperkt de schade als dat kan en geeft de feiten door.") +
       "</ul></div></div>" +
-      '<div class="ox-card meldroute"><div class="meld-txt"><h3>Meldroute</h3><p>Een datalek of twijfel? Meld het direct bij Tarik, Dagmar of via het meldpunt.</p></div>' +
+      '<div class="ox-card meldroute"><div class="meld-txt"><h3>Meldroute</h3><p>Een datalek of twijfel? Meld het direct bij de security officer, de privacy officer of via het meldpunt.</p></div>' +
       '<span class="meld-adres route">jz@vcsw.nl</span>' +
       '<button type="button" class="ox-btn ghost" id="copy"><span>Kopieer adres</span>' + icon("copy") + "</button></div>" +
       '<div class="ox-card uitslag"><div class="uitslag-kop"><h3>Resultaat level 5</h3>' + chip(passed ? "Gehaald" : "Nog niet gehaald", passed ? "ok" : "warn", passed ? "check" : "") +

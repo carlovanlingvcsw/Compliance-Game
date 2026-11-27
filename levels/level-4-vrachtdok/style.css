@@ -68,25 +68,27 @@ body { background: var(--vcsw-page); margin: 0; }
 .lock-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin: 16px 0; }
 .timer { display: inline-flex; align-items: center; gap: 8px; font-family: var(--vcsw-font-heading); font-weight: 700; font-size: 1.25rem; color: var(--vcsw-heading); font-variant-numeric: tabular-nums; }
 .timer.low { color: var(--vcsw-red-600); }
-.count { font-size: 0.875rem; color: var(--vcsw-text-muted); }
+.count { font-size: 0.9375rem; color: var(--vcsw-text-muted); }
 .deck { position: relative; touch-action: pan-y; user-select: none; }
 .msg { background: var(--vcsw-surface); border: 1px solid var(--vcsw-border); border-radius: var(--vcsw-radius-xl); box-shadow: var(--vcsw-shadow-lg);
   padding: 20px; max-width: 560px; margin: 0 auto; cursor: grab; position: relative; }
 .msg.dragging { cursor: grabbing; }
-.msg-head { display: grid; gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--vcsw-divider); margin-bottom: 12px; font-size: 0.875rem; }
+.msg-head { display: grid; gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--vcsw-divider); margin-bottom: 12px; font-size: 0.9375rem; }
 .msg-head .row { display: flex; gap: 8px; min-width: 0; }
-.msg-head .k { color: var(--vcsw-text-muted); width: 72px; flex-shrink: 0; }
+.msg-head .k { color: var(--vcsw-text-muted); width: 88px; flex-shrink: 0; }
 .msg-head .v { color: var(--vcsw-text-strong); overflow-wrap: anywhere; }
 .msg-subject { font-family: var(--vcsw-font-heading); font-weight: 600; font-size: 1rem; color: var(--vcsw-heading); margin: 0 0 8px; }
 .msg-body { margin: 0; font-size: 1rem; line-height: 1.6; color: var(--vcsw-text); }
 .msg-attach { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 6px 10px; border-radius: 6px; background: var(--vcsw-surface-muted); border: 1px solid var(--vcsw-border); font-size: 0.875rem; color: var(--vcsw-text-strong); overflow-wrap: anywhere; }
 .msg-link { color: var(--vcsw-link); text-decoration: underline; font-weight: 500; overflow-wrap: anywhere; }
-.stamp { position: absolute; top: 16px; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.875rem; border: 2px solid; opacity: 0; pointer-events: none; }
-.stamp.left { right: 16px; color: var(--vcsw-red-600); }
-.stamp.right { left: 16px; color: var(--vcsw-green-700); }
+/* Swipe stamps: on the top edge of the card, half outside it, on a solid background. They never cover the text of the message. */
+.stamp { position: absolute; top: 0; transform: translateY(-50%); padding: 2px 12px; border-radius: 999px; font: 700 0.9375rem/1.5 var(--vcsw-font-body);
+  border: 2px solid; background: var(--o-card); opacity: 0; pointer-events: none; z-index: 1; }
+.stamp.left { right: 20px; color: var(--o-red); }
+.stamp.right { left: 20px; color: var(--o-green); }
 .swipe-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 560px; margin: 16px auto 0; }
 .swipe-actions .vcsw-button { min-height: 44px; }
-#stage .swipe-help { max-width: 560px; margin: 8px auto 0; text-align: center; font-size: 0.875rem; color: var(--o-soft); }
+#stage .swipe-help { max-width: 560px; margin: 8px auto 0; text-align: center; font-size: 0.9375rem; color: var(--o-soft); }
 #stage .timer { text-shadow: none; }
 .lock-feedback { max-width: 560px; margin: 16px auto 0; display: grid; gap: 12px; }
 
@@ -129,16 +131,55 @@ body { background: var(--vcsw-page); margin: 0; }
 .token:focus-visible { outline: 2px solid var(--vcsw-focus); outline-offset: 2px; }
 .token[aria-pressed="true"] { border-style: solid; border-color: var(--vcsw-red-600); background: color-mix(in srgb, var(--vcsw-red-600) 14%, transparent); text-decoration: line-through; }
 .token[aria-disabled="true"] { cursor: default; }
-.token .vcsw-icon { width: 16px; height: 16px; vertical-align: -3px; margin-left: 4px; }
-.token.right .vcsw-icon { color: var(--vcsw-green-600); }
-.token.wrong { outline: 2px solid var(--vcsw-amber-500); outline-offset: 1px; }
-.token.wrong .vcsw-icon { color: var(--vcsw-amber-600); }
 .mail-attach { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--vcsw-divider); }
 .stage .mail-attach .attach-name { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--vcsw-text-strong); margin: 0 0 8px; line-height: 1.5; }
 .mail-attach th { text-align: left; font-weight: 500; color: var(--vcsw-text-muted); white-space: normal; width: 45%; }
+.mail-attach .vcsw-table { font-size: 0.9375rem; }
 .mail-attach td { line-height: 2; }
-.sel-count { font-size: 0.875rem; color: var(--vcsw-text-muted); margin: 12px 0 0; }
+.sel-count { font-size: 0.9375rem; color: var(--vcsw-text-muted); margin: 12px 0 0; }
 @media (prefers-reduced-motion: reduce) { .option, .msg { transition: none !important; } }
+
+/* Feedback on the draft mail: one verdict, the mail with tinted marks, numbered notes beside it */
+.mail-verdict { margin: 8px 0 16px; padding: 2px 0 2px 14px; border-left: 3px solid var(--o-green); }
+.mail-verdict.half { border-left-color: #ffc978; }
+.mail-verdict.bad { border-left-color: var(--o-red); }
+#stage .mail-verdict .verdict-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin: 0; }
+#stage .mail-verdict .verdict-title:focus { outline: none; }
+.verdict-word { display: inline-flex; align-items: center; gap: 8px; font: 700 1.375rem/1.3 var(--vcsw-font-heading); color: var(--o-green); }
+.verdict-word .vcsw-icon { width: 22px; height: 22px; align-self: center; }
+.mail-verdict.half .verdict-word { color: #ffc978; }
+.mail-verdict.bad .verdict-word { color: var(--o-red); }
+.verdict-pts { font-size: 1rem; color: var(--o-soft); }
+#stage .mail-verdict .verdict-text { margin: 4px 0 0; max-width: 80ch; }
+.mail-review { display: grid; gap: 20px; margin-top: 4px; }
+@media (min-width: 760px) { .mail-review { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: start; } }
+.mail-review .mailbox { margin-top: 0; }
+.stage .mail-review .mail-body p { line-height: 1.85; }
+.mail-review .mail-attach td { line-height: 1.6; }
+#stage mark.mk { color: #fff; border-radius: 4px; padding: 1px 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+mark.mk.is-ok { background: rgba(123, 241, 168, .16); }
+mark.mk.is-no { background: rgba(255, 162, 162, .22); }
+.mk-lead { white-space: nowrap; }
+.mk-n { display: inline-grid; place-items: center; flex: none; min-width: 22px; height: 22px; padding: 0 5px; box-sizing: border-box; border-radius: 11px;
+  font: 700 0.9375rem/1 var(--vcsw-font-heading); color: #04142b; background: var(--o-green); }
+mark .mk-n { margin-right: 5px; vertical-align: 1px; }
+.mk.is-no .mk-n, .notes li.is-no .mk-n { background: var(--o-red); }
+#stage .mail-notes h3 { margin: 0 0 4px; }
+#stage .notes-key { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin: 0 0 12px; font-size: 0.9375rem; color: var(--o-soft); }
+.key-sw { width: 14px; height: 14px; border-radius: 3px; background: rgba(123, 241, 168, .35); }
+.key-sw.is-no { background: rgba(255, 162, 162, .45); margin-left: 8px; }
+.notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.notes li { display: flex; gap: 10px; align-items: flex-start; }
+.notes li .mk-n { margin-top: 2px; }
+#stage .notes .note-head { margin: 0; line-height: 1.45; color: #fff; }
+#stage .notes .note-text { margin: 2px 0 0; font-size: 0.9375rem; line-height: 1.5; }
+.note-you { font-weight: 600; color: var(--o-green); }
+.notes li.is-no .note-you { color: var(--o-red); }
+.mail-notes .speech { margin: 20px 0 0; }
+.mail-after { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+#stage .mail-after li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9375rem; line-height: 1.5; margin: 0; }
+.mail-after .vcsw-icon { flex: none; margin-top: 3px; color: var(--vcsw-blue-300); }
+.mail-notes .actions { margin-top: 16px; }
 
 /* ================================================================
    Start card of the airlock, clues from ARIA (one button, one price) and Terug op aarde.

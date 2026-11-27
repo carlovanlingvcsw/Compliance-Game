@@ -57,25 +57,25 @@ const SITS = [
   { id: 's1', type: 'mc', title: 'De toegangscode', speaker: 'Bram',
     text: 'Bram wil je helpen: “De code van de passagiersdatabank? Ik zet hem even in het open stationskanaal.”',
     opts: [
-      { t: '“Top, dank je!”', v: 'fout', why: 'Iedereen in dat kanaal kan hem lezen en hij blijft bewaard.', r: ['Bram', 'Staat erin. Handig toch?'] },
-      { t: '“Ik vraag liever een eigen toegangscode aan bij ARIA.”', v: 'goed', why: 'Met een eigen account is duidelijk wie wat heeft gedaan.', r: ['Bram', 'Ook goed. Netter, eigenlijk.'], crystal: 'Eigen toegang' },
-      { t: '“Zeg het maar, dan kras ik het in mijn consolerand.”', v: 'fout', why: 'Iedereen die langs je console loopt, kan het lezen.', r: ['Bram', 'Ha, ouderwets. Komt eraan.'] }
+      { t: '“Top, dank je! Zet er wel bij dat hij alleen voor de crew is.”', v: 'fout', why: 'Iedereen in dat kanaal kan hem lezen en hij blijft bewaard. Een zin erbij verandert dat niet.', r: ['Bram', 'Staat erin, met waarschuwing. Handig toch?'] },
+      { t: '“Hoeft niet, ik vraag een eigen toegangscode aan bij ARIA.”', v: 'goed', why: 'Met een eigen account is duidelijk wie wat heeft gedaan.', r: ['Bram', 'Ook goed. Netter, eigenlijk.'], crystal: 'Eigen toegang' },
+      { t: '“Stuur hem liever privé, dan zet ik hem in mijn wachtwoordkluis.”', v: 'half', why: 'Niet in het open kanaal is beter, en een kluis is veilig. Maar het blijft een gedeelde code. Wat ontbreekt is een eigen account, zodat duidelijk is wie wat heeft gedaan.', r: ['Bram', 'Komt eraan, alleen voor jou.'] }
     ] },
   { id: 's2', type: 'mc', title: 'Etenstijd', speaker: 'ARIA',
     text: 'Je gaat naar de kantine. Op je console staat de passagierslijst van de laatste shuttle naar Nova Terra. Wat doe je?',
     opts: [
       { t: 'Laten staan, je bent zo terug en iedereen aan boord is betrouwbaar.', v: 'fout', why: 'Zolang je weg bent, kan iedereen die langsloopt de passagierslijst lezen.', r: ['ARIA', 'Genoteerd. Ik hoop dat de soep het waard is.'], memo: 'ARIA onthoudt dat je console openstond. Dit komt terug in level 5.' },
-      { t: 'De console vergrendelen.', v: 'goed', why: 'Een vergrendelde console toont niets zolang jij weg bent.', r: ['ARIA', 'Console vergrendeld. Eet smakelijk, cadet.'] },
-      { t: 'Het venster verkleinen.', v: 'half', why: 'Wie aan je console gaat zitten, opent het met één tik.', r: ['ARIA', 'Klein venster, zelfde risico.'] }
+      { t: 'De console vergrendelen voordat je naar de kantine loopt.', v: 'goed', why: 'Een vergrendelde console toont niets zolang jij weg bent.', r: ['ARIA', 'Console vergrendeld. Eet smakelijk, cadet.'] },
+      { t: 'Het venster met de lijst verkleinen voordat je wegloopt.', v: 'half', why: 'Verkleinen haalt de lijst uit beeld, maar wie aan je console gaat zitten, opent hem met één tik. Wat ontbreekt is het slot. Vergrendel je console.', r: ['ARIA', 'Klein venster, zelfde risico.'] }
     ] },
   { id: 's3', type: 'sort', title: 'Is dit een persoonsgegeven?', speaker: 'ARIA',
     text: 'Sorteer de twaalf holokaarten. Sleep elke kaart naar een bak, of gebruik de knoppen op de kaart.' },
   { id: 's4', type: 'mc', title: 'Spullen van de vorige bewoner', speaker: 'ARIA',
     text: 'In het kastje van je hut vind je de loonstrook van het crewlid dat hier eerder sliep. Wat doe je?',
     opts: [
-      { t: 'In de afvalschacht gooien.', v: 'fout', why: 'Afval wordt aan boord gesorteerd en kan worden doorzocht.', r: ['ARIA', 'De afvalsortering leest mee, cadet.'] },
-      { t: 'Teruggeven aan de crewadministratie en melden bij ARIA, zodat beoordeeld kan worden of het een datalek is.', v: 'goed', why: 'Door te melden kan iemand beoordelen of er sprake is van een datalek.', r: ['ARIA', 'Melding ontvangen. Ik laat het beoordelen.'], crystal: 'Melden bij twijfel' },
-      { t: 'Laten liggen, het is niet jouw zaak.', v: 'fout', why: 'Dan blijft het overzicht liggen en weet niemand dat er iets mis is.', r: ['ARIA', 'Op Orion is gegevens beschermen ieders zaak.'] }
+      { t: 'In de afvalschacht gooien, dan slingert de loonstrook van een ander niet meer rond in je hut.', v: 'fout', why: 'Afval wordt aan boord gesorteerd en kan worden doorzocht. En niemand weet dat er iets mis is.', r: ['ARIA', 'De afvalsortering leest mee, cadet.'] },
+      { t: 'Teruggeven aan de crewadministratie en melden bij ARIA, zodat een datalek beoordeeld wordt.', v: 'goed', why: 'Door te melden kan iemand beoordelen of er sprake is van een datalek.', r: ['ARIA', 'Melding ontvangen. Ik laat het beoordelen.'], crystal: 'Melden bij twijfel' },
+      { t: 'Teruggeven aan de crewadministratie, want daar hoort de loonstrook van een ander crewlid gewoon thuis.', v: 'half', why: 'Teruggeven is goed, maar je meldt het ook bij ARIA. Alleen dan kan iemand beoordelen of er een datalek is.', r: ['ARIA', 'Netjes ingeleverd. Maar hoe kwam hij in je kastje?'] }
     ] }
 ];
 
@@ -610,7 +610,7 @@ function renderAarde() {
         ])}</section>
       </div>
       <section class="acard meld">
-        <div class="meld-text"><h3>Meldroute</h3><p>Meld twijfel of een mogelijk datalek bij Tarik of Dagmar, of mail naar het meldpunt.</p></div>
+        <div class="meld-text"><h3>Meldroute</h3><p>Meld twijfel of een mogelijk datalek bij de security officer of de privacy officer, of mail naar het meldpunt.</p></div>
         <div class="meld-act"><code id="mailaddr">jz@vcsw.nl</code><button class="vcsw-button outline" type="button" id="b-copy">Kopieer adres ${icon('copy')}</button></div>
         <p class="vcsw-sr-only" id="copy-status" aria-live="polite"></p>
       </section>

@@ -53,15 +53,15 @@
       intro: "Sanne Vrij begint maandag als crewlid van Orion.",
       say: "Ik heb Sannes BSN, haar adres en een kopie van haar paspoort. Bram stelt voor om haar BSN ook als inlogcode voor het stationssysteem te gebruiken. Ze vindt het zelf prima.",
       opts: [
-        { k: "A", t: "“Handig, dan gebruiken we haar BSN als inlogcode. Dan hoeft ze niets nieuws te onthouden, en ze vindt het zelf ook prima. We zetten het meteen zo in het systeem.”", r: "fout",
+        { k: "A", t: "“Handig, dan wordt haar BSN haar inlogcode. Ze hoeft niets nieuws te onthouden, en ze heeft er zelf toestemming voor gegeven, dus dat zit goed.”", r: "fout",
           uitleg: "Het BSN gebruik je alleen waar de wet dat voorschrijft. Een inlogcode hoort daar niet bij, ook niet als Sanne het goed vindt.",
           reactie: "Ingesteld. Wie over haar schouder meekijkt, ziet nu haar BSN.",
           memo: "BSN van Sanne als inlogcode in het stationssysteem" },
-        { k: "B", t: "“Het BSN en de paspoortkopie gaan alleen in de loonadministratie, omdat de wet dat eist. Voor het systeem krijgt ze een eigen inlogcode.”", r: "goed",
+        { k: "B", t: "“BSN en paspoortkopie alleen in de loonadministratie, omdat de wet dat eist. Voor het systeem krijgt ze een eigen inlogcode.”", r: "goed",
           uitleg: "De wet verplicht het station om een nieuw crewlid te identificeren en het BSN te gebruiken voor de loonaangifte. Daarbuiten gebruik je het BSN niet.",
           reactie: "Dan maak ik een gewone inlogcode aan en bewaar ik de kopie beveiligd in de loonadministratie." },
-        { k: "C", t: "“Haar BSN en paspoortkopie leggen we helemaal niet vast. Dat is te gevoelig, ook voor de loonadministratie.”", r: "half",
-          uitleg: "Voorzichtig, maar de wet verplicht het station juist om ze vast te leggen in de loonadministratie.",
+        { k: "C", t: "“Haar BSN en paspoortkopie leggen we nergens vast, ook niet in de loonadministratie. Dat is veel te gevoelig om te bewaren.”", r: "half",
+          uitleg: "Geen BSN als inlogcode klopt. Maar je vergeet dat de wet het station juist verplicht om het BSN en de kopie in de loonadministratie vast te leggen.",
           reactie: "Dan kan de loonadministratie haar niet aanmelden. Krijgt ze dan wel betaald?" }
       ],
       crystal: { on: "B", name: "BSN-regel", desc: "Het BSN alleen waar de wet het voorschrijft. Toestemming verandert dat niet." }
@@ -71,14 +71,13 @@
       intro: "Crewlid Kai Lindqvist belt zich ziek.",
       say: "Zijn teamleider wil weten wat Kai heeft, zodat het in het rooster kan. En Bram zegt dat we Kai gewoon om toestemming kunnen vragen om alles vast te leggen.",
       opts: [
-        { k: "A", t: "De diagnose in het rooster zetten, zodat het hele team weet waarom Kai er niet is en rekening met hem kan houden als hij terugkomt.", r: "fout",
-          uitleg: "De diagnose is medische informatie. Die legt het station niet vast en deelt het zeker niet met het team.",
-          reactie: "Gedaan. Het hele team ziet nu wat hij heeft.",
-          memo: "Diagnose van Kai in het rooster" },
-        { k: "B", t: "Alleen vastleggen wat nodig is voor zijn loon en begeleiding: bereikbaarheid, verpleegadres, verwachte duur en lopende taken. Het team hoort alleen dat hij er niet is en wie zijn taken overneemt.", r: "goed",
+        { k: "A", t: "Alleen noteren dat Kai ziek is en verder niets vastleggen. Het team hoort dat hij er niet is, en de rest gaat niemand iets aan.", r: "half",
+          uitleg: "Het team niets vertellen klopt. Maar de wet verplicht het station om Kai te begeleiden en zijn loon door te betalen. Daarvoor leg je wel vast wat nodig is, zoals bereikbaarheid, verpleegadres en verwachte duur.",
+          reactie: "Dan weet ik niet waar ik hem kan bereiken. Hoe begeleid ik hem dan?" },
+        { k: "B", t: "Vastleggen wat nodig is voor loon en begeleiding, zoals bereikbaarheid, verpleegadres en verwachte duur. Het team hoort alleen dat hij er niet is.", r: "goed",
           uitleg: "De wet verplicht het station om loon door te betalen en een ziek crewlid te begeleiden. Daarom mag het de gegevens verwerken die daarvoor nodig zijn. Meer niet.",
           reactie: "Dan noteer ik zijn verpleegadres en de verwachte duur. De rest is voor de scheepsarts." },
-        { k: "C", t: "Kai om toestemming vragen om zijn diagnose vast te leggen. Als hij ja zegt, mag alles in het dossier en kan de teamleider het inzien.", r: "fout",
+        { k: "C", t: "Kai om toestemming vragen om zijn diagnose vast te leggen. Zegt hij ja, dan mag het in zijn dossier en kan de teamleider het rooster erop afstemmen.", r: "fout",
           uitleg: "Een crewlid zegt moeilijk nee tegen zijn werkgever, dus die toestemming is niet vrij. En de diagnose legt het station ook mét toestemming niet vast.",
           reactie: "Hij zei ja, maar hij klonk niet alsof hij durfde te weigeren." }
       ],
@@ -88,15 +87,15 @@
       title: "Bloemen voor Kai", who: "bram",
       say: "Kai is al twee weken ziek. Geef me even zijn adres uit de administratie, dan stuur ik namens het team bloemen. Ik zet het meteen op de verjaardagslijst.",
       opts: [
-        { k: "A", t: "Het adres uit de administratie doorgeven. Het is goed bedoeld en het blijft binnen het eigen team. Bloemen sturen is geen verwerking waar regels voor gelden.", r: "fout",
+        { k: "A", t: "Het adres doorgeven. Het is goed bedoeld, het blijft binnen het eigen team en voor bloemen sturen gelden geen regels.", r: "fout",
           uitleg: "Het adres staat in de administratie voor het loon en de verzuimbegeleiding. Doorgeven aan een collega is een ander doel.",
           reactie: "Top. Dan staat het straks ook op de verjaardagslijst, heeft iedereen het.",
           memo: "Adres van Kai doorgegeven aan Bram en op de verjaardagslijst" },
-        { k: "B", t: "Kai zelf laten weten of hij bloemen of bezoek wil, en waar dat heen kan. Het adres uit de administratie geef je niet door.", r: "goed",
+        { k: "B", t: "Kai zelf vragen of hij bloemen of bezoek wil, en waarheen. Het adres uit de administratie geef je niet door.", r: "goed",
           uitleg: "Een gegeven gebruik je alleen voor het doel waarvoor je het kreeg. Kai beslist zelf of hij zijn adres aan het team geeft.",
           reactie: "Goed, ik stuur hem een bericht. Dan kiest hij zelf." },
-        { k: "C", t: "Bram zeggen dat adressen delen niet mag vanwege de regels, en er verder niets mee doen.", r: "half",
-          uitleg: "Niet doorgeven klopt, maar je kunt Kai ook zelf laten kiezen.",
+        { k: "C", t: "Bram zeggen dat adressen delen niet mag vanwege de regels. Het adres blijft in de administratie en verder doe je niets.", r: "half",
+          uitleg: "Het adres niet doorgeven klopt, maar je slaat Kai zelf over. Laat hem kiezen of hij bloemen of bezoek wil, en waar dat heen mag.",
           reactie: "Jammer. Dan maar geen bloemen." }
       ],
       crystal: { on: "B", name: "Doelbinding", desc: "Een gegeven gebruik je alleen voor het doel waarvoor je het kreeg." }
@@ -106,14 +105,13 @@
       intro: "Kai wil overstappen naar de kolonie Nova Terra.",
       say: "Stuur me het verzuimoverzicht van Kai. Ik wil weten of hij vaak ziek is voordat hij bij ons begint.",
       opts: [
-        { k: "A", t: "Het volledige verzuimoverzicht sturen. Vega wordt zijn leidinggevende en mag dat weten voordat Kai begint.", r: "fout",
-          uitleg: "Verzuimgegevens zijn er voor het loon en de begeleiding bij ziekte. Nova Terra heeft er geen grondslag voor.",
-          reactie: "Mooi. Dan weet ik genoeg.",
-          memo: "Verzuimoverzicht van Kai verstuurd naar Kapitein Vega" },
+        { k: "A", t: "Niets van zijn verzuim sturen en het verzoek zonder uitleg afwijzen. Waarom niet, hoeft Vega niet te weten.", r: "half",
+          uitleg: "Niets delen klopt. Maar leg Vega uit waarom, en zeg dat ze met Kai zelf over zijn overstap kan praten. Zonder uitleg zoekt ze een andere weg naar dezelfde gegevens.",
+          reactie: "Geen antwoord? Dan vraag ik het wel aan zijn teamleider." },
         { k: "B", t: "Niets van zijn verzuim delen en uitleggen waarom. Over zijn overstap kan Vega met Kai zelf praten.", r: "goed",
           uitleg: "Je gebruikt verzuimgegevens alleen voor waar ze voor zijn, en je deelt niets wat de ontvanger niet mag hebben.",
           reactie: "Hm. Dan vraag ik hem zelf wanneer hij kan beginnen. Prima." },
-        { k: "C", t: "Alleen het aantal ziektedagen sturen, zonder de reden. Dan deel je niets medisch.", r: "fout",
+        { k: "C", t: "Alleen het aantal ziektedagen sturen, zonder de reden erbij. Dan deel je niets medisch en weet Vega toch genoeg.", r: "fout",
           uitleg: "Ook het aantal ziektedagen zegt iets over zijn gezondheid, en Nova Terra heeft er nog steeds geen grondslag voor.",
           reactie: "Twintig dagen? Dan weet ik genoeg.",
           memo: "Verzuimoverzicht van Kai verstuurd naar Kapitein Vega" }
@@ -125,13 +123,13 @@
       intro: "Een oud-crewlid verschijnt als hologram.",
       say: "Ik werk niet meer op Orion. Wat doen jullie nog met mijn BSN, mijn adres en mijn paspoortkopie?",
       opts: [
-        { k: "A", t: "“We houden alles wat we van je hebben. Je weet nooit waar het later nog goed voor is, en zo kunnen we je snel weer inschrijven als je terugkomt naar Orion.”", r: "fout",
-          uitleg: "Wat geen grondslag meer heeft, moet weg. En hij heeft recht op een duidelijk antwoord.",
-          reactie: "Dus mijn paspoortkopie zwerft hier nog jaren rond? Dan dien ik een klacht in." },
-        { k: "B", t: "Uitleggen dat de wet het station verplicht de loonadministratie met die gegevens nog een aantal jaren te bewaren, beveiligd en alleen daarvoor. De rest is gewist. Wil hij precies weten wat we hebben, dan zet je dat door als inzageverzoek.", r: "goed",
+        { k: "A", t: "Hem vertellen dat de wet het station verplicht de loonadministratie nog een aantal jaren te bewaren, beveiligd en alleen daarvoor, en dat de rest gewist is. Meer hoeft hij niet te weten, dus daar laat je het bij.", r: "half",
+          uitleg: "De uitleg over de bewaarplicht klopt. Maar hij heeft ook recht om te weten welke gegevens het station nog van hem heeft. Zet zijn vraag daarom door als inzageverzoek.",
+          reactie: "Fijn. Maar welke gegevens hebben jullie dan precies nog?" },
+        { k: "B", t: "Uitleggen dat de wet het station verplicht de loonadministratie nog een aantal jaren beveiligd te bewaren, alleen daarvoor. De rest is gewist. Wil hij weten wat er is, dan zet je dat door als inzageverzoek.", r: "goed",
           uitleg: "Een bewaarplicht uit de wet is ook een grondslag. Je legt dat open uit, en een vraag naar al zijn gegevens loopt via het meldpunt.",
           reactie: "Helder. Dan weet ik waar ik aan toe ben." },
-        { k: "C", t: "“Ik wis vandaag nog alles wat we van je hebben, ook uit de loonadministratie. Dat beloof ik je, dan hoef je je nergens meer zorgen over te maken.”", r: "fout",
+        { k: "C", t: "“Ik wis vandaag nog alles wat we van je hebben, ook uit de loonadministratie. Dat beloof ik je, dan hoef je je nergens meer zorgen over te maken. Je hoort het van mij.”", r: "fout",
           uitleg: "Dat kun je niet beloven. De wet verplicht het station de loonadministratie nog te bewaren.",
           reactie: "Fijn. Maar mag jij dat eigenlijk zelf beslissen?" }
       ],
@@ -176,7 +174,8 @@
     if (!S.ord[id]) { var a = opts.map(function (_, i) { return i; }); for (var k = a.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), t = a[k]; a[k] = a[j]; a[j] = t; } S.ord[id] = a; }
     return S.ord[id].map(function (i) { return opts[i]; });
   }
-  var POINTS = { goed: 10, half: 5, fout: 0 };
+  /* Half goed geeft hoogstens de helft. Hier 3: met alle vijf situaties half goed en een foutloos cryo-archief kom je op 15 + 50 = 65 van 100, onder de 70 procent. */
+  var POINTS = { goed: 10, half: 3, fout: 0 };
   var SHIELD_HIT = { goed: 0, half: 5, fout: 10 };
   var DOSSIER_POINTS = 5;
   var MAX = SITS.length * 10 + DOSSIERS.length * DOSSIER_POINTS;
@@ -274,7 +273,7 @@
 
   function verdictBadge(r) {
     if (r === "goed") return '<span class="vcsw-badge success">' + icon("check") + "Goed, +10</span>";
-    if (r === "half") return '<span class="vcsw-badge warning">Half goed, +5</span>';
+    if (r === "half") return '<span class="vcsw-badge warning">Half goed, +' + POINTS.half + "</span>";
     return '<span class="vcsw-badge danger">Fout, 0 punten</span>';
   }
   function alertBox(kind, ic, title, text) {
@@ -296,7 +295,7 @@
       '<p class="lead">Je leert waarom het station een BSN, een adres en verzuimgegevens mag verwerken, en waar de grens ligt.</p>' +
       speech("aria", "De nieuwe kolonisten zijn aan boord en een deel is crewlid van Orion geworden. Luitenant Mira houdt hun administratie bij, met BSN’s, adressen, paspoortkopieën en ziekmeldingen. Voor alles wat je daarmee doet, heb je een reden nodig die de wet erkent. Dat heet een grondslag. Vraag je bij elke stap af waarom het station dit mag, en waarvoor.") +
       '<dl class="vcsw-dl" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">' +
-      "<div><dt>Dienst</dt><dd>Vijf situaties met elk drie keuzes. Goed is 10 punten, half goed 5.</dd></div>" +
+      "<div><dt>Dienst</dt><dd>Vijf situaties met elk drie keuzes. Goed is 10 punten, half goed " + POINTS.half + ".</dd></div>" +
       "<div><dt>Luchtsluis</dt><dd>Geef tien gegevens in het cryo-archief binnen vijf minuten de juiste grondslag.</dd></div>" +
       "<div><dt>Gehaald</dt><dd>Bij minimaal 70 procent van de punten word je Luitenant.</dd></div></dl>" +
       '<div class="actions"><button class="vcsw-button lg" id="go">Begin de dienst' + icon("next") + "</button></div>",
@@ -606,7 +605,7 @@
       }).join("") + "</div>" +
         '<div class="actions"><button type="button" class="vcsw-button lg" id="earthNext" data-fk="earthNext">Verder naar melden en je uitslag' + icon("next") + "</button></div>";
     } else {
-      html += '<div class="o-card meld"><div><h3>Twijfel of een incident? Meld het</h3><p>Bij Tarik, Dagmar of per mail.</p></div>' +
+      html += '<div class="o-card meld"><div><h3>Twijfel of een incident? Meld het</h3><p>Bij de security officer, de privacy officer of per mail.</p></div>' +
         '<span class="route">' + MELD_ADRES + "</span>" +
         '<button type="button" class="vcsw-button outline lg" id="copy" data-fk="copy">Kopieer adres' + icon("copy") + '</button><span class="vcsw-sr-only" role="status" id="copyStatus"></span></div>';
 

@@ -162,20 +162,25 @@ main { position: relative; z-index: 1; height: 100%; }
 .vignette.good { box-shadow: inset 0 0 120px 12px color-mix(in srgb, var(--vcsw-blue-400) 35%, transparent); }
 .vignette.gold { box-shadow: inset 0 0 140px 20px color-mix(in srgb, var(--vcsw-amber-400) 40%, transparent); }
 .vignette.show { opacity: 1; }
-.pop { position: absolute; left: 50%; top: 18%; transform: translate(-50%, 0); font: 800 1.5rem/1 var(--vcsw-font-heading); color: #fff; white-space: nowrap; text-shadow: 0 2px 12px rgb(0 0 0 / .5);
-  animation: popup 1100ms ease-out forwards; }
-.pop.gold { color: var(--vcsw-amber-200); font-size: 2.25rem; }
-.pop.bad { color: var(--vcsw-red-200); }
-@keyframes popup { 0% { opacity: 0; transform: translate(-50%, 12px); } 15% { opacity: 1; transform: translate(-50%, 0); } 75% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -24px); } }
-.toasts { position: fixed; right: 20px; top: calc(var(--bar-h) + 20px); z-index: 30; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-.toast { display: flex; gap: 12px; align-items: center; min-width: 280px; max-width: 360px; padding: 12px 16px; border-radius: 12px; pointer-events: auto;
-  background: var(--vcsw-blue-950); border: 1px solid color-mix(in srgb, var(--vcsw-amber-300) 50%, transparent); box-shadow: 0 20px 40px -20px #000; animation: toastin 300ms ease-out; }
-@keyframes toastin { from { opacity: 0; transform: translateX(20px); } }
-.toast .medal { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--vcsw-amber-300); color: var(--vcsw-amber-950); }
-.toast .medal .vcsw-icon { width: 22px; height: 22px; }
-.toast b { display: block; color: #fff; font-family: var(--vcsw-font-heading); }
-.toast span { font-size: .8125rem; color: var(--vcsw-gray-300); }
-.toast small { display: block; font: 600 .75rem/1.4 var(--vcsw-font-body); color: var(--vcsw-amber-300); }
+/* Notices (badges, combos, switches) live in one dock on the station, placed by dockNotes() in orion.js:
+   above the mission card on the left, or under the top bar on the overview. Never over the mission panel. */
+.toasts { position: fixed; left: 40px; top: calc(var(--bar-h) + 16px); width: 340px; z-index: 30; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toasts[data-at="bottom"] { flex-direction: column-reverse; }
+.toast { display: flex; gap: 12px; align-items: center; padding: 10px 14px; border-radius: 12px; pointer-events: auto;
+  background: color-mix(in srgb, var(--vcsw-blue-950) 94%, transparent); border: 1px solid var(--o-edge-strong); box-shadow: 0 16px 32px -20px #000;
+  animation: toastin 240ms ease-out; transition: opacity 240ms, transform 240ms; }
+.toast.out { opacity: 0; transform: translateY(6px); }
+@keyframes toastin { from { opacity: 0; transform: translateY(8px); } }
+.toast.badge { border-color: color-mix(in srgb, var(--vcsw-amber-300) 55%, transparent); }
+.toast .medal { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--vcsw-amber-300); color: var(--vcsw-amber-950); }
+.toast .medal .vcsw-icon { width: 18px; height: 18px; }
+.toast b { display: block; color: #fff; font: 700 1rem/1.25 var(--vcsw-font-heading); }
+.toast span { display: block; font-size: .9375rem; line-height: 1.35; color: var(--vcsw-gray-300); }
+.toast small { display: block; font: 600 .9375rem/1.3 var(--vcsw-font-body); color: var(--vcsw-amber-200); }
+.toast.line { padding: 8px 12px; }
+.toast.line .dot { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--vcsw-blue-400) 22%, transparent); color: var(--vcsw-blue-200); }
+.toast.line.gold .dot { background: color-mix(in srgb, var(--vcsw-amber-400) 22%, transparent); color: var(--vcsw-amber-300); }
+.toast.line .dot .vcsw-icon { width: 15px; height: 15px; }
 
 /* ---------- Achievements ---------- */
 .trophies { width: min(760px, calc(100% - 32px)); max-height: calc(100vh - 64px); padding: 0; border-radius: 16px; border: 1px solid var(--o-edge-strong); background: var(--vcsw-blue-950); color: var(--vcsw-gray-200); }
@@ -232,32 +237,8 @@ main { position: relative; z-index: 1; height: 100%; }
 .ar-feed { min-height: 28px; text-align: center; font-weight: 600; color: var(--vcsw-gray-200); margin-top: 12px; }
 .ar-feed.good { color: var(--vcsw-green-300); } .ar-feed.bad { color: var(--vcsw-red-300); }
 
-.sprint { display: grid; grid-template-columns: 1fr minmax(260px, 420px) 1fr; gap: 24px; align-items: center; align-content: center; min-height: max(320px, calc(100vh - 400px)); }
-.bin-btn { height: 260px; border-radius: 16px; border: 1px solid var(--o-edge-strong); background: color-mix(in srgb, var(--vcsw-blue-900) 75%, transparent); color: #fff; cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font: 700 1.0625rem/1.2 var(--vcsw-font-heading); text-align: center; padding: 16px; transition: border-color 200ms, background-color 200ms; }
-.bin-btn:hover { border-color: var(--vcsw-blue-300); background: color-mix(in srgb, var(--vcsw-blue-800) 50%, transparent); }
 kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--o-edge-strong); color: var(--vcsw-blue-200); }
-.holo-wrap { display: flex; flex-direction: column; gap: 14px; }
-.holo-wrap .ar-feed { margin: 0; min-height: 32px; }
-.trail { display: flex; justify-content: center; gap: 6px; min-height: 12px; }
-.trail i { width: 12px; height: 12px; border-radius: 3px; background: var(--vcsw-blue-400); }
-.trail i.nok { background: transparent; border: 2px solid var(--vcsw-red-300); }
-.holo::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, #fff 4%, transparent) 3px 4px); }
-.bin-btn .vcsw-icon { width: 36px; height: 36px; color: var(--vcsw-blue-200); }
-.bin-btn.no, .bin-btn.yes { background: color-mix(in srgb, var(--vcsw-blue-800) 70%, transparent); border-color: var(--vcsw-blue-300); }
-.bin-btn kbd { font-size: .9375rem; padding: 8px 12px; }
-.bin-btn.no .vcsw-icon { color: var(--vcsw-blue-200); }
-.holo { border-color: var(--vcsw-blue-200) !important; position: relative; min-height: 260px; box-shadow: 0 24px 40px -18px #000; transform: translateY(-4px); border-radius: 16px; padding: 28px 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 12px;
-  background: color-mix(in srgb, var(--vcsw-blue-700) 55%, transparent); border: 1px solid color-mix(in srgb, var(--vcsw-blue-200) 55%, transparent); }
-.holo small { font-size: .8125rem; color: var(--vcsw-blue-100); }
-.holo p { margin: 0; font: 700 1.75rem/1.25 var(--vcsw-font-heading); color: #fff; text-wrap: balance; }
-.holo.fly-l { animation: flyl 260ms ease-in forwards; } .holo.fly-r { animation: flyr 260ms ease-in forwards; }
-.holo.wrong { border-color: var(--vcsw-red-300); animation: wob 360ms; }
-@keyframes flyl { to { opacity: 0; transform: translateX(-160px) rotate(-8deg); } } @keyframes flyr { to { opacity: 0; transform: translateX(160px) rotate(8deg); } }
-@keyframes wob { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
-.sprint { background-image: linear-gradient(color-mix(in srgb, var(--vcsw-blue-300) 8%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--vcsw-blue-300) 8%, transparent) 1px, transparent 1px) !important; background-size: 32px 32px !important; background-color: #031029 !important; }
-.sprint, .grid9 { padding: 20px; border-radius: 14px; border: 1px solid var(--o-edge-strong); background: radial-gradient(1px 1px at 20px 30px, #fff, transparent), radial-gradient(1px 1px at 140px 90px, var(--vcsw-blue-200), transparent), radial-gradient(ellipse 80% 60% at 50% 120%, color-mix(in srgb, var(--vcsw-blue-500) 25%, transparent), transparent 70%), linear-gradient(180deg, #010714, var(--vcsw-blue-950)); background-size: 220px 180px, 220px 180px, auto, auto; }
 .belt { position: relative; height: 150px; border-radius: 14px; overflow: hidden; border: 1px solid var(--o-edge-strong);
   background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--vcsw-blue-800) 55%, transparent) 0 38px, color-mix(in srgb, var(--vcsw-blue-900) 55%, transparent) 38px 40px); }
 .belt::after { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 70px; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--vcsw-red-600) 40%, transparent)); }
@@ -273,54 +254,11 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .door .vcsw-icon { width: 28px; height: 28px; color: var(--vcsw-blue-200); }
 .door.ok { border-color: var(--vcsw-green-400); } .door.nok { border-color: var(--vcsw-red-300); }
 
-.sky-arcade, .ar-panel .sky { position: relative; display: block; height: max(320px, calc(100vh - 300px)); border-radius: 14px; overflow: hidden; border: 1px solid var(--o-edge-strong); cursor: crosshair;
-  background:
-    radial-gradient(1px 1px at 20px 30px, #fff, transparent), radial-gradient(1px 1px at 140px 90px, var(--vcsw-blue-200), transparent),
-    radial-gradient(1.5px 1.5px at 230px 160px, #fff, transparent), radial-gradient(1px 1px at 80px 200px, var(--vcsw-gray-400), transparent),
-    radial-gradient(ellipse 80% 50% at 50% 115%, color-mix(in srgb, var(--vcsw-blue-500) 30%, transparent), transparent 70%),
-    radial-gradient(ellipse 60% 30% at 30% 30%, color-mix(in srgb, var(--vcsw-blue-700) 22%, transparent), transparent 70%),
-    linear-gradient(180deg, #010714, var(--vcsw-blue-950));
-  background-size: 260px 220px, 260px 220px, 260px 220px, 260px 220px, auto, auto, auto; animation: drift 40s linear infinite; }
-.ar-panel .sky::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(1px 1px at 60px 40px, var(--vcsw-gray-400), transparent), radial-gradient(1px 1px at 180px 130px, var(--vcsw-gray-500), transparent); background-size: 200px 160px; animation: drift2 90s linear infinite; }
 @keyframes drift2 { to { background-position: 0 160px, 0 160px; } }
 @keyframes drift { to { background-position: 0 220px, 0 220px, 0 220px, 0 220px, 0 0, 0 0, 0 0; } }
-.sky .base { position: absolute; left: 0; right: 0; bottom: 0; height: 46px; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 10px; pointer-events: none; }
-.sky .base i { width: 40px; height: 6px; border-radius: 3px; background: var(--vcsw-blue-400); }
-.sky .base i.off { background: color-mix(in srgb, #fff 14%, transparent); }
-.sky .turret { position: absolute; left: 50%; bottom: 22px; width: 76px; height: 48px; margin-left: -38px; }
 .ar-brief { margin: 0 0 10px; font-size: 1rem; color: var(--vcsw-gray-200); }
-.inv { animation: invin 300ms ease-out; } @keyframes invin { from { opacity: 0; } }
-.beam { position: absolute; height: 2px; transform-origin: 0 50%; background: var(--vcsw-blue-200); pointer-events: none; z-index: 2; animation: beam 220ms ease-out forwards; }
-.beam.red { background: var(--vcsw-red-300); }
-@keyframes beam { from { opacity: 1; } to { opacity: 0; } }
-.ar-panel .sky::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 46px; background: color-mix(in srgb, var(--vcsw-blue-500) 22%, transparent); border-top: 1px dashed color-mix(in srgb, var(--vcsw-blue-300) 60%, transparent); }
-.inv { position: absolute; width: 31%; background: var(--vcsw-blue-900) !important; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; border-radius: 10px; text-align: left; cursor: crosshair; color: #fff; font: inherit; will-change: transform;
-  background: color-mix(in srgb, var(--vcsw-blue-800) 92%, transparent); border: 1px solid var(--vcsw-blue-300); }
-.inv { box-shadow: 0 14px 24px -12px #000; }
-.inv:hover, .inv:focus-visible { border-color: var(--vcsw-amber-300); outline: none; }
-.inv .vcsw-icon { flex: none; margin-top: 2px; color: var(--vcsw-blue-200); }
-.inv > span { min-width: 0; }
-.inv small { display: block; font-size: .875rem; line-height: 1.35; color: var(--vcsw-blue-100); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.inv small.dom { font-size: .8125rem; color: var(--vcsw-gray-300); }
-.inv b { display: block; font: 700 1.0625rem/1.25 var(--vcsw-font-heading); }
-.boom { position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; pointer-events: none; animation: boom 380ms ease-out forwards; background: var(--vcsw-amber-300); }
-.boom.blue { background: var(--vcsw-blue-300); } .boom.red { background: var(--vcsw-red-400); }
-@keyframes boom { from { transform: scale(.3); opacity: .9; } to { transform: scale(1.3); opacity: 0; } }
-.float { position: absolute; pointer-events: none; font: 800 1.125rem/1 var(--vcsw-font-heading); color: var(--vcsw-amber-200); animation: fup 800ms ease-out forwards; }
-.float.red { color: var(--vcsw-red-200); } .float.blue { color: var(--vcsw-blue-100); }
-@keyframes fup { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-46px); } }
 .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; font-size: .875rem; color: var(--vcsw-gray-300); }
 
-.grid9 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.mod { position: relative; min-height: 132px; border-radius: 12px; padding: 12px 14px; border: 1px solid var(--o-edge); background: var(--o-glass-2); }
-.mod .mname { font-size: .8125rem; font-weight: 600; color: var(--vcsw-blue-200); }
-.mod .ev { position: absolute; inset: 34px 10px 10px; border-radius: 10px; padding: 10px 12px; cursor: pointer; text-align: left; color: #fff; font: 600 .9375rem/1.3 var(--vcsw-font-body);
-  background: color-mix(in srgb, var(--vcsw-red-900) 70%, var(--vcsw-blue-950)); border: 1px solid var(--vcsw-red-300); display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
-.mod .ev .tag { align-self: flex-start; font: 700 .75rem/1 var(--vcsw-font-body); padding: 4px 8px; border-radius: 999px; background: var(--vcsw-red-600); color: #fff; }
-.mod .ev .bar2 { height: 3px; border-radius: 2px; background: color-mix(in srgb, #fff 15%, transparent); overflow: hidden; }
-.mod .ev .bar2 i { display: block; height: 100%; background: var(--vcsw-red-300); transform-origin: left; }
-.mod .ev:hover { border-color: #fff; }
-.mod.sealed { border-color: var(--vcsw-green-400); } .mod.breach { border-color: var(--vcsw-red-300); }
 
 .res { text-align: center; padding: 12px 0 4px; }
 .res .bigstars { display: flex; justify-content: center; gap: 14px; margin: 18px 0 8px; }
@@ -336,39 +274,24 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .res .learn ul { margin: 0; padding-left: 1.25rem; color: var(--vcsw-gray-200); display: grid; gap: 6px; }
 .res .ar-actions { justify-content: center; margin-top: 24px; }
 @media (max-width: 700px) {
-  .ar-rules, .doors, .grid9 { grid-template-columns: 1fr; }
-  .sprint { grid-template-columns: 1fr 1fr; } .sprint .holo { grid-column: 1 / -1; grid-row: 1; }
+  .ar-rules, .doors { grid-template-columns: 1fr; }
   .ar-hud { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ar-panel .sky, .ar-panel .sky::before { animation: none; }
-  .panel.shake, .pop, .toast, .holo.fly-l, .holo.fly-r, .holo.wrong, .boom, .float, .res .bigstars svg.star-on { animation: none !important; }
-  .pop { display: none; }
+  .panel.shake, .toast, .res .bigstars svg.star-on { animation: none !important; }
+  .toast { transition: none; }
 }
 
 /* ---------- Arcade playfields in 3D (arcade3d.js). The HTML controls stay on top of the scene. ---------- */
 .pf3d { position: relative; overflow: hidden; background: #030a1a !important; }
 .pf3d > canvas.pf { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; pointer-events: none; border-radius: inherit; }
 .pf3d > :not(canvas) { z-index: 1; }
-.sprint.pf3d > *, .grid9.pf3d > * { position: relative; }
-.ar-panel .sky.pf3d::before, .ar-panel .sky.pf3d::after, .belt.pf3d::before, .belt.pf3d::after { display: none; }
-.sky.pf3d .turret, .sky.pf3d .base, .sky.pf3d .beam, .sky.pf3d .boom { visibility: hidden; }
-.sky.pf3d .inv { background: color-mix(in srgb, var(--vcsw-blue-950) 88%, transparent) !important; border-color: var(--vcsw-blue-300); }
-.sprint.pf3d { min-height: max(360px, calc(100vh - 380px)); }
-.sprint.pf3d .bin-btn { background: color-mix(in srgb, var(--vcsw-blue-950) 62%, transparent); }
-.sprint.pf3d .bin-btn:hover { background: color-mix(in srgb, var(--vcsw-blue-800) 62%, transparent); }
-.sprint.pf3d .holo { background: color-mix(in srgb, var(--vcsw-blue-900) 78%, transparent); }
+.belt.pf3d::before, .belt.pf3d::after { display: none; }
 .belt.pf3d { height: 230px; }
 .belt.pf3d .packet { top: 62px; background: #f8fafc; color: var(--vcsw-gray-900); border: 0; border-radius: 6px; box-shadow: 0 6px 14px -6px #000; }
 .belt.pf3d .packet small { color: var(--vcsw-gray-600); }
-.grid9.pf3d { gap: 16px; padding: 24px; }
-.grid9.pf3d .mod { background: none; border-color: transparent; }
-.grid9.pf3d .mod .mname { color: #fff; text-shadow: 0 1px 3px #000; }
 .belt.pf3d .packet b { color: var(--vcsw-gray-900); }
-.sky.pf3d .inv { top: 40px; border-width: 1px 1px 4px; box-shadow: 0 18px 28px -10px #000; }
-.sprint.pf3d { min-height: max(360px, calc(100vh - 300px)); }
-.sprint.pf3d .bin-btn, .sprint.pf3d .holo { border-bottom-width: 4px; box-shadow: 0 18px 28px -10px #000; }
 
 /* ---------- Opening screen ---------- */
 .skip { position: fixed; left: 12px; top: -60px; z-index: 60; padding: 10px 14px; border-radius: 8px; background: #fff; color: var(--vcsw-blue-800); font: 600 .9375rem/1 var(--vcsw-font-heading); }
@@ -416,14 +339,12 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 /* ---------- During an arcade round the station steps back ---------- */
 #world { transition: filter 400ms ease; }
 [data-view="arcade"] #world { filter: saturate(.7) brightness(.7); }
-.sprint.pf3d .holo { background: var(--vcsw-blue-900); }
 @media (prefers-reduced-motion: reduce) { #world { transition: none; } }
 
 /* ---------- Calm while you answer: the bar shows the route, a combo only once it counts ---------- */
 [data-view="mission"] .meter { display: none; }
 [data-view="mission"] .meter.combo.hot { display: flex; }
 .panel { width: min(980px, 57vw); border-color: var(--o-edge-strong); background: color-mix(in srgb, var(--o-space) 84%, transparent); backdrop-filter: blur(8px); }
-.sky.pf3d .inv { top: 78px; }
 
 /* ---------- Nalezen ---------- */
 #review { grid-column: 1 / -1; justify-content: center; border-color: var(--vcsw-amber-300); }
@@ -514,7 +435,6 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .route ol { gap: 1px; }
 .node:not([aria-current="step"]) { padding: 0 3px; }
 .node { height: 36px; }
-.sprint.pf3d .bin-btn { font-size: .9375rem; padding-left: 14px; padding-right: 14px; }
 
 /* ---------- The mission panel ends where its content ends ---------- */
 .panel.fit { bottom: auto; max-height: calc(100vh - var(--bar-h) - 24px); transition: height 220ms ease; }
@@ -523,26 +443,15 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 /* ---------- Round 20: a firmer panel, a darker corner under the title, a glass card in the sprint ---------- */
 .panel { background: color-mix(in srgb, var(--o-space) 94%, transparent); }
 .has-3d .home::before { background: radial-gradient(ellipse 70% 88% at 0% 100%, rgb(2 8 20 / .96), rgb(2 8 20 / .82) 48%, transparent 78%); }
-.sprint.pf3d .holo::after { display: none; }
-.sprint.pf3d .holo { min-height: 220px; background: linear-gradient(180deg, color-mix(in srgb, var(--vcsw-blue-700) 70%, var(--vcsw-blue-900)), var(--vcsw-blue-900)); box-shadow: inset 0 1px 0 rgb(255 255 255 / .28), inset 0 0 0 1px rgb(103 202 255 / .22), 0 18px 28px -10px #000; }
-.sprint.pf3d .bin-btn kbd { font-size: 1.0625rem; padding: 10px 14px; }
 
 /* ---------- Round 21: the playfield fills the panel, labels fit their bins, a clearer line on the module card ---------- */
-.ar-panel .sky.pf3d { height: max(320px, calc(100vh - 256px)); }
-.sprint.pf3d { min-height: max(320px, calc(100vh - 256px)); }
-.sprint.pf3d .bin-btn { font-size: .8125rem; padding-left: 16px; padding-right: 16px; }
 #m-place { color: #e8eef6 !important; font-size: 1rem; }
 
 /* ---------- Round 22: the sender of a message is the clue, so it reads at body size; wider bins ---------- */
-.inv small.dom { font-size: 1rem; font-weight: 600; color: #fff; }
-.inv small { font-size: .9375rem; }
-.sprint.pf3d { grid-template-columns: 1fr minmax(240px, 350px) 1fr; }
-.sprint.pf3d .bin-btn { font-size: .9375rem; padding-left: 10px; padding-right: 10px; }
 
 /* ---------- The admin page is a working screen: the station stays far in the back ---------- */
 [data-view="admin"] #world { filter: brightness(.22) saturate(.6) blur(3px); }
 .admin { background: rgb(2 8 20 / .55); }
-.grid9.pf3d .mname { background: rgb(2 8 20 / .72); padding: 2px 8px; border-radius: 4px; }
 
 /* ================= Round 23: status bar, route with the final mission in three parts, logbook ================= */
 .status { position: absolute; left: 0; right: 0; top: 0; z-index: 3; display: flex; flex-direction: column; gap: 12px; padding: 14px 20px 12px; background: #06162f; border-bottom: 1px solid var(--o-edge-strong); }
@@ -627,14 +536,6 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .gi-doors .gi-side > .vcsw-icon, .gi-doors .gi-side.yes > .vcsw-icon { color: var(--vcsw-blue-200); }
 .gi-doors .gi-side.yes { border-color: var(--vcsw-green-400); }
 .gi-doors .gi-side.yes > .vcsw-icon { color: var(--vcsw-green-300); }
-.gi-demo.d-invaders, .gi-demo.d-lekken { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
-.gi-msg { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 6px 12px; align-items: start; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--o-edge); background: color-mix(in srgb, var(--vcsw-blue-800) 40%, transparent); color: #fff; }
-.gi-msg > .vcsw-icon { width: 22px; height: 22px; margin-top: 2px; }
-.gi-msg.bad { border-color: color-mix(in srgb, var(--vcsw-red-300) 70%, transparent); } .gi-msg.bad > .vcsw-icon { color: var(--vcsw-red-300); }
-.gi-msg.ok { border-color: color-mix(in srgb, var(--vcsw-green-400) 70%, transparent); } .gi-msg.ok > .vcsw-icon { color: var(--vcsw-green-300); }
-.gi-msg small { display: block; font-size: .8125rem; color: var(--vcsw-gray-300); }
-.gi-msg b { display: block; font: 600 1rem/1.3 var(--vcsw-font-heading); margin-top: 2px; }
-.gi-msg kbd { grid-column: 2; justify-self: start; }
 .gi-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
 .gi-box { padding: 16px 18px; border-radius: 14px; border: 1px solid var(--o-edge); background: var(--o-glass-2); }
 .gi-box h2 { margin: 0 0 10px; font: 700 1.0625rem/1.2 var(--vcsw-font-heading); color: #fff; }
@@ -650,18 +551,6 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 }
 
 /* ---------- Ronde 23: Lekken dichten, vaste kop per module ---------- */
-.mod { display: grid; grid-template-rows: auto 1fr; gap: 8px; }
-.mod .mname { display: inline-flex; align-items: center; gap: 8px; font: 600 .875rem/1.2 var(--vcsw-font-heading); color: #fff; min-width: 0; }
-.mod .mname i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--vcsw-green-400); }
-.mod .mstate { position: absolute; top: 12px; right: 14px; font: 600 .75rem/1.3 var(--vcsw-font-body); color: var(--vcsw-gray-300); }
-.mod.ringing { border-color: var(--vcsw-red-300); background: color-mix(in srgb, var(--vcsw-red-700) 22%, var(--o-glass-2)); }
-.mod.ringing .mname i { background: var(--vcsw-red-300); } .mod.ringing .mstate { color: var(--vcsw-red-200); }
-.mod.sealed .mstate { color: var(--vcsw-green-300); } .mod.breach .mstate { color: var(--vcsw-red-200); }
-.mod .ev { position: static; inset: auto; display: grid; grid-template-rows: 1fr auto; gap: 8px; width: 100%; min-height: 78px; align-self: stretch; }
-.mod .ev .etext { align-self: center; }
-.grid9.pf3d .mod { background: color-mix(in srgb, var(--vcsw-blue-950) 62%, transparent); border-color: var(--o-edge); }
-.grid9.pf3d .mod.ringing { background: color-mix(in srgb, var(--vcsw-red-700) 30%, var(--vcsw-blue-950)); border-color: var(--vcsw-red-300); }
-.grid9.pf3d .mname { background: none; padding: 0; border-radius: 0; }
 
 .ar-panel.gi .ar-lead { max-width: none; margin-top: 8px; }
 .gi-demo { margin: 16px 0 14px; padding: 16px; gap: 14px; }
@@ -671,7 +560,6 @@ kbd { font: 700 .75rem/1 var(--vcsw-font-heading); padding: 6px 8px; border-radi
 .gi-doors .gi-side { padding: 12px 6px; }
 .gi-box { padding: 14px 16px; } .gi-box ul { gap: 6px; } .gi-cols { margin-bottom: 16px; gap: 14px; }
 .arcade .ar-wrap:has(.gi) { padding-top: 22px; padding-bottom: 22px; }
-@media (max-height: 780px) { .mod { min-height: 108px; } .mod .ev { min-height: 64px; } .grid9.pf3d { gap: 12px; padding: 16px; } }
 
 /* ---------- Ronde 23: level 5 opent met alarm ---------- */
 .panic { position: fixed; inset: 64px 0 0 0; z-index: 40; display: grid; grid-template-rows: 22px 1fr 22px; color: #fff; overflow: hidden;
@@ -759,7 +647,6 @@ body.panicking .mission { opacity: 0; }
   .lb-nr { background: var(--vcsw-blue-600); }
   .lb-chip { background: #12305c; color: #c7d6ea; } .lb-chip.ok { background: rgb(123 241 168 / .16); color: #7bf1a8; } .lb-chip.low { background: rgb(255 185 0 / .16); color: var(--vcsw-amber-200); }
 }
-.inv { width: 29%; margin-left: 1%; }
 .lb-sheet tr.lb-low th { box-shadow: inset 4px 0 0 #c77700; padding-left: 12px; }
 @media screen { .lb-sheet tr.lb-low th { box-shadow: inset 4px 0 0 var(--vcsw-amber-300); } .lb-sheet tr.lb-low { background: rgb(255 185 0 / .06); } .lb-sheet tr.lb-low .lb-nr { background: #7a4a00; } }
 
@@ -773,3 +660,44 @@ body.panicking .mission { opacity: 0; }
 .bar { background: color-mix(in srgb, var(--o-space) 92%, transparent); backdrop-filter: none; }
 .panel { background: color-mix(in srgb, var(--o-space) 94%, transparent); backdrop-filter: none; }
 .briefing, .map-card, .home-card, .status, .toast { backdrop-filter: none; }
+
+/* ---------- Ronde 30: oefenrondes uit de proefhal in het missiepaneel ----------
+   Een oefenronde is gemaakt voor een breed scherm. Het paneel krijgt daarom meer ruimte dan bij een level,
+   de missiekaart wordt smaller en blijft linksonder, zodat de module van het level links in beeld blijft. */
+@media (min-width: 900px) {
+  .mission.is-oefen .panel { left: clamp(252px, calc(100vw - 1140px), 300px); width: auto; top: calc(var(--bar-h) + 8px); bottom: 8px; }
+  .mission.is-oefen .briefing { left: 16px; bottom: 16px; width: calc(clamp(252px, calc(100vw - 1140px), 300px) - 32px); padding: 16px; gap: 10px; }
+  .mission.is-oefen .briefing h1 { font-size: 1.25rem; }
+  .mission.is-oefen .aria-line p { font-size: .9375rem; }
+  .mission.is-oefen .steer .icon-btn { min-height: 40px; }
+}
+.node.bonus.done .num { background: var(--vcsw-amber-400); }
+
+/* Logbook: the practice rounds sit under their level, a step in */
+.lb-sheet tr.lb-sub th, .lb-sheet tr.lb-sub td { padding-top: 5px; padding-bottom: 5px; font-size: .9375rem; }
+.lb-sheet tr.lb-sub th { padding-left: 42px; font-weight: 600; }
+.lb-sheet tr.lb-sub td.num { font-size: .9375rem; }
+.lb-sheet tr.lb-sub .lb-star .vcsw-icon { width: 15px; height: 15px; }
+.lb-ex { display: inline-flex; align-items: center; gap: 5px; margin-right: 10px; color: #8a6a00; font: 600 .9375rem/1 var(--vcsw-font-body); }
+.lb-ex .vcsw-icon { width: 14px; height: 14px; }
+@media screen { .lb-ex { color: var(--vcsw-amber-300); } }
+.lb-stars { display: inline-flex; gap: 2px; }
+.lb-pdf { display: flex; gap: 8px; align-items: flex-start; margin: 0; font-size: .9375rem; line-height: 1.5; color: #c7d6ea; }
+.lb-pdf[hidden], .lb-note[hidden] { display: none; }
+.lb-pdf .vcsw-icon { flex: none; width: 18px; height: 18px; color: #7bf1a8; margin-top: 2px; }
+.lb-link { padding: 0; border: 0; background: none; color: var(--vcsw-blue-200); font: inherit; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.lb-link:hover { color: #fff; }
+@media screen {
+  .lb-sheet { gap: 12px; }
+  .lb-sheet th, .lb-sheet td { padding-top: 7px; padding-bottom: 7px; }
+  .lb-sheet tr.lb-sub th, .lb-sheet tr.lb-sub td { padding-top: 3px; padding-bottom: 3px; }
+  .lb-sheet tr.lb-sub .lb-chip { padding-top: 2px; padding-bottom: 2px; }
+  .lb-nr { width: 28px; height: 28px; }
+  .logbook { padding-top: 20px; padding-bottom: 18px; gap: 12px; }
+  .lb-who h1 { font-size: 1.75rem; }
+  .lb-total b { font-size: 2.75rem; }
+  .lb-actions .btn-go, .lb-actions .btn-ghost { min-height: 46px; padding-left: 16px; padding-right: 16px; font-size: 1rem; }
+}
+/* Narrow screens: a later rule gave the panel 57vw, which left a strip of 220 pixels on a phone. */
+@media (max-width: 899px) { .panel { width: auto; } }
+@media (max-width: 899px) { .toast { padding: 8px 12px; } .toast span { display: none; } }
