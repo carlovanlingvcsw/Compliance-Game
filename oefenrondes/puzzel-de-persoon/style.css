@@ -213,14 +213,30 @@
 
 /* In het missiepaneel van Ruimtestation Orion (ongeveer 1130 pixels breed): het crewbord krijgt de breedte. */
 @media (min-width: 941px) and (max-width: 1260px) {
-  .pp { grid-template-columns: minmax(0, 1fr) 350px; gap: 14px; }
-  .pp-grid { gap: 10px 6px; }
-  .pp-face span { padding-left: 0; padding-right: 0; letter-spacing: -.015em; }
-  .pp-choice { min-height: 0; padding: 12px; gap: 8px; }
-  .pp-choice b { font-size: 1.0625rem; overflow-wrap: anywhere; hyphens: auto; }
-  .pp-choice small { font-size: .9375rem; }
-  .pp-q h3, .pp-q h2 { font-size: 1.25rem; }
+  .pp { grid-template-columns: minmax(0, 1fr) 340px; gap: 14px; }
+  /* Ronde 31: elk afdelingslabel past heel op zijn tegel, ook Communicatie. Minder rand rond het raster, smallere tussenruimte. */
+  .pp-board { padding: 0 10px 12px; }
+  .pp-board-top { margin: 0 -10px 10px; }
+  .pp-grid { gap: 10px 5px; padding: 0; }
+  .pp-face span { padding-left: 0; padding-right: 0; letter-spacing: -.015em; overflow: visible; text-overflow: clip; }
+  /* De twee oordeelknoppen onder elkaar, over de volle breedte: elk woord past heel, zonder afbreking. */
+  .pp-choices { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .pp-choice { flex-direction: row; align-items: center; justify-content: flex-start; min-height: 0; padding: 14px 16px; gap: 14px; }
+  .pp-choice > span { min-width: 0; }
+  .pp-choice b { font-size: 1.25rem; hyphens: none; overflow-wrap: normal; word-break: keep-all; }
+  .pp-choice small { display: block; margin-top: 4px; font-size: .9375rem; hyphens: none; }
+  .pp-q:not(.pp-fb) { gap: 8px; padding: 14px 16px; }
+  .pp-q h3 { font-size: 1.125rem; letter-spacing: -.005em; }
+  .pp-dare { font-size: .9375rem; }
+  .pp-choice { padding: 12px 16px; }
+  /* De stempel breekt niet over twee regels: past hij niet naast de titel, dan staat hij er heel onder. */
+  .pp-msg-bar { flex-wrap: wrap; row-gap: 8px; }
+  .pp-msg-bar > span:not(.grow):not(.pp-stamp) { white-space: nowrap; }
+  .pp-stamp { white-space: nowrap; font-size: .9375rem; }
   .pp-legend2 { display: none !important; }
   .pp-stake-line { display: none !important; }
   .pp-stakes { justify-content: center; }
 }
+
+/* Nergens woordafbreking in dit spel: een woord breekt nooit midden in. */
+.pp, .pp * { hyphens: none; -webkit-hyphens: none; }

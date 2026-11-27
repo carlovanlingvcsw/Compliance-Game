@@ -129,6 +129,7 @@
           ${ZONES.map((z, i) => `<div class="lk-drop ${z.cls}" data-drop="${i}" style="grid-column:${i + 2};grid-row:3"></div>`).join("")}
           ${LADDER.map(([lbl, v], r) => `<div class="lk-rowlbl lk-lad" data-row="${r}" style="grid-row:${r + 4}">${esc(lbl)}</div>` + v.map((x, i) => `<div class="lk-cell ${ZONES[i].cls} ${x}" data-col="${i}" style="grid-column:${i + 2};grid-row:${r + 4}">${x === "y" ? `<span class="yes">${icon("check")}</span><span class="cw">Ja</span>` : x === "t" ? `<span class="tw">${icon("half", "sm")}Alleen bij twijfel</span>` : `<span class="no">${icon("x", "sm")}</span><span class="cw">Nee</span>`}</div>`).join("")).join("")}
           ${ZONES.map((z, i) => `<div class="lk-colhl" data-hl="${i}" style="grid-column:${i + 2};grid-row:2 / span 6"></div>`).join("")}
+          <p class="lk-ladhint" style="grid-column:2 / span 4;grid-row:4 / span 4">${icon("hand", "sm")}<span>Wijs een zone aan of leg de kaart erop. Dan zie je hier wat er moet gebeuren.</span></p>
         </div>
         <span class="screw a"></span><span class="screw b"></span><span class="screw c"></span><span class="screw d"></span>
       </section>
@@ -164,7 +165,7 @@
     $$(".lk-ghosttok, .lk-arrow", G.stage).forEach((x) => x.remove());
     $(".lk-meter", G.stage).classList.remove("alarm", "decided"); preview(null);
     $$(".lk-colhl", G.stage).forEach((x) => x.className = "lk-colhl");
-    $$(".lk-cell", G.stage).forEach((x) => x.classList.remove("hl"));
+    $$(".lk-cell", G.stage).forEach((x) => x.classList.remove("hl", "pend"));
     $("[data-needle]", G.stage).style.left = "50%"; $("[data-needle]", G.stage).classList.remove("set", "swing");
     side("pick");
   }
@@ -276,12 +277,16 @@
     moveNeedle(z); Mini.sound.play("tap");
     const foot = $("[data-foot]", G.stage);
     foot.classList.add("confirm");
-    foot.innerHTML = `<span class="lk-step">3</span><span class="lk-step2">Op <b>${esc(ZONES[z].name)}</b>. Hoe zeker ben je?</span>
-      <button class="lk-conf sure" type="button" data-conf="1">${icon("gem", "sm")}<span><b>Ik weet het zeker</b><small>Fout kost 10% extra schild</small></span></button>
-      <button class="lk-conf" type="button" data-conf="0"><span><b>Ik denk het</b><small>Geen extra risico</small></span></button>`;
+    $$(".lk-cell", G.stage).forEach((c) => c.classList.toggle("pend", +c.dataset.col === z));
+    foot.setAttribute("tabindex", "-1"); foot.setAttribute("role", "group"); foot.setAttribute("aria-label", "Hoe zeker ben je?");
+    foot.innerHTML = `<p class="lk-confq"><span class="lk-step">3</span><span class="lk-step2">Op <b>${esc(ZONES[z].name)}</b>. Hoe zeker ben je?</span></p>
+      <div class="lk-confrow">
+        <button class="lk-conf sure" type="button" data-conf="1">${icon("gem", "sm")}<span><b>Ik weet het zeker</b><small>Fout kost 10 procent extra schild</small></span></button>
+        <button class="lk-conf" type="button" data-conf="0">${icon("scale", "sm")}<span><b>Ik denk het</b><small>Geen extra kosten</small></span></button>
+      </div>`;
     $$("[data-conf]", foot).forEach((b) => b.addEventListener("click", () => { setBet(b.dataset.conf === "1"); reveal(pendingZ); }));
     $$("[data-conf]", foot).forEach((b) => b.addEventListener("pointerdown", (e) => e.stopPropagation()));
-    if (!G.shot) $("[data-conf]", foot).focus({ preventScroll: true });
+    if (!G.shot) foot.focus({ preventScroll: true });
   }
   async function reveal(z) {
     if (phase !== "confirm") return; phase = "reveal";
@@ -290,6 +295,7 @@
     const pts = res === "goed" ? 10 : res === "half" ? 5 : 0;
     $$("[data-zone]", G.stage).forEach((b) => { b.disabled = true; });
     $(`[data-zone="${z}"]`, G.stage).classList.remove("pending");
+    $$(".lk-cell", G.stage).forEach((c) => c.classList.remove("pend"));
     $(`[data-zone="${z}"]`, G.stage).classList.add("chosen");
     $$("[data-hint],[data-bet]", G.stage).forEach((b) => b.disabled = true);
     $(".lk-meter", G.stage).classList.add("decided");
@@ -305,6 +311,7 @@
     if (!Mini.reduce && !G.shot) await fly(token, from);
     card.classList.add("stamped");
     C.key.forEach((k, j) => setTimeout(() => { const li = $(`[data-fact="${k}"]`, card); if (li) li.classList.add("key"); }, Mini.reduce || G.shot ? 0 : 200 + j * 160));
+    $("[data-foot]", card).classList.remove("confirm"); $("[data-foot]", card).removeAttribute("tabindex");
     $("[data-foot]", card).innerHTML = `<span class="lk-verdict you ${z === C.zone ? "same" : ""}">${icon(z === C.zone ? "check" : "x", "sm")}Jij: <b>${esc(ZONES[z].name)}</b>${sure ? " (zeker)" : ""}</span><span class="lk-verdict right ${ZONES[C.zone].cls}">${icon("flag", "sm")}Hoort bij: <b>${esc(ZONES[C.zone].name)}</b></span>`;
     Mini.sound.play("tap");
     await wait(Mini.reduce || G.shot ? 0 : 350);

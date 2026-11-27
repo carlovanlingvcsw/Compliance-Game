@@ -187,7 +187,7 @@
     who: "ARIA",
     line: "Kijk eerst naar wie het document krijgt en waarvoor. Zwart wat iemand aanwijst, ook als er geen naam staat. Laat staan wat de ontvanger echt nodig heeft.",
     rules: [["pen", "Klik op een woord om het zwart te maken, of sleep met de stift over een stuk tekst. Nog een keer klikken haalt het zwart weg."],
-      ["send", "Klaar? Sleep het document <b>de verzendsluis in</b>, of gebruik de knop. Een gemist gegeven lekt naar buiten en kost schild. Te veel zwart en de ontvanger mist wat hij nodig heeft."],
+      ["send", "Klaar? Sleep het document <b>de verzendsluis in</b>, of klik op de sluis. Een gemist gegeven lekt naar buiten en kost schild. Te veel zwart en de ontvanger mist wat hij nodig heeft."],
       ["gem", "Een document helemaal goed zonder aanwijzing levert een kristal op."]],
     art, note: "Drie documenten, ongeveer 4 minuten"
   });
@@ -240,7 +240,7 @@
     const side = $("[data-side]", G.stage);
     side.innerHTML = `
       <div data-say></div>
-      <div class="zl-meter"><div class="zl-meter-top"><span class="lbl">Leesbaar voor ${esc(D.short)}</span><b data-read>100%</b></div><div class="bar"><i data-readbar></i></div><div class="zl-gauge-sub" data-count></div></div>
+      <div class="zl-meter"><div class="zl-meter-top"><span class="lbl">Leesbaar voor ${esc(D.short)}</span><b data-read>100%</b></div><div class="zl-track" style="--goal:${goalPct()}%"><div class="bar"><i data-readbar></i></div><span class="zl-goal" aria-hidden="true"></span></div><div class="zl-meter-foot"><span class="zl-gauge-sub" data-count></span><span class="zl-goal-lbl">Doel ${goalPct()}%</span></div></div>
       <div class="zl-card zl-pen">
         <div class="zl-rule">
           <div>${icon("eyeoff", "sm")}<span><b>Zwart</b> wat één persoon aanwijst, ook zonder naam.</span></div>
@@ -249,14 +249,21 @@
         <div class="zl-pen-row"><span class="zl-pen-lbl">${icon("pen")}Stift</span><span class="grow"></span>
           <button class="btn ghost" type="button" data-undo disabled>${icon("undo")}Terug</button>
           <button class="btn ghost" type="button" data-clear disabled>${icon("refresh")}Wissen</button>
-          <span class="zl-kbd"><button class="btn ghost zl-kbd-btn" type="button" aria-label="Uitleg toetsenbord" aria-describedby="zl-kbd-tip"><b aria-hidden="true">?</b></button><span class="zl-tip" role="tooltip" id="zl-kbd-tip">Toetsenbord: Tab naar het document, pijltjes om een woord te kiezen, spatie om te zwarten, Shift met pijltje voor een reeks.</span></span></div>
+          <span class="zl-kbd"><button class="btn ghost zl-kbd-btn" type="button" aria-describedby="zl-kbd-tip">Toetsenbord</button><span class="zl-tip" role="tooltip" id="zl-kbd-tip">Toetsenbord: Tab naar het document, pijltjes om een woord te kiezen, spatie om te zwarten, Shift met pijltje voor een reeks.</span></span></div>
       </div>
-      <div class="zl-send-alt"><span>Liever niet slepen?</span><button class="btn sm ghost" type="button" data-send>${icon("send", "sm")}Verstuur met een klik</button></div>`;
+      <div class="zl-send-alt zl-send-small"><button class="btn" type="button" data-send>${icon("send", "sm")}Verstuur</button></div>`;
     $("[data-undo]", side).addEventListener("click", undo);
-    $("[data-clear]", side).addEventListener("click", () => { if (!on.some(Boolean)) return; push(); on.fill(0); paintMarks(); Mini.sound.play("close"); });
+    // Alleen op een smal scherm, waar de verzendsluis niet past
     $("[data-send]", side).addEventListener("click", () => send());
+    $("[data-clear]", side).addEventListener("click", () => { if (!on.some(Boolean)) return; push(); on.fill(0); paintMarks(); Mini.sound.play("close"); });
     sayLine("Zwart alleen wat één persoon aanwijst. De rest moet leesbaar blijven.");
     bindSlot();
+  }
+  /* Doel van de meter: wat leesbaar blijft als precies alle persoonsgegevens zwart zijn en de rest blijft staan. */
+  function goalPct() {
+    const pTok = new Set(); D.order.forEach((s) => { if (s.type === "p") s.toks.forEach((i) => pTok.add(i)); });
+    const content = D.toks.filter((t) => t.content);
+    return content.length ? Math.round(content.filter((t) => !pTok.has(t.i)).length / content.length * 100) : 100;
   }
   function sayLine(t, mood) {
     const el = $("[data-say]", G.stage); if (!el) return;
@@ -622,4 +629,5 @@
       G.gem(); end();
     }
   }
+  window.__zl = { DOCS, play: (i) => play(i) };
 })();

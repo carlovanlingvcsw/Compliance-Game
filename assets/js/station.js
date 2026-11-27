@@ -599,7 +599,7 @@ function nevelTick(t, dt) {
 /* ---------- Camera rig ---------- */
 const HOME = { pos: new THREE.Vector3(19.5, 8.5, 22), target: new THREE.Vector3(0, 0.2, 0) };
 const cam = { pos: HOME.pos.clone(), target: HOME.target.clone(), fromPos: HOME.pos.clone(), fromTarget: HOME.target.clone(), t: 1, dur: 2.4 };
-let focus = -1, alarm = false, frame = "home", offsetX = 0, offsetTarget = 0;
+let focus = -1, alarm = false, frame = "home", offsetX = 0, offsetTarget = 0, offsetY = 0, offsetYTarget = 0, pull = 1;
 const ariaPos = new THREE.Vector3(5, 3, 8);
 camera.position.copy(HOME.pos);
 /* Turn the earth so the Netherlands sits in clear view on the start screen, north up. */
@@ -627,7 +627,23 @@ function focusGoal(i) {
   // camera sits outside the module, measured in the module's own frame so it follows the ring
   // the preset is measured in the module's own frame; pull it back so the module reads well beside the panel
   const pos = moduleWorld(m, m.fixed ? m.cam : m.anchor.clone().add(m.view || VIEW));
+  // In a practice round the panel is wider: the camera aims at the middle of the module body and steps back
+  // along the same line of sight, so the whole module fits in the free strip beside the panel.
+  if (pull !== 1) {
+    const mid = moduleWorld(m, bodyMid(m));
+    pos.sub(target).multiplyScalar(pull).add(mid);
+    return { pos, target: mid };
+  }
   return { pos, target };
+}
+/* Middle of a module's body in its own frame, measured once from its meshes. */
+function bodyMid(m) {
+  if (!m.mid) {
+    m.group.updateMatrixWorld(true);
+    const c = new THREE.Box3().setFromObject(m.group).getCenter(new THREE.Vector3());
+    m.mid = m.group.worldToLocal(c);
+  }
+  return m.mid.clone();
 }
 const bob = new THREE.Vector3(); let bobK = 0;
 function setGoal(i, instant) {
@@ -658,8 +674,8 @@ window.addEventListener("resize", resize);
 resize();
 function applyOffset() {
   const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
-  if (Math.abs(offsetX) < 0.5) camera.clearViewOffset();
-  else camera.setViewOffset(w, h, -offsetX, 0, w, h);
+  if (Math.abs(offsetX) < 0.5 && Math.abs(offsetY) < 0.5) camera.clearViewOffset();
+  else camera.setViewOffset(w, h, -offsetX, -offsetY, w, h);
 }
 
 /* ---------- Bloom: lamps, windows and the planet rim glow a little. Add ?fx=uit to switch it off. ---------- */
@@ -784,6 +800,7 @@ function tick() {
   camera.position.add(bob);
   camera.lookAt(cam.target);
   offsetX += (offsetTarget - offsetX) * (1 - Math.pow(0.002, dt));
+  offsetY += (offsetYTarget - offsetY) * (1 - Math.pow(0.002, dt));
   applyOffset();
 
   // ARIA flies to the focused module, otherwise patrols near the hub
@@ -815,17 +832,39 @@ function tick() {
   if (labelsCb) labelsCb();
 }
 
+/* Centre of the free space beside the practice panel: left of the panel, below the top bar and above the mission card.
+   Measured from the page, with a fallback for a page without those parts. */
+function oefenStrip(w, h) {
+  const box = (sel) => { const el = document.querySelector(sel); if (!el || el.hidden) return null; const r = el.getBoundingClientRect(); return r.width > 0 ? r : null; };
+  const panel = box(".mission .panel"), card = box(".mission .briefing"), bar = box(".bar") || box("header");
+  const left = panel ? panel.left : w * 0.21;
+  const top = bar ? Math.min(bar.bottom, h * 0.15) : 64;
+  const bottom = card && card.top > top + 120 ? card.top : h * 0.66;
+  return { x: Math.max(80, left / 2), y: (top + bottom) / 2 };
+}
+
 /* ---------- Public API for the shell ---------- */
 let labelsCb = null;
 const v3 = new THREE.Vector3();
 window.OrionStation = {
   ready: true,
-  /* i: module 0 to 5, or -1 for the overview. side: "left" puts the station left of a panel. */
+  /* i: module 0 to 5, or -1 for the overview. side: "left" puts the station left of a panel.
+     side "oefen" is for a practice round, where the panel is wider: the module sits in the middle of the free strip
+     left of the panel and above the mission card, a little further away so it fits. "left" switches to this stand
+     by itself while the mission panel is in practice mode (.mission.is-oefen). */
   focus(i, side) {
     focus = i;
+    const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
+    const oefen = i >= 0 && (side === "oefen" || (side === "left" && !!document.querySelector(".mission.is-oefen:not([hidden])")));
+    pull = oefen ? 1.7 : 1;
     setGoal(i, false);
-    const w = canvas.clientWidth || window.innerWidth;
-    offsetTarget = side === "left" ? -w * 0.28 : side === "right" ? w * 0.2 : side === "home" ? w * 0.1 : 0;
+    if (oefen) {
+      const s = oefenStrip(w, h);
+      offsetTarget = s.x - w / 2; offsetYTarget = s.y - h / 2;
+    } else {
+      offsetTarget = side === "left" ? -w * 0.28 : side === "right" ? w * 0.2 : side === "home" ? w * 0.1 : 0;
+      offsetYTarget = 0;
+    }
   },
   alarm(on) { alarm = !!on; },
   /* The attack of the Zwarte Nevel. boss: { i: current attack 0 to 5, n: 6, results: ["good" | "bad", ...] } or null to clear the smoke. */
@@ -835,7 +874,7 @@ window.OrionStation = {
     force = true;
   },
   /* Jump to the current goal without the flight (used for test stills). */
-  snap() { const w = ringWant(); if (w !== null) { ring.rotation.y = w; ring.updateMatrixWorld(true); } const g = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex); cam.t = 1; bob.set(0, 0, 0); bobK = 0; camera.position.copy(g.pos); cam.target.copy(g.target); offsetX = offsetTarget; ariaPos.copy(aria.position); },
+  snap() { const w = ringWant(); if (w !== null) { ring.rotation.y = w; ring.updateMatrixWorld(true); } const g = focusGoal(cam.goalIndex == null ? -1 : cam.goalIndex); cam.t = 1; bob.set(0, 0, 0); bobK = 0; camera.position.copy(g.pos); cam.target.copy(g.target); offsetX = offsetTarget; offsetY = offsetYTarget; ariaPos.copy(aria.position); },
   /* A short flash of light at ARIA when the player answers: blue for good, red for wrong. */
   pulse(kind) { pulseLight.color.setHex(kind === "bad" ? 0xff6467 : kind === "gold" ? 0xffd230 : 0x67caff); pulseLevel = kind === "gold" ? 12 : 6; force = true; },
   /* 0 = full speed, 1 = thirty frames a second, 2 = a slow idle while an arcade round has the screen. */

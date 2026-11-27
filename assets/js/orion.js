@@ -310,7 +310,7 @@
     station(function (S) {
       if (view === "home" || view === "admin") { S.focus(-1, view === "home" && window.innerWidth > 900 ? "home" : null); S.alarm(false); S.lowPower(view === "admin" ? 2 : false); return; }
       var r = ROUTE[cur], L = r.type === "level" ? LEVELS[r.n] : r.type === "result" ? LEVELS[5] : LEVELS[extraInfo(r).after];
-      S.focus(L.module, window.innerWidth > 900 ? "left" : null);
+      S.focus(L.module, window.innerWidth > 900 ? (r.type === "oefen" ? "oefen" : "left") : null);
       S.alarm(!!L.alarm);
       S.lowPower(true);
     });
@@ -908,6 +908,8 @@
   var roundNotes = 0, revBtn = document.getElementById("review"), revDlg = document.getElementById("review-dlg");
   function note(where, q, a, why, r) {
     if (!why) return;
+    /* The label already says goed, half goed or fout; drop the same word at the start of the explanation. */
+    why = String(why).replace(/^\s*(Helemaal goed|Half goed|Niet goed|Goed|Fout)[.!:,]\s*/i, "");
     P.review = (P.review || []).filter(function (x) { return !(x.w === where && x.q === q && x.a === a); });
     P.review.unshift({ w: where, q: q || "", a: a || "", why: why, r: r }); P.review = P.review.slice(0, 40);
     roundNotes++; save(); paintReview(true);

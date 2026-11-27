@@ -398,3 +398,72 @@
   .lk-zone { padding: 6px 10px; }
   .lk-scale { height: 26px; }
 }
+
+/* ---------- Integratieronde (missiepaneel 1128 px) ---------- */
+/* Gevolgen alleen voor de zone die je aanwijst, kiest of die goed blijkt; de andere kolommen blijven leeg. */
+.lk-cell, .lk-meter.decided .lk-cell:not(.hl), .lk-meter:not(.decided) .lk-grid:has(.pv) .lk-cell:not(.pv), .lk-meter:not(.decided) .lk-grid:not(:has(.pv)) .lk-cell { opacity: 1; }
+.lk-cell:not(.pv):not(.hl):not(.pend) { background: rgba(11, 20, 36, .55); box-shadow: none; }
+.lk-cell:not(.pv):not(.hl):not(.pend) > * { visibility: hidden; }
+.lk-cell.pend { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--zs); box-shadow: inset 0 0 0 1px var(--zc); }
+.lk-cell.pend .cw { display: inline; color: #fff; font: 700 1.0625rem/1 var(--font-h); }
+.lk-cell.pend .yes { width: 28px; height: 28px; }
+.lk-cell.pend .no { width: 26px; height: 26px; }
+.lk-cell.pend .no + .cw { color: var(--g300); }
+.lk-ladhint { z-index: 2 !important; align-self: center; justify-self: center; display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 14px; border-radius: 10px; background: rgba(3, 14, 36, .8); color: var(--g200); font: 500 1rem/1.35 var(--font-b); pointer-events: none; }
+.lk-ladhint svg { color: var(--b300); }
+.lk-grid:has(.lk-cell.pv, .lk-cell.hl, .lk-cell.pend) .lk-ladhint { display: none; }
+
+/* Rijlabels: minstens 15 px, wit of lichtgrijs, nooit doorzichtig. */
+.lk-rowlbl, .lk-rowlbl.lk-lad { color: #fff; font: 600 1rem/1.25 var(--font-b); opacity: 1 !important; }
+.lk-meter .lk-rowlbl.off { color: var(--g300); font-weight: 500; }
+.lk-meter:not(.decided) .lk-rowlbl.on { color: #fff; font-weight: 700; }
+.lk-scale-lbl span { color: var(--g200); font-size: .9375rem; }
+
+/* Gelegde meldingen: grotere, rustige chips met donkere tekst op licht. */
+.lk-token { gap: 6px; padding: 3px 10px 3px 3px; border-radius: 8px; background: #f1f5f9; color: #0f172b; font: 700 1rem/1.15 var(--font-b); box-shadow: 0 2px 0 #314158; }
+.lk-token .ta { width: 26px; height: 26px; }
+.lk-token .ta svg { width: 22px; height: 22px; }
+.lk-zv { font-size: .9375rem; }
+
+/* De zekerheidsstap: eerst de vraag, dan twee even grote knoppen met de kosten in gewone tekst. */
+.lk-cardfoot.confirm { display: block; padding: 8px 18px 10px !important; }
+.lk-cardfoot.confirm:focus { outline: none; }
+.lk-confq { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; }
+.lk-confrow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lk-cardfoot.confirm .lk-conf { width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px !important; border-width: 2px; border-color: #90a1b9; }
+.lk-cardfoot.confirm .lk-conf svg { flex: none; margin-top: 2px; color: #0a6dbe; }
+.lk-cardfoot.confirm .lk-conf.sure svg { color: #b45309; }
+.lk-cardfoot.confirm .lk-conf b { font: 700 1.0625rem/1.2 var(--font-h); }
+.lk-cardfoot.confirm .lk-conf small { margin-top: 2px; color: #1d293d; font: 500 .9375rem/1.3 var(--font-b); }
+.lk-cardfoot.confirm .lk-conf:hover { background: #eaf8ff; border-color: #0a6dbe; }
+html.kbd .lk-conf:focus-visible { outline: 3px solid #e17100; outline-offset: 2px; }
+
+@media (min-width: 941px) and (max-width: 1260px) {
+  .lk-grid { grid-template-columns: 200px repeat(4, minmax(0, 1fr)); }
+  .lk-meter { padding: 8px 14px 12px; margin-bottom: 4px; }
+  .lk-zone { padding: 6px 10px 8px; gap: 4px; }
+  .lk-zone .nm { font-size: 1.25rem; }
+  .lk-zone .big { width: 32px; height: 32px; }
+  .lk-zone .big .i { width: 18px; height: 18px; }
+  .lk-cell { min-height: 34px; }
+  .lk-lad { padding-top: 4px; padding-bottom: 4px; }
+}
+@media (min-width: 941px) and (max-width: 1260px) {
+  /* Alles past met marge in het paneel: smallere tekening op de kaart, zones zonder groot icoon. */
+  .lk-card { grid-template-columns: 64px minmax(0, 1fr); padding: 12px 18px 10px; }
+  .lk-card-tx h3 { font-size: 1.375rem; }
+  .lk-card-tx p { font-size: 1rem !important; }
+  .lk-card-tx ul { margin-top: 6px; }
+  .lk-grid { grid-template-columns: 236px repeat(4, minmax(0, 1fr)); grid-template-rows: auto auto minmax(42px, auto) repeat(4, auto); }
+  .lk-scale { height: 24px; }
+  .lk-scale-bar { top: 12px; }
+  .lk-zone .big { display: none; }
+  .lk-zone .sb { line-height: 1.25; }
+  .lk-drop { padding: 6px 5px 8px; }
+  .lk-cell { min-height: 32px; }
+  .lk-lad { padding-top: 3px; padding-bottom: 3px; }
+  .lk-ladhint { padding: 6px 12px; }
+}
+/* Gelegde meldingen blijven leesbaar, ook als je een andere zone aanwijst. */
+.lk-meter:not(.decided) .lk-grid:has(.pv) .lk-drop:not(.pv) { opacity: 1; }
+.lk-meter:not(.decided) .lk-grid:has(.pv) .lk-zone:not(.pv) { opacity: .7; }

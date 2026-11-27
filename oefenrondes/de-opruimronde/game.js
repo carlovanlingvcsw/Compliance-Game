@@ -221,8 +221,9 @@ function view2D(host) {
 /* ---------- 3D: de sorteerhal van het cryo-archief ---------- */
 function view3D(host) {
   const { THREE, stage, metal, plain, glow, rbox, mesh, textTex } = S3D;
-  const target = new THREE.Vector3(-0.5, 1.55, -1.5), dir = new THREE.Vector3(0, 6.0, 11).normalize();
-  const fit = (S) => { const a = S.camera.aspect, half = Math.tan(THREE.MathUtils.degToRad(S.camera.fov / 2)); const d = Math.max(10, 6.5 / (half * a)); S.camera.position.copy(target).addScaledVector(dir, d); S.camera.lookAt(target); };
+  /* De camera staat strak op de band en de drie luiken: breed genoeg voor de borden, zonder lege vloer eronder. */
+  const target = new THREE.Vector3(-0.1, 1.7, -2.15), dir = new THREE.Vector3(0, 6.0, 11).normalize();
+  const fit = (S) => { const a = S.camera.aspect, half = Math.tan(THREE.MathUtils.degToRad(S.camera.fov / 2)); const d = Math.max(9, Math.max(5.35 / (half * a), 3.9 / half)); S.camera.position.copy(target).addScaledVector(dir, d); S.camera.lookAt(target); };
   const S = stage(host, { fov: 34, exposure: 1.08, maxDpr: 1.5, onResize: fit });
   const scene = S.scene; scene.background = new THREE.Color(0x050d22);
   scene.fog = new THREE.Fog(0x050d22, 22, 38);
@@ -258,7 +259,7 @@ function view3D(host) {
     mesh(rbox(0.62, 0.26, 0.2, 0.06), legMat, scene, x, 2.78, -3.92);
     D.lens = mesh(rbox(0.48, 0.13, 0.06, 0.03), new THREE.MeshBasicMaterial({ color: 0x2a3650 }), scene, x, 2.78, -3.8);
     // bord
-    const sign = mesh(new THREE.PlaneGeometry(3.1, 1.03), new THREE.MeshBasicMaterial({ map: textTex([{ t: E.naam, size: 120, weight: 800 }, { t: E.sub, size: 92, weight: 700, color: "#d3efff" }], { w: 1024, h: 340, bg: "#0b1f40", border: E.col, align: "center", pad: 34 }), toneMapped: false }), scene, x, 3.5, -3.94);
+    const sign = mesh(new THREE.PlaneGeometry(3.1, 1.03), new THREE.MeshBasicMaterial({ map: textTex([{ t: E.naam, size: 120, weight: 800 }, { t: E.sub, size: 106, weight: 700, color: "#e6f6ff" }], { w: 1024, h: 340, bg: "#0b1f40", border: E.col, align: "center", pad: 34 }), toneMapped: false }), scene, x, 3.5, -3.94);
     D.sign = sign;
     mesh(rbox(3.22, 1.15, 0.08, 0.05), legMat, scene, x, 3.5, -4.0);
     // binnenkant: een nis met eigen inhoud
@@ -472,14 +473,24 @@ const G = game({
 const introArt = scene2D({ vb: "30 -50 840 525", crates: crate2D(CRATES[3], 270, 384) + crate2D(CRATES[1], 440, 384) + crate2D(CRATES[0], 610, 384) });
 G.intro({
   lead: `Vandaag is het ${TODAY}. Het cryo-archief zit vol. Tien kratten met gegevens rijden over de band en elk krat krijgt een eigen bestemming.`,
-  who: "Noor", line: "Kijk op het label wat het is, de datum en hoe het met de persoon zit. Naast het label hangt de kaart met bewaartermijnen.",
+  who: "Noor", line: "Kijk op het label wat het is, de datum en hoe het met de persoon zit. Reken dan zelf uit of de termijn voorbij is.",
   rules: [
     ["save", "<b>Bewaren</b>: terug in het actieve archief. Je hebt het nog nodig voor het doel."],
     ["lock", "<b>Archiveren</b>: in de afgesloten kluis. Het doel is klaar, maar een wet eist dat je het nog bewaart."],
     ["trash", "<b>Wissen</b>: de versnipperaar. Geen doel meer en de wettelijke termijn is voorbij."],
     ["gem", "Fout sorteren kost schild. Vijf op rij goed levert een kristal op."]
   ],
-  art: introArt, note: "Tien kratten, ongeveer 4 minuten", start: "Start de band"
+  art: introArt, note: "Tien kratten, ongeveer 4 minuten", start: "Start de band",
+  /* De bewaartermijnen staan hier één keer. Bij de eerste krat pas je ze zelf toe, daarna hangt de lijst naast het label. */
+  onShow(art) {
+    const wrap = document.createElement("div"); wrap.className = "or-brief-left";
+    art.before(wrap); wrap.appendChild(art);
+    wrap.insertAdjacentHTML("beforeend", `<section class="or-brief-terms" aria-label="Bewaartermijnen">
+      <h2>${icon("clock", "sm")}Bewaartermijnen</h2>
+      <dl>${TERMS.map(([, n, t]) => `<div><dt>${esc(n)}</dt><dd>${esc(t)}</dd></div>`).join("")}</dl>
+      <p>Onthoud ze. Bij de eerste krat reken je zonder lijst, daarna hangt de lijst naast het label.</p>
+    </section>`);
+  }
 });
 
 let V = null, idx = 0, phase = "idle", counts = { bewaren: 0, archiveren: 0, wissen: 0 }, gemNote = "", hintUsedHere = false;
@@ -498,7 +509,7 @@ function layout() {
       <section class="or-label" aria-live="polite">
         <div class="or-label-head">${icon("file", "sm")}<b>Label van de krat</b><span class="grow"></span><span data-no></span></div>
         <dl data-dl></dl>
-        <div class="or-terms" aria-label="Bewaartermijnen"><h4>${icon("clock", "sm")}Welke termijn geldt?</h4><ul data-terms></ul></div>
+        <div class="or-terms closed" data-termbox aria-label="Bewaartermijnen"><h4>${icon("clock", "sm")}Welke termijn geldt?</h4><p class="or-terms-closed">Pas de regel eerst zelf toe. Na deze krat hangt de lijst hier. Kom je er niet uit, vraag dan een aanwijzing.</p><ul data-terms>${TERMS.map(([k, n, t]) => `<li data-term="${k}"><span>${n}</span><b>${t}</b></li>`).join("")}</ul></div>
       </section>
       <div class="or-talk" data-talk></div>
     </aside>
@@ -519,10 +530,14 @@ function label(c, scanned) {
   const rows = [["Soort", c.soort], ["Datum", c.datum], ["Persoon", c.persoon], ["Bijzonderheid", c.extra]];
   $("[data-dl]", G.stage).innerHTML = rows.map(([k, v], i) => `<div class="${scanned ? "in" : ""}" style="animation-delay:${i * 70}ms"><dt>${k}</dt><dd>${scanned ? esc(v) : `<i class="sk"></i>`}</dd></div>`).join("");
   $("[data-no]", G.stage).textContent = `${idx + 1} van ${CRATES.length}`;
-  const pick = TERMS.filter(([k]) => k === c.term || k === "doel" || k === (TWIN[c.term] || "loon"));
-  $("[data-terms]", G.stage).innerHTML = pick.map(([k, n, t]) => `<li data-term="${k}"><span>${n}</span><b>${t}</b></li>`).join("");
 }
-const TWIN = { loon: "id", id: "loon", cv: "cam", cam: "cv", verzuim: "id", doel: "loon" };
+/* De termijnenlijst naast het label. Bij de eerste krat is hij dicht: de speler past de regel eerst zelf toe.
+   closed: dicht, open: alle termijnen zonder markering, only: alleen de termijn die geldt (na de keuze of na een aanwijzing). */
+function terms(mode, c) {
+  const box = $("[data-termbox]", G.stage); if (!box) return;
+  box.classList.toggle("closed", mode === "closed"); box.classList.toggle("only", mode === "only");
+  $$("[data-term]", box).forEach((li) => li.classList.toggle("on", mode === "only" && !!c && li.dataset.term === c.term));
+}
 function talk(html) { const t = $("[data-talk]", G.stage); t.innerHTML = html; }
 function ariaPrompt(text) {
   talk(G.sayHTML("ARIA", text, { side: `<button class="btn sm ghost" type="button" data-hint>${icon("bulb", "sm")}Aanwijzing</button><span class="hintcost">${esc(G.hintLabel())}</span>` }));
@@ -532,7 +547,7 @@ function hint() {
   if (phase !== "choose" || hintUsedHere) return;
   hintUsedHere = true; const cost = G.hint();
   talk(G.sayHTML("ARIA", CRATES[idx].rule + (cost ? " Dit kostte 10 procent schild." : ""), { role: "aanwijzing uit de bewaarlijst" }));
-  markTerm(CRATES[idx]);
+  terms("only", CRATES[idx]);
 }
 function setButtons(on) { $$("[data-exit]", G.stage).forEach((b) => { b.disabled = !on; b.classList.remove("picked", "right", "wrong"); $$(".or-badge", b).forEach((x) => x.remove()); }); }
 function badges(k, ans) { $$("[data-exit]", G.stage).forEach((b) => { $$(".or-badge", b).forEach((x) => x.remove()); const e = b.dataset.exit; if (e === ans) b.insertAdjacentHTML("beforeend", `<span class="or-badge ok">${icon("check", "sm")}${e === k ? "Jouw keuze, goed" : "Goed"}</span>`); else if (e === k) b.insertAdjacentHTML("beforeend", `<span class="or-badge me">Jouw keuze</span>`); }); }
@@ -548,7 +563,7 @@ async function next() {
   const c = CRATES[idx]; phase = "scan"; hintUsedHere = false;
   V.lamps(null); setButtons(false);
   $("[data-count]", G.root).textContent = `Krat ${idx + 1} van ${CRATES.length}`;
-  label(c, false);
+  label(c, false); terms(idx === 0 ? "closed" : "open");
   talk(G.sayHTML("ARIA", "Er komt een krat aan. De scanner leest het label.", {}));
   queueChip();
   await V.spawn(c, () => label(c, true), CRATES.slice(idx + 1, idx + 2));
@@ -577,7 +592,7 @@ async function tooLate() {
   const c = CRATES[idx], J = { result: "fout", points: 0, shield: 10, title: "Te laat" };
   $$("[data-exit]", G.stage).forEach((b) => b.classList.toggle("right", b.dataset.exit === c.answer)); badges(null, c.answer);
   G.record({ result: "fout", points: 0, shield: 10, q: `${c.soort}, ${c.datum}`, a: "Te laat gesorteerd", why: `Juist was ${EXITS[c.answer].naam}. ` + c.why, title: "Te laat", short: `Juist was ${EXITS[c.answer].naam}.` });
-  logLine(c, c.answer, "fout"); gemNote = ""; markTerm(c);
+  logLine(c, c.answer, "fout"); gemNote = ""; terms("only", c);
   V.verdict(false, `<b>${icon("clock", "sm")}Te laat</b><span>Juist: ${EXITS[c.answer].naam}</span>`);
   feedback(c, null, J);
   await V.send(c.answer, c.answer, () => {});
@@ -595,14 +610,13 @@ async function choose(k) {
   logLine(c, k, J.result);
   gemNote = "";
   if (J.result === "goed" && G.combo > 0 && G.combo % 5 === 0 && G.gems < 3) { G.gem(); gemNote = "Vijf op rij goed. Je verdient een kristal."; }
-  markTerm(c);
+  terms("only", c);
   feedback(c, k, J);
   await V.send(k, c.answer, () => {});
   if (G.finished) return;
   phase = "feedback";
   const nb = $("[data-next]", G.stage); if (nb) { nb.disabled = false; nb.innerHTML = nb.dataset.label; nb.focus({ preventScroll: true }); }
 }
-function markTerm(c) { $$("[data-term]", G.stage).forEach((li) => li.classList.toggle("on", li.dataset.term === c.term)); }
 function feedback(c, k, J) {
   const last = idx === CRATES.length - 1;
   const mood = J.result === "goed" ? "ok" : J.result === "half" ? "half" : "bad";

@@ -6,7 +6,7 @@
 (function () {
   "use strict";
   const { game, icon, esc, $, $$, h, wait, FACES, crewFace } = Mini;
-  const CODE = "482913", NUM_BAD = "0247 4409", NUM_OK = "0247 4400";
+  const CODE = "482913", NUM_BAD = "0247\u00a04409", NUM_OK = "0247\u00a04400";
   const JEROEN = crewFace(7711, { hairStyle: "short", hair: "#5b3a1e", skin: "#e8c2a0", suit: "#0c2f5f", accent: "#ffb900", glasses: true });
   /* Korte houding per antwoord, zonder te verraden wat goed is. */
   const STANCE = { nummer: "verifiëren", half: "deels", weiger: "weigeren", waarom: "verifiëren", mail: "verifiëren", ophangen: "weigeren", laatste: "deels", alles: "meegaan",
@@ -21,32 +21,32 @@
       hint: "Wie vraagt hier om je code? En wie doet dat nooit?",
       aria: () => G.calm ? "Hij wil je code. Neem de tijd, aarzelen kost hier niets." : "Hij wil dat je snel antwoordt. Snel is niet hetzelfde als goed.",
       opts: () => [
-        { id: "nummer", t: "Wat is je personeelsnummer eigenlijk?", r: "half", p: 10, sh: 5, say: "Natuurlijk. P-20417. [[haast|Lees je nu de code voor? Hij verloopt zo.]]", gev: "Hij noemt zonder aarzelen een nummer en dringt verder aan.", why: "Een beller kan elk nummer noemen. Echt controleren doe je via een kanaal dat jij zelf kiest, zoals het nummer van de servicedesk op het intranet." },
-        { id: "half", t: "Alleen de eerste helft dan. 4 8 2.", r: "fout", p: 0, sh: 20, leak: [0, 1, 2], say: "Top. [[haast|En de laatste drie? Hij verloopt zo.]]", gev: "Hij noteert ze en wil meteen de rest.", why: "Ook een deel van je code is te veel. De servicedesk of een beheerder vraagt nooit om je inlogcode, ook niet om een stukje." },
-        { id: "weiger", t: "Geen codes via de telefoon. Ik hang op.", r: "goed", p: 25, sh: 0, say: "[[dreiging|Wacht even, niet ophangen! Dan gaat je account echt dicht.]]", gev: "Hij schrikt en probeert je aan de lijn te houden. Jij gaf niets.", why: "De servicedesk en beheerders vragen nooit om je wachtwoord of je inlogcode. Wie dat wel doet, is niet te vertrouwen." },
-        { id: "waarom", t: "Waarom heb je mijn code nodig?", r: "half", p: 10, sh: 5, say: "Het systeem staat in noodstand. [[haast|Ik heb die code echt nu nodig.]]", gev: "Hij heeft meteen een verhaal klaar en dringt verder aan.", why: "Goede vraag, maar je blijft in zijn gesprek en hij heeft altijd een antwoord klaar. Wie om je code vraagt, is niet te vertrouwen. Dat is genoeg om op te hangen." }
+        { id: "nummer", t: "Wat is je personeelsnummer eigenlijk, Jeroen?", r: "fout", p: 0, sh: 10, say: "Natuurlijk. P-20417. [[haast|Lees je nu de code voor? Hij verloopt zo.]]", gev: "Hij noemt zonder aarzelen een nummer en dringt verder aan.", why: "Een beller kan elk nummer noemen, dus dit controleert niets. Je blijft in zijn gesprek en hij voelt zich bevestigd. Echt controleren doe je via een kanaal dat jij zelf kiest, zoals het nummer van de servicedesk op het intranet." },
+        { id: "half", t: "Oké, alleen de eerste helft dan. 4\u00a08\u00a02.", r: "fout", p: 0, sh: 20, leak: [0, 1, 2], say: "Top. [[haast|En de laatste drie? Hij verloopt zo.]]", gev: "Hij noteert ze en wil meteen de rest.", why: "Ook een deel van je code is te veel. De servicedesk of een beheerder vraagt nooit om je inlogcode, ook niet om een stukje." },
+        { id: "weiger", t: "Geen codes via de telefoon, ik hang nu op.", r: "goed", p: 25, sh: 0, say: "[[dreiging|Wacht even, niet ophangen! Dan gaat je account echt dicht.]]", gev: "Hij schrikt en probeert je aan de lijn te houden. Jij gaf niets.", why: "De servicedesk en beheerders vragen nooit om je wachtwoord of je inlogcode. Wie dat wel doet, is niet te vertrouwen." },
+        { id: "waarom", t: "Waarom heb je mijn code eigenlijk nodig?", r: "half", p: 10, sh: 5, say: "Het systeem staat in noodstand. [[haast|Ik heb die code echt nu nodig.]]", gev: "Hij heeft meteen een verhaal klaar en dringt verder aan.", why: "Half goed. Je wantrouwt de vraag, maar je mist het belangrijkste. Wie om je inlogcode vraagt, is niet te vertrouwen, en dan hang je op. Met een vraag blijf je in zijn gesprek en hij heeft altijd een antwoord klaar." }
       ] },
     { key: "druk", step: "De druk", who: "Jeroen", ask: "Wat zeg je nu?", base: 35, timed: 12,
       line: () => "Luister. [[gezag|Kapitein Vega wacht hierop.]] [[dreiging|Over twee minuten gaat je account op slot.]] [[kennis|Je werkt toch met Bram?]] [[haast|" + (S.leak.length ? "Alleen de laatste drie nog, dan ben je klaar." : "Alleen die code nog, dan ben je klaar.") + "]]",
       hint: "Kijk naar de drukmeter. Hoe meer druk iemand zet, hoe meer reden om op te hangen.",
       aria: () => "De meter slaat uit. Luister wat hij allemaal inzet.",
       opts: () => [
-        { id: "mail", t: "Mail het eerst, dan lees ik voor.", r: "half", p: 8, sh: 10, say: "Komt eraan. Ik bel je zo terug.", gev: "Hij belooft een mail en hangt op. Zo'n mail kan hij zelf vervalsen.", why: "Een mail kan net zo goed nep zijn. En je belooft nog steeds je code te geven. Een inlogcode geef je aan niemand." },
-        { id: "ophangen", t: "Nee, ik geef niets. Ik hang op.", r: "goed", p: 25, sh: 0, hang: true, gev: "De lijn is dood en de druk is weg. Nu kun je rustig zelf controleren.", why: "Hoe harder iemand aandringt, hoe meer reden om op te hangen. Ophangen is niet onbeleefd, het is veilig." },
+        { id: "mail", t: "Mail het eerst, dan lees ik hem voor.", r: "half", p: 10, sh: 10, say: "Komt eraan. Ik bel je zo terug.", gev: "Hij belooft een mail en hangt op. Zo'n mail kan hij zelf vervalsen.", why: "Half goed. Je houdt hem op afstand, maar je mist het belangrijkste. Een inlogcode geef je aan niemand, ook niet na een mail. En zo'n mail kan hij net zo goed vervalsen." },
+        { id: "ophangen", t: "Nee, ik geef je niets. Ik hang nu op.", r: "goed", p: 25, sh: 0, hang: true, gev: "De lijn is dood en de druk is weg. Nu kun je rustig zelf controleren.", why: "Hoe harder iemand aandringt, hoe meer reden om op te hangen. Ophangen is niet onbeleefd, het is veilig." },
         S.leak.length
-          ? { id: "laatste", t: "Oké, de laatste drie. 9 1 3.", r: "fout", p: 0, sh: 20, leak: [3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Nu kan hij als jou inloggen.", why: "Hij zette alles tegelijk in. De kapitein, haast, een dreiging en de naam van je collega. Dat iemand Bram kent, bewijst niets. Met je code kan hij proberen als jou in te loggen." }
-          : { id: "laatste", t: "Alleen de laatste drie dan. 9 1 3.", r: "fout", p: 0, sh: 20, leak: [3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Hij probeert de rest te raden.", why: "Ook een deel van je code is te veel. Dat hij Bram kent, bewijst niets. Met je code kan hij proberen als jou in te loggen." },
-        { id: "alles", t: "Goed dan, ik lees hem voor.", r: "fout", p: 0, sh: 25, leak: [0, 1, 2, 3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Nu kan hij als jou inloggen.", why: "Precies waar hij op rekende. De angst voor een blokkade moest je laten handelen voordat je nadacht. Met je code kan hij proberen als jou in te loggen." }
+          ? { id: "laatste", t: "Oké, de laatste drie dan. 9\u00a01\u00a03.", r: "fout", p: 0, sh: 20, leak: [3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Nu kan hij als jou inloggen.", why: "Hij zette alles tegelijk in. De kapitein, haast, een dreiging en de naam van je collega. Dat iemand Bram kent, bewijst niets. Met je code kan hij proberen als jou in te loggen." }
+          : { id: "laatste", t: "Alleen de laatste drie dan. 9\u00a01\u00a03.", r: "fout", p: 0, sh: 20, leak: [3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Hij probeert de rest te raden.", why: "Ook een deel van je code is te veel. Dat hij Bram kent, bewijst niets. Met je code kan hij proberen als jou in te loggen." },
+        { id: "alles", t: "Goed dan, ik lees de hele code voor.", r: "fout", p: 0, sh: 25, leak: [0, 1, 2, 3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Nu kan hij als jou inloggen.", why: "Precies waar hij op rekende. De angst voor een blokkade moest je laten handelen voordat je nadacht. Met je code kan hij proberen als jou in te loggen." }
       ] },
     { key: "terug", step: "Terugbellen", who: null, ask: "Wie bel je nu?",
       line: () => "Het gesprek is voorbij. Op je telefoon staan zijn nummer en het nummer van de servicedesk dat je op het intranet opzocht.",
       hint: "Vergelijk de twee nummers op je telefoon. Welk nummer heb jij zelf opgezocht?",
       aria: () => "Op je telefoon staan twee nummers. Kijk goed.",
       opts: () => [
-        { id: "bram", t: "Bram bellen, hij kent iedereen.", r: "half", p: 10, sh: 5, say: "Jeroen? Geen idee. Bel de servicedesk even.", gev: "Bram kent geen Jeroen en weet het ook niet. Je bent tijd kwijt.", why: "Bram kan niet zien wie er belde en kan niets blokkeren. De servicedesk wel, via het bekende nummer." },
-        { id: "terugbeller", t: `Terugbellen naar ${NUM_BAD}.`, r: "fout", p: 0, sh: 10, say: "Met Jeroen, IT-beheer. [[kennis|Ah, daar ben je weer.]]", gev: "Jeroen neemt op. Je praat weer met de beller zelf.", why: "Dat is het nummer van de beller. Terugbellen via de nummerweergave bewijst niets. Kies zelf het bekende nummer." },
-        { id: "intranet", t: `Servicedesk bellen via intranet, ${NUM_OK}.`, r: "goed", p: 25, sh: 0, gev: "Je belt het nummer dat je zelf opzocht. Femke van de servicedesk neemt op.", why: "Je controleert via een kanaal dat je zelf kiest, niet via het nummer van de beller." },
-        { id: "niemand", t: "Niemand bellen. Het is klaar.", r: "fout", p: 0, sh: 10,
+        { id: "bram", t: "Bram bellen, hij kent iedereen op het dok.", r: "half", p: 10, sh: 5, say: "Jeroen? Geen idee. Bel de servicedesk even.", gev: "Bram kent geen Jeroen en weet het ook niet. Je bent tijd kwijt.", why: "Half goed. Navragen is slim, maar je mist het belangrijkste. Bram kan niet zien wie er belde en kan niets blokkeren. De servicedesk wel, via het nummer dat je zelf opzocht." },
+        { id: "terugbeller", t: `Terugbellen via de nummerweergave, ${NUM_BAD}.`, r: "fout", p: 0, sh: 10, say: "Met Jeroen, IT-beheer. [[kennis|Ah, daar ben je weer.]]", gev: "Jeroen neemt op. Je praat weer met de beller zelf.", why: "Dat is het nummer van de beller. Terugbellen via de nummerweergave bewijst niets. Kies zelf het bekende nummer." },
+        { id: "intranet", t: `De servicedesk via het intranet, ${NUM_OK}.`, r: "goed", p: 25, sh: 0, gev: "Je belt het nummer dat je zelf opzocht. Femke van de servicedesk neemt op.", why: "Je controleert via een kanaal dat je zelf kiest, niet via het nummer van de beller." },
+        { id: "niemand", t: "Niemand bellen. Het gesprek is toch voorbij.", r: "fout", p: 0, sh: 10,
           gev: S.leak.length ? "Niemand weet dat je code weg is. De beller heeft vrij spel." : "Niemand weet van het telefoontje. Hij kan rustig een collega bellen.",
           why: S.leak.length ? "Je code is weg. Wachten maakt het erger. Meld het direct en wijzig je wachtwoord via het portaal dat je kent." : "Melden is altijd nodig, ook als je niets gaf. Misschien belt hij straks een collega die minder alert is." }
       ] },
@@ -55,13 +55,13 @@
       hint: "Wat heeft de servicedesk nodig om je account te beschermen en de crew te waarschuwen?",
       aria: () => "De servicedesk luistert. Wat moeten ze van je weten?",
       opts: () => S.leak.length ? [
-        { id: "reset", t: "Wil je alleen mijn wachtwoord resetten?", r: "half", p: 10, sh: 10, say: "Dat kan. Verder niets gebeurd?", gev: "Je wachtwoord is nieuw, maar de servicedesk weet niet dat je code weg is.", why: "Zeg wat er gebeurde. Alleen dan kan de servicedesk zien of iemand op je account zit en de crew waarschuwen." },
+        { id: "reset", t: "Wil je alleen mijn wachtwoord resetten?", r: "half", p: 10, sh: 10, say: "Dat kan. Verder niets gebeurd?", gev: "Je wachtwoord is nieuw, maar de servicedesk weet niet dat je code weg is.", why: "Half goed. Een nieuw wachtwoord helpt, maar je mist het belangrijkste. Zeg wat er gebeurde. Alleen dan kan de servicedesk zien of iemand op je account zit en de crew waarschuwen." },
         { id: "eerlijk", t: "Een beller kreeg mijn code. Ik meld het.", r: "goed", p: 25, sh: 0, say: "Goed dat je meteen belt. Wij belden je niet en er werkt geen Jeroen bij IT-beheer. Ik blokkeer de sessies op je account. Wijzig je wachtwoord via het portaal dat je kent.", gev: "Femke blokkeert de sessies op je account. De beller staat weer buiten.", why: "Direct melden, eerlijk zeggen wat je gaf en je wachtwoord wijzigen via het bekende portaal. Iedereen kan erin trappen. Snel melden is wat telt." },
-        { id: "zwijg", t: "Rare beller gehad, maar niets gezegd.", r: "fout", p: 0, sh: 15, say: "Gelukkig. Dan is er niets aan de hand.", gev: "Femke denkt dat alles goed is. Je account staat open.", why: "Wie verzwijgt wat er gebeurde, laat zijn account openstaan. Iedereen kan erin trappen. Eerlijk melden is wat telt." }
+        { id: "zwijg", t: "Rare beller gehad, maar ik heb niets gezegd.", r: "fout", p: 0, sh: 15, say: "Gelukkig. Dan is er niets aan de hand.", gev: "Femke denkt dat alles goed is. Je account staat open.", why: "Wie verzwijgt wat er gebeurde, laat zijn account openstaan. Iedereen kan erin trappen. Eerlijk melden is wat telt." }
       ] : [
-        { id: "jeroen", t: "Werkt er bij jullie een Jeroen?", r: "half", p: 12, sh: 5, say: "Nee, die naam ken ik niet. Waarom vraag je dat?", gev: "Femke kent geen Jeroen, maar weet nog niet wat er gebeurde.", why: "Navragen is goed, maar zeg meteen wat er gebeurde. Dan kan de servicedesk de rest van de crew waarschuwen." },
-        { id: "reset", t: "Kun je mijn wachtwoord resetten?", r: "half", p: 10, sh: 5, say: "Dat kan. Is er iets gebeurd?", gev: "Je wachtwoord is nieuw, maar niemand weet van de beller.", why: "Je wachtwoord wijzigen mag, maar het belangrijkste is melden wat er gebeurde. Een reset vertelt de servicedesk niets over de beller." },
-        { id: "melden", t: `Nepbeller vroeg mijn code, van ${NUM_BAD}.`, r: "goed", p: 25, sh: 0, say: "Goed dat je belt. Wij belden je niet en er werkt geen Jeroen bij IT-beheer. Jij bent vandaag de derde. Ik waarschuw de hele crew.", gev: "Femke waarschuwt de hele crew voor dit nummer.", why: "Melden met wie belde, wat hij vroeg en vanaf welk nummer. Zo kan de servicedesk de rest van de crew waarschuwen." }
+        { id: "jeroen", t: "Werkt er bij jullie een Jeroen op IT-beheer?", r: "half", p: 12, sh: 5, say: "Nee, die naam ken ik niet. Waarom vraag je dat?", gev: "Femke kent geen Jeroen, maar weet nog niet wat er gebeurde.", why: "Half goed. Navragen is goed, maar je mist het belangrijkste. Zeg meteen wat er gebeurde, wie belde en vanaf welk nummer. Dan kan de servicedesk de rest van de crew waarschuwen." },
+        { id: "reset", t: "Kun je voor de zekerheid mijn wachtwoord resetten?", r: "fout", p: 0, sh: 5, say: "Dat kan. Is er iets gebeurd?", gev: "Je wachtwoord is nieuw, maar niemand weet van de beller.", why: "Een nieuw wachtwoord kan geen kwaad, maar je meldt niets. De servicedesk weet niets van de beller en kan de crew niet waarschuwen. Melden is hier de kern." },
+        { id: "melden", t: `Een nepbeller vroeg mijn code, vanaf ${NUM_BAD}.`, r: "goed", p: 25, sh: 0, say: "Goed dat je belt. Wij belden je niet en er werkt geen Jeroen bij IT-beheer. Jij bent vandaag de derde. Ik waarschuw de hele crew.", gev: "Femke waarschuwt de hele crew voor dit nummer.", why: "Melden met wie belde, wat hij vroeg en vanaf welk nummer. Zo kan de servicedesk de rest van de crew waarschuwen." }
       ] }
   ];
   const READ = { id: "voorlezen", r: "fout", p: 0, sh: 25, say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Nu kan hij als jou inloggen.", why: "Je code voorlezen geeft de beller de sleutel tot je account. De servicedesk of een beheerder vraagt nooit om je inlogcode." };
@@ -129,7 +129,7 @@
           </div>
           <div class="tf-leakbar" data-leakbar hidden></div>
           <div class="tf-subt" data-subt aria-live="polite"><span class="who"><span class="nu">Nu</span>Console</span><p>De console gaat over.</p></div>
-          <div class="tf-loghead">Eerder in het gesprek</div>
+          <div class="tf-loghead">Eerder in het gesprek<span data-lognote></span></div>
           <div class="tf-log" data-log></div>
         </div>
       </section>
@@ -140,6 +140,7 @@
     </div>`);
     G.stage.appendChild(n);
     phone("lock");
+    if (window.ResizeObserver) new ResizeObserver(() => fitLog()).observe($("[data-log]", n));
   }
 
   /* ---------- Telefoon ---------- */
@@ -237,7 +238,15 @@
   function logAdd(kind, text, who) {
     const log = $("[data-log]", G.stage);
     const b = h(kind === "sys" ? `<div class="tf-sys">${esc(text)}</div>` : `<div class="tf-b ${kind}">${kind === "them" ? `<span class="av">${faceOf(who)}</span>` : ""}<div><span class="nm">${kind === "me" ? "Jij" : esc(who)}</span><p>${kind === "them" ? parse(text).map((x) => x.t ? `<mark class="t-${x.t}">${esc(x.s)}</mark>` : esc(x.s)).join("") : esc(text)}</p></div></div>`);
-    log.appendChild(b); log.scrollTop = log.scrollHeight;
+    log.appendChild(b); fitLog();
+  }
+  /* Eerder in het gesprek: alleen hele ballonnen. Wat niet past, klapt in; de kop zegt hoeveel. */
+  function fitLog() {
+    const log = $("[data-log]", G.stage), note = $("[data-lognote]", G.stage); if (!log) return;
+    const items = Array.from(log.children); items.forEach((e) => { e.hidden = false; });
+    let n = 0;
+    for (const e of items) { if (log.scrollHeight <= log.clientHeight + 1 || n >= items.length - 1) break; e.hidden = true; n++; }
+    if (note) note.textContent = n ? `${n} ${n === 1 ? "oudere regel" : "oudere regels"} ingeklapt` : "";
   }
   function me(text) {
     flushSub(); subLine = { who: "Jij", text, me: true };
@@ -250,7 +259,7 @@
     const box = $("[data-subt]", G.stage); box.classList.remove("old", "mine");
     const segs = parse(text);
     box.innerHTML = `<span class="who"><span class="nu">Nu</span><span class="av">${faceOf(who)}</span>${esc(who)}</span><p>${segs.map((x, i) => `<span data-seg="${i}" class="${x.t ? "tac t-" + x.t : ""}">${esc(x.s)}</span>`).join("")}</p>`;
-    const log = $("[data-log]", G.stage); requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; });
+    requestAnimationFrame(fitLog);
     const wave = $("[data-wave]", G.stage);
     if (S.fast) { segs.forEach((x) => x.t && lightTactic(x.t)); return; }
     wave.classList.add("on");
@@ -292,14 +301,14 @@
     }
     const opts = T.opts(); S.opts = opts;
     side.innerHTML = `<div class="tf-ask fade-in"><div class="tf-askhead"><h3>${esc(T.ask)}</h3><button class="btn sm ghost" type="button" data-hint>${icon("bulb", "sm")}Aanwijzing</button></div>
-      <div class="tf-opts">${opts.map((o, k) => `<button class="tf-opt" type="button" data-o="${k}"><span class="q">${icon(i === 2 ? "phone" : "msg", "sm")}</span><span class="tx">${esc(o.t)}</span></button>`).join("")}</div>
+      <div class="tf-opts" tabindex="-1" role="group" aria-label="${esc(T.ask)}">${opts.map((o, k) => `<button class="tf-opt" type="button" data-o="${k}"><span class="q">${icon(i === 2 ? "phone" : "msg", "sm")}</span><span class="tx">${esc(o.t)}</span></button>`).join("")}</div>
       <div class="tf-aria" data-aria>${G.sayHTML("ARIA", T.aria(), { side: `<span class="hintcost">${esc(G.hintLabel())}</span>` })}</div></div>`;
     $$("[data-o]", side).forEach((b) => b.addEventListener("click", () => choose(S.opts[+b.dataset.o])));
     $("[data-hint]", side).addEventListener("click", () => { const c = G.hint(); $("[data-aria]", side).innerHTML = G.sayHTML("ARIA", T.hint + (c ? " (min 10 procent schild)" : ""), { mood: "half" }); $("[data-hint]", side).disabled = true; });
     const pu = $("[data-push]", G.stage); pu.hidden = !T.timed;
     if (T.timed) $("[data-ptxt]", G.stage).textContent = G.calm ? "Hij wacht. Aarzelen laat de druk stijgen" : "Antwoord voor de balk leeg is";
     if (i < 2) { codeLive(true); startPush(i); }
-    $("[data-o]", side).focus();
+    $(".tf-opts", side).focus({ preventScroll: true });
   }
 
   /* Wachtbalk. Hij loopt altijd leeg en de druk stijgt terwijl je aarzelt. Is hij leeg, dan dringt de beller aan.
@@ -334,7 +343,7 @@
   function readCode() {
     if (S.chosen || S.turn > 1) return;
     const rest = CODE.split("").map((_, i) => i).filter((i) => !S.leak.includes(i));
-    choose(Object.assign({}, READ, { t: `Je leest voor: ${rest.map((i) => CODE[i]).join(" ")}`, leak: rest }));
+    choose(Object.assign({}, READ, { t: `Je leest voor: ${rest.map((i) => CODE[i]).join("\u00a0")}`, leak: rest }));
   }
 
   async function choose(o) {
@@ -422,7 +431,7 @@
     (async () => {
       $("[data-pickup]", G.stage).click();
       await wait(60);
-      if (G.shot === "play") { await choose(TURNS[0].opts()[0]); await wait(20); await turn(1); $("[data-wave]", G.stage).classList.add("on"); }
+      if (G.shot === "play") { await choose(TURNS[0].opts().find((o) => o.id === "waarom")); await wait(20); await turn(1); $("[data-wave]", G.stage).classList.add("on"); }
       if (G.shot === "feedback") { await choose(TURNS[0].opts()[1]); }
       if (G.shot === "result") {
         [["goed", 25, 0, 0], ["goed", 25, 0, 1], ["fout", 0, 10, 2], ["half", 12, 5, 3]].forEach(([r, p, sh, t]) => { const o = TURNS[t].opts().find((x) => x.r === r); G.record({ result: r, points: p, shield: sh, q: `${TURNS[t].step}: ${TURNS[t].ask}`, a: o.t, why: o.why, toast: false }); });

@@ -346,10 +346,56 @@
     if (stage.getBoundingClientRect().top < 0) stage.scrollIntoView();
   }
 
-  function speech(whoKey, text) {
+  function speech(whoKey, text, extra) {
     var p = PEOPLE[whoKey];
-    return '<div class="speech"><span class="who ' + (p.cls || "") + '" aria-hidden="true">' + p.initials + '</span>' +
+    return '<div class="speech' + (extra ? " " + extra : "") + '"><span class="who ' + (p.cls || "") + '" aria-hidden="true">' + p.initials + '</span>' +
       '<div class="bubble"><p class="name">' + esc(p.name) + '</p><p>' + esc(text) + "</p></div></div>";
+  }
+
+  /* Feedback pieces shared by the mail and the other situations: title with the chips beside it, one calm verdict line,
+     and the rewards as a short list. The verdict text carries vcsw-alert-text, so the bridge finds the explanation for Nalezen. */
+  function fbHead(title, list) {
+    return '<div class="fb-head"><h2>' + esc(title) + "</h2>" + chips(list) + "</div>";
+  }
+  function verdictLine(cls, ic, word, pts, text) {
+    return '<div class="verdict-line ' + cls + '"><p class="verdict-title"><span class="verdict-word">' + icon(ic) + esc(word) + "</span>" +
+      '<span class="verdict-pts">' + esc(pts) + "</span></p>" + '<p class="verdict-text vcsw-alert-text">' + esc(text) + "</p></div>";
+  }
+  function afterList(lines) {
+    return '<ul class="fb-after">' + lines.map(function (l) { return "<li>" + icon(l[0], "sm") + "<span>" + l[1] + "</span></li>"; }).join("") + "</ul>";
+  }
+  /* In the game panel (about 717 px high at 1440x900) the mail review gets a fixed budget, so the button stays in view.
+     The budget comes from a constant and the content above the review, never from the height of the frame: the shell sizes
+     the frame from the content, so a link between the two would make the panel creep. Only a part that still overflows scrolls. */
+  var PANEL_H = 717;
+  function fitReview() {
+    var rv = stage.querySelector(".fit-review");
+    if (!rv) return;
+    var parts = rv.querySelectorAll(".review-scroll");
+    function overflow() { var o = 0; parts.forEach(function (el) { o += Math.max(0, el.scrollHeight - el.clientHeight); }); return o; }
+    if (document.documentElement.classList.contains("in-orion")) {
+      var top = rv.getBoundingClientRect().top + window.pageYOffset;
+      rv.style.setProperty("--rv-h", Math.max(320, PANEL_H - top - 14) + "px");
+      /* Side by side: give the mail more width while the notes still have room, and keep the split with the least overflow */
+      if (getComputedStyle(rv).gridTemplateColumns.split(" ").length > 1) {
+        var best = null;
+        [1.3, 1.15, 1, 1.6, 1.9].forEach(function (f) {
+          rv.style.gridTemplateColumns = "minmax(0, " + f + "fr) minmax(0, 1fr)";
+          var o = overflow();
+          if (!best || o < best.o - 2) best = { f: f, o: o };
+        });
+        rv.style.gridTemplateColumns = "minmax(0, " + best.f + "fr) minmax(0, 1fr)";
+      }
+    }
+    parts.forEach(function (el) {
+      var over = el.scrollHeight > el.clientHeight + 2;
+      el.classList.toggle("is-over", over);
+      var atEnd = function () { el.classList.toggle("at-end", el.scrollTop + el.clientHeight >= el.scrollHeight - 4); };
+      if (!el.dataset.watch) { el.dataset.watch = "1"; el.addEventListener("scroll", atEnd, { passive: true }); }
+      atEnd();
+      if (over) { el.setAttribute("tabindex", "0"); el.setAttribute("role", "region"); }
+      else { el.removeAttribute("tabindex"); el.removeAttribute("role"); }
+    });
   }
 
   function alertBox(kind, title, text) {
@@ -390,18 +436,6 @@
     );
   }
 
-  /* What a situation leaves you with: the crystal, and what to remember for the airlock */
-  function rewards(s, good) {
-    var out = "";
-    if (good) {
-      if (s.crystal) out += '<div class="reward">' + icon("gem") + "<div><strong>Datakristal: " + esc(s.crystal.name) + "</strong><br>" + esc(s.crystal.text) + "</div></div>";
-      out += '<div class="reward">' + icon("eye") + "<div><strong>Onthoud dit voor de luchtsluis</strong><br>" + esc(s.clue) + "</div></div>";
-    } else if (s.crystal) {
-      out += '<div class="reward">' + icon("info") + "<div><strong>Geen kristal deze keer</strong><br>Elk kristal is in de luchtsluis één aanwijzing van ARIA zonder kosten. Zonder kristal kost een aanwijzing " + CLUE_COST + " procent schild.</div></div>";
-    }
-    return out;
-  }
-
   function startSit() { S.screen = "sit"; S.chosen = null; S.mail = { round: 1, sel: {}, checked: false, e1: 0, e2: 0, grade: null }; renderSit(); }
 
   function mailErrors(s, round) {
@@ -429,6 +463,12 @@
       });
     }
     function judged(k) { return !!M.sel[k] === s.items[k][badKey]; }
+    function hasMark(str) { var f = false; str.replace(/\{(\w+)\}/g, function (_, k) { if (marks[k]) f = true; return _; }); return f; }
+    function gap(inline, label) {
+      label = label || "Tekst zonder markering, weggelaten";
+      var inner = '<span aria-hidden="true">…</span><span class="vcsw-sr-only">' + label + "</span>";
+      return inline ? '<span class="mail-cut" title="' + label + '">' + inner + "</span>" : '<p class="mail-gap" title="' + label + '">' + inner + "</p>";
+    }
 
     function tokens(str) {
       return esc(str).replace(/\n/g, "<br>").replace(/\{(\w+)\}/g, function (_, k) {
@@ -443,12 +483,32 @@
         return '<span role="button" tabindex="0" class="token" data-tok="' + k + '" aria-pressed="' + on + '">' + esc(it.text) + "</span>";
       });
     }
-    var body = s.body.split("\n\n").map(function (para) { return "<p>" + tokens(para) + "</p>"; }).join("");
+    /* After checking, the mail is cut down to the sentences and attachment rows with a mark, so the review fits the panel.
+       Every piece that is left out shows as one ellipsis: a line of its own between paragraphs, inline within one. */
+    var body = "";
+    if (!M.checked) {
+      body = s.body.split("\n\n").map(function (para) { return "<p>" + tokens(para) + "</p>"; }).join("");
+    } else {
+      var cur = null, line = [], pend = false;
+      var flush = function () { if (line.length) body += "<p>" + line.join(" ") + "</p>"; line = []; };
+      s.body.split("\n\n").forEach(function (para, pi) {
+        para.split(/(?<=\.)\s+(?=[A-Z])/).forEach(function (sen) {
+          if (!hasMark(sen)) { pend = true; return; }
+          if (cur !== pi) { flush(); if (pend) body += gap(); cur = pi; }
+          else if (pend) line.push(gap(true));
+          pend = false; line.push(tokens(sen));
+        });
+      });
+      flush(); if (pend) body += gap();
+    }
     if (s.attach) {
+      var rows = M.checked ? s.attach.rows.filter(function (row) { return hasMark(row[1]); }) : s.attach.rows;
+      var hid = s.attach.rows.length - rows.length;
       body += '<div class="mail-attach"><p class="attach-name">' + icon("file", "sm") + "Bijlage: " + esc(s.attach.name) + "</p>" +
-        '<div class="vcsw-table-wrap"><table class="vcsw-table"><tbody>' +
-        s.attach.rows.map(function (row) { return "<tr><th scope=\"row\">" + esc(row[0]) + "</th><td>" + tokens(row[1]) + "</td></tr>"; }).join("") +
-        "</tbody></table></div></div>";
+        (rows.length ? '<div class="vcsw-table-wrap"><table class="vcsw-table"><tbody>' +
+          rows.map(function (row) { return "<tr><th scope=\"row\">" + esc(row[0]) + "</th><td>" + tokens(row[1]) + "</td></tr>"; }).join("") +
+          "</tbody></table></div>" : "") +
+        (hid ? gap(false, hid === 1 ? "Eén rij zonder markering, weggelaten" : hid + " rijen zonder markering, weggelaten") : "") + "</div>";
     }
 
     var via = r === 1
@@ -457,11 +517,15 @@
     var task = r === 1
       ? "<p><strong>Stap 1 van 2.</strong> De mail gaat via de gewone stationsmail. Klik in de mail en de bijlage alle gegevens aan die zo niet verstuurd mogen worden. Klik nog een keer om een keuze ongedaan te maken.</p>"
       : "<p><strong>Stap 2 van 2.</strong> Bram verstuurt de mail nu via Kluispost, het beveiligde kanaal van Orion. Aangetekend verzenden kan ook. Klik aan wat er zelfs via dit kanaal niet in hoort.</p>";
-    var mailbox = '<div class="mailbox"><div class="msg-head">' +
-      '<div class="row"><span class="k">Aan</span><span class="v">Kapitein Vega &lt;vega@novaterra.space&gt;</span></div>' +
-      '<div class="row"><span class="k">Onderwerp</span><span class="v">Uitkomst kostencontrole Nova Terra</span></div>' +
-      '<div class="row"><span class="k">Via</span><span class="v">' + via + "</span></div></div>" +
-      '<div class="mail-body">' + body + "</div></div>";
+    var mailbox = M.checked
+      ? '<div class="mailbox review-scroll" aria-label="De mail, ingekort tot de markeringen"><div class="msg-head slim">' +
+        '<span class="v">Aan Kapitein Vega</span><span class="v">' + via + "</span></div>" +
+        '<div class="mail-body">' + body + "</div></div>"
+      : '<div class="mailbox"><div class="msg-head">' +
+        '<div class="row"><span class="k">Aan</span><span class="v">Kapitein Vega &lt;vega@novaterra.space&gt;</span></div>' +
+        '<div class="row"><span class="k">Onderwerp</span><span class="v">Uitkomst kostencontrole Nova Terra</span></div>' +
+        '<div class="row"><span class="k">Via</span><span class="v">' + via + "</span></div></div>" +
+        '<div class="mail-body">' + body + "</div></div>";
 
     if (!M.checked) {
       show(
@@ -474,58 +538,54 @@
       return;
     }
 
-    /* One verdict: step 1 is judged on its own errors, step 2 on both steps together (the same grade as the score) */
-    var e = r === 1 ? M.e1 : M.e1 + M.e2;
-    var g = r === 1 ? (e === 0 ? "good" : e <= 2 ? "half" : "bad") : M.grade;
-    var word = g === "good" ? "Goed" : g === "half" ? "Half goed" : "Niet goed";
-    var pts = r === 1 ? "Stap 1 van 2, nog geen punten"
-      : g === "good" ? "+10 punten" : g === "half" ? "+5 punten, schild −5%" : "0 punten, schild −10%";
-    var count = r === 1
-      ? (e === 0 ? "Je beoordeelde alle gegevens goed" : "Je beoordeelde " + plural(e, "gegeven", "gegevens") + " niet goed")
-      : (e === 0 ? "Je beoordeelde in beide stappen alle gegevens goed" : "In stap 1 en 2 samen beoordeelde je " + plural(e, "gegeven", "gegevens") + " niet goed");
-    var lesson = r === 1 ? "Gevoelige gegevens horen niet in een gewone mail, ook niet in een bijlage." : s.goodWhy;
-    var verdict = '<div class="mail-verdict ' + g + '"><p class="verdict-title"><span class="verdict-word">' +
-      icon(g === "good" ? "check" : g === "half" ? "half" : "x") + word + '</span><span class="verdict-pts">' + pts + "</span></p>" +
-      '<p class="verdict-text">' + count + ". " + esc(lesson) + "</p></div>";
+    /* Step 1 gets an interim verdict without points; step 2 gets the verdict for both steps together (the same grade as the score) */
+    var e = r === 1 ? M.e1 : M.e1 + M.e2, nAll = Object.keys(s.items).length, g = M.grade;
+    var verdict = r === 1
+      ? verdictLine("mid", "info", "Tussenoordeel", "Nog geen punten, die volgen na stap 2",
+          (e === 0 ? "Je beoordeelde alle " + nAll + " gegevens goed." : "Je beoordeelde " + e + " van de " + nAll + " gegevens niet goed.") +
+          " Gevoelige gegevens horen niet in een gewone mail, ook niet in een bijlage.")
+      : verdictLine(g, g === "good" ? "check" : g === "half" ? "half" : "x", g === "good" ? "Goed" : g === "half" ? "Half goed" : "Niet goed",
+          g === "good" ? "+10 punten" : g === "half" ? "+5 punten, schild −5%" : "0 punten, schild −10%",
+          (e === 0 ? "Je beoordeelde in beide stappen alle gegevens goed." : "In stap 1 en 2 samen beoordeelde je " + plural(e, "gegeven", "gegevens") + " niet goed.") +
+          " Ook via Kluispost deel je alleen wat de ontvanger echt nodig heeft, en medische details blijven bij de scheepsarts.");
 
-    var where = r === 1 ? "via de gewone mail" : "via Kluispost";
-    var notes = order.map(function (k) {
-      var it = s.items[k], ok = judged(k);
-      var why = r === 1 ? it.why1 : (it.r2 ? it.why2 : (it.r1 ? s.why2ok : "Mocht al via de gewone mail, en mag hier dus ook."));
-      var rule = it[badKey] ? "Mag niet " + where + "." : "Mag wel " + where + ".";
-      var you = ok ? "Goed gezien." : it[badKey] ? "Dit miste je." : "Jij klikte dit onterecht aan.";
+    /* Notes: what went wrong stays open, what went well folds away behind one line */
+    function note(k) {
+      var it = s.items[k], ok = judged(k), txt;
+      if (ok) txt = '<strong class="note-you">Goed gezien.</strong> ' + esc(r === 1 ? it.why1 : it.why2);
+      else if (it[badKey]) txt = '<strong class="note-you">Gemist.</strong> ' + esc(r === 1 ? it.why1 : it.why2);
+      else txt = '<strong class="note-you">Onterecht aangeklikt.</strong> ' +
+        esc(r === 1 ? "Mag wel via de gewone mail. " + it.why1 : (it.r1 ? s.why2ok : "Mocht al via de gewone mail, en mag hier dus ook."));
       return '<li class="' + (ok ? "is-ok" : "is-no") + '"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" +
-        '<div><p class="note-head"><span class="vcsw-sr-only">Toelichting ' + marks[k] + ": </span><strong>" + esc(it.text) + "</strong></p>" +
-        '<p class="note-text"><span class="note-you">' + you + "</span> " + rule + " " + esc(why) + "</p></div></li>";
-    }).join("");
+        '<p class="note-text"><span class="vcsw-sr-only">Toelichting ' + marks[k] + ", " + esc(it.text) + ". </span>" + txt + "</p></li>";
+    }
+    var wrong = order.filter(function (k) { return !judged(k); }), right = order.filter(judged);
+    var notes = (wrong.length ? '<ol class="notes">' + wrong.map(note).join("") + "</ol>" : "") +
+      (right.length ? '<details class="notes-ok"><summary>' + icon("check", "sm") + "<span>" + right.length + " goed beoordeeld</span>" +
+        '<span class="sum-more"><span class="when-closed">Toon uitleg</span><span class="when-open">Verberg</span></span></summary>' +
+        '<ol class="notes">' + right.map(note).join("") + "</ol></details>" : "");
 
-    var after = "";
+    var after;
     if (r === 1) {
       after = '<div class="actions">' + btn("Verstuur via Kluispost", "mail2", "", "arrowR") + "</div>";
     } else {
-      var o = s.react[g];
-      var lines = [];
-      if (g === "good") {
-        lines.push(["gem", "<strong>Datakristal: " + esc(s.crystal.name) + "</strong> " + esc(s.crystal.text)]);
-        lines.push(["eye", "<strong>Onthoud dit voor de luchtsluis</strong> " + esc(s.clue)]);
-      } else {
-        lines.push(["info", "<strong>Geen kristal deze keer.</strong> Zonder kristal kost een aanwijzing in de luchtsluis " + CLUE_COST + " procent schild."]);
-      }
-      after = speech(o.who, o.say) +
-        '<ul class="mail-after">' + lines.map(function (l) { return "<li>" + icon(l[0], "sm") + "<span>" + l[1] + "</span></li>"; }).join("") + "</ul>" +
+      var lines = g === "good"
+        ? [["gem", "<strong>Datakristal: " + esc(s.crystal.name) + ".</strong> " + esc(s.crystal.text)], ["eye", "<strong>Onthoud voor de luchtsluis.</strong> " + esc(s.clue)]]
+        : [["info", "<strong>Geen kristal deze keer.</strong> Zonder kristal kost een aanwijzing in de luchtsluis " + CLUE_COST + " procent schild."]];
+      after = speech(s.react[g].who, s.react[g].say, "slim") + afterList(lines) +
         '<div class="actions">' + btn("Volgende situatie", "nextsit", "", "arrowR") + "</div>";
     }
 
     show(
-      chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length, r === 1 ? "Stap 1 van 2, gewone mail" : "Stap 2 van 2, Kluispost"]) +
-      "<h2>" + esc(s.title) + "</h2>" + verdict +
-      '<div class="mail-review">' + mailbox +
-      '<section class="mail-notes" aria-labelledby="notes-h"><h3 id="notes-h">Toelichting per markering</h3>' +
-      '<p class="notes-key"><span class="key-sw is-ok" aria-hidden="true"></span>Goed beoordeeld<span class="key-sw is-no" aria-hidden="true"></span>Niet goed beoordeeld</p>' +
-      (order.length ? '<ol class="notes">' + notes + "</ol>" : "<p>Er was in deze stap niets te markeren.</p>") +
-      after + "</section></div>",
+      fbHead(s.title, ["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length, r === 1 ? "Stap 1 van 2, gewone mail" : "Stap 2 van 2, Kluispost"]) + verdict +
+      '<div class="mail-review fit-review">' + mailbox +
+      '<section class="mail-notes" aria-labelledby="notes-h"><div class="notes-top"><h3 id="notes-h">Toelichting</h3>' +
+      '<p class="notes-key"><span class="key-sw is-ok" aria-hidden="true"></span>Goed<span class="key-sw is-no" aria-hidden="true"></span>Niet goed</p></div>' +
+      '<div class="notes-scroll review-scroll" aria-labelledby="notes-h">' + notes + "</div>" +
+      '<div class="notes-foot">' + after + "</div></section></div>",
       ".verdict-title"
     );
+    fitReview();
   }
 
   function checkMail() {
@@ -566,27 +626,27 @@
         '<span class="letter" aria-hidden="true">' + letters[k] + "</span><span>" + esc(o.text) + "</span>" + verdict + "</button></li>";
     }).join("");
 
-    var fb = "";
-    if (S.chosen !== null) {
-      var o = s.options[S.chosen];
-      var title = o.grade === "good" ? "Goed, +10 punten" : o.grade === "half" ? "Half goed, +5 punten, schild −5%" : "Fout, 0 punten, schild −10%";
-      fb = '<div class="feedback">' +
-        speech(o.react.who, o.react.say) +
-        alertBox(o.grade === "good" ? "success" : o.grade === "half" ? "warning" : "error", title, o.why);
-      fb += rewards(s, o.grade === "good");
-      fb += "</div>";
+    var fb = "", done = S.chosen !== null;
+    if (done) {
+      var o = s.options[S.chosen], good = o.grade === "good";
+      var lines = good
+        ? (s.crystal ? [["gem", "<strong>Datakristal: " + esc(s.crystal.name) + ".</strong> " + esc(s.crystal.text)]] : []).concat([["eye", "<strong>Onthoud voor de luchtsluis.</strong> " + esc(s.clue)]])
+        : s.crystal ? [["info", "<strong>Geen kristal deze keer.</strong> Zonder kristal kost een aanwijzing in de luchtsluis " + CLUE_COST + " procent schild."]] : [];
+      fb = verdictLine(o.grade, good ? "check" : o.grade === "half" ? "half" : "x", good ? "Goed" : o.grade === "half" ? "Half goed" : "Fout",
+          good ? "+10 punten" : o.grade === "half" ? "+5 punten, schild −5%" : "0 punten, schild −10%", o.why) +
+        '<div class="fb-react">' + speech(o.react.who, o.react.say, "slim") + (lines.length ? afterList(lines) : "") + "</div>";
       var last = S.sit === SITUATIONS.length - 1;
       fb += '<div class="actions">' + btn(last ? "Naar de luchtsluis" : "Volgende situatie", last ? "prelock" : "nextsit", "", "arrowR") + "</div>";
     }
 
     show(
-      chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) +
-      "<h2>" + esc(s.title) + "</h2>" +
-      "<p>" + esc(s.intro) + "</p>" +
-      speech(s.speaker, s.line) +
+      (done ? fbHead(s.title, ["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length])
+            : chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) + "<h2>" + esc(s.title) + "</h2>") +
+      '<p class="sit-intro">' + esc(s.intro) + "</p>" +
+      speech(s.speaker, s.line, done ? "slim" : "") +
       '<p class="vcsw-sr-only">Kies een van de drie opties.</p>' +
-      '<ul class="options">' + opts + "</ul>" + fb,
-      S.chosen !== null ? ".feedback .vcsw-alert-title" : "h2"
+      '<ul class="options' + (done ? " answered" : "") + '">' + opts + "</ul>" + fb,
+      done ? ".verdict-title" : "h2"
     );
   }
 
@@ -602,8 +662,6 @@
       S.clues[S.sit] = true;
     }
     renderSit();
-    var t = stage.querySelector(".feedback .vcsw-alert-title");
-    if (t) { t.setAttribute("tabindex", "-1"); t.focus(); }
   }
 
   /* Start card of the airlock: the goal in one sentence, how you score, what a mistake costs, one start button */
@@ -1015,6 +1073,8 @@
     var tk = e.target.closest && e.target.closest("[data-tok]");
     if (tk && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); tk.click(); }
   });
+  /* Opening the folded notes can make the list overflow: then it becomes a scroll region that the keyboard can reach */
+  stage.addEventListener("toggle", function () { fitReview(); }, true);
   stage.addEventListener("submit", function (e) {
     if (e.target.id === "codeform") { e.preventDefault(); checkCode(document.getElementById("codein").value); }
   });

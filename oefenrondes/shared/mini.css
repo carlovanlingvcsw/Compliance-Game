@@ -289,3 +289,10 @@ html.in-shell .mg-panel { padding: 12px 16px 14px; gap: 10px; }
 html.in-shell .mg-head h2 { font-size: 1.5rem; }
 html.in-shell .intro { gap: 24px; }
 html.in-shell .intro h1 { font-size: 2.375rem; }
+
+/* Integratieronde: geen woordafbreking midden in een woord, in alle oefenrondes. Lange adressen krijgen in de
+   spellen zelf een breekpunt na een punt of @. */
+html, body, body * { -webkit-hyphens: none !important; hyphens: none !important; word-break: normal !important; overflow-wrap: normal !important; }
+/* Focusring alleen bij toetsenbordgebruik (mini.js zet de klasse kbd). Zo lijkt geen knop of optie voorgeselecteerd. */
+html:not(.kbd) :focus-visible, html:not(.kbd) :focus { outline: none !important; }
+[tabindex="-1"]:focus { outline: none; }

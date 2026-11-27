@@ -253,7 +253,7 @@
     const el = h(`<div class="pk-lens" aria-hidden="true"><div class="glass"><div class="view"></div></div><span class="rim"></span><span class="grip"></span><span class="tip">Beweeg mij</span></div>`);
     paper.appendChild(el);
     const view = $(".view", el);
-    let x = 0, y = 0, px = 0, py = 0, moved = false, start = [0, 0];
+    let x = 0, y = 0, px = 0, py = 0, moved = false, start = [0, 0], hoverK = null, dwellT = null;
     function build() {
       view.innerHTML = ""; const clone = docEl.cloneNode(true); clone.classList.add("magnified");
       $$("[tabindex]", clone).forEach((e) => e.removeAttribute("tabindex"));
@@ -262,7 +262,7 @@
     build();
     function rel(e) { const r = paper.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
     // De loep blijft altijd helemaal binnen het mailvlak.
-    function place(nx, ny) {
+    function place(nx, ny, instant) {
       R = el.offsetWidth / 2 || 95;
       const W = paper.clientWidth, H = paper.clientHeight;
       el.classList.remove("parked");
@@ -272,10 +272,12 @@
       // Het glas toont altijd wat onder de wijzer ligt, ook als het glas zelf aan de rand blijft.
       view.style.transform = `translate(${R - px * Z}px, ${R - py * Z}px) scale(${Z})`;
       if (!moved && (Math.abs(nx - start[0]) > 4 || Math.abs(ny - start[1]) > 4)) { moved = true; el.classList.add("used"); }
-      check();
+      check(instant);
     }
     // Een onderdeel ligt onder de loep als het binnen de binnenste helft van het glas valt.
-    function check() {
+    /* Een signaal telt pas als gevonden als de loep er even op blijft rusten. Zo vult de bewijslijst zich niet
+       vanzelf als je de muis alleen over de mail naar de knoppen beweegt. Met het toetsenbord telt het direct. */
+    function check(instant) {
       // Het punt waar je naar wijst telt; het glas zelf blijft binnen de mail.
       const pr = paper.getBoundingClientRect(), rr = 26; let over = null, best = Infinity;
       $$(".hs", docEl).forEach((s) => {
@@ -289,11 +291,13 @@
       if (over) {
         const xr = $(`[data-hs="${over}"] .xr`, docEl), rd = $("[data-read]", G.stage);
         rd.className = "pk-read on"; rd.innerHTML = `${icon(KIND_ICON[over])}<span><b>${LABEL[over]}</b>${xr ? xr.innerHTML.replace(/<br>/g, " ") : esc(ASK[over])}</span>`;
-        reveal(over);
       }
+      if (over !== hoverK) { clearTimeout(dwellT); hoverK = over; if (over && !instant) dwellT = setTimeout(() => { if (hoverK === over) reveal(over); }, 380); }
+      if (over && instant) reveal(over);
     }
     // In rust staat de loep klein geparkeerd in de hoek, zodat de mail helemaal leesbaar blijft.
     function park() {
+      clearTimeout(dwellT); hoverK = null;
       el.classList.add("parked"); el.classList.remove("on");
       el.style.transform = `translate(${paper.clientWidth - 64}px, ${paper.clientHeight - 64}px) scale(.26)`;
     }
@@ -304,7 +308,7 @@
     paper.addEventListener("pointerdown", (e) => { el.classList.remove("parked"); const p = rel(e); place(p[0], p[1]); });
     const center = (s) => { const pr = paper.getBoundingClientRect(), r = s.getClientRects()[0]; return [r.left - pr.left + r.width / 2, r.top - pr.top + r.height / 2]; };
     $$(".hs", docEl).forEach((s) => {
-      const go = () => { el.classList.remove("parked"); const c = center(s); place(c[0], c[1]); };
+      const go = () => { el.classList.remove("parked"); const c = center(s); place(c[0], c[1], true); };
       s.addEventListener("focus", go);
       s.addEventListener("blur", () => setTimeout(() => { if (!paper.contains(document.activeElement)) park(); }, 0));
       s.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
@@ -314,14 +318,14 @@
       if (d) { e.preventDefault(); el.classList.remove("parked"); place(px + d[0], py + d[1]); }
     });
     const ro = new ResizeObserver(() => { build(); if (el.classList.contains("parked")) park(); else place(px, py); }); ro.observe(docEl);
-    return { place, park, at: (k) => { const c = center($(`[data-hs="${k}"]`, docEl)); place(c[0], c[1]); } };
+    return { place, park, at: (k) => { const c = center($(`[data-hs="${k}"]`, docEl)); place(c[0], c[1], true); } };
   }
 
   /* ---------- Bewijs ---------- */
   function reveal(k) {
     if (found.includes(k) || decided) return;
     found.push(k); Mini.sound.play("tap");
-    const s = $(`[data-hs="${k}"]`, docEl); s.classList.add("found", "glow"); setTimeout(() => s.classList.remove("glow"), 1400);
+    const s = $(`[data-hs="${k}"]`, docEl); s.classList.add("found", "glow"); setTimeout(() => s.classList.remove("glow"), 1200);
     const list = $("[data-ev]", G.stage); const empty = $(".pk-empty", list); if (empty) empty.remove();
     list.appendChild(h(cardHTML(k, false)));
     list.lastElementChild.classList.add("slide-in");
@@ -367,6 +371,7 @@
     list.scrollTop = 0;
     $$(".hs", docEl).forEach((s) => { const k = s.dataset.hs, t = M.hs[k][0]; s.classList.add("judged", t === "k" ? "j-k" : found.includes(k) ? "j-hit" : "j-miss"); });
     $("[data-read]", G.stage).hidden = true;
+    $("[data-paper]", G.stage).classList.add("done");
     const stake = $("[data-stake]", G.stage); if (stake) stake.remove();
     $("[data-evcount]", G.stage).textContent = clues.length ? `${clues.filter((k) => found.includes(k)).length} van ${clues.length} signalen gevonden` : "geen nepsignalen in dit bericht";
     const right = Object.keys(M.out).find((k) => M.out[k][0] === "goed");
@@ -449,7 +454,12 @@
   if (G.shot) {
     unread = 6; ticker = "Nieuw van Kantine: Menu van vandaag";
     G.begin();
-    if (G.shot === "play") { setTimeout(() => { lens.at("haste"); lens.at("link"); lens.at("from"); lens.park(); }, 300); }
+    /* Halverwege: twee berichten zijn afgehandeld, in bericht 3 zijn twee van de vier onderdelen bekeken en ligt de loep op de knop. */
+    if (G.shot === "play") {
+      [["goed", 20, "nep"], ["half", 10, "twijfel"]].forEach(([r, p, c], i) => { results[i] = r; G.record({ result: r, points: p, q: MSGS[i].subject, a: `${CHOICE[c][1]}, ${CHOICE[c][2]}`, why: MSGS[i].why, toast: false }); });
+      unread = 4; play(2);
+      setTimeout(() => { lens.at("from"); lens.at("link"); }, 300);
+    }
     if (G.shot === "feedback") { setTimeout(() => { ["haste", "link", "from", "reply"].forEach((k) => lens.at(k)); setTimeout(() => decide("nep"), 100); }, 300); }
     if (G.shot === "result") {
       [["goed", 20, 0, "nep"], ["half", 10, 0, "twijfel"], ["goed", 20, 0, "nep"], ["fout", 0, 10, "echt"], ["goed", 20, 0, "nep"]].forEach(([r, p, s, c], i) => G.record({ result: r, points: p, shield: s, q: MSGS[i].subject, a: `${CHOICE[c][1]}, ${CHOICE[c][2]}`, why: MSGS[i].why, toast: false }));

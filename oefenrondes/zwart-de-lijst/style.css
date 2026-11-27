@@ -355,3 +355,30 @@
   .zl-pen-row .btn { min-height: 46px; padding: 0 14px; }
   .zl-send-alt span { display: none; }
 }
+
+/* Ronde 31: één verstuurplek (de verzendsluis), een doellijn op de meter, een benoemde toetsenbordknop en lucht onder het document */
+.zl-track { position: relative; }
+.zl-goal { position: absolute; top: -6px; bottom: -6px; left: var(--goal); width: 4px; margin-left: -2px; border-radius: 2px; background: #fff; box-shadow: 0 0 0 2px #041330; pointer-events: none; }
+.zl-meter-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.zl-goal-lbl { flex: none; color: #fff; font: 700 .9375rem/1.2 var(--font-b); }
+.zl-goal-lbl::before { content: ""; display: inline-block; width: 4px; height: 14px; margin-right: 7px; border-radius: 2px; background: #fff; vertical-align: -2px; }
+.zl-kbd-btn { width: auto; padding: 0 14px !important; font: 600 .9375rem/1 var(--font-b); }
+.zl-lock { cursor: pointer; }
+.zl-lock:focus-visible { outline: 3px solid var(--b300); outline-offset: 3px; }
+.zl-sheet { padding-bottom: 14px; }
+.zl-desk { padding-bottom: 14px; }
+@media (min-width: 941px) and (max-width: 1260px) {
+  .zl-pen-row { row-gap: 8px; }
+  .zl-kbd { margin-left: auto; }
+}
+@media (min-width: 941px) and (max-width: 1260px) {
+  /* Het langste document (de notulen) past met marge boven de onderrand van de console */
+  .zl:not(:has(.zl-rv)) { grid-template-columns: minmax(0, 1fr) 340px; }
+  .zl-desk { grid-template-columns: minmax(0, 1fr) 108px; }
+  .zl-body { font-size: 1rem; line-height: 1.45; }
+  .zl-paper { padding: 12px 22px 10px; }
+  .zl-sheet { gap: 8px; }
+}
+/* De verzendsluis is de enige verstuurplek. Alleen op een smal scherm, waar de sluis wegvalt, staat er een knop. */
+.zl-send-small { display: none; }
+@media (max-width: 600px) { .zl-send-small { display: flex; } .zl-send-small .btn { flex: 1; } }

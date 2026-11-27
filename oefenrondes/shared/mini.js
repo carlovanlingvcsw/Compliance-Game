@@ -135,6 +135,13 @@
   };
 
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* Focusring alleen als je met het toetsenbord werkt. Een knop die het spel zelf focust, of een klik met de muis,
+     mag er niet uitzien alsof hij al gekozen is. */
+  (function () {
+    const de = document.documentElement, keys = /^(Tab|Arrow|Enter$| $|Home$|End$|Page)/;
+    addEventListener("keydown", (e) => { if (!e.altKey && !e.ctrlKey && !e.metaKey && keys.test(e.key)) de.classList.add("kbd"); }, true);
+    addEventListener("pointerdown", () => de.classList.remove("kbd"), true);
+  })();
   const params = new URLSearchParams(window.ORION_PARAMS || location.search);
   const embedded = window.parent !== window;
   if (params.get("shell") === "orion") document.documentElement.classList.add("in-shell");
@@ -329,7 +336,7 @@
       setTimeout(() => { const g = $("[data-rvg]", n), t = $("[data-rvt]", n); if (g && t && rl.scrollHeight - rl.clientHeight > 4) { g.hidden = true; t.setAttribute("aria-expanded", "false"); t.innerHTML = tlabel(false); } cue(); }, 40);
       const rvt = $("[data-rvt]", n); if (rvt) rvt.addEventListener("click", () => { const g = $("[data-rvg]", n), open = g.hidden; g.hidden = !open; rvt.setAttribute("aria-expanded", open); rvt.innerHTML = tlabel(open); setTimeout(cue, 30); });
       requestAnimationFrame(() => requestAnimationFrame(() => { $("[data-arc]", n).style.strokeDashoffset = C * (1 - Math.min(1, pct / 100)); }));
-      const pe = $("[data-pct]", n); let k = 0; const tick = () => { k = Math.min(pct, k + Math.max(1, pct / 30)); pe.textContent = Math.round(k) + "%"; if (k < pct) requestAnimationFrame(tick); }; reduce ? (pe.textContent = pct + "%") : tick();
+      const pe = $("[data-pct]", n); let k = 0; const tick = () => { k = Math.min(pct, k + Math.max(1, pct / 30)); pe.textContent = Math.round(k) + "%"; if (k < pct) requestAnimationFrame(tick); }; reduce || params.get("shot") ? (pe.textContent = pct + "%") : tick(); setTimeout(() => { pe.textContent = pct + "%"; }, 1600);
       $("[data-again]", n).addEventListener("click", () => location.reload());
       sound.play(pass ? "win" : "half");
       post({ orion: "done", game: cfg.id, score: Math.round(G.score), max: G.max, pct, stars, shield: Math.round(G.shield), gems: G.gems });

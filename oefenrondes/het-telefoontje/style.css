@@ -315,3 +315,32 @@
   .tf-fb .pts small.tf-shloss { margin-top: 0; }
   .tf-phone { width: 190px; }
 }
+
+/* ---------- Integratieronde (missiepaneel 1128 px) ---------- */
+/* Eerder in het gesprek: een vaste kop zonder vervaagde regel eronder, alleen hele ballonnen, lucht aan de onderkant. */
+.tf-loghead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 10px 18px 8px; border-top: 1px solid rgba(103, 202, 255, .12); }
+.tf-loghead [data-lognote] { color: var(--g300); font: 500 .9375rem/1.2 var(--font-b); }
+.tf-log { -webkit-mask-image: none; mask-image: none; overflow: hidden; justify-content: flex-end; padding: 4px 18px 18px !important; gap: 8px !important; }
+.tf-b, .tf-sys { flex: none; }
+.tf-b.me { margin-right: 0; }
+/* Ruimte voor de keuzes: geen optie oogt voorgeselecteerd. */
+.tf-opts:focus { outline: none; }
+
+@media (min-width: 941px) and (max-width: 1260px) {
+  .tf { grid-template-columns: minmax(0, 1fr) 222px 352px; }
+  /* De telefoon: de notch is smaller en staat tussen tijd en slot, de zes cijfers houden afstand tot de rand. */
+  .tf-phone { width: 218px; padding: 10px; border-radius: 34px; }
+  .tf-pscreen { border-radius: 25px; }
+  .tf-notch { top: 15px; width: 48px; height: 14px; margin-left: -24px; border-radius: 8px; }
+  .tf-pbar { padding: 13px 20px 6px; }
+  .tf-app, .tf-calls, .tf-incall { padding: 6px 14px 14px; }
+  .tf-code { gap: 4px; }
+  .tf-code button { height: 54px; font-size: 1.625rem; border-radius: 7px; }
+  .tf-code button:nth-child(3) { margin-right: 5px; }
+  .tf-tapbtn { min-height: 44px; }
+}
+/* Ballonnen staan onderaan; loopt het over, dan gaat dat naar beneden (meetbaar) en klapt fitLog de oudste in. */
+.tf-log { justify-content: flex-start; gap: 6px !important; padding: 2px 18px 16px !important; }
+.tf-log > :first-child:not([hidden]), .tf-log > [hidden] + :not([hidden]) { margin-top: auto; }
+.tf-b { max-width: 94%; }
+.tf-b > div { padding: 6px 12px 7px; }
