@@ -107,7 +107,7 @@
     const n = h(`<div class="pp fade-in">
       <div class="pp-left">
         <section class="pp-board" aria-label="Crewbord van de aankomsthal">
-          <div class="pp-board-top"><span class="lamp"></span><b>Crewbord aankomsthal</b><span class="grow"></span><p class="pp-count" data-countbox><span data-countpre>Alle</span> <b data-count>${crew.length}</b> <span data-countlbl>passen</span></p></div>
+          <div class="pp-board-top"><span class="lamp"></span><b>Crewbord aankomsthal</b><span class="pp-key"  aria-label="Vakjes onder elk portret">${R.cards.map((c, j) => `<span><i class="c${j}"></i>${esc(c[0])}</span>`).join("")}</span><span class="grow"></span><p class="pp-count" data-countbox><span data-countpre>Alle</span> <b data-count>${crew.length}</b> <span data-countlbl>passen</span></p></div>
           <div class="pp-trail" data-trail><span>Scan een gegeven. Wie er niet bij past, wordt gedimd.</span></div>
           <div class="pp-grid" data-grid>${order.map((c) => `<div class="pp-face" data-id="${c.id}"><div class="pp-pips">${R.cards.map((_, j) => `<i class="c${j}"></i>`).join("")}</div><div class="pp-pic">${crewFace(1000 + c.id, c.cap ? { cap: true, hairStyle: "short" } : undefined)}</div><span>${esc(c.dept)}</span></div>`).join("")}</div>
         </section>

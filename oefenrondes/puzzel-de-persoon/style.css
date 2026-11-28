@@ -299,3 +299,9 @@
   .pp-msg-body { padding: 12px 16px 8px; }
   .pp-msg-foot { padding: 4px 16px 12px; font-size: .9375rem; }
 }
+
+/* Ronde 7: legenda bij de vakjes onder de portretten, in dezelfde kleuren als de gegevens in het bericht. */
+.pp-key { display: inline-flex; gap: 12px; margin-left: 18px; color: var(--g200); font-size: .9375rem; }
+.pp-key span { display: inline-flex; align-items: center; gap: 6px; }
+.pp-key i { width: 18px; height: 10px; border-radius: 999px; }
+.pp-key i.c0 { background: #67caff; } .pp-key i.c1 { background: #ff8fd0; } .pp-key i.c2 { background: #b5f05a; }
