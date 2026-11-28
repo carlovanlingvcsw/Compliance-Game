@@ -246,7 +246,7 @@
       row("target", "blue", "Je haalt het level met minimaal 70 procent van de punten. Daarna ben je Commandeur.") +
       '</ul></div></div>' +
       '<div class="actions">' + nextBtn("Start level 3", "go") + '</div>' +
-      '<p class="ox-foot">' + icon("info") + '<span><strong>Prototype met fictieve gegevens.</strong> De goede antwoorden wachten nog op goedkeuring door de Privacy Officer, zie de open punten in het ontwerp.</span></p>' +
+      '<p class="ox-foot">' + icon("info") + '<span><strong>Prototype met fictieve gegevens.</strong> De goede antwoorden wachten nog op goedkeuring door de privacy officer, zie de open punten in het ontwerp.</span></p>' +
       '</div>'
     );
     document.getElementById("go").onclick = screenBriefing;

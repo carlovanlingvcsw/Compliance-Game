@@ -384,7 +384,7 @@
       '<label><input type="radio" name="role" value="verwerker"' + (S.role === "verwerker" ? " checked" : "") + '> Verwerker: het ziekteoverzicht is van de crew van Nova Terra</label>' +
       '<label><input type="radio" name="role" value="verantwoordelijke"' + (S.role === "verantwoordelijke" ? " checked" : "") + '> Verantwoordelijke: het ziekteoverzicht is van de eigen crew van Orion</label></fieldset></div>' +
       '<div class="actions"><button type="button" class="ox-btn lg" id="go">Naar het incident' + icon("next") + "</button></div>" +
-      '<p class="ox-foot">' + icon("info") + "<span><strong>Prototype met fictieve gegevens.</strong> Alle namen en gegevens zijn verzonnen. De stappen en termijnen bij een datalek wachten nog op goedkeuring van de Privacy Officer.</span></p>",
+      '<p class="ox-foot">' + icon("info") + "<span><strong>Prototype met fictieve gegevens.</strong> Alle namen en gegevens zijn verzonnen. De stappen en termijnen bij een datalek wachten nog op goedkeuring van de privacy officer.</span></p>",
       "title-screen"
     );
     document.getElementById("fConsole").onchange = function (e) { S.flags.console = e.target.checked; S.seq = []; hud(); };

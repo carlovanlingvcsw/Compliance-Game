@@ -468,7 +468,7 @@
     text(M, y, 10.5, true, D.passed + " van 6 missies gehaald,  " + D.games + " van " + D.gamesAll + " oefenrondes gespeeld,  " + D.badges + " van " + BADGES.length + " prestaties");
     y -= 22;
     wrap("Het schild telt niet mee voor halen. Een missie is gehaald vanaf 70 procent van de punten. Oefenrondes hoef je niet te halen. Dit logboek is gemaakt in je eigen browser en nergens anders bewaard.", 9.5, W - 2 * M).forEach(function (l) { need(14); text(M, y, 9.5, false, l, "0.231 0.302 0.431"); y -= 14; });
-    y -= 6; need(14); text(M, y, 9, false, "Prototype met fictieve namen en gegevens. De inhoud wacht op goedkeuring van de Privacy Officer.", "0.42 0.48 0.58");
+    y -= 6; need(14); text(M, y, 9, false, "Prototype met fictieve namen en gegevens. De inhoud wacht op goedkeuring van de privacy officer.", "0.42 0.48 0.58");
     var objs = [], kids = [];
     objs[1] = "<< /Type /Catalog /Pages 2 0 R >>";
     objs[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";

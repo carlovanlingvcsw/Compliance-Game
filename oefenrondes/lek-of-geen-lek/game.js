@@ -2,7 +2,7 @@
    Aan de balie van de Datawacht in Module Kepler komen zeven meldingen binnen als dossierkaarten.
    De speler legt elke kaart op de risicometer: geen datalek, laag risico, risico of hoog risico.
    Daarna schuift de kaart naar de goede zone en licht de kolom op met wat er dan gebeurt.
-   Melden bij de Privacy Officer staat in elke zone met een lek aan. Afstand bepaalt goed, half of fout.
+   Melden bij de privacy officer staat in elke zone met een lek aan. Afstand bepaalt goed, half of fout.
    Wie "Zeker weten" aanzet, verdient bij een goed antwoord een kristal en verliest bij een fout extra schild. */
 (function () {
   "use strict";
@@ -16,7 +16,7 @@
   ];
   /* Wat er per zone gebeurt. y = ja, n = nee, t = bij twijfel */
   const LADDER = [
-    ["Melden bij de Privacy Officer", ["t", "y", "y", "y"]],
+    ["Melden bij de privacy officer", ["t", "y", "y", "y"]],
     ["Intern vastleggen", ["n", "y", "y", "y"]],
     ["Melding bij de AP, binnen 72 uur", ["n", "n", "y", "y"]],
     ["Betrokkenen zelf informeren", ["n", "n", "n", "y"]]
@@ -38,7 +38,7 @@
     { title: "Loonstrook naar de verkeerde collega", short: "Loonstrook", art: "payslip", zone: 2,
       text: "Mira mailt de loonstrook van een technicus naar een andere technicus met dezelfde achternaam.",
       facts: [["file", "Loon, inhoudingen en BSN"], ["user", "1 crewlid"], ["mail", "Bij een collega"]], key: [0],
-      why: "Een loonstrook bevat financiële gegevens en een BSN. Dat is meer dan een onschuldig gegeven, ook al ging het naar een collega. Daarom beoordeelt de Privacy Officer het als risico en beslist die over een melding bij de AP.",
+      why: "Een loonstrook bevat financiële gegevens en een BSN. Dat is meer dan een onschuldig gegeven, ook al ging het naar een collega. Daarom beoordeelt de privacy officer het als risico en beslist die over een melding bij de AP.",
       hint: "Kijk vooral naar welke gegevens er op een loonstrook staan." },
     { title: "Kantinemenu naar Station Vela", short: "Kantinemenu", art: "menu", zone: 0,
       text: "Het weekmenu van de kantine gaat per ongeluk naar de kantine van Station Vela.",
@@ -48,27 +48,27 @@
     { title: "Versleutelde laptop kwijt", short: "Laptop", art: "laptop", zone: 1,
       text: "Bram verliest zijn laptop in het vrachtdok. De schijf is goed versleuteld en het wachtwoord zat er niet bij.",
       facts: [["lock", "Crewlijst, goed versleuteld"], ["users", "60 crewleden"], ["search", "Vinder onbekend"]], key: [0],
-      why: "Zonder wachtwoord kan een vinder niets met de versleutelde schijf. Het risico is laag. Toch meldt Bram het direct bij de Privacy Officer, die het intern vastlegt.",
+      why: "Zonder wachtwoord kan een vinder niets met de versleutelde schijf. Het risico is laag. Toch meldt Bram het direct bij de privacy officer, die het intern vastlegt.",
       hint: "Wat kan iemand die de laptop vindt eigenlijk zien zonder wachtwoord?" },
     { title: "Alle adressen zichtbaar in CC", short: "Mail in CC", art: "cc", zone: 2,
       text: "Een uitnodiging voor de sportdag gaat naar alle 140 crewleden. Iedereen staat zichtbaar in CC, ook de privé-adressen van crew met verlof.",
       facts: [["mail", "Privé-mailadressen"], ["users", "140 crewleden"], ["eye", "Iedereen ziet ze"]], key: [0, 1],
-      why: "Het gaat om veel mensen, en privé-adressen kwamen bij iedereen terecht. Dat maakt het meer dan laag risico. De Privacy Officer beoordeelt het en beslist over een melding bij de AP.",
+      why: "Het gaat om veel mensen, en privé-adressen kwamen bij iedereen terecht. Dat maakt het meer dan laag risico. De privacy officer beoordeelt het en beslist over een melding bij de AP.",
       hint: "Hoeveel mensen gaat het om, en waren alle adressen al bekend bij iedereen?" },
     { title: "Ransomware op de ziekenboeg", short: "Ransomware", art: "ransom", zone: 3,
       text: "Ransomware versleutelt de server van de ziekenboeg. Daarop staan de verzuimdossiers van alle crew.",
       facts: [["cross", "Gezondheidsgegevens"], ["users", "Alle crew"], ["alert", "Onbekende aanvallers"]], key: [0, 1, 2],
-      why: "Gezondheidsgegevens van veel mensen in handen van onbekenden. Dat is een hoog risico. De Privacy Officer meldt het bij de AP binnen 72 uur, en ook de crew zelf wordt geïnformeerd.",
+      why: "Gezondheidsgegevens van veel mensen in handen van onbekenden. Dat is een hoog risico. De privacy officer meldt het bij de AP binnen 72 uur, en ook de crew zelf wordt geïnformeerd.",
       hint: "Tel de factoren die het risico verhogen. Welke gegevens, hoeveel mensen, en bij wie?" },
     { title: "Uitdraai op de printer", short: "Printer", art: "printer", zone: 1,
       text: "Een uitdraai met gezondheidsgegevens van één crewlid lag een kwartier op de printer van Dokter Okafor. De spreekkamer was op slot.",
       facts: [["cross", "Gezondheidsgegevens"], ["user", "1 crewlid"], ["lock", "Afgesloten ruimte"]], key: [2],
-      why: "Gezondheidsgegevens zijn gevoelig, maar niemand anders kon erbij in die afgesloten ruimte. Het risico is laag. Wel meldt de dokter het bij de Privacy Officer, en die legt het vast.",
+      why: "Gezondheidsgegevens zijn gevoelig, maar niemand anders kon erbij in die afgesloten ruimte. Het risico is laag. Wel meldt de dokter het bij de privacy officer, en die legt het vast.",
       hint: "Gevoelige gegevens, maar wie had er in dat kwartier bij gekund?" },
     { title: "Paspoortkopieën drie maanden open", short: "Paspoorten", art: "passport", zone: 3,
       text: "BSN's en paspoortkopieën van alle crew stonden drie maanden open voor iedereen op het station, en ook voor gasten van buiten.",
       facts: [["file", "BSN en kopie paspoort"], ["users", "Alle crew"], ["unlock", "Drie maanden open"]], key: [0, 1, 2],
-      why: "BSN's en kopieën van identiteitsbewijzen, van veel mensen, lang open voor onbekenden. Dat is een hoog risico. De Privacy Officer meldt bij de AP binnen 72 uur na ontdekking, en de crew wordt zelf geïnformeerd.",
+      why: "BSN's en kopieën van identiteitsbewijzen, van veel mensen, lang open voor onbekenden. Dat is een hoog risico. De privacy officer meldt bij de AP binnen 72 uur na ontdekking, en de crew wordt zelf geïnformeerd.",
       hint: "BSN, kopie identiteitsbewijs, veel mensen, onbekenden. Hoeveel van de zware factoren zie je?" }
   ];
 
@@ -98,7 +98,7 @@
   G.intro({
     lead: "Aan de balie van de Datawacht in Module Kepler komen zeven meldingen binnen. Niet alles is even erg. Jij legt elke melding op de risicometer en ziet wat er dan moet gebeuren.",
     who: "Noor",
-    line: "Is het een lek, en hoe groot is het risico? Kijk naar welke gegevens het zijn, hoeveel mensen, en bij wie ze terechtkwamen. Melden bij de Privacy Officer doe je bij elk lek.",
+    line: "Is het een lek, en hoe groot is het risico? Kijk naar welke gegevens het zijn, hoeveel mensen, en bij wie ze terechtkwamen. Melden bij de privacy officer doe je bij elk lek.",
     rules: [["hand", "Weeg de feiten op de kaart. Sleep de kaart dan naar een zone op de meter, of klik op de zone."],
       ["target", "Precies goed is 10 punten. Eén zone ernaast is half goed. Verder weg kost schild."],
       ["gem", "Na het leggen kies je <b>Zeker weten</b> of <b>Ik denk het</b>. Zeker en goed levert een kristal op, zeker en fout kost extra schild."]],
@@ -201,7 +201,7 @@
       <div class="lk-fb-head"><span class="dot">${icon(res === "goed" ? "check" : res === "half" ? "half" : "x", "lg")}</span><h3>${res === "goed" ? "Goed" : res === "half" ? "Half goed" : under ? "Zwaar onderschat" : "Niet goed"} <span class="pts">+${pts}</span></h3></div>
       <p class="lk-fb-zone">${res === "goed" ? "" : res === "half" ? "Eén zone ernaast. " : `${dist} zones ernaast. `}Doorslaggevend: ${C.key.map((k) => `<i class="lk-key">${esc(C.facts[k][1])}</i>`).join(" ")}</p>
       ${G.sayHTML("Noor", (res === "goed" ? (o.sure ? "Klopt, en je durfde. " : "Klopt. ") : res === "half" ? "Bijna. " : under ? "Dit lek mag je nooit onderschatten. " : "Nee, dit zit anders. ") + C.why, { mood: res === "goed" ? "ok" : res === "half" ? "half" : "bad" })}
-      <div class="lk-fb-foot"><p class="lk-fb-rule">${icon("phone", "sm")}<span>${C.zone >= 1 ? "Meld het direct bij de Privacy Officer." : "Bij twijfel meld je het toch."}</span></p>
+      <div class="lk-fb-foot"><p class="lk-fb-rule">${icon("phone", "sm")}<span>${C.zone >= 1 ? "Meld het direct bij de privacy officer." : "Bij twijfel meld je het toch."}</span></p>
         <button class="btn lk-fb-next" type="button" data-next>${last ? "Naar de debriefing" : "Volgende melding"}${icon("arrow")}</button></div></div>`;
     $("[data-next]", s).addEventListener("click", () => last ? end() : showCase(idx + 1));
     $("[data-next]", s).focus({ preventScroll: true });
@@ -381,7 +381,7 @@
   function end() {
     const good = G.log.filter((x) => x.result === "goed").length;
     if (G.hints === 0 && good >= 5) G.gem();
-    const T = "Elk (mogelijk) datalek meld je direct bij de Privacy Officer, ook bij laag risico en ook bij twijfel. Hoe erger de gegevens, hoe meer mensen en hoe onbekender de ontvanger, hoe hoger het risico. De Privacy Officer beslist over een melding bij de AP binnen 72 uur.";
+    const T = "Elk (mogelijk) datalek meld je direct bij de privacy officer, ook bij laag risico en ook bij twijfel. Hoe erger de gegevens, hoe meer mensen en hoe onbekender de ontvanger, hoe hoger het risico. De privacy officer beslist over een melding bij de AP binnen 72 uur.";
     if (!critical.length) { G.finish({ takeaway: T }); return; }
     const isCrit = (x) => /kritieke misser/.test(x.q);
     const review = G.log.filter(isCrit).concat(G.log.filter((x) => !isCrit(x)));
