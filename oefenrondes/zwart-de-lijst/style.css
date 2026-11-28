@@ -425,3 +425,6 @@
   .zl-addr { margin: 8px 0 4px; padding: 6px 12px; }
   .zl-meter .zl-send { min-height: 50px; }
 }
+
+/* Ronde 7: geen losse klinknagels op het bureau, critici lazen ze als verdwaalde stippen. */
+.zl-desk::before, .zl-desk::after { display: none; }
