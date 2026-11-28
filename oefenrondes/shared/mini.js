@@ -198,7 +198,7 @@
     $("[data-pressure]", root).addEventListener("click", (e) => {
       G.calm = !G.calm; store.set("pressure", !G.calm);
       e.currentTarget.setAttribute("aria-pressed", !G.calm); e.currentTarget.innerHTML = `${icon("clock", "sm")}<span>Tijdsdruk ${G.calm ? "uit" : "aan"}</span>`;
-      if (G.started && !G.finished && cfg.timer) { if (G.calm) stopClock(); else startClock(); }
+      if (G.started && !G.finished && cfg.timer) { if (G.calm) { stopClock(); clockEl.hidden = true; } else startClock(); }
     });
 
     function paint() {
