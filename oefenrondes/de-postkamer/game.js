@@ -162,7 +162,7 @@
     lead: "Op de postterminal van het Vrachtdok staan vijf nieuwe berichten. Sommige zijn echt, sommige zijn phishing. Een mailprogramma laat niet alles zien. Jouw loep wel.",
     who: "ARIA",
     line: "Een bericht kan er netjes uitzien en toch nep zijn. En een streng bericht kan gewoon kloppen. Kijk eerst, beslis dan.",
-    rules: [["search", "Wijs met de <b>loep</b> afzender, knop, bijlage en tekst aan. Wat erachter zit, staat in de strook onder de mail. Met Tab spring je naar elk onderdeel. Wat je vindt komt in de bewijslijst."],
+    rules: [["search", "Wijs met de <b>loep</b> afzender, knop, bijlage en tekst aan. Wat erachter zit, staat in de strook onder de mail. Met Tab spring je naar elk onderdeel. Onderdelen met een stippellijn kun je bekijken. Wat je vindt komt in de bewijslijst."],
       ["flag", "Beslis per bericht: <b>echt</b> en afhandelen, <b>nep</b> en melden, of bij <b>twijfel</b> navragen via een kanaal dat je zelf kiest."],
       ["gem", "Vind je in een nepbericht alle signalen voordat je beslist? Dan krijg je een kristal. Een verkeerde keuze kost schild."]],
     art, note: "Vijf berichten, geen tijdsdruk, ongeveer 4 minuten"
@@ -226,7 +226,7 @@
       <section class="pk-side"><div class="pk-side-in">
         <div class="pk-ev">
           <div class="pk-ev-head"><h3>${icon("search")}Bewijslijst</h3><span data-evcount>0 van ${parts} bekeken</span></div>
-          <ul class="pk-ev-list" data-ev aria-live="polite">${Array.from({ length: parts }, (_, k) => `<li class="pk-slot">${icon("search", "sm")}<span>${k ? "Nog niet bekeken" : "Nog niet bekeken. Wijs een onderdeel van de mail aan."}</span></li>`).join("")}</ul>
+          <ul class="pk-ev-list" data-ev aria-live="polite">${Array.from({ length: parts }, (_, k) => `<li class="pk-slot">${icon("search", "sm")}<span>${k ? "Nog niet bekeken" : "Nog niet bekeken. Zoek in de mail de stippellijnen."}</span></li>`).join("")}</ul>
           <div class="pk-stake" data-stake><b>${icon("alert", "sm")}Wat er op het spel staat</b>
             <p class="who">${icon("user", "sm")}<span>${esc(M.stake[0])}</span></p>
             <p class="sh">${icon("shield", "sm")}<span>${esc(M.stake[1])}</span></p></div>
@@ -266,6 +266,12 @@
         const rg = document.createRange(); rg.selectNodeContents(t);
         for (const q of rg.getClientRects()) out.push([q.left - pr.left, q.top - pr.top, q.right - pr.left, q.bottom - pr.top]);
       }
+      // Ook knoppen, de bijlage, de banner en elk onderdeel met zijn rand en stippellijn: het glas valt nooit over een knop.
+      const P = 8;
+      $$(".hs:not(.phrase), .pk-cta, .pk-replybtn, .pk-file, .pk-banner, .pk-av", docEl).forEach((b) => {
+        const q = b.getBoundingClientRect(); if (!q.width) return;
+        out.push([q.left - pr.left - P, q.top - pr.top - P, q.right - pr.left + P, q.bottom - pr.top + P]);
+      });
       return out;
     }
     // Zet het glas op de eerste plek waar het geen tekst raakt. Is er geen vrije plek, dan blijft het weg.
@@ -282,7 +288,7 @@
     function beside(s) {
       const pr = paper.getBoundingClientRect(), rs = s.getClientRects(), a = rs[0], z = rs[rs.length - 1];
       const L = (r) => r.left - pr.left, T = (r) => r.top - pr.top, R = (r) => r.right - pr.left, B = (r) => r.bottom - pr.top;
-      put([[R(z) + 10, T(z) + z.height / 2 - S / 2], [L(a) - 10 - S, T(a) + a.height / 2 - S / 2], [R(z) - S, B(z) + 4], [L(a), T(a) - 4 - S], [paper.clientWidth - S - 2, T(z) + z.height / 2 - S / 2]]);
+      put([[R(z) + 16, T(z) + z.height / 2 - S / 2], [L(a) - 16 - S, T(a) + a.height / 2 - S / 2], [R(z) - S, B(z) + 10], [L(a), T(a) - 10 - S], [paper.clientWidth - S - 2, T(z) + z.height / 2 - S / 2]]);
     }
     function place(nx, ny, instant, s) {
       px = Math.max(0, Math.min(paper.clientWidth, nx)); py = Math.max(0, Math.min(paper.clientHeight, ny));

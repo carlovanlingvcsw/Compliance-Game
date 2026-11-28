@@ -280,3 +280,22 @@
   .pp-fb { padding: 12px 14px; gap: 6px; }
   .pp-fb-face { width: 46px; height: 46px; }
 }
+
+/* Ronde 33: gedimde tegels blijven zichtbaar (portret op de helft), labels leesbaar; het bericht krijgt meer ruimte en grotere markeringen. */
+.pp-face.off { opacity: 1; filter: none; transform: scale(.94); background: #0a254b; border-color: rgba(103, 202, 255, .16); }
+.pp-face.off .pp-pic { opacity: .5; filter: grayscale(1); }
+.pp-face.off .pp-pips { opacity: .55; }
+.pp-face.off span { opacity: 1; color: #cad5e2; text-decoration: none; background: rgba(4, 19, 48, .95); }
+.pp-field { display: inline-block; max-width: 100%; text-align: left; font-size: 1.125rem; line-height: 1.35; padding: 2px 10px 3px; }
+.pp-field .lbl { margin-right: 6px; }
+.pp-field .lbl { font: 700 1rem/1 var(--font-b); color: #0c4a8a; }
+.pp-msg-body { padding: 12px 18px 8px; line-height: 1.95; font-size: 1.0625rem; }
+.pp-msg-meta { font-size: .9375rem; }
+@media (min-width: 941px) and (max-width: 1260px) {
+  /* De voortgangsstrook herhaalt "Bericht N van 6" uit de kop: weg, zodat het bericht de hoogte krijgt. */
+  .pp-stakes { display: none !important; }
+  .pp { grid-template-columns: minmax(0, 1fr) 340px; gap: 12px; }
+  .pp-msg-meta { grid-template-columns: auto 1fr; padding: 10px 16px 8px; }
+  .pp-msg-body { padding: 12px 16px 8px; }
+  .pp-msg-foot { padding: 4px 16px 12px; font-size: .9375rem; }
+}

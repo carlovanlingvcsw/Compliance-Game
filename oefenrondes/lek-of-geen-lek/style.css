@@ -523,3 +523,81 @@ html.kbd .lk-conf:focus-visible { outline: 3px solid #e17100; outline-offset: 2p
 .lk-cell .no, .lk-cell.pend .no, .lk-cell.mine .no, .lk-cell.hl .no { width: 22px !important; height: 22px !important; }
 .lk-fb .say .txt { font-size: .9375rem; line-height: 1.45; }
 .lk-fb-zone .lk-key { padding: 0 8px; }
+
+/* ---------- Ronde 10: gevolgen als één rij kaarten, zekerheid als eigen stap ---------- */
+.lk-meter { display: flex; flex-direction: column; }
+.lk-meter .lk-grid { flex: 1; grid-template-rows: auto auto minmax(44px, auto) minmax(0, 1fr); }
+.lk-cons { align-self: stretch; display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 14px; align-items: stretch; margin-top: 12px; padding: 12px 14px; border-radius: 14px; border: 2px solid rgba(255, 255, 255, .14); background: rgba(4, 14, 32, .7); }
+.lk-cons.pend, .lk-cons.right { border-color: var(--zc); background: linear-gradient(180deg, var(--zs), rgba(4, 14, 32, .75)); }
+.lk-cons.pend { border-style: dashed; }
+.lk-cons-head { display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.lk-cons-head b { color: #fff; font: 800 1.25rem/1.2 var(--font-h); }
+.lk-cons-head span { color: var(--g200); font: 500 1rem/1.35 var(--font-b); }
+.lk-cons-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.lk-cons-list li { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 12px; border: 2px solid rgba(255, 255, 255, .16); background: rgba(11, 20, 36, .85); }
+.lk-cons-list .lb { color: #fff; font: 600 1.0625rem/1.25 var(--font-b); }
+.lk-cons-list .v { display: inline-flex; align-items: center; gap: 8px; color: #fff; font: 800 1.375rem/1.1 var(--font-h); }
+.lk-cons-list .v .i { flex: none; width: 30px; height: 30px; padding: 5px; border-radius: 50%; stroke-width: 3; }
+.lk-cons-list li.y { border-color: var(--zc); background: rgba(11, 20, 36, .6); }
+.lk-cons-list li.y .v .i { background: var(--zc); color: #0b1424; }
+.lk-cons-list li.n .v { color: var(--g200); }
+.lk-cons-list li.n .v .i { border: 2px solid #cad5e2; color: #fff; padding: 4px; }
+.lk-cons-list li.t .v { font-size: 1.125rem; }
+.lk-cons-list li.t .v .i { background: rgba(103, 202, 255, .25); color: var(--b200); }
+.lk-cons-list .q { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 2px dashed rgba(255, 255, 255, .35); color: var(--g300); font: 800 1.125rem/1 var(--font-h); }
+.lk-cons.idle .lk-cons-list li { border-style: dashed; }
+.lk-cons.idle .lb { color: var(--g200); }
+.lk-cons-list li.miss { box-shadow: 0 0 0 3px rgba(255, 210, 48, .7); }
+.lk-cons-list .you { color: #ffd230; font: 700 .9375rem/1.2 var(--font-b); }
+@media (prefers-reduced-motion: no-preference) { .lk-cons.pend .lk-cons-list li, .lk-cons.right .lk-cons-list li { animation: fadein .3s ease both; } }
+
+/* De zekerheidsstap staat rechts, los van de kaart, met twee grote knoppen. */
+.lk-cs-wrap { border-radius: 16px; border: 2px solid #ffd230; background: linear-gradient(180deg, rgba(123, 51, 6, .55), rgba(42, 22, 0, .7)); padding: 12px 14px; }
+.lk-cs-step { display: flex; flex-direction: column; gap: 8px; height: 100%; animation: fadein .3s ease both; }
+.lk-cs-step:focus { outline: none; }
+.lk-cs-head { display: flex; align-items: center; gap: 10px; }
+.lk-cs-head .lk-step { background: #ffd230; color: #2a1600; }
+.lk-cs-head h3 { margin: 0; color: #fff; font: 800 1.375rem/1.2 var(--font-h); }
+.lk-cs-sub { margin: 0; color: #fff; font: 500 1rem/1.35 var(--font-b); }
+.lk-cs-sub b { color: var(--zc); font-weight: 800; }
+.lk-cs-row { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lk-cs { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 6px; text-align: left; padding: 12px 14px; border-radius: 14px; cursor: pointer; border: 2px solid rgba(103, 202, 255, .55); background: #0c2f5f; color: #fff; transition: background .15s, border-color .15s; }
+.lk-cs .t { display: inline-flex; align-items: center; gap: 8px; font: 800 1.1875rem/1.15 var(--font-h); }
+.lk-cs .t .i { flex: none; color: var(--b300); }
+.lk-cs .c { color: var(--g100, #f1f5f9); font: 500 .9375rem/1.3 var(--font-b); }
+.lk-cs.sure { border-color: #ffd230; background: #4a2a04; }
+.lk-cs.sure .t .i { color: #ffd230; }
+.lk-cs:hover { border-color: #fff; background: #13559b; }
+.lk-cs.sure:hover { background: #6b3d06; }
+.lk-cs:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.lk-side.lk-cs-wrap { justify-content: stretch; }
+
+@media (min-width: 941px) and (max-width: 1260px) {
+  .lk-cons { grid-template-columns: 196px minmax(0, 1fr); gap: 10px; padding: 10px 12px; margin-top: 10px; }
+  .lk-cons-list { gap: 8px; }
+  .lk-cons-list li { padding: 8px 12px; gap: 6px; }
+  .lk-cons-list .lb { font-size: 1rem; }
+  .lk-cons-list .v { font-size: 1.25rem; }
+  .lk-cons-list li.t .v { font-size: 1.0625rem; }
+  .lk-cons-head b { font-size: 1.125rem; }
+  .lk-cons-head span { font-size: .9375rem; }
+}
+@media (max-width: 760px) {
+  .lk-cons { grid-column: 1 / -1 !important; grid-row: auto !important; grid-template-columns: 1fr; }
+  .lk-cons-list { grid-template-columns: 1fr 1fr; }
+  .lk-cs-row { grid-template-columns: 1fr; }
+}
+.lk-cons-list .v { flex-wrap: wrap; row-gap: 2px; }
+.lk-cons-list .you { flex-basis: auto; margin-left: 2px; }
+@media (min-width: 941px) and (max-width: 1260px) {
+  .lk-cons { padding: 8px 10px; margin-top: 8px; }
+  .lk-cons-list li { padding: 6px 10px; gap: 4px; }
+  .lk-cons-head { gap: 4px; }
+}
+@media (min-width: 941px) and (max-width: 1260px) {
+  .lk-cons { padding: 6px 10px; margin-top: 3px; }
+  .lk-cons-list li { padding: 5px 10px; }
+  .lk-cons-list .v { font-size: 1.1875rem; }
+  .lk-cons-list .v .i, .lk-cons-list .q { width: 26px; height: 26px; padding: 4px; }
+  .lk-cons-list .lb { line-height: 1.2; }
+}

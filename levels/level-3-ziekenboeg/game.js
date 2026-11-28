@@ -620,6 +620,7 @@
     if (!L || L.done || L.cur === -1) { if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost); return; }
     var i = L.cur, it = LOCK_ITEMS[i], h = hatch(id);
     flyIn(id, ghost);
+    L.open = null;
     L.place[i] = id;
     delete L.verdict[i];
     L.justIn = i;
@@ -706,19 +707,45 @@
       var door = document.getElementById("deur-" + h.id);
       door.classList.toggle("actief", L.cur !== -1 && !L.done);
       door.classList.toggle("fout", hasWrong);
-      document.getElementById("lijst-" + h.id).innerHTML = items.map(function (i) {
-        var v = L.verdict[i], tip = L.revealed[i] && LOCK_ITEMS[i].a !== h.id;
-        return '<li' + (L.justIn === i ? ' class="nieuw"' : '') + '><button type="button" class="deur-item' + (v === false ? " fout" : "") + '" data-take="' + i + '"' + (L.done ? " disabled" : "") +
-          ' title="Klik om terug te halen">' + icon(v === false ? "cross" : "tick") +
+      /* Compacte chips in een vak met vaste hoogte, zodat de drie kolommen even hoog blijven.
+         Rode stukjes en een ARIA-tip staan vooraan. Past het niet, dan toont de laatste plek "+2 meer". */
+      var CAP = 3, open = L.open && L.open[h.id];
+      var order = items.slice().sort(function (a, b) {
+        var wa = (L.verdict[a] === false ? 2 : 0) + (L.revealed[a] && LOCK_ITEMS[a].a !== h.id ? 1 : 0);
+        var wb = (L.verdict[b] === false ? 2 : 0) + (L.revealed[b] && LOCK_ITEMS[b].a !== h.id ? 1 : 0);
+        return wb - wa || b - a;
+      });
+      var shown = open || order.length <= CAP ? order : order.slice(0, CAP - 1);
+      var html = shown.map(function (i) {
+        var v = L.verdict[i], tip = L.revealed[i] && LOCK_ITEMS[i].a !== h.id, tipTxt = tip ? "ARIA: hoort bij " + hatch(LOCK_ITEMS[i].a).name : "";
+        return '<li' + (L.justIn === i ? ' class="nieuw"' : '') + '><button type="button" class="deur-item' + (v === false ? " fout" : "") + (tip ? " tip" : "") + '" data-take="' + i + '"' + (L.done ? " disabled" : "") +
+          ' title="' + LOCK_ITEMS[i].t + (tipTxt ? ". " + tipTxt : "") + (L.done ? "" : ". Klik om terug te halen") + '">' + icon(v === false ? "cross" : tip ? "bulb" : "tick") +
           '<span>' + LOCK_ITEMS[i].t + (v === false ? '<span class="vcsw-sr-only">. Ligt in het verkeerde luik</span>' : '') +
-          (L.done ? '' : '<span class="vcsw-sr-only">. Terughalen</span>') +
-          (tip ? '<small>' + icon("bulb") + 'ARIA: hoort bij ' + hatch(LOCK_ITEMS[i].a).name + '</small>' : '') + '</span>' +
+          (tip ? '<span class="vcsw-sr-only">. ' + tipTxt + '</span>' : '') +
+          (L.done ? '' : '<span class="vcsw-sr-only">. Terughalen</span>') + '</span>' +
           (v === false ? '<span class="terug" aria-hidden="true">' + icon("undo") + '</span>' : '') + '</button></li>';
       }).join("");
+      if (order.length > CAP) {
+        html += '<li><button type="button" class="deur-meer" data-meer="' + h.id + '" aria-expanded="' + (open ? "true" : "false") + '">' +
+          (open ? "Minder tonen" : "+" + (order.length - shown.length) + " meer") + '</button></li>';
+      }
+      var lijst = document.getElementById("lijst-" + h.id);
+      lijst.innerHTML = html || '<li class="deur-leeg" aria-hidden="true">Nog leeg</li>';
+      lijst.classList.toggle("open", !!open);
     });
     L.justIn = null;
     screenEl.querySelectorAll("[data-take]").forEach(function (b) {
       b.onclick = function () { takeBack(+b.getAttribute("data-take")); };
+    });
+    screenEl.querySelectorAll("[data-meer]").forEach(function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute("data-meer");
+        L.open = L.open || {};
+        L.open[id] = !L.open[id];
+        paintLock();
+        var nb = screenEl.querySelector('[data-meer="' + id + '"]');
+        if (nb) nb.focus({ preventScroll: true });
+      };
     });
     screenEl.querySelectorAll(".deur-btn").forEach(function (b) {
       if (L.cur === -1 || L.done) b.setAttribute("aria-disabled", "true"); else b.removeAttribute("aria-disabled");
@@ -786,6 +813,7 @@
 
   function checkLock() {
     var L = S.lock;
+    L.open = null;
     if (L.done) return;
     if (Object.keys(L.place).length < LOCK_ITEMS.length) { announce("Leg eerst elk stukje informatie in een luik."); return; }
     if (LOCK_ITEMS.some(function (it, i) { return L.verdict[i] === false; })) { announce("Haal eerst de rode stukjes terug en schuif ze door een ander luik."); return; }

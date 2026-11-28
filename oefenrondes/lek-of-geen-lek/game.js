@@ -127,9 +127,8 @@
           ${ZONES.map((z, i) => `<button class="lk-zone ${z.cls}" type="button" data-zone="${i}" style="grid-column:${i + 2};grid-row:2"><span class="nm">${esc(z.name)}</span><span class="fx"><span class="big">${icon(z.fx, "lg")}</span><span class="sb">${esc(z.sub)}</span></span></button>`).join("")}
           <div class="lk-rowlbl" style="grid-row:3">Gelegde meldingen</div>
           ${ZONES.map((z, i) => `<div class="lk-drop ${z.cls}" data-drop="${i}" style="grid-column:${i + 2};grid-row:3"></div>`).join("")}
-          ${LADDER.map(([lbl, v], r) => `<div class="lk-rowlbl lk-lad" data-row="${r}" style="grid-row:${r + 4}">${esc(lbl)}</div>` + v.map((x, i) => `<div class="lk-cell ${ZONES[i].cls} ${x}" data-col="${i}" style="grid-column:${i + 2};grid-row:${r + 4}">${x === "y" ? `<span class="yes">${icon("check")}</span><span class="cw">Ja</span>` : x === "t" ? `<span class="tw">${icon("half", "sm")}Alleen bij twijfel</span>` : `<span class="no">${icon("x", "sm")}</span><span class="cw">Nee</span>`}</div>`).join("")).join("")}
-          ${ZONES.map((z, i) => `<div class="lk-colhl" data-hl="${i}" style="grid-column:${i + 2};grid-row:2 / span 6"></div>`).join("")}
-          <p class="lk-ladhint" style="grid-column:1 / span 5;grid-row:4 / span 4">${icon("hand", "sm")}<span>Leg de kaart op een zone. Dan zie je hier wat er bij die zone moet gebeuren.</span></p>
+          ${ZONES.map((z, i) => `<div class="lk-colhl" data-hl="${i}" style="grid-column:${i + 2};grid-row:2 / span 2"></div>`).join("")}
+          <div class="lk-cons" data-cons style="grid-column:1 / span 5;grid-row:4" aria-live="polite"></div>
         </div>
         <span class="screw a"></span><span class="screw b"></span><span class="screw c"></span><span class="screw d"></span>
       </section>
@@ -166,6 +165,7 @@
     $$(".lk-colhl", G.stage).forEach((x) => x.className = "lk-colhl");
     $$(".lk-cell", G.stage).forEach((x) => x.classList.remove("hl", "pend", "mine"));
     $("[data-needle]", G.stage).style.left = "50%"; $("[data-needle]", G.stage).classList.remove("set", "swing");
+    cons(null);
     side("pick");
   }
 
@@ -178,6 +178,19 @@
         <ul>${C.facts.map((f, k) => `<li data-fact="${k}"><span class="ic">${icon(f[0])}</span><span><small>${WEIGH[k]}</small><b>${esc(f[1])}</b></span></li>`).join("")}</ul>
         <div data-hintline></div></div>`;
       $("[data-hint]", s).addEventListener("click", hint);
+      return;
+    }
+    if (mode === "confirm") {
+      s.className = "lk-side lk-cs-wrap";
+      s.innerHTML = `<div class="lk-cs-step" role="group" aria-labelledby="lk-cs-q" tabindex="-1" data-csstep>
+        <div class="lk-cs-head"><span class="lk-step">3</span><h3 id="lk-cs-q">Hoe zeker ben je?</h3></div>
+        <p class="lk-cs-sub">Je legde de melding op <b class="${ZONES[o.z].cls}">${esc(ZONES[o.z].name)}</b>. Een andere zone kiezen mag nog.</p>
+        <div class="lk-cs-row">
+          <button class="lk-cs sure" type="button" data-conf="1"><span class="t">${icon("gem")}Ik weet het zeker</span><span class="c">Goed levert een kristal op. Niet helemaal goed kost 10 procent extra schild.</span></button>
+          <button class="lk-cs" type="button" data-conf="0"><span class="t">${icon("scale")}Ik denk het</span><span class="c">Geen kristal en geen extra kosten.</span></button>
+        </div></div>`;
+      $$("[data-conf]", s).forEach((b) => b.addEventListener("click", () => { setBet(b.dataset.conf === "1"); reveal(pendingZ); }));
+      if (!G.shot) $("[data-csstep]", s).focus({ preventScroll: true });
       return;
     }
     const { res, C, chosen, pts } = o;
@@ -257,6 +270,23 @@
   }
   function setBet(v) { sure = v; const b = $("[data-bet]", G.stage); if (b) b.setAttribute("aria-checked", String(v)); }
   function moveNeedle(z) { $("[data-needle]", G.stage).style.left = (z * 25 + 12.5) + "%"; }
+  /* De gevolgen van een risiconiveau als één rij grote kaarten onder de meter. */
+  const VAL = { y: ["Ja", "check"], n: ["Nee", "x"], t: ["Alleen bij twijfel", "half"] };
+  function cons(z, mode, mine) {
+    const el = $("[data-cons]", G.stage); if (!el) return;
+    if (z == null) {
+      el.className = "lk-cons idle";
+      el.innerHTML = `<div class="lk-cons-head"><b>Wat moet er gebeuren?</b><span>Leg de kaart op een zone. Dan zie je hier de gevolgen van dat risiconiveau.</span></div>
+        <ul class="lk-cons-list">${LADDER.map(([lbl]) => `<li><span class="lb">${esc(lbl)}</span><span class="v"><span class="q">?</span></span></li>`).join("")}</ul>`;
+      return;
+    }
+    const Z = ZONES[z], diff = mode === "right" && mine != null && mine !== z;
+    const head = mode === "right" ? (diff ? `Hoort bij ${Z.name}. Dit moet er gebeuren` : `${Z.name} klopt. Dit moet er gebeuren`) : `Gevolgen van ${Z.name}`;
+    const sub = mode === "right" ? (diff ? `Jij koos ${ZONES[mine].name.toLowerCase()}. Het verschil is geel omrand.` : "Zo gaat het verder met deze melding.") : "Zo gaat het verder als je dit bevestigt.";
+    el.className = `lk-cons ${Z.cls} ${mode}`;
+    el.innerHTML = `<div class="lk-cons-head"><b>${esc(head)}</b><span>${esc(sub)}</span></div>
+      <ul class="lk-cons-list">${LADDER.map(([lbl, v]) => { const x = v[z], other = diff && v[mine] !== x; return `<li class="${x}${other ? " miss" : ""}"><span class="lb">${esc(lbl)}</span><span class="v">${icon(VAL[x][1])}${VAL[x][0]}${other ? `<span class="you">Jouw keuze: ${VAL[v[mine]][0].toLowerCase()}</span>` : ""}</span></li>`; }).join("")}</ul>`;
+  }
   /* Toon de gevolgen van de zone waar je overheen gaat. */
   function preview(z) {
     if (phase !== "pick" && phase !== "confirm" && z != null) return;
@@ -278,15 +308,9 @@
     foot.classList.add("confirm");
     $$(".lk-cell", G.stage).forEach((c) => c.classList.toggle("pend", +c.dataset.col === z));
     $(".lk-meter", G.stage).classList.add("placed");
-    foot.setAttribute("tabindex", "-1"); foot.setAttribute("role", "group"); foot.setAttribute("aria-label", "Hoe zeker ben je?");
-    foot.innerHTML = `<p class="lk-confq"><span class="lk-step">3</span><span class="lk-step2">Op <b>${esc(ZONES[z].name)}</b>. Hoe zeker ben je?</span></p>
-      <div class="lk-confrow">
-        <button class="lk-conf sure" type="button" data-conf="1">${icon("gem", "sm")}<span><b>Ik weet het zeker</b><small>Fout kost 10 procent extra schild</small></span></button>
-        <button class="lk-conf" type="button" data-conf="0">${icon("scale", "sm")}<span><b>Ik denk het</b><small>Geen extra kosten</small></span></button>
-      </div>`;
-    $$("[data-conf]", foot).forEach((b) => b.addEventListener("click", () => { setBet(b.dataset.conf === "1"); reveal(pendingZ); }));
-    $$("[data-conf]", foot).forEach((b) => b.addEventListener("pointerdown", (e) => e.stopPropagation()));
-    if (!G.shot) foot.focus({ preventScroll: true });
+    foot.innerHTML = `<span class="lk-step">2</span><span class="lk-step2">Gelegd op <b>${esc(ZONES[z].name)}</b>. Kies rechts hoe zeker je bent.</span>`;
+    cons(z, "pend");
+    side("confirm", { z });
   }
   async function reveal(z) {
     if (phase !== "confirm") return; phase = "reveal";
@@ -334,6 +358,7 @@
     $(`[data-hl="${C.zone}"]`, G.stage).classList.add("on", ZONES[C.zone].cls);
     $$(`[data-col="${C.zone}"]`, G.stage).forEach((c, r) => setTimeout(() => c.classList.add("hl"), Mini.reduce || G.shot ? 0 : r * 110));
     $("[data-needle]", G.stage).classList.add("set");
+    cons(C.zone, "right", z);
     placed.push({ i: idx, z, res });
     if (res === "goed") streak++; else streak = 0;
     const extra = sure && res !== "goed" ? 10 : 0;

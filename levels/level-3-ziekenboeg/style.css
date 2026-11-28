@@ -335,3 +335,30 @@ html.orion-level .ox-clock.timer.low { color: #ffc978 !important; }
 
 /* ARIA spreekt in hetzelfde kader als in de andere levels. */
 .title-screen .ox-say:has(> .ox-face), .ox-stack > .ox-say:has(> .ox-face) { padding: 12px 16px; border-radius: 12px; background: linear-gradient(180deg, #0b2548, #081b38); border: 1px solid #1f4f85; border-left: 3px solid var(--vcsw-blue-400); }
+
+/* ---------- Integratieronde: stukje als zwaarste element, compacte chips onder de luiken ---------- */
+/* Het stukje dat je verdeelt is groter en lichter dan alles eromheen; de luiken zijn wat lager. */
+.stukje-body { min-height: 96px; gap: 8px; }
+.kaartje { gap: 14px; padding: 14px 30px 14px 14px; border-radius: 12px; border: 2px solid #ffffff; box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 -4px 0 #b7c6da inset, 0 10px 24px -6px rgb(0 0 0 / .7), 0 0 0 4px rgb(255 255 255 / .08); }
+.kaart-greep { width: 26px; height: 26px; }
+.kaart-tekst { font-size: 32px; line-height: 1.15; }
+.vlieg-kaart .kaart-tekst { font-size: 24px; }
+.luik-kast { height: 108px; }
+.luik-gat { inset: 12px 18px 14px; }
+.luik-sleuf { top: 16px; }
+.blad-plaat { bottom: 14px; }
+
+/* Geplaatste stukjes: chips van één regel in een vak met vaste hoogte (drie plekken). */
+.deur-lijst, .deur-lijst:empty { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; height: 102px; max-height: none; overflow: hidden; }
+.deur-lijst.open { overflow-y: auto; }
+.deur-lijst li { max-width: 100%; }
+.deur-item { width: auto; max-width: 100%; align-items: center; gap: 6px; height: 30px; padding: 0 10px 0 8px; border-radius: 999px; border: 1px solid #1f4f85; line-height: 20px; }
+.deur-item > .vcsw-icon { margin-top: 0; }
+.deur-item > span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.deur-item > .terug { padding-top: 0; }
+.deur-item.tip { border-color: #ffc978; }
+.deur-item.tip > .vcsw-icon { color: #ffc978; }
+.deur-meer { height: 30px; padding: 0 12px; border-radius: 999px; border: 1px dashed #3a6aa3; background: transparent; color: #b9cbe3; font: 600 15px/1 var(--vcsw-font-body); cursor: pointer; }
+.deur-meer:hover { border-color: var(--luik); color: #fff; }
+#screen .deur-meer:focus-visible { outline: 2px solid #67caff; outline-offset: 2px; }
+.deur-leeg { align-self: stretch; display: flex; align-items: center; justify-content: center; height: 30px; border-radius: 999px; border: 1px dashed #1f4f85; color: #8fa9cc; font: 400 15px/1 var(--vcsw-font-body); }
