@@ -249,11 +249,11 @@
     };
     card.addEventListener("pointerup", endDrag); card.addEventListener("pointercancel", endDrag);
   }
-  /* Jouw keuze blijft als spookfiche staan, met een pijl naar de goede zone. */
+  /* Jouw keuze blijft als spookfiche staan, met een pijl naar de goede zone. De pijl stopt aan de rand van die zone, zodat hij niet over fiches daar valt. */
   function markMiss(z, right, C) {
     $(`[data-drop="${z}"]`, G.stage).insertAdjacentHTML("beforeend", `<div class="lk-ghosttok" aria-label="Jouw keuze">${icon("x", "sm")}Jouw keuze</div>`);
     const a = Math.min(z, right), b = Math.max(z, right), n = b - a + 1;
-    $(".lk-grid", G.stage).insertAdjacentHTML("beforeend", `<div class="lk-arrow ${right > z ? "to-r" : "to-l"}" style="grid-column:${a + 2} / ${b + 3};grid-row:3;margin:0 calc(50% / ${n})" aria-hidden="true"><i></i></div>`);
+    $(".lk-grid", G.stage).insertAdjacentHTML("beforeend", `<div class="lk-arrow ${right > z ? "to-r" : "to-l"}" style="grid-column:${a + 2} / ${b + 3};grid-row:3;margin:${right > z ? `0 calc(100% / ${n} - 4px) 0 calc(50% / ${n})` : `0 calc(50% / ${n}) 0 calc(100% / ${n} - 4px)`}" aria-hidden="true"><i></i></div>`);
   }
   function pickFoot() {
     return `<span class="lk-step" title="Weeg de feiten">1</span><span class="lk-step2">Weeg</span>${[["file", "Welke gegevens"], ["users", "Hoeveel mensen"], ["eye", "Bij wie"]].map((w, k) => `<button class="lk-look" type="button" data-look="${k}" aria-pressed="false">${icon(w[0], "sm")}${w[1]}</button>`).join("")}<span class="lk-step">2</span><span class="lk-step2">Leg op de meter</span>`;
