@@ -257,3 +257,86 @@ html.orion-level .ox-clock.timer.low { color: #ffc978 !important; }
 /* Alleen omkeren als de kop het laatste kind is, dus als er labels voor staan. Een zin onder de kop blijft eronder. */
 .screen-head:not(.rij) { flex-direction: column; }
 .screen-head:not(.rij):has(> h1:last-child), .screen-head:not(.rij):has(> h2:last-child) { flex-direction: column-reverse; }
+
+/* ---------- Na een antwoord past het scherm in het missiepaneel (ongeveer 717 px hoog bij 1440x900) ---------- */
+/* Jouw antwoord blijft staan, de andere twee klappen in achter één regel. */
+.screen.answered { gap: 12px; }
+html.in-orion .options.answered { display: flex; flex-direction: column; gap: 6px; }
+html.in-orion .options.answered .option.picked { padding: 12px 16px !important; }
+.options.answered .option .verdict { margin-top: 4px; }
+.opts-more summary { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 12px; border-radius: 8px; cursor: pointer; list-style: none;
+  font-size: 15px; color: #b9cbe3; background: rgba(255, 255, 255, .05); }
+.opts-more summary::-webkit-details-marker { display: none; }
+.opts-more summary .vcsw-icon { width: 16px; height: 16px; flex: none; color: #67caff; transition: transform 200ms ease; }
+.opts-more[open] summary .vcsw-icon { transform: rotate(180deg); }
+.opts-more summary:hover { background: rgba(255, 255, 255, .09); color: #fff; }
+.opts-more summary:focus-visible { outline: 2px solid #67caff; outline-offset: 2px; }
+.opts-more .sum-more { margin-left: auto; color: #67caff; font-weight: 600; }
+.opts-more .when-open, .opts-more[open] .when-closed { display: none; }
+.opts-more[open] .when-open { display: inline; }
+.opts-more-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+html.in-orion .opts-more-list .option { padding: 10px 16px !important; }
+
+/* De reactie en de uitleg van ARIA in één kader, gescheiden door een dunne lijn */
+.feedback { gap: 10px; }
+.ox-say.duo { padding: 10px 14px; border-radius: 12px; background: linear-gradient(180deg, #0b2548, #081b38); border: 1px solid #1f4f85; border-left: 3px solid var(--vcsw-blue-400); }
+.ox-say.duo > .ox-face, .ox-say.duo > .ox-av { width: 40px; height: 40px; }
+.duo-aria { display: flex; gap: 10px; align-items: flex-start; margin-top: 6px; padding-top: 8px; border-top: 1px solid #1f4f85; }
+.duo-aria > .ox-face { width: 28px; height: 28px; flex: none; }
+.ox-say.duo > .ox-say-body > .ox-say-text.uitleg { margin-top: 6px; padding-top: 8px; border-top: 1px solid #1f4f85; }
+
+/* Kristal of geen kristal: een korte regel in plaats van een los kader */
+.fb-after { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+#stage .fb-after li { display: flex; gap: 10px; align-items: flex-start; margin: 0; font-size: 15px; line-height: 1.45; color: #e2e8f0; }
+#stage .fb-after strong { color: #fff; }
+.fb-after .vcsw-icon { flex: none; width: 18px; height: 18px; margin-top: 2px; color: #ffb900; }
+.fb-after li.none .vcsw-icon { color: #b9cbe3; }
+@media (prefers-reduced-motion: reduce) { .opts-more summary .vcsw-icon { transition: none; } }
+
+/* ---------- Het incidentlog past in het paneel ---------- */
+/* De kop met de klok op één regel, de tijdbalk eronder over de volle breedte */
+.screen.log, .screen.log-done { gap: 10px; }
+.log-head { align-items: center !important; }
+.log-tijd { margin-left: auto; display: flex; align-items: baseline; gap: 4px 14px; flex-wrap: wrap; }
+#stage .log-tijd h3 { margin: 0; font: 600 15px/1.2 var(--vcsw-font-body); color: #b9cbe3; }
+.log-tijd .tijd-n { margin-left: 0; }
+.log-tijd .ox-clock { margin-left: 0; }
+.log-track { height: 8px; margin-top: -2px; }
+.log-track .fill { transition: width 1s linear; }
+/* Twee kolommen, per regel de tekst met Ja en Nee ernaast */
+.screen.log .logrows { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 10px; }
+#stage .logrows-kop { margin: 0 0 -2px; display: flex; justify-content: flex-end; font: 600 15px/1.2 var(--vcsw-font-body); color: #b9cbe3; }
+#stage .logrows-kop span { width: 112px; text-align: center; }
+.screen.log .logrow { flex-direction: row; align-items: center; gap: 10px; padding: 4px 5px 4px 12px; }
+.screen.log .logrow .what { flex: 1 1 auto; min-width: 0; font-size: 15px; line-height: 1.3; }
+.screen.log .logrow .vcsw-segmented { flex: none; width: 112px; }
+.screen.log .logrow .vcsw-segmented button { min-height: 36px; padding-inline: 6px; }
+@media (max-width: 560px) { .screen.log .logrows { grid-template-columns: minmax(0, 1fr); } .logrows-kop + .logrows-kop { display: none; } }
+
+/* Na het opslaan: de regels die niet goed waren met uitleg, de goede ingeklapt */
+.log-review { display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow: auto; overscroll-behavior: contain; position: relative; }
+.log-review.is-over { padding-right: 8px; scrollbar-width: thin; scrollbar-color: rgba(103, 202, 255, .75) rgba(255, 255, 255, .06); }
+.log-review.is-over:not(.at-end) { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 48px), transparent); }
+.log-review:focus-visible { outline: 2px solid #67caff; outline-offset: 2px; }
+.lognotes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 10px; }
+#stage .lognotes li { margin: 0; padding: 7px 12px 8px; border: 1px solid #1f4f85; border-radius: 10px; background: #06162f; display: flex; flex-direction: column; gap: 2px; }
+#stage .lognotes li.is-no { border-color: #ffa2a2; }
+#stage .lognotes .what { margin: 0; font: 600 15px/1.35 var(--vcsw-font-body); color: #fff; }
+#stage .lognotes .note { margin: 0; font-size: 15px; line-height: 1.4; color: #e2e8f0; }
+.lognotes .note strong .vcsw-icon { display: inline-block; width: 14px; height: 14px; stroke-width: 2.25; vertical-align: -2px; margin-right: 4px; }
+.lognotes .note .is-bad { color: #ffa2a2; }
+.lognotes .note .is-good { color: #7bf1a8; }
+.lognotes-ok summary { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 12px; border-radius: 8px; cursor: pointer; list-style: none; font-size: 15px; color: #fff; background: rgba(123, 241, 168, .08); }
+.lognotes-ok summary::-webkit-details-marker { display: none; }
+.lognotes-ok summary .vcsw-icon { color: #7bf1a8; flex: none; width: 18px; height: 18px; }
+.lognotes-ok summary:hover { background: rgba(123, 241, 168, .14); }
+.lognotes-ok summary:focus-visible { outline: 2px solid #67caff; outline-offset: 2px; }
+.lognotes-ok .sum-more { margin-left: auto; color: #67caff; font-weight: 600; white-space: nowrap; }
+.lognotes-ok .when-open, .lognotes-ok[open] .when-closed { display: none; }
+.lognotes-ok[open] .when-open { display: inline; }
+.lognotes-ok > .lognotes { margin-top: 6px; }
+.screen.log-done .feedback { gap: 8px; }
+@media (max-width: 560px) { .lognotes { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .log-track .fill { transition: none; } }
+/* Wat in een dichte uitklaplijst staat, telt niet mee voor de hoogte die de brug aan de schil meldt */
+details:not([open]) > :not(summary) { display: none; }

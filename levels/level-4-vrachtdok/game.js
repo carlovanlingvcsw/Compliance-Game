@@ -501,14 +501,17 @@
       });
       flush(); if (pend) body += gap();
     }
+    /* Before checking, the attachment gets its own column beside the mail, so the selection fits the panel. After checking it stays under the mail. */
+    var attachHtml = "";
     if (s.attach) {
       var rows = M.checked ? s.attach.rows.filter(function (row) { return hasMark(row[1]); }) : s.attach.rows;
       var hid = s.attach.rows.length - rows.length;
-      body += '<div class="mail-attach"><p class="attach-name">' + icon("file", "sm") + "Bijlage: " + esc(s.attach.name) + "</p>" +
+      attachHtml = '<div class="mail-attach"><p class="attach-name">' + icon("file", "sm") + "Bijlage: " + esc(s.attach.name) + "</p>" +
         (rows.length ? '<div class="vcsw-table-wrap"><table class="vcsw-table"><tbody>' +
           rows.map(function (row) { return "<tr><th scope=\"row\">" + esc(row[0]) + "</th><td>" + tokens(row[1]) + "</td></tr>"; }).join("") +
           "</tbody></table></div>" : "") +
         (hid ? gap(false, hid === 1 ? "Eén rij zonder markering, weggelaten" : hid + " rijen zonder markering, weggelaten") : "") + "</div>";
+      if (M.checked) body += attachHtml;
     }
 
     var via = r === 1
@@ -521,20 +524,25 @@
       ? '<div class="mailbox review-scroll" aria-label="De mail, ingekort tot de markeringen"><div class="msg-head slim">' +
         '<span class="v">Aan Kapitein Vega</span><span class="v">' + via + "</span></div>" +
         '<div class="mail-body">' + body + "</div></div>"
-      : '<div class="mailbox"><div class="msg-head">' +
+      : '<div class="mailbox review-scroll" aria-label="De mail"><div class="msg-head">' +
         '<div class="row"><span class="k">Aan</span><span class="v">Kapitein Vega &lt;vega@novaterra.space&gt;</span></div>' +
         '<div class="row"><span class="k">Onderwerp</span><span class="v">Uitkomst kostencontrole Nova Terra</span></div>' +
         '<div class="row"><span class="k">Via</span><span class="v">' + via + "</span></div></div>" +
         '<div class="mail-body">' + body + "</div></div>";
 
     if (!M.checked) {
+      /* In the game panel: title and chips on one row, then the mail on the left over the full height. On the right the intro,
+         Bram's line and the task, the attachment and the button. The source order stays intro, mail, attachment, button,
+         so reading and tabbing follow the task. Same budget as the review after checking; only a part that still overflows scrolls. */
       show(
-        chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) +
-        "<h2>" + esc(s.title) + "</h2><p>" + esc(s.intro) + "</p>" +
-        (r === 1 ? speech(s.speaker, s.line) : "") + task + mailbox +
-        '<p class="sel-count" aria-live="polite">' + nSel + " gegevens aangeklikt</p>" + '<div class="actions">' + btn("Controleer", "mailcheck", "", "check") + "</div>",
+        fbHead(s.title, ["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) +
+        '<div class="mail-review mail-pick fit-review"><div class="mail-brief"><p class="sit-intro">' + esc(s.intro) + "</p>" +
+        (r === 1 ? speech(s.speaker, s.line, "slim") : "") + task + "</div>" + mailbox +
+        '<div class="mail-att review-scroll" aria-label="De bijlage">' + attachHtml + "</div>" +
+        '<div class="mail-foot"><p class="sel-count" aria-live="polite">' + nSel + " gegevens aangeklikt</p>" + '<div class="actions">' + btn("Controleer", "mailcheck", "", "check") + "</div></div></div>",
         "h2"
       );
+      fitReview();
       return;
     }
 
@@ -674,7 +682,7 @@
         : '<li class="missed">' + icon("lock", "sm") + "<span>Gemist bij “" + esc(s.title) + "”.</span></li>";
     }).join("");
     show(
-      '<div class="head">' +
+      '<div class="prelock"><div class="head">' +
       chips(["Luchtsluis", icon("timer") + "5 minuten", icon("gem") + plural(n, "kristal", "kristallen") + " uit dit level"]) +
       "<h2>De berichtenstroom</h2>" +
       '<p class="lead">Beslis bij tien binnenkomende berichten of ze echt zijn of een aanval van de Zwarte Nevel.</p></div>' +
@@ -692,7 +700,7 @@
         ["shield", "Daarna kost een aanwijzing " + CLUE_COST + " procent schild", "bad"]
       ]) + "</section></div>" +
       '<section class="acard tips"><h3>Hier let je op</h3><ul class="clues">' + tips + "</ul></section>" +
-      '<div class="actions">' + btn("Open de berichtenstroom", "lock", "", "arrowR") + "</div>"
+      '<div class="actions">' + btn("Open de berichtenstroom", "lock", "", "arrowR") + "</div></div>"
     );
   }
 
@@ -890,18 +898,34 @@
     var pct = Math.round((S.score / MAX_SCORE) * 100);
     var passed = S.score / MAX_SCORE >= PASS;
     if (passed) document.getElementById("hud-rank").textContent = "Kapitein";
-    var sitLines = SITUATIONS.map(function (s, i) {
-      var g = S.sitResults[i];
+    /* Each situation: the title with the verdict, then the explanation. Half goed: say what the half answer missed, before the full answer. */
+    function sitText(s, g) {
       var good = s.type === "mail" ? { text: s.goodText, why: s.goodWhy } : s.options.filter(function (o) { return o.grade === "good"; })[0];
-      var ic = g === "good" ? icon("check", "ok") : g === "half" ? icon("half", "mid") : icon("x", "no");
-      var lbl = g === "good" ? "Goed" : g === "half" ? "Half goed" : "Fout";
-      /* Half goed: say what the half answer missed, before the full answer */
       var half = s.type === "mail" ? null : s.options.filter(function (o) { return o.grade === "half"; })[0];
       var missed = g !== "half" ? "" : s.type === "mail"
         ? "Je zag een of twee gegevens over het hoofd. "
         : esc(half.why) + " ";
-      return "<li>" + ic + "<span><strong>" + esc(s.title) + "</strong> (" + lbl + "). " + missed + (g === "good" ? "" : "Beter was: " + esc(good.text) + " ") + esc(good.why) + "</span></li>";
+      return missed + (g === "good" ? "" : "Beter was: " + esc(good.text) + " ") + esc(good.why);
+    }
+    function sitHead(s, g) {
+      var ic = g === "good" ? icon("check", "ok") : g === "half" ? icon("half", "mid") : icon("x", "no");
+      var lbl = g === "good" ? "Goed" : g === "half" ? "Half goed" : "Fout";
+      return ic + "<span><strong>" + esc(s.title) + "</strong> (" + lbl + ")</span>";
+    }
+    var more = '<span class="sum-more"><span class="when-closed">Toon uitleg</span><span class="when-open">Verberg</span></span>';
+    /* What did not go well stays open (as far as the panel allows), what went well folds away behind one line, as in the mail review */
+    var notGood = [], goodIdx = [];
+    SITUATIONS.forEach(function (s, i) { if (S.sitResults[i] === "good") goodIdx.push(i); else notGood.push(i); });
+    var sitLines = notGood.map(function (i) {
+      var s = SITUATIONS[i], g = S.sitResults[i];
+      return '<li><details class="sit-fb" open><summary>' + sitHead(s, g) + more + '</summary><p class="sit-why">' + sitText(s, g) + "</p></details></li>";
     }).join("");
+    if (goodIdx.length) {
+      var names = goodIdx.map(function (i) { return esc(SITUATIONS[i].title); });
+      var list = names.length > 1 ? names.slice(0, -1).join(", ") + " en " + names[names.length - 1] : names[0];
+      sitLines += '<li><details class="sit-ok"><summary>' + icon("check", "ok") + "<span><strong>" + plural(goodIdx.length, "situatie", "situaties") + " goed.</strong> " + list + "</span>" + more + "</summary>" +
+        '<ul class="sit-ok-list">' + goodIdx.map(function (i) { var s = SITUATIONS[i]; return "<li><strong>" + esc(s.title) + ".</strong> " + sitText(s, "good") + "</li>"; }).join("") + "</ul></details></li>";
+    }
     var okMsgs = S.msgResults.filter(function (r) { return r === "ok"; }).length;
     var crystals = S.crystals.length
       ? '<ul class="crystal-list">' + S.crystals.map(function (c) { return '<li><span class="vcsw-badge">' + icon("gem") + esc(c) + "</span></li>"; }).join("") + "</ul>"
@@ -913,15 +937,40 @@
       ? "Sterk werk. De sluis staat open en de Zwarte Nevel blijft buiten. Hier is wat goed ging en waarom."
       : "De sluis is open, maar het vertrouwen aan boord is nog niet groot genoeg. Je speelt de dienst opnieuw. Hier is waarom.";
     show(
+      '<div class="debrief">' +
       "<h2>" + (passed ? "Level gehaald. Je bent nu Kapitein" : "Nog niet gehaald") + "</h2>" +
-      speech("ARIA", summary) +
+      speech("ARIA", summary, "slim") +
       chips(["Score " + pct + "%, " + S.score + " van " + MAX_SCORE + " punten, 70% nodig", icon("shield") + "Schildsterkte " + S.shield + "%", okMsgs + " van " + MESSAGES.length + " berichten goed beoordeeld"]) +
-      "<h3>Je dienst</h3><ul class=\"result-list\">" + sitLines + "</ul>" +
-      "<h3>Datakristallen</h3>" + crystals +
-      '<div class="mt">' + carry + "</div>" +
-      "<h3>Drie kernregels</h3><ol class=\"rules\">" + RULES.map(function (r) { return "<li><span>" + esc(r) + "</span></li>"; }).join("") + "</ol>" +
-      '<div class="actions">' + btn("Terug op aarde", "earth", "", "arrowR") + "</div>"
+      "<h3>Je dienst</h3><ul class=\"result-list sit-list\">" + sitLines + "</ul>" +
+      '<div class="two debrief-two"><div><h3>Datakristallen</h3>' + crystals + '<div class="carry">' + carry + "</div></div>" +
+      "<div><h3>Drie kernregels</h3><ol class=\"rules\">" + RULES.map(function (r) { return "<li><span>" + esc(r) + "</span></li>"; }).join("") + "</ol></div></div>" +
+      '<div class="actions">' + btn("Terug op aarde", "earth", "", "arrowR") + "</div></div>"
     );
+    fitDebrief();
+  }
+
+  /* The debriefing gets the same fixed budget as the mail review: explanations that do not fit fold, from the last one up,
+     so the button stays in view. The budget comes from the constant, never from the height of the frame. */
+  function fitDebrief() {
+    if (!document.documentElement.classList.contains("in-orion")) return;
+    var open = [].slice.call(stage.querySelectorAll(".sit-fb[open]")), act = stage.querySelector(".debrief > .actions");
+    function bottom() { return act.getBoundingClientRect().bottom + window.pageYOffset + 14; }
+    while (open.length && bottom() > PANEL_H) open.pop().removeAttribute("open");
+    fitSitList();
+  }
+  /* When the player opens an explanation that does not fit even on its own, only the list scrolls, as in the mail review */
+  function fitSitList() {
+    var list = stage.querySelector(".sit-list"), act = stage.querySelector(".debrief > .actions");
+    if (!list || !act || !document.documentElement.classList.contains("in-orion")) return;
+    list.style.maxHeight = "";
+    var extra = act.getBoundingClientRect().bottom + window.pageYOffset + 14 - PANEL_H, over = false;
+    if (extra > 0) { list.style.maxHeight = Math.max(140, list.getBoundingClientRect().height - extra) + "px"; over = list.scrollHeight > list.clientHeight + 2; }
+    list.classList.toggle("is-over", over);
+    if (over) { list.setAttribute("tabindex", "0"); list.setAttribute("role", "region"); list.setAttribute("aria-label", "Je dienst"); }
+    else { list.removeAttribute("tabindex"); list.removeAttribute("role"); list.removeAttribute("aria-label"); }
+    var atEnd = function () { list.classList.toggle("at-end", list.scrollTop + list.clientHeight >= list.scrollHeight - 4); };
+    if (!list.dataset.watch) { list.dataset.watch = "1"; list.addEventListener("scroll", atEnd, { passive: true }); }
+    atEnd();
   }
 
   /* Terug op aarde, in two steps so each fits the panel: first the two lists, then the report route and the result */
@@ -1074,7 +1123,18 @@
     if (tk && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); tk.click(); }
   });
   /* Opening the folded notes can make the list overflow: then it becomes a scroll region that the keyboard can reach */
-  stage.addEventListener("toggle", function () { fitReview(); }, true);
+  stage.addEventListener("toggle", function (e) {
+    fitReview();
+    /* Debriefing: opening one explanation folds the others again when the panel would otherwise scroll */
+    var d = e.target;
+    if (d.open && d.closest && d.closest(".debrief") && document.documentElement.classList.contains("in-orion")) {
+      var act = stage.querySelector(".debrief > .actions");
+      var others = [].slice.call(stage.querySelectorAll(".sit-fb[open], .sit-ok[open]")).filter(function (x) { return x !== d; });
+      var list = stage.querySelector(".sit-list"); if (list) list.style.maxHeight = "";
+      while (others.length && act.getBoundingClientRect().bottom + window.pageYOffset + 14 > PANEL_H) others.pop().removeAttribute("open");
+    }
+    if (d.closest && d.closest(".debrief")) fitSitList();
+  }, true);
   stage.addEventListener("submit", function (e) {
     if (e.target.id === "codeform") { e.preventDefault(); checkCode(document.getElementById("codein").value); }
   });

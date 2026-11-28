@@ -342,3 +342,100 @@ mark .mk-n { margin-right: 4px; vertical-align: 1px; }
 #stage .option:hover:not([disabled]) { box-shadow: none; }
 #stage > .chips { margin-top: 12px; }
 #stage > .chips:first-child { margin-top: 0; }
+/* Wat in een dichte uitklaplijst staat, telt niet mee voor de hoogte die de brug aan de schil meldt */
+details:not([open]) > :not(summary) { display: none; }
+
+/* ---------- Startkaart van de luchtsluis past in het paneel ---------- */
+.prelock .two { margin-top: 12px; gap: 12px; }
+.prelock .acard { padding: 12px 16px; gap: 8px; }
+#stage .prelock .acard .ilist { gap: 6px; }
+#stage .prelock .acard.tips { margin-top: 12px; }
+#stage .prelock .actions { margin-top: 14px; }
+
+/* ---------- De conceptmail vóór Controleer: past in het paneel ---------- */
+/* Links de mail over de volle hoogte, rechts de opdracht, de bijlage en de knop. De volgorde in de bron blijft opdracht, mail, bijlage, knop. */
+.mail-pick { grid-template-areas: "brief" "mail" "att" "foot"; }
+@media (min-width: 760px) {
+  .mail-pick { grid-template-areas: "mail brief" "mail att" "mail foot"; grid-template-rows: auto minmax(0, 1fr) auto; gap: 8px 14px; align-items: stretch; }
+  html.in-orion .mail-pick.fit-review { height: var(--rv-h, auto); }
+  html.in-orion .fit-review.mail-pick .mailbox { max-height: none; }
+}
+.mail-pick .mail-brief { grid-area: brief; }
+.mail-pick .mailbox { grid-area: mail; min-height: 0; }
+.mail-pick .mail-att { grid-area: att; min-height: 0; overflow: auto; overscroll-behavior: contain; border: 1px solid var(--vcsw-border); border-radius: var(--vcsw-radius-xl); background: var(--vcsw-surface); }
+.mail-pick .mail-foot { grid-area: foot; }
+.mail-brief { display: flex; flex-direction: column; gap: 4px; }
+#stage .mail-brief p { margin: 0; max-width: none; font-size: 0.9375rem; line-height: 1.4; }
+#stage .mail-brief .speech.slim { margin: 0; }
+.mail-pick .mailbox .msg-head { padding: 6px 14px; gap: 0; font-size: 0.9375rem; line-height: 1.45; }
+.mail-pick .mailbox .msg-head .k { width: 82px; }
+.mail-pick .mail-body { padding: 6px 14px 8px; }
+.stage .mail-pick .mail-body p { margin: 0 0 6px; line-height: 1.58; font-size: 0.9375rem; max-width: none; }
+.stage .mail-pick .mail-body p:last-child { margin-bottom: 0; }
+.mail-pick .mail-attach { margin: 0; padding: 6px 12px 4px; border-top: 0; }
+.stage .mail-pick .mail-attach .attach-name { margin: 0 0 2px; font-size: 0.9375rem; overflow-wrap: anywhere; }
+.mail-pick .mail-attach .vcsw-table-wrap { overflow: visible; }
+.mail-pick .mail-attach .vcsw-table { width: 100%; table-layout: fixed; }
+.mail-pick .mail-attach .vcsw-table th, .mail-pick .mail-attach .vcsw-table td { padding: 1px 8px 1px 0; line-height: 1.45; vertical-align: top; font-size: 0.9375rem; white-space: normal; overflow-wrap: anywhere; }
+.mail-pick .mail-attach th { width: 40%; }
+.mail-pick .mail-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+#stage .mail-pick .sel-count { margin: 0; order: 2; }
+#stage .mail-pick .mail-foot .actions { margin-top: 0; }
+.mail-pick .mail-att.is-over { scrollbar-width: thin; scrollbar-color: rgba(103, 202, 255, .75) rgba(255, 255, 255, .06); }
+.mail-pick .mail-att.is-over:not(.at-end) { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent); }
+
+/* ---------- Debriefing past in het paneel ---------- */
+/* ARIA kort, je dienst als lijst waarin wat niet goed ging openstaat en wat goed ging inklapt achter één regel,
+   daaronder de kristallen en de kernregels naast elkaar */
+#stage .debrief h2 { margin: 0 0 2px; }
+#stage .debrief .speech.slim { margin: 4px 0 8px; }
+#stage .debrief > .chips { margin: 0 0 4px; }
+#stage .debrief h3 { margin: 10px 0 4px; font-size: 1.0625rem; }
+.sit-list { gap: 4px; margin: 0; }
+.sit-list > li { display: block; }
+.sit-fb summary, .sit-ok summary { display: flex; align-items: flex-start; gap: 10px; min-height: 30px; padding: 3px 10px; border-radius: 8px; cursor: pointer; list-style: none; font-size: 0.9375rem; line-height: 1.45; }
+.sit-fb summary::-webkit-details-marker, .sit-ok summary::-webkit-details-marker { display: none; }
+.sit-fb summary .vcsw-icon, .sit-ok summary .vcsw-icon, .sit-ok-list .vcsw-icon { flex: none; margin-top: 3px; }
+#stage .sit-fb summary strong, #stage .sit-ok summary strong, #stage .sit-ok-list strong { color: #fff; }
+.sit-fb summary { background: rgba(255, 255, 255, .05); }
+.sit-ok summary { background: rgba(123, 241, 168, .08); }
+.sit-fb summary:hover { background: rgba(255, 255, 255, .09); }
+.sit-ok summary:hover { background: rgba(123, 241, 168, .14); }
+.sit-fb summary:focus-visible, .sit-ok summary:focus-visible { outline: 2px solid var(--vcsw-focus); outline-offset: 2px; }
+.sit-fb .sum-more, .sit-ok .sum-more { margin-left: auto; padding-left: 10px; }
+.sit-fb .when-open, .sit-fb[open] .when-closed, .sit-ok .when-open, .sit-ok[open] .when-closed { display: none; }
+.sit-fb[open] .when-open, .sit-ok[open] .when-open { display: inline; }
+#stage .sit-why { margin: 4px 0 2px 36px; font-size: 0.9375rem; line-height: 1.5; max-width: none; }
+.sit-ok-list { list-style: none; margin: 4px 0 0 36px; padding: 0; display: grid; gap: 4px; }
+#stage .sit-ok-list > li { display: block; margin: 0; padding: 0; font-size: 0.9375rem; line-height: 1.45; }
+.debrief-two { margin-top: 2px; align-items: start; }
+#stage .debrief-two h3 { margin-top: 6px; }
+#stage .debrief-two .crystal-list { margin: 0; }
+#stage .debrief-two p { margin: 0; font-size: 0.9375rem; }
+.debrief-two .carry { margin-top: 8px; }
+#stage .debrief-two .rules { margin: 0; gap: 4px; }
+#stage .debrief-two .rules li { font-size: 0.9375rem; line-height: 1.4; }
+#stage .debrief-two .rules li::before { width: 24px; height: 24px; font-size: 0.8125rem; }
+#stage .debrief > .actions { margin-top: 10px; }
+#stage .debrief-two .vcsw-alert { padding: 8px 12px; gap: 10px; }
+#stage .debrief-two .vcsw-alert-title { margin: 0; font-size: 0.9375rem; line-height: 1.4; }
+#stage .debrief-two .vcsw-alert-text { margin: 0; font-size: 0.9375rem; line-height: 1.45; }
+#stage .debrief-two .crystal-list { align-items: center; }
+#stage .debrief-two .crystal-list li { margin: 0; }
+#stage .debrief .sit-why { margin-top: 2px; line-height: 1.45; }
+
+/* ---------- Berichtenstroom: iets minder lucht, zodat een bericht met link of bijlage plus de aanwijzing van ARIA in het paneel past ---------- */
+html.in-orion #stage .lock-top { margin: 8px 0; }
+html.in-orion #stage .msg { padding: 16px 18px; }
+html.in-orion #stage .msg .msg-head { padding-bottom: 8px; margin-bottom: 8px; }
+html.in-orion #stage .swipe-actions { margin-top: 12px; }
+html.in-orion #stage .ask { margin-top: 12px; }
+html.in-orion #stage .ask .clue { padding: 10px 14px; }
+html.in-orion #stage .ask { gap: 6px; }
+html.in-orion #stage .ask-card { gap: 8px; }
+html.in-orion #stage .swipe-help { margin-top: 6px; }
+/* Alleen als de speler meer uitleg openklapt dan het paneel toelaat, scrolt de lijst zelf en blijft de knop in beeld */
+.sit-list { overflow: auto; overscroll-behavior: contain; position: relative; }
+.sit-list.is-over { padding-right: 8px; scrollbar-width: thin; scrollbar-color: rgba(103, 202, 255, .75) rgba(255, 255, 255, .06); }
+.sit-list.is-over:not(.at-end) { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent); }
+.sit-list:focus-visible { outline: 2px solid var(--vcsw-focus); outline-offset: 2px; }

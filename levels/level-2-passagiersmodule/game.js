@@ -45,6 +45,19 @@
     var w = WHO[who];
     return '<div class="speech"><span class="vcsw-avatar ' + w.cls + '" aria-hidden="true">' + w.av + '</span><div><div class="speech-who">' + w.name + ' <span class="speech-role">' + w.role + '</span></div><p class="speech-text">' + esc(text) + "</p></div></div>";
   }
+  /* Na een antwoord: de reactie van het personage en de uitleg van ARIA in één ballon, zodat het scherm in het paneel past.
+     De uitleg draagt de klasse uitleg: daar leest de brug de uitleg voor Nalezen uit. */
+  function speechDuo(who, react, uitleg) {
+    var w = WHO[who], a = WHO.aria;
+    var aria = who === "aria"
+      ? '<p class="speech-text uitleg">' + esc(uitleg) + "</p>"
+      : '<div class="duo-aria"><span class="vcsw-avatar av-aria" aria-hidden="true">' + a.av + '</span><div><div class="speech-who">' + a.name + ' <span class="speech-role">' + a.role + '</span></div><p class="speech-text uitleg">' + esc(uitleg) + "</p></div></div>";
+    return '<div class="speech duo"><span class="vcsw-avatar ' + w.cls + '" aria-hidden="true">' + w.av + '</span><div><div class="speech-who">' + w.name + ' <span class="speech-role">' + w.role + '</span></div><p class="speech-text duo-react">' + esc(react) + "</p>" + aria + "</div></div>";
+  }
+  /* Wat een keuze oplevert, als korte regels met een teken ervoor */
+  function afterList(rows) {
+    return '<ul class="fb-after">' + rows.map(function (r) { return '<li class="' + r[0] + '">' + icon(r[1]) + "<span>" + r[2] + "</span></li>"; }).join("") + "</ul>";
+  }
 
   /* ---------- Inhoud level 2 ---------- */
   var SITS = [
@@ -306,29 +319,39 @@
 
   function renderSit() {
     var s = SITS[S.sit], pick = S.picks[S.sit];
-    var html = '<div class="titled"><div class="chips">' + chip("Dienst " + (S.sit + 1) + " van " + SITS.length) + "</div><h2>" + esc(s.title) + "</h2></div>";
+    var dienst = '<div class="chips">' + chip("Dienst " + (S.sit + 1) + " van " + SITS.length) + "</div>";
+    /* Na een antwoord staan de titel en het label op één regel, zoals in het vrachtdok */
+    var html = pick ? '<div class="titled rij"><h2>' + esc(s.title) + "</h2>" + dienst + "</div>" : '<div class="titled">' + dienst + "<h2>" + esc(s.title) + "</h2></div>";
     if (s.intro) html += "<p>" + esc(s.intro) + "</p>";
     html += speech(s.who, s.say);
-    html += '<div class="options" role="group" aria-label="Kies je antwoord">';
-    ordered(S.sit, s.opts).forEach(function (o, n) {
+    var buttons = ordered(S.sit, s.opts).map(function (o, n) {
       var cls = "option" + (pick ? (pick === o.k ? " picked" : " dim") : "");
-      html += '<button class="' + cls + '" data-k="' + o.k + '"' + (pick ? " disabled" : "") + '><span class="key" aria-hidden="true">' + "ABC"[n] + "</span><span><span class=\"vcsw-sr-only\">Optie " + "ABC"[n] + ". </span>" + esc(o.t) +
-        (pick === o.k ? '<span class="verdict">' + verdictBadge(o.r) + "</span>" : "") + "</span></button>";
+      return { k: o.k, html: '<button class="' + cls + '" data-k="' + o.k + '"' + (pick ? " disabled" : "") + '><span class="key" aria-hidden="true">' + "ABC"[n] + "</span><span><span class=\"vcsw-sr-only\">Optie " + "ABC"[n] + ". </span>" + esc(o.t) +
+        (pick === o.k ? '<span class="verdict">' + verdictBadge(o.r) + "</span>" : "") + "</span></button>" };
     });
-    html += "</div>";
+    if (!pick) {
+      html += '<div class="options" role="group" aria-label="Kies je antwoord">' + buttons.map(function (b) { return b.html; }).join("") + "</div>";
+    } else {
+      /* Na een antwoord: jouw antwoord blijft staan, de andere twee klappen in achter één regel */
+      var others = buttons.filter(function (b) { return b.k !== pick; });
+      html += '<div class="options answered" role="group" aria-label="Je antwoord">' + buttons.filter(function (b) { return b.k === pick; })[0].html +
+        '<details class="opts-more"><summary data-fk="opts-more">' + icon("down") + "<span>De andere " + (others.length === 2 ? "twee" : others.length) + " antwoorden</span>" +
+        '<span class="sum-more"><span class="when-closed">Toon</span><span class="when-open">Verberg</span></span></summary>' +
+        '<div class="opts-more-list">' + others.map(function (b) { return b.html; }).join("") + "</div></details></div>";
+    }
     if (pick) {
-      var o = s.opts.filter(function (x) { return x.k === pick; })[0];
-      html += '<div class="feedback">' + speech(s.who, o.reactie) +
-        speech("aria", (o.r === "goed" ? "Goed. " : o.r === "half" ? "Half goed. " : "Fout. ") + o.uitleg);
+      var o = s.opts.filter(function (x) { return x.k === pick; })[0], after = [];
+      html += '<div class="feedback">' + speechDuo(s.who, o.reactie, (o.r === "goed" ? "Goed. " : o.r === "half" ? "Half goed. " : "Fout. ") + o.uitleg);
       if (s.crystal && s.crystal.on === pick) {
-        html += '<div class="reward">' + icon("gem") + "<div><strong>Datakristal " + esc(s.crystal.name) + "</strong><br><span>" + esc(s.crystal.desc) + "</span></div></div>";
+        after.push(["gem", "gem", "<strong>Datakristal " + esc(s.crystal.name) + ".</strong> " + esc(s.crystal.desc)]);
       } else if (s.crystal) {
-        html += '<p class="dossier-note" style="color:var(--vcsw-text-muted)">Geen datakristal bij deze keuze. In de luchtsluis is elk kristal één aanwijzing van ARIA zonder kosten.</p>';
+        after.push(["none", "gem", "Geen datakristal bij deze keuze. In de luchtsluis is elk kristal één aanwijzing van ARIA zonder kosten."]);
       }
-      if (o.memo) html += alertBox("warning", "bell", "ARIA onthoudt deze keuze", "Dit komt terug in de eindmissie.");
+      if (o.memo) after.push(["memo", "bell", "<strong>ARIA onthoudt deze keuze.</strong> Dit komt terug in de eindmissie."]);
+      if (after.length) html += afterList(after);
       html += '</div><div class="actions"><button class="vcsw-button lg" id="next">' + (S.sit < SITS.length - 1 ? "Volgende situatie" : "Naar de luchtsluis") + icon("next") + "</button></div>";
     }
-    show(html);
+    show(html, null, pick ? "answered" : "");
     if (!pick) {
       stage.querySelectorAll(".option").forEach(function (b) {
         b.onclick = function () { choose(b.getAttribute("data-k")); };
@@ -415,8 +438,11 @@
     }
     html += "</div>";
 
+    /* De aanwijzing staat in de rechterkolom boven de open lade, waar naast de kast ruimte over is. Zo past de sluis met aanwijzing in het paneel. */
+    var clueHtml = "";
     if (L.given) {
-      var c = CLUES[L.view];
+      var c = CLUES[L.view], html0 = html;
+      html = "";
       html += '<div class="clue-say" id="clueSay" tabindex="-1"><p><span class="vcsw-sr-only">Aanwijzing van ARIA. </span><strong>' + esc(c.title) + ".</strong> " + esc(c.text) + "</p>";
       if (L.given > 1) {
         html += '<div class="pager"><button type="button" id="cluePrev" data-fk="cluePrev" aria-label="Vorige aanwijzing"' + (L.view === 0 ? " disabled" : "") + ">" + icon("left") + "</button>" +
@@ -424,6 +450,7 @@
           '<button type="button" id="clueNext" data-fk="clueNext" aria-label="Volgende aanwijzing"' + (L.view >= L.given - 1 ? " disabled" : "") + ">" + icon("right") + "</button></div>";
       }
       html += "</div>";
+      clueHtml = html; html = html0;
     }
 
     /* Eén regel: de naam van de sluis, hoeveel gekozen, de kristallen, en rechts de klok */
@@ -461,7 +488,7 @@
     html += "</div>";
 
     var a = L.assign[cur.id], curWrong = !done && L.wrong[cur.id];
-    html += '<section class="open-lade" id="openLade" tabindex="-1" aria-labelledby="openTitle">' +
+    html += '<div class="lade-kolom">' + clueHtml + '<section class="open-lade" id="openLade" tabindex="-1" aria-labelledby="openTitle">' +
       '<h3 id="openTitle">' + esc(cur.what) + "</h3>" +
       '<p class="open-meta">Lade ' + cur.id + ", " + esc(cur.name) + "</p>" +
       '<p class="open-ctx">' + esc(cur.ctx) + ".</p>";
@@ -480,7 +507,7 @@
         (good ? "" : "<div><dt>Juiste grond</dt><dd>" + gIcon(cur.ans) + vak(cur.ans).label + "</dd></div>") + "</dl>" +
         '<p class="open-why">' + esc(cur.why) + "</p>";
     }
-    html += "</section></div>";
+    html += "</section></div></div>";
 
     /* De knoppen, met ernaast wat er aan de hand is */
     var msg;
@@ -558,6 +585,8 @@
       ? "Goed werk, Luitenant. Je weet nu waarom het station een BSN, een adres of een ziekmelding mag hebben, en waar de grens ligt."
       : "Je hebt minder dan 70 procent. Speel de dienst opnieuw. In de echte game krijg je dan andere situaties.");
 
+    /* Twee kolommen, zodat de debriefing in het paneel past: links je keuzes en je inventaris, rechts de regels en wat ARIA onthoudt */
+    html += '<div class="debrief-grid"><div class="debrief-col">';
     html += "<div><h3>Jouw keuzes</h3><ul class=\"result-list\">";
     SITS.forEach(function (s, i) {
       var o = s.opts.filter(function (x) { return x.k === S.picks[i]; })[0];
@@ -567,18 +596,20 @@
     var lc = S.lock.firstCorrect || 0;
     html += "<li><span>Cryo-archief, eerste poging</span><span class=\"vcsw-badge " + (lc === DOSSIERS.length ? "success" : lc >= 7 ? "warning" : "danger") + "\">" + lc + " van " + DOSSIERS.length + " goed, +" + lc * DOSSIER_POINTS + "</span></li></ul></div>";
 
+    if (S.crystals.length) html += '<div><h3>Je inventaris</h3><div class="crystals">' + S.crystals.map(function (c) { return '<span class="vcsw-badge">' + icon("gem") + esc(c) + "</span>"; }).join("") + "</div></div>";
+    html += '</div><div class="debrief-col">';
+
     html += "<div><h3>Drie kernregels</h3><ol class=\"rules\">" + RULES.map(function (r) { return "<li>" + esc(r) + "</li>"; }).join("") + "</ol></div>";
 
-    if (S.crystals.length) html += '<div><h3>Je inventaris</h3><div class="crystals">' + S.crystals.map(function (c) { return '<span class="vcsw-badge">' + icon("gem") + esc(c) + "</span>"; }).join("") + "</div></div>";
-
     if (S.memos.length) {
-      html += '<div><h3>ARIA onthoudt</h3><p style="font-size:0.875rem;color:var(--vcsw-text-muted)">In de eindmissie komt een inzageverzoek binnen. Deze sporen vindt de speler dan terug en moet hij melden.</p><ul class="result-list">' +
+      html += '<div><h3>ARIA onthoudt</h3><p class="memo-intro">In de eindmissie komt een inzageverzoek binnen. Deze sporen vindt de speler dan terug en moet hij melden.</p><ul class="result-list">' +
         S.memos.map(function (m) { return "<li><span>" + esc(m) + '</span><span class="vcsw-badge warning">Eindmissie</span></li>'; }).join("") + "</ul></div>";
     }
+    html += "</div></div>";
 
     html += '<div class="actions">' + (passed ? "" : '<button class="vcsw-button outline lg" id="again">' + icon("refresh") + "Speel opnieuw</button>") +
       '<button class="vcsw-button lg" id="earth">Terug op aarde' + icon("next") + "</button></div>";
-    show(html);
+    show(html, null, "debrief");
     var a = document.getElementById("again");
     if (a) a.onclick = restart;
     document.getElementById("earth").onclick = function () { S.screen = "earth"; render(); };
