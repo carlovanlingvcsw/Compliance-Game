@@ -134,7 +134,7 @@ function scene2D(o = {}) {
       <rect x="${x - 60}" y="92" width="120" height="5" rx="2" fill="${E.col}"/>
       <rect x="${x - 26}" y="76" width="52" height="12" rx="4" fill="#1d293d"/><rect data-lamp="${k}" x="${x - 21}" y="78.5" width="42" height="7" rx="3" fill="#33415a"/>
       <g transform="translate(${x} 40)"><rect x="-100" y="-22" width="200" height="44" rx="6" fill="#1b2a45"/><rect x="-100" y="20" width="200" height="3" fill="${E.col}" opacity=".8"/>
-      <text y="7" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="21" fill="#cfdcec">${E.sub}</text></g>
+      <text y="7" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="24" fill="#fff">${E.naam}</text></g>
       <rect x="${x - 66}" y="286" width="132" height="76" fill="#1a273d"/>${[0, 1, 2, 3, 4].map((i) => `<rect x="${x - 62}" y="${292 + i * 14}" width="124" height="7" rx="3.5" fill="#55657e"/>`).join("")}
       <rect x="${x - 72}" y="286" width="7" height="76" fill="#8b9bb3"/><rect x="${x + 65}" y="286" width="7" height="76" fill="#8b9bb3"/>
       <rect x="${x - 66}" y="286" width="132" height="10" fill="url(#st-${k})" opacity=".85"/>
@@ -258,8 +258,8 @@ function view3D(host) {
     mesh(rbox(0.62, 0.26, 0.2, 0.06), legMat, scene, x, 2.78, -3.92);
     D.lens = mesh(rbox(0.48, 0.13, 0.06, 0.03), new THREE.MeshBasicMaterial({ color: 0x2a3650 }), scene, x, 2.78, -3.8);
     // bord
-    // bord: vlak en rustig, alleen de plek. Wat je kiest staat op de knoppen eronder.
-    const sign = mesh(new THREE.PlaneGeometry(2.7, 0.58), new THREE.MeshBasicMaterial({ map: textTex([{ t: E.sub, size: 118, weight: 700, color: "#bccbdd" }], { w: 1024, h: 220, bg: "#1b2a45", align: "center", pad: 40 }), toneMapped: false }), scene, x, 3.45, -3.94);
+    // bord: dezelfde naam als op de knop eronder, zodat deur en knop één woord delen.
+    const sign = mesh(new THREE.PlaneGeometry(2.7, 0.58), new THREE.MeshBasicMaterial({ map: textTex([{ t: E.naam, size: 128, weight: 800, color: "#ffffff" }], { w: 1024, h: 220, bg: "#1b2a45", align: "center", pad: 40 }), toneMapped: false }), scene, x, 3.45, -3.94);
     D.sign = sign;
     mesh(rbox(2.7, 0.05, 0.04, 0.015), plain(E.hex, { metalness: .2, roughness: .6 }), scene, x, 3.13, -3.93);
     // binnenkant: een nis met eigen inhoud

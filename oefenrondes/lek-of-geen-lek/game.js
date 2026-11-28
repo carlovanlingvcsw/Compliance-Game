@@ -3,7 +3,7 @@
    De speler legt elke kaart op de risicometer: geen datalek, laag risico, risico of hoog risico.
    Daarna schuift de kaart naar de goede zone en licht de kolom op met wat er dan gebeurt.
    Melden bij de Privacy Officer staat in elke zone met een lek aan. Afstand bepaalt goed, half of fout.
-   Wie "Ik weet het zeker" aanzet, verdient bij een goed antwoord een kristal en verliest bij een fout extra schild. */
+   Wie "Zeker weten" aanzet, verdient bij een goed antwoord een kristal en verliest bij een fout extra schild. */
 (function () {
   "use strict";
   const { game, icon, esc, $, $$, h, wait } = Mini;
@@ -101,7 +101,7 @@
     line: "Is het een lek, en hoe groot is het risico? Kijk naar welke gegevens het zijn, hoeveel mensen, en bij wie ze terechtkwamen. Melden bij de Privacy Officer doe je bij elk lek.",
     rules: [["hand", "Weeg de feiten op de kaart. Sleep de kaart dan naar een zone op de meter, of klik op de zone."],
       ["target", "Precies goed is 10 punten. Eén zone ernaast is half goed. Verder weg kost schild."],
-      ["gem", "Na het leggen kies je <b>Ik weet het zeker</b> of <b>Ik denk het</b>. Zeker en goed levert een kristal op, zeker en fout kost extra schild."]],
+      ["gem", "Na het leggen kies je <b>Zeker weten</b> of <b>Ik denk het</b>. Zeker en goed levert een kristal op, zeker en fout kost extra schild."]],
     art: introArt, note: "Zeven meldingen, ongeveer 4 minuten"
   });
 
@@ -186,7 +186,7 @@
         <div class="lk-cs-head"><span class="lk-step">3</span><h3 id="lk-cs-q">Hoe zeker ben je?</h3></div>
         <p class="lk-cs-sub">Je legde de melding op <b class="${ZONES[o.z].cls}">${esc(ZONES[o.z].name)}</b>. Een andere zone kiezen mag nog.</p>
         <div class="lk-cs-row">
-          <button class="lk-cs sure" type="button" data-conf="1"><span class="t">${icon("gem")}Ik weet het zeker</span><span class="c">Goed levert een kristal op. Niet helemaal goed kost 10 procent extra schild.</span></button>
+          <button class="lk-cs sure" type="button" data-conf="1"><span class="t">${icon("gem")}Zeker weten</span><span class="c">Goed levert een kristal op. Niet helemaal goed kost 10 procent extra schild.</span></button>
           <button class="lk-cs" type="button" data-conf="0"><span class="t">${icon("scale")}Ik denk het</span><span class="c">Geen kristal en geen extra kosten.</span></button>
         </div></div>`;
       $$("[data-conf]", s).forEach((b) => b.addEventListener("click", () => { setBet(b.dataset.conf === "1"); reveal(pendingZ); }));

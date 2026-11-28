@@ -805,7 +805,7 @@
       controls =
         '<div class="swipe-actions">' +
         '<button type="button" class="vcsw-button destructive" data-action="attack">' + icon("arrowL") + "Aanval</button>" +
-        '<button type="button" class="vcsw-button" data-action="real">Echt' + icon("arrowR") + "</button></div>" +
+        '<button type="button" class="vcsw-button outline" data-action="real">Echt' + icon("arrowR") + "</button></div>" +
         '<p class="swipe-help">Schuif de kaart, gebruik de knoppen of druk op pijltje links of rechts.</p>' + ask;
     } else {
       var correct = res === "ok";

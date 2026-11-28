@@ -460,3 +460,13 @@ html.in-orion #stage .swipe-help { margin-top: 6px; }
 .notes-wrong + .notes-sub { margin-top: 12px; }
 /* The mail verdict uses the full width of the panel, so it takes one line less above the fragment */
 #stage .verdict-line.in-mail .verdict-text { max-width: none; }
+
+/* Ronde 5: Aanval en Echt als rustige keuzeknoppen met gekleurde rand, even zwaar, zodat de kaart de aandacht houdt. */
+#stage .swipe-actions .vcsw-button { background: rgba(9, 30, 60, .85); color: #fff; border: 2px solid #67caff; font-weight: 700; }
+#stage .swipe-actions .vcsw-button.destructive { border-color: #ff8a8d; }
+#stage .swipe-actions .vcsw-button:hover { background: #13559b; }
+#stage .swipe-actions .vcsw-button.destructive:hover { background: #5c1828; }
+#stage .swipe-actions .vcsw-button .vcsw-icon { color: #67caff; }
+#stage .swipe-actions .vcsw-button.destructive .vcsw-icon { color: #ff8a8d; }
+#stage .swipe-actions .vcsw-button.outline { background: rgba(9, 30, 60, .85) !important; border: 2px solid #67caff !important; }
+#stage .swipe-actions .vcsw-button.outline:hover:not([disabled]) { background: #13559b !important; }

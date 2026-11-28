@@ -362,3 +362,8 @@ html.orion-level .ox-clock.timer.low { color: #ffc978 !important; }
 .deur-meer:hover { border-color: var(--luik); color: #fff; }
 #screen .deur-meer:focus-visible { outline: 2px solid #67caff; outline-offset: 2px; }
 .deur-leeg { align-self: stretch; display: flex; align-items: center; justify-content: center; height: 30px; border-radius: 999px; border: 1px dashed #1f4f85; color: #8fa9cc; font: 400 15px/1 var(--vcsw-font-body); }
+
+/* Ronde 5: een geplaatst stukje mag over twee regels, zodat niets meer wordt afgekapt. */
+.deur-lijst, .deur-lijst:empty { height: 132px; }
+.deur-item { height: auto; min-height: 30px; padding: 4px 10px 4px 8px; border-radius: 15px; }
+.deur-item > span { white-space: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 19px; }
