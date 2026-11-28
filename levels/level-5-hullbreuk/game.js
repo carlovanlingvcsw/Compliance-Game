@@ -12,6 +12,7 @@
     next: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
     up: '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
     down: '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
+    chev: '<path d="m6 9 6 6 6-6"/>',
     refresh: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
     gem: '<path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>',
     unlock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
@@ -44,6 +45,16 @@
     var face = who === "aria" ? ARIA_FACE : '<span class="ox-av ' + w.cls + '" aria-hidden="true">' + w.av + "</span>";
     return '<div class="ox-say">' + face + '<div class="ox-say-body"><div class="ox-say-who"><span class="ox-say-name">' + w.name + '</span><span class="ox-say-role">' + w.role + "</span>" + (extra || "") + '</div><p class="speech-text ox-say-text">' + esc(text) + "</p></div></div>";
   }
+  /* Na een antwoord: de reactie van het personage en de uitleg van ARIA in één ballon, zodat het scherm in het paneel past.
+     De uitleg draagt de klasse uitleg: daar leest de brug de uitleg voor Nalezen uit. */
+  function speechDuo(who, react, uitleg) {
+    var w = WHO[who], a = WHO.aria;
+    var face = who === "aria" ? ARIA_FACE : '<span class="ox-av ' + w.cls + '" aria-hidden="true">' + w.av + "</span>";
+    var aria = who === "aria"
+      ? '<p class="speech-text ox-say-text uitleg">' + esc(uitleg) + "</p>"
+      : '<div class="duo-aria">' + ARIA_FACE + '<div class="ox-say-body"><div class="ox-say-who"><span class="ox-say-name">' + a.name + '</span><span class="ox-say-role">' + a.role + '</span></div><p class="speech-text ox-say-text uitleg">' + esc(uitleg) + "</p></div></div>";
+    return '<div class="ox-say duo">' + face + '<div class="ox-say-body"><div class="ox-say-who"><span class="ox-say-name">' + w.name + '</span><span class="ox-say-role">' + w.role + '</span></div><p class="ox-say-text duo-react">' + esc(react) + "</p>" + aria + "</div></div>";
+  }
 
   /* ---------- Rol van Orion ----------
      verwerker: Orion verwerkt het ziekteoverzicht in opdracht van Nova Terra (ontwerp).
@@ -67,11 +78,11 @@
       { k: "A", t: "Akkoord. Na de rustperiode pakken we het op, dat is vroeg genoeg.", r: "fout", cost: 10,
         uitleg: "De 72 uur lopen ook tijdens de rustperiode door.",
         reactie: "Mooi, dan ga ik slapen. Morgen kijken we wel." },
-      { k: "B", t: "Direct melden bij ARIA, ook al begint de nachtdienst.", r: "goed",
+      { k: "B", t: "Nu direct melden bij ARIA, ook al begint de nachtdienst zo.", r: "goed",
         uitleg: "Een datalek meld je direct. Het meldpunt kan dan meteen beoordelen wat er moet gebeuren.",
         reactie: "Oké, oké. Ik blijf even. Zeg maar wat ik moet doen." },
-      { k: "C", t: "Zelf de Galactische Toezichtraad oproepen.", r: "half",
-        uitleg: "Snel handelen is goed, maar het meldpunt beoordeelt of en hoe er gemeld wordt.",
+      { k: "C", t: "Zelf meteen de Galactische Toezichtraad oproepen en het lek melden.", r: "half",
+        uitleg: "Snel handelen is goed, maar je slaat het meldpunt over. Meld het bij ARIA, want het meldpunt beoordeelt of en hoe er gemeld wordt.",
         reactie: "Wauw, jij gaat er meteen vol in. Weet ARIA hier al van?" }
     ]
   };
@@ -87,9 +98,9 @@
       { k: "B", t: "Het feit laten vastleggen in het incidentlog en je console voortaan altijd vergrendelen.", r: "goed",
         uitleg: "Het log gaat over feiten, niet over schuld. Hoe het lek kon ontstaan, helpt om het in de toekomst te voorkomen.",
         reactie: "Vastgelegd. Dank je voor je eerlijkheid, Kapitein." },
-      { k: "C", t: "Snel de logbestanden van je console wissen, zodat er geen verwarring over ontstaat.", r: "fout",
-        uitleg: "Wie sporen wist, maakt de beoordeling onmogelijk en het lek groter. De feiten moeten juist bewaard blijven.",
-        reactie: "Ik heb een kopie. Dit gaat ook in het log." }
+      { k: "C", t: "Je console voortaan altijd vergrendelen. Dat het bericht van jouw console kwam, laat je verder rusten.", r: "half",
+        uitleg: "Vergrendelen is goed, maar het feit hoort ook in het incidentlog. Het meldpunt heeft alle feiten nodig, ook hoe het lek kon ontstaan.",
+        reactie: "Goed voornemen. Maar dan mist er een feit in mijn log." }
     ]
   };
 
@@ -115,7 +126,7 @@
     say: "Het bericht is net bij Kepler-4 aangekomen. Wat doe je om de schade te beperken?",
     opts: [
       { k: "A", t: "Het bericht terughalen via het systeem en er verder niets mee doen. Dan is het weg bij Kepler-4.", r: "half",
-        uitleg: "Terughalen werkt lang niet altijd buiten het eigen station.",
+        uitleg: "Terughalen werkt lang niet altijd buiten het eigen station. Vraag Kepler-4 daarom ook om het bericht te wissen en dat schriftelijk te bevestigen.",
         reactie: "Terughalen mislukt. Het bericht staat nog in het systeem van Kepler-4." },
       { k: "B", t: "Kepler-4 oproepen, vragen het bericht en eventuele kopieën te wissen en dat schriftelijk te bevestigen.", r: "goed",
         uitleg: "Zo beperk je het lek en heb je bewijs dat de gegevens weg zijn. Die bevestiging gaat ook in het log.",
@@ -155,15 +166,15 @@
       verantwoordelijke: "Iedereen in de kantine heeft het erover. Staan mijn ziektedagen nu bij Kepler-4?"
     },
     opts: [
-      { k: "A", t: "“Er is niets aan de hand.”", r: "fout",
+      { k: "A", t: "Zeggen dat er niets aan de hand is. Zo voorkom je onrust in de crew zolang het meldpunt nog uitzoekt wat er precies is gebeurd.", r: "fout",
         uitleg: "Ontkennen schaadt het vertrouwen nog meer, zeker als later blijkt dat er wel iets is gebeurd.",
         reactie: { verwerker: "Niets? Dat hoor ik anders. Ik bel de commandant.", verantwoordelijke: "Echt niet? Waarom fluistert iedereen dan?" } },
-      { k: "B", t: { verwerker: "Eerlijk zeggen dat er een incident is, dat het met voorrang wordt behandeld en dat de juiste persoon vandaag contact opneemt.", verantwoordelijke: "Eerlijk zeggen dat er een incident is, dat het met voorrang wordt behandeld en dat het meldpunt haar vandaag laat weten wat het voor haar betekent." }, r: "goed",
+      { k: "B", t: { verwerker: "Eerlijk zeggen dat er een incident is, dat het voorrang krijgt en dat de juiste persoon vandaag contact opneemt.", verantwoordelijke: "Eerlijk zeggen dat er een incident is, dat het voorrang krijgt en dat het meldpunt haar vandaag laat weten wat het voor haar betekent." }, r: "goed",
         uitleg: "Je bent eerlijk zonder details te geven die nog niet vaststaan. De beoordeling ligt bij het meldpunt.",
         reactie: { verwerker: "Goed. Ik wacht op dat telefoontje. Vandaag nog.", verantwoordelijke: "Oké. Fijn dat je het gewoon zegt." } },
-      { k: "C", t: "Uitgebreid speculeren over wat er misschien allemaal gebeurd is.", r: "fout",
-        uitleg: "Geef geen informatie die nog niet vaststaat. Dat maakt de onrust groter en kan later niet kloppen.",
-        reactie: { verwerker: "Misschien, misschien. Weet je het nou of niet?", verantwoordelijke: "Dus het kan nog veel erger zijn? Nu maak ik me pas echt zorgen." } }
+      { k: "C", t: { verwerker: "Eerlijk zeggen dat er een incident is en dat het voorrang krijgt. Verder zeg je nu niets, want de details staan nog niet vast.", verantwoordelijke: "Eerlijk zeggen dat er een incident is en dat het voorrang krijgt. Verder zeg je haar nu niets, want de details over haar gegevens staan nog niet vast." }, r: "half",
+        uitleg: "Eerlijk zijn zonder details is goed, maar je laat het open. Zeg ook wanneer en van wie er vandaag meer nieuws komt, anders blijft de onrust.",
+        reactie: { verwerker: "Voorrang, prima. Maar wanneer hoor ik dan iets?", verantwoordelijke: "Oké. Maar hoor ik nog wat het voor mij betekent?" } }
     ]
   };
 
@@ -175,26 +186,26 @@
     },
     opts: {
       verwerker: [
-        { k: "A", t: "Orion meldt altijd zelf bij de Toezichtraad. Wij maakten de fout, dus wij zijn ook degene die het lek moet melden, wat onze rol ook is.", r: "fout",
+        { k: "A", t: "Orion meldt altijd zelf bij de Toezichtraad. Wij maakten de fout, dus wij zijn ook degene die het lek moet melden, wat onze rol bij deze gegevens ook is. Nova Terra hoeft daar niets voor te doen.", r: "fout",
           uitleg: "Dat hangt af van onze rol. Wie de fout maakte, bepaalt niet wie meldt.",
           reactie: "Dan meldt Orion iets wat Nova Terra had moeten beoordelen." },
-        { k: "B", t: "Dat hangt af van onze rol. Verwerken we gegevens in opdracht, dan informeren we Nova Terra zonder onnodige vertraging en meldt Nova Terra. Gaat het om gegevens waarvoor wij zelf verantwoordelijk zijn, zoals die van onze eigen crew, dan melden we zelf.", r: "goed",
+        { k: "B", t: "Dat hangt af van onze rol. In opdracht informeren we Nova Terra zonder onnodige vertraging en meldt Nova Terra. Zijn we zelf verantwoordelijk, zoals voor onze eigen crew, dan melden we zelf.", r: "goed",
           uitleg: "Hier verwerkt Orion in opdracht. Dus informeren we Nova Terra meteen, en Nova Terra beslist over de melding.",
           reactie: "Juist. Ik zet de informatie voor Nova Terra klaar." },
-        { k: "C", t: "Niemand hoeft te melden. Het was maar één bericht met één overzicht, dus dit telt niet als een datalek dat je moet melden.", r: "fout",
-          uitleg: "Ook één bericht kan een datalek zijn. Dat beoordeelt het meldpunt, niet jij.",
-          reactie: "Eén bericht met de ziektedagen van een hele crew." }
+        { k: "C", t: "We verwerken in opdracht, dus Nova Terra meldt. Wij informeren Nova Terra zodra het meldpunt het lek helemaal heeft uitgezocht, zodat ze meteen alle feiten hebben.", r: "half",
+          uitleg: "Nova Terra meldt, dat klopt. Maar je wacht niet tot alles is uitgezocht. Als verwerker informeer je Nova Terra zonder onnodige vertraging.",
+          reactie: "Dan hoort Nova Terra het pas als wij klaar zijn met uitzoeken. Dat is te laat." }
       ],
       verantwoordelijke: [
-        { k: "A", t: "We informeren Nova Terra en die meldt het bij de Toezichtraad. Zo gaat het altijd bij een lek, wie de gegevens ook beheert.", r: "fout",
+        { k: "A", t: "We informeren Nova Terra en die meldt het bij de Toezichtraad. Zo gaat het altijd bij een lek, wie de gegevens ook beheert en van wie ze ook zijn.", r: "fout",
           uitleg: "Het gaat om de eigen crew van Orion. Dan is Orion zelf verantwoordelijk.",
           reactie: "Nova Terra heeft met deze gegevens niets te maken." },
-        { k: "B", t: "Het gaat om onze eigen crew, dus Orion is zelf verantwoordelijk. Het meldpunt beoordeelt het risico en meldt binnen 72 uur bij de Toezichtraad als er risico is.", r: "goed",
+        { k: "B", t: "Het gaat om onze eigen crew, dus Orion is zelf verantwoordelijk. Het meldpunt beoordeelt het risico en meldt binnen 72 uur als er risico is.", r: "goed",
           uitleg: "Bij eigen verantwoordelijkheid meldt Orion zelf, en alleen als er een risico is. Het meldpunt maakt die afweging.",
           reactie: "Juist. Ik zet de melding klaar voor het meldpunt." },
-        { k: "C", t: "Niemand hoeft te melden. Het was maar één bericht met één overzicht, dus dit telt niet als een datalek dat je moet melden.", r: "fout",
-          uitleg: "Ook één bericht kan een datalek zijn. Dat beoordeelt het meldpunt, niet jij.",
-          reactie: "Eén bericht met de ziektedagen van onze hele crew." }
+        { k: "C", t: "Het gaat om onze eigen crew, dus Orion meldt zelf. Het meldpunt meldt het lek binnen 72 uur bij de Toezichtraad, wat het risico ook is. Zo zit je altijd goed.", r: "half",
+          uitleg: "Orion meldt zelf, dat klopt. Maar het meldpunt beoordeelt eerst het risico. Alleen als er risico is, meldt het binnen 72 uur bij de Toezichtraad.",
+          reactie: "Melden zonder te kijken naar het risico? Dan slaan we de beoordeling over." }
       ]
     },
     crystal: { on: "B", name: "Verwerker of verantwoordelijke", desc: "Verwerk je in opdracht, dan informeer je direct de opdrachtgever. Ben je zelf verantwoordelijk, dan meldt het meldpunt binnen 72 uur als er risico is." }
@@ -373,7 +384,7 @@
       '<label><input type="radio" name="role" value="verwerker"' + (S.role === "verwerker" ? " checked" : "") + '> Verwerker: het ziekteoverzicht is van de crew van Nova Terra</label>' +
       '<label><input type="radio" name="role" value="verantwoordelijke"' + (S.role === "verantwoordelijke" ? " checked" : "") + '> Verantwoordelijke: het ziekteoverzicht is van de eigen crew van Orion</label></fieldset></div>' +
       '<div class="actions"><button type="button" class="ox-btn lg" id="go">Naar het incident' + icon("next") + "</button></div>" +
-      '<p class="ox-foot">' + icon("info") + "<span><strong>Prototype met fictieve gegevens.</strong> Alle namen en gegevens zijn verzonnen. De stappen en termijnen bij een datalek wachten nog op goedkeuring van de Privacy Officer.</span></p>",
+      '<p class="ox-foot">' + icon("info") + "<span><strong>Prototype met fictieve gegevens.</strong> Alle namen en gegevens zijn verzonnen. De stappen en termijnen bij een datalek wachten nog op goedkeuring van de privacy officer.</span></p>",
       "title-screen"
     );
     document.getElementById("fConsole").onchange = function (e) { S.flags.console = e.target.checked; S.seq = []; hud(); };
@@ -400,26 +411,33 @@
     var html = '<div class="screen-head rij"><h2>' + esc(s.title2 ? V(s.title2) : s.title) + "</h2>" + dienstChip(s) + "</div>";
     if (s.intro) html += '<p class="muted">' + esc(s.intro) + "</p>";
     html += speech(who, val(s.say));
-    html += '<div class="options" role="group" aria-label="Kies je antwoord">';
-    ordered(s.id, opts).forEach(function (o, n) {
+    var buttons = ordered(s.id, opts).map(function (o, n) {
       var cls = "option" + (pick ? (pick.k === o.k ? " picked" : " dim") : "");
       var extra = pick && pick.k === o.k ? '<span class="vcsw-badge neutral">' + icon("clock") + "min " + pick.cost + " uur</span>" + (pick.fast ? '<span class="vcsw-badge">' + icon("zap") + "Snel, +" + FAST_BONUS + " bonus</span>" : "") : "";
-      html += '<button type="button" class="' + cls + '" data-k="' + o.k + '"' + (pick ? " disabled" : "") + '><span class="key" aria-hidden="true">' + "ABC"[n] + '</span><span><span class="vcsw-sr-only">Optie ' + "ABC"[n] + ". </span>" + esc(val(o.t)) +
-        (pick && pick.k === o.k ? '<span class="verdict">' + verdictBadge(o.r, extra) + "</span>" : "") + "</span></button>";
+      return { k: o.k, html: '<button type="button" class="' + cls + '" data-k="' + o.k + '"' + (pick ? " disabled" : "") + '><span class="key" aria-hidden="true">' + "ABC"[n] + '</span><span><span class="vcsw-sr-only">Optie ' + "ABC"[n] + ". </span>" + esc(val(o.t)) +
+        (pick && pick.k === o.k ? '<span class="verdict">' + verdictBadge(o.r, extra) + "</span>" : "") + "</span></button>" };
     });
-    html += "</div>";
+    if (!pick) {
+      html += '<div class="options" role="group" aria-label="Kies je antwoord">' + buttons.map(function (b) { return b.html; }).join("") + "</div>";
+    } else {
+      /* Na een antwoord: jouw antwoord blijft staan, de andere twee klappen in achter één regel */
+      var others = buttons.filter(function (b) { return b.k !== pick.k; });
+      html += '<div class="options answered" role="group" aria-label="Je antwoord">' + buttons.filter(function (b) { return b.k === pick.k; })[0].html +
+        '<details class="opts-more"><summary>' + icon("chev") + "<span>De andere " + (others.length === 2 ? "twee" : others.length) + " antwoorden</span>" +
+        '<span class="sum-more"><span class="when-closed">Toon</span><span class="when-open">Verberg</span></span></summary>' +
+        '<div class="opts-more-list">' + others.map(function (b) { return b.html; }).join("") + "</div></details></div>";
+    }
     if (pick) {
       var o = opts.filter(function (x) { return x.k === pick.k; })[0];
-      html += '<div class="feedback">' + speech(who, val(o.reactie)) +
-        speech("aria", (o.r === "goed" ? "Goed. " : o.r === "half" ? "Half goed. " : "Fout. ") + o.uitleg);
+      html += '<div class="feedback">' + speechDuo(who, val(o.reactie), (o.r === "goed" ? "Goed. " : o.r === "half" ? "Half goed. " : "Fout. ") + o.uitleg);
       if (s.crystal && s.crystal.on === pick.k) {
-        html += reward("gem", "Datakristal " + esc(s.crystal.name), esc(s.crystal.desc));
+        html += '<ul class="fb-after"><li class="gem">' + icon("gem") + "<span><strong>Datakristal " + esc(s.crystal.name) + ".</strong> " + esc(s.crystal.desc) + "</span></li></ul>";
       } else if (s.crystal) {
-        html += '<p class="muted">Geen datakristal bij deze keuze. Elk kristal is in de luchtsluis één aanwijzing zonder kosten.</p>';
+        html += '<ul class="fb-after"><li class="none">' + icon("gem") + "<span>Geen datakristal bij deze keuze. Elk kristal is in de luchtsluis één aanwijzing zonder kosten.</span></li></ul>";
       }
       html += '</div><div class="actions"><button type="button" class="ox-btn lg" id="next">' + nextLabel() + icon("next") + "</button></div>";
     }
-    show(html);
+    show(html, pick ? "answered" : "");
     if (!pick) {
       S.shownAt = Date.now();
       stage.querySelectorAll(".option").forEach(function (b) { b.onclick = function () { choose(b.getAttribute("data-k")); }; });
@@ -483,6 +501,28 @@
     if (r === "goed" && !hasCrystal(s.crystal.name)) S.crystals.push(s.crystal.name);
     render();
   }
+  /* In het paneel (ongeveer 717 px hoog bij 1440x900) krijgt de lijst met uitleg een vast budget, zodat de knop in beeld blijft.
+     Het budget komt uit een vaste hoogte en de inhoud, nooit uit de hoogte van het frame: de schil zet die hoogte op basis van de inhoud.
+     Alleen bij veel fouten tegelijk past de lijst niet, en dan scrolt alleen de lijst. */
+  var PANEL_H = 716;
+  function fitLogReview() {
+    var rv = stage.querySelector(".log-review"), end = document.querySelector(".meet-einde");
+    if (!rv || !end) return;
+    rv.style.maxHeight = "";
+    var over = false;
+    if (document.documentElement.classList.contains("in-orion")) {
+      var bottom = end.getBoundingClientRect().bottom + window.pageYOffset + 8, extra = bottom - PANEL_H;
+      if (extra > 0) { rv.style.maxHeight = Math.max(160, rv.getBoundingClientRect().height - extra) + "px"; over = rv.scrollHeight > rv.clientHeight + 2; }
+    }
+    rv.classList.toggle("is-over", over);
+    if (over) { rv.setAttribute("tabindex", "0"); rv.setAttribute("role", "region"); rv.setAttribute("aria-label", "Uitleg per regel"); }
+    else { rv.removeAttribute("tabindex"); rv.removeAttribute("role"); rv.removeAttribute("aria-label"); }
+    var atEnd = function () { rv.classList.toggle("at-end", rv.scrollTop + rv.clientHeight >= rv.scrollHeight - 4); };
+    if (!rv.dataset.watch) { rv.dataset.watch = "1"; rv.addEventListener("scroll", atEnd, { passive: true }); }
+    atEnd();
+  }
+  /* Klapt de speler de goede regels open, dan krijgt de lijst opnieuw zijn budget */
+  stage.addEventListener("toggle", function (e) { if (e.target.classList && e.target.classList.contains("lognotes-ok")) fitLogReview(); }, true);
   function renderLog(s) {
     var L = S.log, done = L.done, n = s.rows.length;
     if (!L.order) {
@@ -490,38 +530,50 @@
       for (var k = n - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)); var t = L.order[k]; L.order[k] = L.order[j]; L.order[j] = t; }
       L.left = s.seconds;
     }
-    var html = '<div class="screen-head rij"><h2>' + esc(s.title) + "</h2>" + dienstChip(s) + "</div>" +
-      speech("aria", s.say);
     var filledN = Object.keys(L.assign).length;
-    /* Tijdbalk: titel, teller en klok op één basislijn, de balk eronder over de volle breedte. */
-    html += '<div class="ox-card tijdbalk"><div class="tijd-rij"><h3>Tijd voor het log</h3><span class="tijd-n">' + filledN + " van " + n + " gekozen</span>" +
-      '<span class="ox-clock timer' + (L.left <= 20 ? " low" : "") + '" id="logTimer" aria-label="Resterende tijd">' + icon("clock") + "<span>" + fmt(L.left) + "</span></span></div>" +
-      '<div class="track"><div class="fill' + logTone(L.left) + '" id="logBar" style="width:' + (L.left / s.seconds * 100) + '%"></div></div></div>';
-    html += '<div class="logrows">';
-    L.order.forEach(function (i) {
-      var r = s.rows[i], a = L.assign[i], wrong = done && a !== r.ans;
-      html += '<div class="logrow' + (wrong ? " wrong" : "") + '"><span class="what">' + esc(r.t) + "</span>" +
-        '<div class="vcsw-segmented" role="group" aria-label="In het log: ' + esc(r.t) + '">' +
-        '<button type="button" data-r="' + i + '" data-v="1" aria-pressed="' + (a === true) + '"' + (done ? " disabled" : "") + ">Ja, in het log</button>" +
-        '<button type="button" data-r="' + i + '" data-v="0" aria-pressed="' + (a === false) + '"' + (done ? " disabled" : "") + ">Nee</button></div>";
-      if (done) html += '<p class="note">' + (wrong ? '<strong class="is-bad">' + icon("cross") + (a === undefined ? "Niet op tijd gekozen." : "Niet goed.") + " Juist: " + (r.ans ? "wel" : "niet") + " in het log.</strong> " : '<strong class="is-good">' + icon("check") + "Goed.</strong> ") + esc(r.why) + "</p>";
-      html += "</div>";
-    });
-    html += "</div>";
+    /* De kop met de klok op één regel en de tijdbalk eronder, zodat het log in het paneel past zonder te scrollen */
+    var html = '<div class="screen-head rij log-head"><h2>' + esc(s.title) + "</h2>" + dienstChip(s) +
+      '<div class="log-tijd"><h3>Tijd voor het log</h3><span class="tijd-n">' + filledN + " van " + n + " gekozen</span>" +
+      '<span class="ox-clock timer' + (L.left <= 20 ? " low" : "") + '" id="logTimer" aria-label="Resterende tijd">' + icon("clock") + "<span>" + fmt(L.left) + "</span></span></div></div>" +
+      '<div class="track log-track"><div class="fill' + logTone(L.left) + '" id="logBar" style="width:' + (L.left / s.seconds * 100) + '%"></div></div>' +
+      speech("aria", s.say);
     if (!done) {
+      /* Twee kolommen met per regel de tekst en de keuze ernaast. Boven elke kolom staat de vraag, de knoppen zeggen Ja en Nee. */
+      html += '<div class="logrows"><p class="logrows-kop" aria-hidden="true"><span>In het log?</span></p><p class="logrows-kop" aria-hidden="true"><span>In het log?</span></p>';
+      L.order.forEach(function (i) {
+        var r = s.rows[i], a = L.assign[i];
+        html += '<div class="logrow"><span class="what">' + esc(r.t) + "</span>" +
+          '<div class="vcsw-segmented" role="group" aria-label="In het log: ' + esc(r.t) + '">' +
+          '<button type="button" data-r="' + i + '" data-v="1" aria-pressed="' + (a === true) + '">Ja<span class="vcsw-sr-only">, in het log</span></button>' +
+          '<button type="button" data-r="' + i + '" data-v="0" aria-pressed="' + (a === false) + '">Nee</button></div></div>';
+      });
+      html += "</div>";
       html += '<div class="actions"><button type="button" class="ox-btn lg" id="save">Log opslaan' + icon("check") + "</button>" +
         (filledN < n ? '<span class="muted">Nog ' + (n - filledN) + " regels zonder keuze. Die tellen als fout.</span>" : "") + "</div>";
     } else {
+      /* Na het opslaan: eerst de regels die niet goed waren, met uitleg. De goede klappen in achter één regel, zoals in het vrachtdok. */
       var p = S.picks[s.id];
+      function note(i) {
+        var r = s.rows[i], a = L.assign[i], wrong = a !== r.ans;
+        return '<li class="' + (wrong ? "is-no" : "is-ok") + '"><p class="what">' + esc(r.t) + '</p><p class="note">' +
+          (wrong ? '<strong class="is-bad">' + icon("cross") + (a === undefined ? "Niet op tijd gekozen." : "Niet goed.") + " Juist: " + (r.ans ? "wel" : "niet") + " in het log.</strong> " : '<strong class="is-good">' + icon("check") + "Goed.</strong> ") + esc(r.why) + "</p></li>";
+      }
+      var wrongRows = L.order.filter(function (i) { return L.assign[i] !== s.rows[i].ans; }), rightRows = L.order.filter(function (i) { return L.assign[i] === s.rows[i].ans; });
+      html += '<div class="log-review">' +
+        (wrongRows.length ? '<ul class="lognotes">' + wrongRows.map(note).join("") + "</ul>" : "") +
+        (rightRows.length ? '<details class="lognotes-ok"><summary>' + icon("check") + "<span>" + rightRows.length + " van " + n + " goed gekozen</span>" +
+          '<span class="sum-more"><span class="when-closed">Toon uitleg</span><span class="when-open">Verberg</span></span></summary>' +
+          '<ul class="lognotes">' + rightRows.map(note).join("") + "</ul></details>" : "") + "</div>";
       html += '<div class="feedback">';
       if (p.timeout) html += alertBox("warning", "warn", "De tijd is op", "Het log is opgeslagen zoals het was. Dat kost 4 extra uur op de klok.");
       html += '<div class="verdict" style="display:flex;flex-wrap:wrap;gap:6px">' + verdictBadge(p.r, '<span class="vcsw-badge neutral">' + p.good + " van " + p.total + ' goed</span><span class="vcsw-badge neutral">' + icon("clock") + "min " + p.cost + " uur</span>" + (p.fast ? '<span class="vcsw-badge">' + icon("zap") + "Snel, +" + FAST_BONUS + " bonus</span>" : "")) + "</div>" +
         speech("aria", p.r === "goed" ? "Een helder log. Alleen feiten, geen schuld, geen conclusies en geen kopie van het lek." : p.r === "half" ? "Bijna goed. Kijk nog eens naar de regels die rood zijn." : "Dit log helpt het meldpunt nog niet. Kijk naar de regels die rood zijn.");
-      if (p.r === "goed") html += reward("gem", "Datakristal " + esc(s.crystal.name), esc(s.crystal.desc));
-      else html += '<p class="muted">Het datakristal ' + esc(s.crystal.name) + " krijg je alleen als alles goed is. Elk kristal is in de luchtsluis één aanwijzing zonder kosten.</p>";
+      if (p.r === "goed") html += '<ul class="fb-after"><li class="gem">' + icon("gem") + "<span><strong>Datakristal " + esc(s.crystal.name) + ".</strong> " + esc(s.crystal.desc) + "</span></li></ul>";
+      else html += '<ul class="fb-after"><li class="none">' + icon("gem") + "<span>Het datakristal " + esc(s.crystal.name) + " krijg je alleen als alles goed is. Elk kristal is in de luchtsluis één aanwijzing zonder kosten.</span></li></ul>";
       html += '</div><div class="actions"><button type="button" class="ox-btn lg" id="next">' + nextLabel() + icon("next") + "</button></div>";
     }
-    show(html);
+    show(html, done ? "log-done" : "log");
+    if (done) fitLogReview();
     if (!done) {
       if (!logTimer) startLogTimer(s);
       stage.querySelectorAll("[data-r]").forEach(function (b) {
@@ -753,7 +805,7 @@
       item("check", "Direct melden", "Meld een (vermoedelijk) datalek direct, ook op vrijdagmiddag. De 72 uur lopen ook in het weekend door.") +
       item("check", "Niet zelf beoordelen", "Of en hoe er gemeld wordt, beoordeelt het meldpunt. Jij meldt, beperkt de schade als dat kan en geeft de feiten door.") +
       "</ul></div></div>" +
-      '<div class="ox-card meldroute"><div class="meld-txt"><h3>Meldroute</h3><p>Een datalek of twijfel? Meld het direct bij Tarik, Dagmar of via het meldpunt.</p></div>' +
+      '<div class="ox-card meldroute"><div class="meld-txt"><h3>Meldroute</h3><p>Een datalek of twijfel? Meld het direct bij de security officer, de privacy officer of via het meldpunt.</p></div>' +
       '<span class="meld-adres route">jz@vcsw.nl</span>' +
       '<button type="button" class="ox-btn ghost" id="copy"><span>Kopieer adres</span>' + icon("copy") + "</button></div>" +
       '<div class="ox-card uitslag"><div class="uitslag-kop"><h3>Resultaat level 5</h3>' + chip(passed ? "Gehaald" : "Nog niet gehaald", passed ? "ok" : "warn", passed ? "check" : "") +

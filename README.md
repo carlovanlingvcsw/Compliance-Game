@@ -1,6 +1,6 @@
 # AVG-game Ruimtestation Orion
 
-Een AVG-training van VCSW in de vorm van een game. Spelers zijn Cadet van de Datawacht op Ruimtestation Orion. Ze vliegen langs zes modules van het station en spelen daar vijf levels, een eindmissie en vier arcaderondes over het beschermen van persoonsgegevens.
+Een AVG-training van VCSW in de vorm van een game. Spelers zijn Cadet van de Datawacht op Ruimtestation Orion. Ze vliegen langs zes modules van het station en spelen daar vijf levels, een eindmissie, zes oefenrondes en één arcaderonde over het beschermen van persoonsgegevens.
 
 Status: prototype. Alle namen, planeten en gegevens in het spel zijn fictief. De goede antwoorden, stappen en termijnen wachten nog op goedkeuring van de Privacy Officer. Het 3D-station en ARIA zijn een concept: het VCSW-merk heeft nog geen goedgekeurde illustraties, dus marketing moet de beeldtaal nog goedkeuren.
 
@@ -11,23 +11,28 @@ Status: prototype. Alle namen, planeten en gegevens in het spel zijn fictief. De
 - **Statusbalk.** Boven elk level staat een vaste balk met de stappen van het level, de score met de grens van 70 procent, het schild en de kristallen. Na elk antwoord toont de balk vijf seconden wat erbij kwam of eraf ging. Op het laatste scherm staat hier de knop naar het volgende onderdeel.
 - **Aanwijzingen.** In een luchtsluis vraag je ARIA om een aanwijzing. Elk kristal uit het level is één aanwijzing zonder kosten, daarna kost een aanwijzing 10 procent schild.
 - **Eindmissie in drie delen.** Het bericht, de aanval van de Zwarte Nevel (rook over de modules in het station, zes vragen op tijd) en de hoofdsluis met vijf grendels van drie kernregels.
-- **Logboek.** De route eindigt bij een logboek met de uitslag per missie. Je bewaart het als pdf via de afdrukfunctie van de browser.
+- **Oefenrondes.** Na een level volgt soms een oefenronde: een kort spel over hetzelfde onderwerp. Het spel opent in het missiepaneel, met de module van het level in 3D ernaast en een zin van ARIA. Antwoorden tellen mee voor je combo. Aan het eind zie je je sterren en ga je met Verder in de route door.
+- **Logboek.** De route eindigt bij een logboek met de uitslag per missie en per oefenronde. Met Bewaar als pdf download je het logboek als pdf-bestand, dat het spel zelf in de browser maakt. Lukt downloaden niet, bijvoorbeeld in een afgeschermde voorvertoning, dan open je de pdf in een nieuw tabblad of druk je het logboek af.
 - **ARIA** is de boordcomputer. Ze vliegt mee naar elke module en zegt in één zin wat er speelt.
-- **Combo's, sterren en badges.** Goede antwoorden op rij verhogen je combo tot ×4 en leveren XP op. Per level en per arcaderonde verdien je tot drie sterren. Er zijn elf badges.
+- **Combo's, sterren en badges.** Goede antwoorden op rij verhogen je combo tot ×4 en leveren XP op. Per level en per oefenronde verdien je tot drie sterren. Er zijn veertien badges.
+- **Meldingen.** Een badge, een combo of een andere melding verschijnt klein linksonder boven de missiekaart, over het station. Zo valt een melding nooit over een vraag of een antwoord in het missiepaneel.
 - **Voortgang** blijft alleen in de browser van de speler bewaard. Er worden geen gegevens verstuurd.
 - **Zonder 3D.** Kan de browser geen WebGL, of zet je `?3d=uit` achter het adres, dan speel je hetzelfde spel met een vlakke sterrenachtergrond. Bij de instelling "minder beweging" staat het station stil en springt de camera zonder vlucht.
 
 | Route | Onderwerp | Module | Map |
 | --- | --- | --- | --- |
 | Level 1 | Aankomst op het station | Aankomsthal | [levels/level-1-aankomst](levels/level-1-aankomst) |
-| Bonus | Holokaarten-sprint | Aankomsthal | in `assets/js/orion.js` |
+| Oefenronde | Puzzel de persoon | Aankomsthal | [oefenrondes/puzzel-de-persoon](oefenrondes/puzzel-de-persoon) |
+| Oefenronde | Zwart de lijst | Aankomsthal | [oefenrondes/zwart-de-lijst](oefenrondes/zwart-de-lijst) |
 | Level 2 | De passagiersmodule | Passagiersmodule | [levels/level-2-passagiersmodule](levels/level-2-passagiersmodule) |
+| Oefenronde | De opruimronde | Passagiersmodule | [oefenrondes/de-opruimronde](oefenrondes/de-opruimronde) |
 | Level 3 | De medische ziekenboeg | Ziekenboeg | [levels/level-3-ziekenboeg](levels/level-3-ziekenboeg) |
-| Bonus | Wie mag dit zien? | Ziekenboeg | in `assets/js/orion.js` |
+| Arcade | Wie mag dit zien? | Ziekenboeg | in `assets/js/orion.js` |
 | Level 4 | Het vrachtdok | Vrachtdok | [levels/level-4-vrachtdok](levels/level-4-vrachtdok) |
-| Bonus | Phishing Invaders | Vrachtdok | in `assets/js/orion.js` |
+| Oefenronde | De postkamer | Vrachtdok | [oefenrondes/de-postkamer](oefenrondes/de-postkamer) |
+| Oefenronde | Het telefoontje | Vrachtdok | [oefenrondes/het-telefoontje](oefenrondes/het-telefoontje) |
 | Level 5 | Alarm in module Kepler | Module Kepler | [levels/level-5-hullbreuk](levels/level-5-hullbreuk) |
-| Bonus | Lekken dichten | Module Kepler | in `assets/js/orion.js` |
+| Oefenronde | Lek of geen lek | Module Kepler | [oefenrondes/lek-of-geen-lek](oefenrondes/lek-of-geen-lek) |
 | Eindmissie | Een bericht van de aarde | Communicatietoren | [levels/eindmissie-bericht-van-de-aarde](levels/eindmissie-bericht-van-de-aarde) |
 
 ## Opbouw
@@ -39,10 +44,10 @@ assets/
   css/orion.css              Opmaak van het spel rond de levels: balk, stationskaart, paneel, arcade, prestaties
   css/orion-theme.css        Ruimte-thema voor level 2 tot en met de eindmissie
   css/orion-level.css        Aanpassingen voor level 1, dat zijn eigen thema in style.css heeft
-  js/orion.js                Route, combo's, sterren, badges, de vier arcaderondes en de koppeling met het station
+  js/orion.js                Route, combo's, sterren, badges, oefenrondes, de arcaderonde, het logboek als pdf en de koppeling met het station
   js/orion-bridge.js         Staat in elk level: meldt elk gekozen antwoord aan het spel, voor combo's en sterren
   js/station.js              Het 3D-station, in code gebouwd met three.js, met CC0-texturen en bloom
-  js/arcade3d.js             De 3D-speelvelden achter de vier arcaderondes
+  js/arcade3d.js             Het 3D-speelveld achter de arcaderonde Wie mag dit zien?
   js/tex.js                  Laadt de texturen voor station en arcade
   textures/                  Texturen van ambientCG (CC0), zie CREDITS.md in die map
   vendor/three.module.js     three.js r170 (MIT-licentie), zonder internet bruikbaar
@@ -51,6 +56,12 @@ levels/<level>/
   index.html                 Pagina van het level (statusbalk, speelveld)
   style.css                  Opmaak die alleen voor dit level geldt
   game.js                    Spellogica en alle teksten, vragen en antwoorden van dit level
+oefenrondes/
+  shared/mini.js             Gedeelde motor van de oefenrondes (statusbalk, oordelen, uitslag), kopie uit de proefhal
+  shared/mini.css            Gedeelde opmaak, met aanpassingen voor het missiepaneel
+  shared/scene3d.js          Gedeelde 3D-basis, gebruikt de three.js van het spel in assets/vendor
+  shared/orion-oefen.js      Koppeling met het spel: terugknop, Tijdsdruk en geluid
+  <slug>/                    Eén oefenronde: index.html, game.js (teksten en logica) en style.css
 tools/
   serve.mjs                  Lokale webserver
   bundle.mjs                 Maakt één los HTML-bestand van het hele spel
@@ -73,8 +84,9 @@ Dubbelklikken op `index.html` werkt niet goed: de browser laat het 3D-station da
 ## Aanpassen
 
 - **Teksten, vragen, antwoorden en feedback** van een level staan in `game.js` van dat level. Zoek op de zin die je wilt wijzigen.
-- **Wat ARIA per missie zegt**, de naam van de module en de volgorde van levels staan in de lijst `LEVELS` bovenin `assets/js/orion.js`. De volgorde van levels en arcaderondes staat in `ROUTE` in hetzelfde bestand.
-- **Arcaderondes**: regels, kaarten en berichten staan in `GAMES`, `CARDS`, `PACKETS`, `MSGS` en `EVENTS` in `assets/js/orion.js`.
+- **Wat ARIA per missie zegt**, de naam van de module en de volgorde van levels staan in de lijst `LEVELS` bovenin `assets/js/orion.js`. De volgorde van levels, oefenrondes en de arcaderonde staat in `ROUTE` in hetzelfde bestand.
+- **Oefenrondes**: teksten, vragen en uitleg staan in `oefenrondes/<slug>/game.js`. Welke oefenronde bij welk level hoort en wat ARIA erbij zegt, staat in de lijst `OEFEN` bovenin `assets/js/orion.js`. De rondes komen uit de proefhal. Werk je ze daar bij, kopieer dan `game.js` en `style.css` opnieuw en zet het blok "In het missiepaneel van Ruimtestation Orion" onderaan `style.css` terug.
+- **Arcaderonde Wie mag dit zien?**: regels en pakketjes staan in `GAMES` en `PACKETS` in `assets/js/orion.js`.
 - **Het station**: modules, kleuren en camerastandpunten staan in `assets/js/station.js`. Elke module heeft een eigen blok met een korte uitleg erboven.
 - **Opmaak** van één level wijzig je in `style.css` van dat level. Kleuren en lettertypen komen uit `assets/css/vcsw-brand.css`; pas die alleen aan als de huisstijl verandert.
 
@@ -86,9 +98,17 @@ Wil je het spel als één bestand versturen of in een leeromgeving zetten:
 npm run bundle
 ```
 
-Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 6,4 MB). Het werkt met dubbelklikken en zonder internet; alleen de lettertypen komen dan uit het systeem. De map `dist/` gaat niet mee naar GitHub.
+Het resultaat staat in `dist/AVG-game_Ruimtestation_Orion.html` (ongeveer 7,4 MB), met de oefenrondes erin. Het werkt met dubbelklikken en zonder internet; alleen de lettertypen komen dan uit het systeem. De map `dist/` gaat niet mee naar GitHub.
 
 ## Wijzigingen
+
+### 27 november 2026: oefenrondes, pdf-logboek en meldingen op een vaste plek (ronde 30)
+
+- **Oefenrondes uit de proefhal.** Zes spellen uit de proefhal vervangen de Holokaarten-sprint, Phishing Invaders en Lekken dichten. Na level 1 volgen Puzzel de persoon en Zwart de lijst, na level 2 De opruimronde, na level 4 De postkamer en Het telefoontje, na level 5 Lek of geen lek. Wie mag dit zien? na level 3 blijft. Een oefenronde laadt in het missiepaneel zoals een level. Het paneel is bij een oefenronde breder, zodat het spel zonder scrollen past op 1440 bij 900. De statusbalk van het spel zelf blijft staan, die van het station niet: de balk van het spel toont ook het oordeel bij elke keuze. De 3D-ronde gebruikt de three.js van het spel, er staat geen tweede kopie in de repo.
+- **Badges.** Sorteermachine, Scherpschutter, Lekdichter, Zonder kras en Arcadeheld zijn vervangen door Puzzelaar, Zwartmaker, Opruimer, Postmeester, Niet in te pakken, Lekspeurder, Ongeschonden en Oefenmeester. Er zijn nu veertien badges.
+- **Logboek als pdf.** Bewaar als pdf maakt in de browser een echt pdf-bestand met de uitslag per missie en per oefenronde, en biedt het aan als download. Werkt downloaden niet, dan open je het in een nieuw tabblad of druk je af.
+- **Meldingen.** Badges, combo's en de melding van Tijdsdruk staan klein boven de missiekaart linksonder, niet meer rechtsboven of midden over het paneel.
+- Testsprong: `index.html?oefen=<slug>&shot=play` opent een oefenronde direct in de schil, midden in het spel. Met `shot=feedback` of `shot=result` zie je een oordeel of de uitslag.
 
 ### 26 november 2026: nieuwe voorpagina, rustig paneel en meer tempo (ronde 29)
 

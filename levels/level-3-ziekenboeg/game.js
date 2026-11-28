@@ -9,6 +9,7 @@
     alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
     x: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
     right: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+    left: '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
     refresh: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
     tick: '<path d="M20 6 9 17l-5-5"/>',
     cross: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
@@ -22,7 +23,9 @@
     lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
     target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
-    dot: '<circle cx="12" cy="12" r="3"/>'
+    dot: '<circle cx="12" cy="12" r="3"/>',
+    grip: '<circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>'
   };
   function icon(name, cls) { return '<svg class="vcsw-icon' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + P[name] + '</svg>'; }
   var ARIA_FACE = '<svg class="ox-face" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="48" fill="#0c2f5f"/><ellipse cx="48" cy="50" rx="30" ry="24" fill="#e8eef6"/><ellipse cx="48" cy="50" rx="30" ry="24" fill="none" stroke="#8fa0b8" stroke-width="2"/><circle cx="48" cy="50" r="13" fill="#04142b"/><circle cx="48" cy="50" r="8" fill="#15aaff"/><circle cx="45" cy="47" r="2.5" fill="#fff"/><rect x="10" y="44" width="10" height="12" rx="4" fill="#8fa0b8"/><rect x="76" y="44" width="10" height="12" rx="4" fill="#8fa0b8"/><path d="M48 26v-9" stroke="#8fa0b8" stroke-width="3" stroke-linecap="round"/><circle cx="48" cy="15" r="3" fill="#ffb900"/></svg>';
@@ -43,77 +46,91 @@
   }
 
   /* ---------- Content (from the game design, level 3) ---------- */
+  /* Velden van de ziekmelding. Gemengde volgorde, zodat de plek niet verraadt wat mag. */
   var SICK_FIELDS = [
     { q: "Communicatiekanaal en verblijfplaats tijdens ziekte", ok: true, why: "Nodig om contact te houden" },
+    { q: "Wat is de diagnose", ok: false, why: "Alleen voor de scheepsarts" },
     { q: "Verwachte duur van de afwezigheid", ok: true, why: "Nodig voor het dienstrooster" },
-    { q: "Lopende taken en afspraken", ok: true, why: "Nodig om werk over te dragen" },
     { q: "Valt het crewlid onder een vangnetregeling", ok: true, why: "Nodig voor de juiste vergoeding" },
+    { q: "Welke medicijnen gebruikt het crewlid", ok: false, why: "Medisch gegeven" },
+    { q: "Lopende taken en afspraken", ok: true, why: "Nodig om werk over te dragen" },
+    { q: "Is het iets psychisch", ok: false, why: "Ook een indirecte vraag naar de diagnose mag niet" },
     { q: "Is de ziekte het gevolg van een ongeluk tijdens dienst", ok: true, why: "Nodig voor melding en verzekering" },
     { q: "Is er een ander schip aansprakelijk, bijvoorbeeld na een aanvaring", ok: true, why: "Nodig om schade te verhalen" },
-    { q: "Wat is de diagnose", ok: false, why: "Alleen voor de scheepsarts" },
-    { q: "Wat is de oorzaak, bijvoorbeeld heimwee naar de aarde", ok: false, why: "Valt onder medische gegevens" },
-    { q: "Welke medicijnen gebruikt het crewlid", ok: false, why: "Medisch gegeven" },
-    { q: "Is het iets psychisch", ok: false, why: "Ook een indirecte vraag naar de diagnose mag niet" }
+    { q: "Wat is de oorzaak, bijvoorbeeld heimwee naar de aarde", ok: false, why: "Valt onder medische gegevens" }
   ];
 
+  /* Meerkeuzeregel van de privacy officer: per vraag één goed en één half goed antwoord, de rest fout maar aannemelijk.
+     Antwoorden zijn ongeveer even lang en het goede antwoord staat niet steeds op dezelfde plek.
+     Half goed geeft 3 van de 10 punten, zodat je met alleen half goede antwoorden het level niet haalt. De uitleg (why) zegt wat het half goede antwoord mist. */
   var CHOICE_SITUATIONS = [
     {
       id: "s2", title: "Situatie 2: De nieuwsgierige kapitein",
       intro: say("vega", "Wat heeft Joran precies? Ik moet weten of hij terugkomt.") +
         '<p class="mt-16">Joran heeft jou in de kantine verteld dat hij overspannen is.</p>',
       options: [
-        { text: "“Tussen ons, hij is overspannen.”", grade: "fout", why: "Je deelt een medisch gegeven zonder grondslag, ook al vertelde Joran het vrijwillig.",
+        { text: "“Daar kan ik niets over zeggen. Voor al je vragen over Joran verwijs ik je naar de scheepsarts.”", grade: "half",
+          why: "Je deelt terecht niets over zijn gezondheid. Wat je mist, is dat Vega wel recht heeft op de verwachte duur voor haar planning. De scheepsarts adviseert alleen over wat Joran nog kan, niet over wat hij heeft.",
+          react: say("vega", "De scheepsarts? Die vertelt mij toch niets. Ik wil alleen weten wanneer ik hem weer kan inroosteren.") },
+        { text: "“Hij vertelde me zelf dat hij overspannen is. Dan kun je de oogstrotatie alvast anders plannen.”", grade: "fout",
+          why: "Je deelt een medisch gegeven zonder grondslag, ook al vertelde Joran het vrijwillig.",
           react: say("vega", "Overspannen? Dan kan ik hem wel afschrijven voor de oogstrotatie. Goed dat ik het weet.") },
-        { text: "“Ik kan geen medische informatie delen. Wel de verwachte duur. De scheepsarts adviseert over wat hij nog kan.”", grade: "goed", why: "Je geeft Vega wat ze nodig heeft voor de planning, en niets over zijn gezondheid.",
-          react: say("vega", "Hm. Geef me die duur dan maar, en zorg dat het advies van de scheepsarts vandaag bij me ligt.") },
-        { text: "“Dat weet ik niet.”", grade: "half", why: "Je deelt niets, maar je helpt haar ook niet verder en het is niet eerlijk.",
-          react: say("vega", "Je weet het niet? Dan zoek je het maar uit. Ik roep je over een uur weer op.") }
+        { text: "“Medische informatie deel ik niet. Wel de verwachte duur, en de scheepsarts adviseert wat hij nog kan.”", grade: "goed",
+          why: "Je geeft Vega wat ze nodig heeft voor de planning, en niets over zijn gezondheid.",
+          react: say("vega", "Hm. Geef me die duur dan maar, en zorg dat het advies van de scheepsarts vandaag bij me ligt.") }
       ],
-      flagOn: 0, flag: "joran"
+      flagOn: 1, flag: "joran"
     },
     {
       id: "s3", title: "Situatie 3: Het verkeerde kanaal",
       intro: '<p>In het algemene kanaal van de module verschijnt een bericht. Het is een rapport van de scheepsarts met medische details over een crewlid. Het hoort daar niet.</p>' +
         '<div class="ox-card kanaal mt-16"><span class="ox-chip neutral">Algemeen kanaal van de ziekenboeg</span><p><strong>Scheepsarts:</strong> Rapport crewlid 0417, bevindingen en behandelplan (bijlage)</p></div>',
       options: [
-        { text: "Doorsturen naar de hele ploeg, zodat iedereen weet hoe het zit.", grade: "fout", why: "Zo verspreid je medische gegevens nog verder. Elke extra ontvanger maakt het lek groter.",
-          react: say("aria", "Ik tel nu 46 ontvangers in plaats van 23. Knap werk, maar niet het soort werk dat ik bedoel.") },
-        { text: "Niet verder verspreiden, de afzender laten weten dat het verkeerd is beland en melden bij ARIA.", grade: "goed", why: "Je beperkt de schade en laat het meldpunt beoordelen of het een datalek is.",
+        { text: "Niet verder verspreiden, de afzender laten weten dat het verkeerd is beland en melden bij ARIA.", grade: "goed",
+          why: "Je beperkt de schade en laat het meldpunt beoordelen of het een datalek is.",
           react: say("aria", "Melding ontvangen. Ik leg het vast en laat beoordelen of het een datalek is. Precies zo.") },
-        { text: "Stilletjes wissen.", grade: "fout", why: "Het kan een datalek zijn en dat moet beoordeeld en geregistreerd worden.",
-          react: say("aria", "Weg uit jouw scherm is niet weg uit de andere 22 schermen. En nu weet niemand dat het gebeurd is.") }
+        { text: "Het rapport doorsturen naar de sectorchef, zodat die de scheepsarts op de fout kan aanspreken.", grade: "fout",
+          why: "Zo verspreid je medische gegevens nog verder. Ook een leidinggevende hoort dit rapport niet te zien, en elke extra ontvanger maakt het lek groter.",
+          react: say("aria", "Nu staat het rapport ook in de inbox van de sectorchef. Het lek is net een ontvanger groter geworden.") },
+        { text: "Niet verder verspreiden en de scheepsarts vragen het rapport snel uit het kanaal te halen.", grade: "half",
+          why: "Je beperkt de schade, maar je meldt het niet. Zonder melding bij het meldpunt beoordeelt niemand of het een datalek is, en wordt het ook niet geregistreerd.",
+          react: say("aria", "Het rapport is weg uit het kanaal, mooi. Maar ik heb geen melding gekregen, dus niemand beoordeelt of dit een datalek is.") }
       ],
-      crystal: { on: 1, name: "Verkeerd ontvangen" }
+      crystal: { on: 0, name: "Verkeerd ontvangen" }
     },
     {
       id: "s4", title: "Situatie 4: De crewchat",
       intro: say("bram", "De nieuwe technicus staat in het register voor aangepast werk. Zet dat even in de crewchat, dan houdt iedereen er rekening mee."),
       options: [
-        { text: "Doen, het is goed bedoeld.", grade: "fout", why: "Zo’n registratie zegt iets over iemands gezondheid en arbeidsvermogen en is gevoelig.",
-          react: say("bram", "Zie je, iedereen reageert met een duim. O wacht, de technicus zelf leest ook mee. Dat was misschien niet zo handig.") },
-        { text: "Alleen vastleggen in het beveiligde systeem, voor wie het nodig heeft.", grade: "goed", why: "Alleen wie de registratie nodig heeft voor zijn taak, kan erbij.",
+        { text: "Niets opschrijven, maar het bij de ochtendbriefing kort mondeling aan de hele ploeg vertellen.", grade: "fout",
+          why: "Ook mondeling delen is delen. Zo’n registratie zegt iets over iemands gezondheid en arbeidsvermogen en is gevoelig.",
+          react: say("bram", "Slim, dan staat het nergens. Behalve in het hoofd van de hele ploeg, natuurlijk.") },
+        { text: "Alleen vastleggen in het beveiligde systeem, voor wie het nodig heeft voor zijn taak.", grade: "goed",
+          why: "Alleen wie de registratie nodig heeft voor zijn taak, kan erbij.",
           react: say("bram", "Ook goed. Dan hoef ik niet te onthouden wie het wel en niet mocht weten.") },
-        { text: "Het alleen mondeling aan de ploeg vertellen.", grade: "fout", why: "Ook mondeling delen is delen.",
-          react: say("bram", "Slim, dan staat het nergens. Behalve in het hoofd van de hele ploeg, natuurlijk.") }
+        { text: "Niet in de crewchat, maar vastleggen in het beveiligde systeem waar de hele ploeg bij kan.", grade: "half",
+          why: "Het beveiligde systeem is de goede plek. Wat je mist, is dat alleen wie de registratie nodig heeft voor zijn taak erbij mag. De hele ploeg hoort daar niet bij.",
+          react: say("bram", "Staat erin. Iedereen kan het nu opzoeken, ook de kok. Was dat de bedoeling?") }
       ],
       crystal: { on: 1, name: "Need to know" }
     }
   ];
 
   var HATCHES = [
-    { id: "chef", name: "Sectorchef", icon: "user" },
-    { id: "admin", name: "Crewadministratie", icon: "clipboard" },
-    { id: "arts", name: "Scheepsarts", icon: "medic" }
+    { id: "chef", name: "Sectorchef", icon: "user", role: "Plant het werk" },
+    { id: "admin", name: "Crewadministratie", icon: "clipboard", role: "Regelt vergoeding en formele kant" },
+    { id: "arts", name: "Scheepsarts", icon: "medic", role: "Krijgt als enige medische gegevens" }
   ];
   function hatch(id) { return HATCHES.filter(function (h) { return h.id === id; })[0]; }
+  /* De stukjes komen één voor één in beeld, in deze volgorde. Gemengd, zodat de volgorde niets verraadt. */
   var LOCK_ITEMS = [
     { t: "Verwachte terugkeer over twee weken", a: "chef" },
-    { t: "Kan vier uur per dag licht werk doen", a: "chef" },
     { t: "Diagnose: rugblessure", a: "arts" },
-    { t: "Medicatielijst", a: "arts" },
-    { t: "Verslag van de fysiotherapeut", a: "arts" },
     { t: "Valt onder een vangnetregeling", a: "admin" },
+    { t: "Kan vier uur per dag licht werk doen", a: "chef" },
+    { t: "Verslag van de fysiotherapeut", a: "arts" },
     { t: "Ziekmelding is op tijd gedaan", a: "admin" },
+    { t: "Medicatielijst", a: "arts" },
     { t: "Afwezigheid is het gevolg van een ongeluk tijdens dienst", a: "admin" }
   ];
   var LOCK_WHY = {
@@ -221,7 +238,7 @@
       '<p class="ox-lead">Je leert dat gezondheidsgegevens extra bescherming krijgen en dat een leidinggevende niet mag weten wat een ziek crewlid mankeert. Je speelt vier situaties en opent daarna de luchtsluis De drie luiken.</p>' +
       '<div class="ox-two">' +
       '<div class="ox-card"><h3>Zo scoor je</h3><ul class="ox-rows">' +
-      row("tick", "green", "Goed antwoord 10 punten, half goed 5 punten, fout 0 punten met uitleg.") +
+      row("tick", "green", "Goed antwoord 10 punten, half goed 3 punten, fout 0 punten met uitleg.") +
       row("shield", "red", "Foute keuzes verzwakken je schilden. Half goed kost 5 procent, fout 10 procent.") +
       '</ul></div>' +
       '<div class="ox-card"><h3>Goed om te weten</h3><ul class="ox-rows">' +
@@ -229,7 +246,7 @@
       row("target", "blue", "Je haalt het level met minimaal 70 procent van de punten. Daarna ben je Commandeur.") +
       '</ul></div></div>' +
       '<div class="actions">' + nextBtn("Start level 3", "go") + '</div>' +
-      '<p class="ox-foot">' + icon("info") + '<span><strong>Prototype met fictieve gegevens.</strong> De goede antwoorden wachten nog op goedkeuring door de Privacy Officer, zie de open punten in het ontwerp.</span></p>' +
+      '<p class="ox-foot">' + icon("info") + '<span><strong>Prototype met fictieve gegevens.</strong> De goede antwoorden wachten nog op goedkeuring door de privacy officer, zie de open punten in het ontwerp.</span></p>' +
       '</div>'
     );
     document.getElementById("go").onclick = screenBriefing;
@@ -291,7 +308,7 @@
       });
       var wrong = SICK_FIELDS.length - good;
       var grade = good >= 9 ? "goed" : (good >= 7 ? "half" : "fout");
-      var pts = grade === "goed" ? 10 : (grade === "half" ? 5 : 0);
+      var pts = grade === "goed" ? 10 : (grade === "half" ? 3 : 0);
       S.points += pts;
       S.shield -= wrong * 2;
       S.results.s1 = { grade: grade, good: good };
@@ -330,7 +347,7 @@
           x.classList.add(x === b ? "picked" : "dim");
           if (x === b) x.setAttribute("aria-current", "true");
         });
-        S.points += o.grade === "goed" ? 10 : (o.grade === "half" ? 5 : 0);
+        S.points += o.grade === "goed" ? 10 : (o.grade === "half" ? 3 : 0);
         S.shield -= SHIELD_COST[o.grade];
         S.results[sit.id] = { grade: o.grade, pick: letters[i] };
         if (sit.flag && i === sit.flagOn) S.flags[sit.flag] = true;
@@ -349,10 +366,10 @@
     });
   }
 
-  /* ---------- Luchtsluis: De drie luiken ---------- */
-  function pills(counts) {
+  /* ---------- Luchtsluis: De drie luiken (voorstel C, één stukje tegelijk) ---------- */
+  function pills() {
     return HATCHES.map(function (h) {
-      return '<span class="luik-pil h-' + h.id + '">' + icon(h.icon) + '<span>' + h.name + '</span>' + (counts ? '<b id="cnt-' + h.id + '">0</b><span class="vcsw-sr-only"> stukjes</span>' : '') + '</span>';
+      return '<span class="luik-pil h-' + h.id + '">' + icon(h.icon) + '<span>' + h.name + '</span></span>';
     }).join("");
   }
 
@@ -365,13 +382,13 @@
       head("De drie luiken", chip("Luchtsluis") + chip(Math.floor(LOCK_SECONDS / 60) + " minuten", "", "clock") + chip("Hoort bij level 3", "neutral")) +
       '<p class="ox-lead">Schuif elk stukje informatie over een ziek crewlid door het juiste luik.</p>' +
       '<div class="ox-card intro-demo">' +
-      say("aria", "Einde dienst. Op je console ligt nog informatie over een ziek crewlid die daar deels niet thuishoort. Schuif elk stukje door het juiste luik: sectorchef, crewadministratie of scheepsarts. Het luik van de scheepsarts heeft een extra slot. Je mag er alleen iets in schuiven, nooit zelf iets uit halen.") +
-      '<div class="luik-pills" aria-hidden="true">' + pills(false) + '</div></div>' +
+      say("aria", "Einde dienst. Op je console ligt nog informatie over een ziek crewlid die daar deels niet thuishoort. Je krijgt de stukjes één voor één. Sleep elk stukje naar het luik van de sectorchef, de crewadministratie of de scheepsarts, of klik op het luik. Elk luik krijgt alleen wat die rol nodig heeft.") +
+      '<div class="luik-pills" aria-hidden="true">' + pills() + '</div></div>' +
       '<div class="ox-two">' +
       '<div class="ox-card"><h3>Zo scoor je</h3><ul class="ox-rows">' +
       row("tick", "green", "Elk stukje dat bij de eerste controle goed ligt, levert 5 punten op.") +
       row("shield", "red", "Elk fout stukje kost 5 procent schild.") +
-      row("refresh", "blue", "Kies bij elk stukje een luik. Daarna controleer je de verdeling.") +
+      row("refresh", "blue", "Verkeerd geschoven? Klik op het stukje onder het luik om het terug te halen.") +
       '</ul></div>' +
       '<div class="ox-card"><h3>Goed om te weten</h3><ul class="ox-rows">' +
       row("clock", "blue", "Je hebt " + Math.floor(LOCK_SECONDS / 60) + " minuten. Als de verdeling klopt, licht de sluiscode op.") +
@@ -386,118 +403,377 @@
   var timerId = null;
   function fmt(n) { return Math.floor(n / 60) + ":" + (n % 60 < 10 ? "0" : "") + (n % 60); }
 
+  /* Een getekend luik in de stijl van het station: een kast met klinknagels en een statuslampje,
+     een donkere opening en een deurblad met naad, sleuf, plaatje en waarschuwingsstreep, opgehangen aan twee scharnieren bovenaan.
+     Het hele luik is één knop. Bij inschuiven klapt het deurblad naar binnen open en weer dicht. */
+  function hatchButton(h, k) {
+    return '<button type="button" class="deur-btn luik-knop" data-hatch="' + h.id + '" aria-keyshortcuts="' + (k + 1) + '">' +
+      '<span class="vcsw-sr-only">Schuif hierin bij ' + h.name + ', toets ' + (k + 1) + '</span>' +
+      '<span class="luik-kast" aria-hidden="true">' +
+      '<span class="luik-lamp"></span>' +
+      '<span class="luik-gat"><span class="luik-binnen"></span>' +
+      '<span class="luik-blad"><span class="blad-naad"></span><span class="luik-sleuf"></span>' +
+      '<span class="blad-plaat">Schuif hierin<kbd>' + (k + 1) + '</kbd></span><span class="blad-streep"></span></span></span>' +
+      '<span class="luik-scharnier l"></span><span class="luik-scharnier r"></span>' +
+      '</span></button>';
+  }
+
+  /* Het eerstvolgende stukje na i dat nog niet in een luik ligt, of -1 als alles ligt. */
+  function nextOpen(i) {
+    var N = LOCK_ITEMS.length;
+    for (var k = 1; k <= N; k++) { var j = (i + k + N) % N; if (!S.lock.place[j]) return j; }
+    return -1;
+  }
+
   function screenLock() {
-    S.lock = { place: {}, verdict: {}, checks: 0, firstScored: false, used: 0, remaining: LOCK_SECONDS, revealed: {}, done: false };
-    var cards = LOCK_ITEMS.map(function (it, i) {
-      var btns = HATCHES.map(function (h) {
-        return '<button type="button" class="luik-btn h-' + h.id + '" data-card="' + i + '" data-hatch="' + h.id + '" aria-pressed="false">' + icon(h.icon, "ic-luik") + icon("tick", "ic-on") + '<span>' + h.name + '</span></button>';
-      }).join("");
-      return '<div class="luik-card" id="card' + i + '"><div class="luik-head"><span class="luik-teken" id="tk' + i + '" aria-hidden="true"></span>' +
-        '<div class="luik-txt"><span class="luik-label" id="lbl' + i + '">' + it.t + '</span><span class="luik-sub" id="sub' + i + '">Nog kiezen</span></div></div>' +
-        '<div class="luik-btns" role="group" aria-labelledby="lbl' + i + '">' + btns + '</div></div>';
-    }).join("");
-    var pil = HATCHES.map(function (h) {
-      var base = icon(h.icon) + '<span>' + h.name + '</span><b id="cnt-' + h.id + '">0</b><span class="vcsw-sr-only"> stukjes</span>';
-      return '<span class="luik-pil h-' + h.id + '">' + base + '</span>';
+    S.lock = { place: {}, verdict: {}, checks: 0, firstScored: false, used: 0, remaining: LOCK_SECONDS, revealed: {}, done: false, cur: 0 };
+    var segs = LOCK_ITEMS.map(function (it, i) { return '<li id="seg' + i + '"></li>'; }).join("");
+    var doors = HATCHES.map(function (h, k) {
+      return '<section class="luik-deur h-' + h.id + '" id="deur-' + h.id + '" data-deur="' + h.id + '" aria-labelledby="ln-' + h.id + '">' +
+        '<div class="deur-kop"><span class="deur-ic" aria-hidden="true">' + icon(h.icon) + '</span><h3 id="ln-' + h.id + '">' + h.name + '</h3>' +
+        '<b class="deur-tel" id="cnt-' + h.id + '">0</b><span class="vcsw-sr-only" id="cnts-' + h.id + '"></span></div>' +
+        '<p class="deur-rol">' + h.role + '</p>' + hatchButton(h, k) +
+        '<ul class="deur-lijst" id="lijst-' + h.id + '" aria-label="Stukjes bij ' + h.name + '"></ul></section>';
     }).join("");
     show("luchtsluis",
       '<div class="luik">' +
       '<div class="luik-top"><h2>De drie luiken</h2>' +
-      '<span class="ox-chip" id="gekozen">' + icon("tick") + '<span>0 van ' + LOCK_ITEMS.length + ' gekozen</span></span>' +
       '<span class="ox-chip ok" id="schildChip"></span>' +
       '<span class="ox-clock timer" id="timer" aria-label="Resterende tijd">' + icon("clock") + '<span>' + fmt(LOCK_SECONDS) + '</span></span></div>' +
-      '<div class="luik-pills" role="group" aria-label="De drie luiken">' + pil + '<span class="luik-rest" id="rest"></span></div>' +
-      '<div class="luik-grid">' + cards + '</div>' +
-      '<div class="luik-acts" id="act">' +
-      '<button type="button" class="ox-btn" id="check" aria-disabled="true">Verdeling controleren' + icon("tick") + '</button>' +
-      '<button type="button" class="ox-btn ghost" id="hint">Vraag ARIA om een aanwijzing' + icon("bulb") + '</button>' +
-      '<button type="button" class="luik-open" id="openArts" title="Extra slot. Alleen inschuiven.">' + icon("lock") + '<span>Luik van de scheepsarts zelf openen</span><span class="vcsw-sr-only">. Dat luik heeft een extra slot.</span></button>' +
+      '<section class="ox-card stukje" id="stukje" aria-label="Huidig stukje">' +
+      '<div class="stukje-kop"><span class="stukje-nr" id="stukNr"></span><ol class="stukje-balk" aria-hidden="true">' + segs + '</ol></div>' +
+      '<div class="stukje-body" id="stukBody"></div></section>' +
+      '<div class="luiken" role="group" aria-label="De drie luiken">' + doors + '</div>' +
+      '<div class="luik-acts">' +
+      '<button type="button" class="ox-btn ghost" id="prev">' + icon("left") + 'Vorige stukje</button>' +
       '<div class="aw-meta"><span class="aw-gems" id="gems"></span><span class="aw-cost" id="hintCost"></span></div>' +
+      '<button type="button" class="ox-btn ghost" id="hint">Vraag een aanwijzing' + icon("bulb") + '</button>' +
       '</div>' +
       '<div class="aw-list" id="msg"></div>' +
       '</div>'
     );
-    paintLock();
-    screenEl.querySelectorAll("[data-card]").forEach(function (b) {
-      b.addEventListener("click", function () {
-        if (S.lock.done) return;
-        var i = +b.getAttribute("data-card");
-        S.lock.place[i] = b.getAttribute("data-hatch");
-        delete S.lock.verdict[i];
-        paintLock();
+    /* Het hele luik is klikbaar: de kop, de rol en het getekende luik. Een stukje in de lijst eronder haalt terug. */
+    screenEl.querySelectorAll(".luik-deur").forEach(function (d) {
+      d.addEventListener("click", function (e) {
+        if (e.target.closest("[data-take]") || e.target.closest(".deur-lijst")) return;
+        shove(d.getAttribute("data-deur"));
       });
     });
-    document.getElementById("openArts").onclick = function () {
-      if (S.lock.done) return;
-      S.shield -= 10;
-      ariaSays("Dat luik gaat niet open voor jou, en dat is precies de bedoeling. Dat kost je 10 procent schildsterkte.", chip("Kostte 10 procent schild", "warn", "shield"));
-      paintLock();
-      announce("Het luik van de scheepsarts blijft dicht. Min 10 procent schildsterkte.");
-    };
+    document.getElementById("prev").onclick = previous;
     document.getElementById("hint").onclick = useHint;
-    document.getElementById("check").onclick = checkLock;
+    paintLock();
     startTimer();
   }
 
-  /* Eén vak onder de knoppen voor het laatste bericht: de tekstballon van ARIA of de uitslag van een controle.
-     Een aanwijzing blijft daarnaast op de kaart zelf staan. */
+  /* Toetsen 1, 2 en 3 schuiven het stukje door het eerste, tweede of derde luik. */
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey || !/^[123]$/.test(e.key)) return;
+    if (S.screen !== "luchtsluis" || !S.lock || S.lock.done || !document.getElementById("stukje")) return;
+    e.preventDefault();
+    shove(HATCHES[+e.key - 1].id);
+  });
+
+  function calmMotion() { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
+
+  /* Een los kaartje dat over het scherm beweegt: bij slepen, bij inschuiven en bij terugspringen. Alleen beeld. */
+  function makeGhost(text, rect, extra) {
+    var g = document.createElement("div");
+    g.className = "kaartje vlieg-kaart" + (extra ? " " + extra : "");
+    g.setAttribute("aria-hidden", "true");
+    g.innerHTML = icon("grip", "kaart-greep") + '<span class="kaart-tekst"></span>';
+    g.querySelector(".kaart-tekst").textContent = text;
+    g.style.left = rect.left + "px"; g.style.top = rect.top + "px"; g.style.width = rect.width + "px";
+    document.body.appendChild(g);
+    return g;
+  }
+  function doorOpen(id, ms) {
+    var door = document.getElementById("deur-" + id);
+    if (!door) return;
+    clearTimeout(door._dicht);
+    door.classList.add("open");
+    door._dicht = setTimeout(function () {
+      door.classList.remove("open");
+      door.classList.remove("slikt"); void door.offsetWidth; door.classList.add("slikt");
+    }, ms);
+  }
+  /* Het midden van de sleuf: daar gaat een stukje in en komt het uit. */
+  function slotPoint(id) {
+    var gat = document.querySelector("#deur-" + id + " .luik-gat");
+    if (!gat) return null;
+    var b = gat.getBoundingClientRect();
+    return { x: b.left + b.width / 2, y: b.top + b.height * 0.36, w: b.width };
+  }
+
+  /* Het stukje vliegt naar het gekozen luik, het deurblad klapt open, het stukje verdwijnt erin en het luik sluit.
+     Met een sleepkaartje vliegt dat kaartje vanaf de plek waar je het losliet. */
+  function flyIn(id, ghost) {
+    var p = slotPoint(id);
+    if (calmMotion() || !document.body.animate || !p) { if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost); return; }
+    var start = ghost ? "rotate(-3deg) scale(1.04)" : "none";
+    var g = ghost;
+    if (!g) {
+      var src = document.getElementById("kaartje");
+      if (!src) return;
+      g = makeGhost(src.textContent, src.getBoundingClientRect());
+    }
+    g.classList.add("h-" + id, "richting");
+    var w = g.offsetWidth, h = g.offsetHeight, left = parseFloat(g.style.left), top = parseFloat(g.style.top);
+    var dx = p.x - (left + w / 2), dy = p.y - (top + h / 2), fit = Math.min(1, (p.w * 0.86) / w);
+    doorOpen(id, 500);
+    var anim = g.animate([
+      { transform: start, opacity: 1 },
+      { transform: "translate(" + dx + "px, " + dy + "px) rotate(0deg) scale(" + fit + ")", opacity: 1, offset: 0.62 },
+      { transform: "translate(" + dx + "px, " + (dy + 10) + "px) rotate(0deg) scale(" + (fit * 0.5) + ", " + (fit * 0.2) + ")", opacity: 0 }
+    ], { duration: 560, easing: "cubic-bezier(.4, 0, .3, 1)", fill: "forwards" });
+    anim.onfinish = anim.oncancel = function () { if (g.parentNode) g.parentNode.removeChild(g); };
+  }
+
+  /* Het stukje springt terug uit het luik naar de kaart bovenaan. */
+  function flyOut(i, id, wasWrong) {
+    var p = slotPoint(id), dest = document.getElementById("kaartje");
+    if (calmMotion() || !document.body.animate || !p || !dest) return;
+    var r = dest.getBoundingClientRect();
+    var g = makeGhost(LOCK_ITEMS[i].t, r, "h-" + id + " richting" + (wasWrong ? " fout" : ""));
+    var w = g.offsetWidth, h = g.offsetHeight;
+    var dx = p.x - (r.left + w / 2), dy = p.y - (r.top + h / 2), fit = Math.min(1, (p.w * 0.86) / w);
+    dest.classList.add("landt");
+    doorOpen(id, 360);
+    var anim = g.animate([
+      { transform: "translate(" + dx + "px, " + (dy + 10) + "px) scale(" + (fit * 0.5) + ", " + (fit * 0.2) + ")", opacity: 0 },
+      { transform: "translate(" + dx + "px, " + (dy - 14) + "px) scale(" + fit + ")", opacity: 1, offset: 0.3 },
+      { transform: "translate(" + (dx * 0.4) + "px, " + (dy * 0.4 - 40) + "px) rotate(-3deg) scale(1)", opacity: 1, offset: 0.7 },
+      { transform: "translate(0, 0) rotate(0deg) scale(1)", opacity: 1 }
+    ], { duration: 620, easing: "cubic-bezier(.3, 0, .3, 1)", fill: "forwards" });
+    anim.onfinish = anim.oncancel = function () {
+      if (g.parentNode) g.parentNode.removeChild(g);
+      var k = document.getElementById("kaartje");
+      if (k) k.classList.remove("landt");
+    };
+  }
+
+  /* Slepen: pak het kaartje op en laat het los boven een luik. Muis, pen en aanraken via pointer events. */
+  var drag = null;
+  function doorAt(x, y) {
+    var el = document.elementFromPoint(x, y);
+    var d = el && el.closest ? el.closest(".luik-deur") : null;
+    return d && screenEl.contains(d) ? d : null;
+  }
+  function markTarget(d) {
+    screenEl.querySelectorAll(".luik-deur.doel").forEach(function (x) { if (x !== d) x.classList.remove("doel"); });
+    if (d) d.classList.add("doel");
+  }
+  function endDrag(dropOn) {
+    var D = drag;
+    drag = null;
+    screenEl.classList.remove("sleept");
+    markTarget(null);
+    if (!D) return;
+    D.el.classList.remove("vast");
+    if (!D.ghost) return;
+    if (dropOn && S.lock && !S.lock.done && S.lock.cur !== -1) { shove(dropOn, D.ghost); return; }
+    /* Losgelaten naast een luik: het kaartje gaat terug naar zijn plek. */
+    D.el.classList.remove("weg");
+    var g = D.ghost;
+    if (calmMotion() || !g.animate) { g.parentNode.removeChild(g); return; }
+    var r = D.el.getBoundingClientRect();
+    var dx = r.left - parseFloat(g.style.left), dy = r.top - parseFloat(g.style.top);
+    D.el.classList.add("landt");
+    var a = g.animate([{ transform: "rotate(-3deg) scale(1.04)" }, { transform: "translate(" + dx + "px, " + dy + "px) rotate(0deg) scale(1)" }],
+      { duration: 240, easing: "cubic-bezier(.3, 0, .3, 1)", fill: "forwards" });
+    a.onfinish = a.oncancel = function () { if (g.parentNode) g.parentNode.removeChild(g); D.el.classList.remove("landt"); };
+  }
+  function bindDrag(el) {
+    el.addEventListener("pointerdown", function (e) {
+      if ((e.pointerType === "mouse" && e.button !== 0) || !S.lock || S.lock.done || drag) return;
+      e.preventDefault();
+      drag = { el: el, x0: e.clientX, y0: e.clientY, ghost: null, over: null };
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
+      el.classList.add("vast");
+    });
+    el.addEventListener("pointermove", function (e) {
+      var D = drag;
+      if (!D || D.el !== el) return;
+      if (!D.ghost) {
+        if (Math.abs(e.clientX - D.x0) + Math.abs(e.clientY - D.y0) < 6) return;
+        var r = el.getBoundingClientRect();
+        D.offX = D.x0 - r.left; D.offY = D.y0 - r.top;
+        D.ghost = makeGhost(el.textContent, r, "opgepakt");
+        el.classList.add("weg");
+        screenEl.classList.add("sleept");
+      }
+      D.ghost.style.left = (e.clientX - D.offX) + "px";
+      D.ghost.style.top = (e.clientY - D.offY) + "px";
+      var d = doorAt(e.clientX, e.clientY);
+      D.over = d ? d.getAttribute("data-deur") : null;
+      markTarget(d);
+    });
+    el.addEventListener("pointerup", function (e) {
+      if (!drag || drag.el !== el) return;
+      var d = drag.ghost ? doorAt(e.clientX, e.clientY) : null;
+      endDrag(d ? d.getAttribute("data-deur") : null);
+    });
+    el.addEventListener("pointercancel", function () { if (drag && drag.el === el) endDrag(null); });
+  }
+
+  function shove(id, ghost) {
+    var L = S.lock;
+    if (!L || L.done || L.cur === -1) { if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost); return; }
+    var i = L.cur, it = LOCK_ITEMS[i], h = hatch(id);
+    flyIn(id, ghost);
+    L.open = null;
+    L.place[i] = id;
+    delete L.verdict[i];
+    L.justIn = i;
+    L.cur = nextOpen(i);
+    paintLock();
+    announce(it.t + " ligt nu bij " + h.name + ". " + (L.cur === -1 ? "Alle stukjes liggen in een luik. Controleer de verdeling." : "Volgende stukje: " + LOCK_ITEMS[L.cur].t + "."));
+  }
+
+  /* Een stukje terughalen uit een luik: het springt eruit en wordt weer het huidige stukje. */
+  function takeBack(i, focusId) {
+    var L = S.lock;
+    if (!L || L.done) return;
+    var from = L.place[i], wasWrong = L.verdict[i] === false;
+    delete L.place[i];
+    delete L.verdict[i];
+    L.cur = i;
+    paintLock();
+    if (from) flyOut(i, from, wasWrong);
+    var f = document.querySelector('#deur-' + (focusId || from) + ' .deur-btn');
+    if (f) f.focus({ preventScroll: true });
+    announce(LOCK_ITEMS[i].t + " is teruggehaald. Kies opnieuw een luik.");
+  }
+
+  function previous() {
+    var L = S.lock;
+    if (!L || L.done) return;
+    var t = L.cur === -1 ? LOCK_ITEMS.length - 1 : L.cur - 1;
+    if (t < 0) return;
+    var from = L.place[t];
+    if (from) { takeBack(t, from); return; }
+    L.cur = t;
+    paintLock();
+    announce("Stukje " + (t + 1) + ": " + LOCK_ITEMS[t].t + ".");
+  }
+
+  /* Eén vak onder de knoppen voor het laatste bericht: de tekstballon van ARIA of de uitslag van een controle. */
   function lockMsg(html) {
     var box = document.getElementById("msg");
     if (!box) return;
     box.innerHTML = html;
-    var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (box.scrollIntoView) box.scrollIntoView({ block: "nearest", behavior: calm ? "auto" : "smooth" });
+    if (box.scrollIntoView) box.scrollIntoView({ block: "nearest", behavior: calmMotion() ? "auto" : "smooth" });
   }
   function ariaSays(text, extra) { lockMsg('<div class="ox-card aw-bubble">' + say("aria", text, extra) + '</div>'); }
 
   function paintLock() {
-    var L = S.lock, n = Object.keys(L.place).length, total = LOCK_ITEMS.length;
+    var L = S.lock, total = LOCK_ITEMS.length, n = Object.keys(L.place).length;
+    var wrongNow = LOCK_ITEMS.filter(function (it, i) { return L.verdict[i] === false; }).length;
+    /* Kaart bovenaan: het huidige stukje, of de controle als alles in een luik ligt. */
+    var body = document.getElementById("stukBody"), nr = document.getElementById("stukNr");
+    if (L.cur !== -1) {
+      var it = LOCK_ITEMS[L.cur];
+      nr.textContent = "Stukje " + (L.cur + 1) + " van " + total;
+      body.innerHTML = '<div class="kaartje" id="kaartje" title="Sleep naar een luik">' + icon("grip", "kaart-greep") +
+        '<span class="kaart-tekst" id="stukNaam">' + it.t + '</span></div>' +
+        (L.revealed[L.cur] ? '<p class="stukje-tip">' + icon("bulb") + '<span>ARIA: dit hoort bij ' + hatch(it.a).name + '. ' + LOCK_WHY[it.a] +
+          (L.hintChip && L.hintChip.i === L.cur ? ' ' + L.hintChip.html : '') + '</span></p>'
+          : '<p class="stukje-vraag">Door welk luik mag dit? Sleep het naar een luik, klik op een luik of druk 1, 2 of 3.</p>');
+      bindDrag(document.getElementById("kaartje"));
+    } else {
+      nr.textContent = n + " van " + total + " in een luik";
+      var title = wrongNow ? wrongNow + (wrongNow === 1 ? " stukje ligt" : " stukjes liggen") + " in het verkeerde luik" : "Alle stukjes liggen in een luik";
+      var sub = wrongNow ? "Klik op een rood stukje om het terug te halen en schuif het door een ander luik. Controleer daarna opnieuw. Punten tellen alleen bij de eerste controle."
+        : "Twijfel je? Klik op een stukje onder een luik om het terug te halen.";
+      body.innerHTML = '<p class="stukje-naam klaar' + (wrongNow ? " fout" : "") + '" id="stukNaam">' + (wrongNow ? icon("x") : "") + title + '</p>' +
+        '<p class="stukje-vraag">' + sub + '</p>' +
+        (L.done || wrongNow ? '' : '<button type="button" class="ox-btn" id="check">Verdeling controleren' + icon("tick") + '</button>');
+      var c = document.getElementById("check");
+      if (c) c.onclick = checkLock;
+    }
+    /* Voortgangsbalk: elk vakje in de kleur van het luik waar het stukje ligt. */
     LOCK_ITEMS.forEach(function (it, i) {
-      var at = L.place[i], h = at ? hatch(at) : null, v = L.verdict[i];
-      var card = document.getElementById("card" + i);
-      card.className = "luik-card" + (h ? " at h-" + at : "") + (v === false ? " wrong" : "");
-      var tk = document.getElementById("tk" + i);
-      tk.className = "luik-teken" + (h ? " on" : "");
-      tk.innerHTML = h ? icon(h.icon) : "";
-      var sub = h ? "Ligt bij: " + h.name : "Nog kiezen";
-      if (v === false) sub = '<span class="st bad">' + icon("cross") + 'Fout, probeer een ander luik</span>';
-      else if (v === true) sub = '<span class="st good">' + icon("tick") + 'Goed. Ligt bij: ' + h.name + '</span>';
-      if (L.revealed[i] && at !== it.a) sub += '<span class="st tip">' + icon("bulb") + 'ARIA: hoort bij ' + hatch(it.a).name + '</span>';
-      document.getElementById("sub" + i).innerHTML = sub;
-      card.querySelectorAll("[data-card]").forEach(function (b) {
-        b.setAttribute("aria-pressed", String(b.getAttribute("data-hatch") === at));
-        if (L.done) b.disabled = true;
-      });
+      var at = L.place[i];
+      document.getElementById("seg" + i).className = (at ? "at h-" + at : "") + (i === L.cur ? " nu" : "") + (L.verdict[i] === false ? " fout" : "");
     });
+    /* De drie luiken: teller en de lijst met stukjes die erin liggen. */
     HATCHES.forEach(function (h) {
-      var c = 0;
-      LOCK_ITEMS.forEach(function (it, i) { if (L.place[i] === h.id) c++; });
-      document.getElementById("cnt-" + h.id).textContent = c;
+      var items = [];
+      LOCK_ITEMS.forEach(function (it, i) { if (L.place[i] === h.id) items.push(i); });
+      var cnt = document.getElementById("cnt-" + h.id);
+      cnt.textContent = items.length;
+      cnt.className = "deur-tel" + (items.length ? "" : " leeg");
+      document.getElementById("cnts-" + h.id).textContent = items.length === 1 ? " stukje" : " stukjes";
+      var hasWrong = items.some(function (i) { return L.verdict[i] === false; });
+      var door = document.getElementById("deur-" + h.id);
+      door.classList.toggle("actief", L.cur !== -1 && !L.done);
+      door.classList.toggle("fout", hasWrong);
+      /* Compacte chips in een vak met vaste hoogte, zodat de drie kolommen even hoog blijven.
+         Rode stukjes en een ARIA-tip staan vooraan. Past het niet, dan toont de laatste plek "+2 meer". */
+      var CAP = 3, open = L.open && L.open[h.id];
+      var order = items.slice().sort(function (a, b) {
+        var wa = (L.verdict[a] === false ? 2 : 0) + (L.revealed[a] && LOCK_ITEMS[a].a !== h.id ? 1 : 0);
+        var wb = (L.verdict[b] === false ? 2 : 0) + (L.revealed[b] && LOCK_ITEMS[b].a !== h.id ? 1 : 0);
+        return wb - wa || b - a;
+      });
+      var shown = open || order.length <= CAP ? order : order.slice(0, CAP - 1);
+      var html = shown.map(function (i) {
+        var v = L.verdict[i], tip = L.revealed[i] && LOCK_ITEMS[i].a !== h.id, tipTxt = tip ? "ARIA: hoort bij " + hatch(LOCK_ITEMS[i].a).name : "";
+        return '<li' + (L.justIn === i ? ' class="nieuw"' : '') + '><button type="button" class="deur-item' + (v === false ? " fout" : "") + (tip ? " tip" : "") + '" data-take="' + i + '"' + (L.done ? " disabled" : "") +
+          ' title="' + LOCK_ITEMS[i].t + (tipTxt ? ". " + tipTxt : "") + (L.done ? "" : ". Klik om terug te halen") + '">' + icon(v === false ? "cross" : tip ? "bulb" : "tick") +
+          '<span>' + LOCK_ITEMS[i].t + (v === false ? '<span class="vcsw-sr-only">. Ligt in het verkeerde luik</span>' : '') +
+          (tip ? '<span class="vcsw-sr-only">. ' + tipTxt + '</span>' : '') +
+          (L.done ? '' : '<span class="vcsw-sr-only">. Terughalen</span>') + '</span>' +
+          (v === false ? '<span class="terug" aria-hidden="true">' + icon("undo") + '</span>' : '') + '</button></li>';
+      }).join("");
+      if (order.length > CAP) {
+        html += '<li><button type="button" class="deur-meer" data-meer="' + h.id + '" aria-expanded="' + (open ? "true" : "false") + '">' +
+          (open ? "Minder tonen" : "+" + (order.length - shown.length) + " meer") + '</button></li>';
+      }
+      var lijst = document.getElementById("lijst-" + h.id);
+      lijst.innerHTML = html || '<li class="deur-leeg" aria-hidden="true">Nog leeg</li>';
+      lijst.classList.toggle("open", !!open);
     });
-    document.querySelector("#gekozen span").textContent = n + " van " + total + " gekozen";
-    document.getElementById("rest").textContent = n === total ? "Alles gekozen" : "Nog " + (total - n) + " te kiezen";
+    L.justIn = null;
+    screenEl.querySelectorAll("[data-take]").forEach(function (b) {
+      b.onclick = function () { takeBack(+b.getAttribute("data-take")); };
+    });
+    screenEl.querySelectorAll("[data-meer]").forEach(function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute("data-meer");
+        L.open = L.open || {};
+        L.open[id] = !L.open[id];
+        paintLock();
+        var nb = screenEl.querySelector('[data-meer="' + id + '"]');
+        if (nb) nb.focus({ preventScroll: true });
+      };
+    });
+    screenEl.querySelectorAll(".deur-btn").forEach(function (b) {
+      if (L.cur === -1 || L.done) b.setAttribute("aria-disabled", "true"); else b.removeAttribute("aria-disabled");
+    });
+    var prev = document.getElementById("prev");
+    if (L.done || L.cur === 0) prev.setAttribute("aria-disabled", "true"); else prev.removeAttribute("aria-disabled");
     var sh = shieldNow(), sc = document.getElementById("schildChip");
     sc.className = "ox-chip " + shieldTone(sh);
     sc.innerHTML = icon("shield") + "Schild " + sh + "%";
-    var c = document.getElementById("check");
-    if (c) { if (n === total) c.removeAttribute("aria-disabled"); else c.setAttribute("aria-disabled", "true"); }
     /* Teller van kristallen en de prijs van de volgende aanwijzing */
     var have = S.crystals.length, usedFree = Math.min(L.used, have), gems = "";
     for (var g = 0; g < have; g++) gems += '<span class="gem' + (g < usedFree ? " used" : "") + '">' + icon("gem") + '</span>';
-    document.getElementById("gems").innerHTML = gems + '<span>' + (have ? usedFree + " van " + have + " gebruikt" : "Geen kristallen verdiend") + '</span>';
+    document.getElementById("gems").innerHTML = gems + '<span>' + (have ? usedFree + " van " + have + " kristallen gebruikt" : "Geen kristallen verdiend") + '</span>';
     var free = L.used < have, cost = document.getElementById("hintCost");
     cost.className = "aw-cost " + (free ? "free" : "paid");
-    cost.innerHTML = icon(free ? "gem" : "shield") + (free ? "Volgende: zonder kosten" : "Volgende: " + HINT_COST + " procent schild");
+    cost.innerHTML = icon(free ? "gem" : "shield") + (free ? "Volgende aanwijzing zonder kosten" : "Volgende aanwijzing kost " + HINT_COST + " procent schild");
     renderHud();
   }
 
-  /* Eén prijs: elk kristal uit dit level is één aanwijzing zonder kosten, daarna 10 procent schild. */
+  /* Eén prijs: elk kristal uit dit level is één aanwijzing zonder kosten, daarna 10 procent schild.
+     ARIA helpt eerst bij het stukje dat nu in beeld is, daarna bij een stukje dat in het verkeerde luik ligt. */
   function useHint() {
     var L = S.lock;
     if (L.done) return;
     var target = -1, i;
-    for (i = 0; i < LOCK_ITEMS.length; i++) {
-      if (!L.revealed[i] && L.place[i] !== LOCK_ITEMS[i].a) { target = i; break; }
+    if (L.cur !== -1 && !L.revealed[L.cur]) target = L.cur;
+    for (i = 0; target === -1 && i < LOCK_ITEMS.length; i++) {
+      if (!L.revealed[i] && L.place[i] !== LOCK_ITEMS[i].a) target = i;
     }
     if (target === -1) {
       var open = LOCK_ITEMS.some(function (it, k) { return L.place[k] !== it.a; });
@@ -509,8 +785,10 @@
     L.used++;
     L.revealed[target] = true;
     var it = LOCK_ITEMS[target], hname = hatch(it.a).name;
-    ariaSays("“" + it.t + "” hoort bij: " + hname + ". " + LOCK_WHY[it.a],
-      free ? chip("Zonder kosten, kristal gebruikt", "gold", "gem") : chip("Kostte " + HINT_COST + " procent schild", "warn", "shield"));
+    var costChip = free ? chip("Zonder kosten, kristal gebruikt", "gold", "gem") : chip("Kostte " + HINT_COST + " procent schild", "warn", "shield");
+    /* Gaat de aanwijzing over het stukje in beeld, dan zegt ARIA het in de kaart zelf. Anders in de tekstballon. */
+    if (target === L.cur) { L.hintChip = { i: target, html: costChip }; lockMsg(""); }
+    else { L.hintChip = null; ariaSays("“" + it.t + "” hoort bij " + hname + ". " + LOCK_WHY[it.a], costChip); }
     paintLock();
     announce(it.t + " hoort bij " + hname + ". " + (free ? "Zonder kosten." : "Min " + HINT_COST + " procent schild."));
   }
@@ -535,8 +813,10 @@
 
   function checkLock() {
     var L = S.lock;
+    L.open = null;
     if (L.done) return;
     if (Object.keys(L.place).length < LOCK_ITEMS.length) { announce("Leg eerst elk stukje informatie in een luik."); return; }
+    if (LOCK_ITEMS.some(function (it, i) { return L.verdict[i] === false; })) { announce("Haal eerst de rode stukjes terug en schuif ze door een ander luik."); return; }
     L.checks++;
     var wrong = 0;
     LOCK_ITEMS.forEach(function (it, i) {
@@ -552,9 +832,12 @@
       S.results.lock = { good: good };
     }
     if (wrong > 0) {
+      /* De uitslag staat in de kaart bovenaan en de foute stukjes zijn rood onder hun luik. */
+      lockMsg("");
       paintLock();
-      lockMsg(gradeAlert(wrong <= 2 ? "half" : "fout", wrong + (wrong === 1 ? " stukje ligt" : " stukjes liggen") + " in het verkeerde luik", "Leg ze in een ander luik en controleer opnieuw. Punten tellen alleen bij de eerste controle."));
-      announce(wrong + " fout. Probeer opnieuw.");
+      var first = screenEl.querySelector(".deur-item.fout");
+      if (first) first.focus({ preventScroll: true });
+      announce(wrong + " fout. Haal de rode stukjes terug en probeer opnieuw.");
       return;
     }
     L.done = true;
@@ -662,7 +945,7 @@
       row("tick", "blue", "Wat iemand je vertrouwelijk vertelt, geef je niet door.") +
       row("tick", "blue", "Gevoelige gegevens alleen voor wie ze nodig heeft, en nooit in een chat of groepsapp.") +
       '</ul></div></div>' +
-      '<div class="ox-card meldroute"><div class="meld-txt"><h3>Meldroute</h3><p>Twijfel of een vermoedelijk datalek? Meld het direct bij Tarik, Dagmar of via het meldpunt.</p></div>' +
+      '<div class="ox-card meldroute"><div class="meld-txt"><h3>Meldroute</h3><p>Twijfel of een vermoedelijk datalek? Meld het direct bij de security officer, de privacy officer of via het meldpunt.</p></div>' +
       '<span class="meld-adres">jz@vcsw.nl</span>' +
       '<button type="button" class="ox-btn ghost" id="copy"><span>Kopieer adres</span>' + icon("copy") + '</button></div>' +
       '<div class="ox-card uitslag"><div class="uitslag-kop"><h3>Resultaat level 3</h3>' + chip(passed ? "Gehaald" : "Nog niet gehaald", passed ? "ok" : "warn", passed ? "tick" : "") +
@@ -686,11 +969,11 @@
     reset();
     if (low) {
       S.points = 5; S.shield = 64; S.flags.joran = true;
-      S.results = { s1: { grade: "half", good: 7 }, s2: { grade: "fout", pick: "A" }, s3: { grade: "fout", pick: "C" }, s4: { grade: "fout", pick: "A" } };
+      S.results = { s1: { grade: "half", good: 7 }, s2: { grade: "fout", pick: "B" }, s3: { grade: "fout", pick: "B" }, s4: { grade: "fout", pick: "A" } };
       if (withLock) { S.points += 20; S.shield -= 20; S.results.lock = { good: 4 }; }
     } else {
       S.points = 30; S.shield = 90; S.crystals = ["Wat mag je vragen bij ziekte", "Need to know"];
-      S.results = { s1: { grade: "goed", good: 9 }, s2: { grade: "goed", pick: "B" }, s3: { grade: "fout", pick: "A" }, s4: { grade: "goed", pick: "B" } };
+      S.results = { s1: { grade: "goed", good: 9 }, s2: { grade: "goed", pick: "C" }, s3: { grade: "fout", pick: "B" }, s4: { grade: "goed", pick: "B" } };
       if (withLock) { S.points += 35; S.shield -= 5; S.results.lock = { good: 7 }; }
     }
   }
@@ -707,7 +990,11 @@
       /* &gekozen=5 legt de eerste vijf stukjes alvast bij een luik, voor een voorbeeldbeeld. */
       var pre = Math.min(LOCK_ITEMS.length, +q.get("gekozen") || 0);
       for (var k = 0; k < pre; k++) S.lock.place[k] = LOCK_ITEMS[k].a;
+      /* &fout=1 legt het eerste stukje in het verkeerde luik en controleert meteen, voor een beeld na de controle. */
+      if (pre === LOCK_ITEMS.length && q.get("fout")) S.lock.place[0] = LOCK_ITEMS[0].a === "arts" ? "chef" : "arts";
+      S.lock.cur = pre ? nextOpen(pre - 1) : 0;
       if (pre) paintLock();
+      if (pre === LOCK_ITEMS.length && q.get("fout")) checkLock();
       return true;
     }
     if (name === "sluisopen") { demo(low, true); S.screen = "luchtsluis"; screenLockOpen(); return true; }

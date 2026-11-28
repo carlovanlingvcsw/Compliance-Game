@@ -1,4 +1,4 @@
-// Builds one self-contained HTML file of the whole game: station, shell, levels and arcade.
+// Builds one self-contained HTML file of the whole game: station, shell, levels, practice rounds and arcade.
 // Handy for sending by mail or uploading to an LMS. Usage: node tools/bundle.mjs
 // Output: dist/AVG-game_Ruimtestation_Orion.html
 import fs from "node:fs";
@@ -65,7 +65,35 @@ function linkModule(id) {
 }
 const linked = [], seenMods = new Set();
 (function visit(id) { if (seenMods.has(id)) return; seenMods.add(id); const m = linkModule(id); m.deps.forEach(visit); linked.push(m.js); })("orion/station.js");
-const stationScript = "window.__orionStation = async function () {\nconst __m = {};\n" + linked.join("\n") + "\n};";
+// The linked modules stay reachable as window.__orionMods, so a 3D practice round in its frame can borrow three.js
+// from the shell instead of carrying a second copy.
+const stationScript = "window.__orionStation = async function () {\nconst __m = window.__orionMods = {};\n" + linked.join("\n") + "\n};";
+
+// Practice rounds (oefenrondes/<slug>/): CSS and scripts inline, the page goes into the shell as base64 like a level.
+// The 3D round gets scene3d.js linked into a plain script that takes three.js from the shell (window.__orionMods).
+modFiles["scene3d"] = "oefenrondes/shared/scene3d.js";
+const scene3dChunk = linkModule("scene3d").js;
+const oefenSlugs = fs.readdirSync(path.join(root, "oefenrondes")).filter((d) => fs.existsSync(path.join(root, "oefenrondes", d, "index.html")));
+if (oefenSlugs.length !== 6) throw new Error(`Verwacht 6 oefenrondes, gevonden: ${oefenSlugs.length}`);
+const oefenHtml = oefenSlugs.map((slug) => {
+  const dir = `oefenrondes/${slug}`;
+  let html = read(`${dir}/index.html`);
+  html = html.replace(/<link rel="stylesheet" href="([^"]+)">/g, (m, href) => "<style>\n" + read(path.join(dir, href)) + "\n</style>");
+  html = html.replace(/<script type="importmap">[\s\S]*?<\/script>\n?/g, "");
+  html = html.replace(/<script src="([^"]+)"><\/script>/g, (m, s) => "<script>\n" + safeScript(read(path.join(dir, s))) + "\n</script>");
+  html = html.replace(/<script type="module" src="([^"]+)"><\/script>/g, (m, s) => {
+    let code = read(path.join(dir, s));
+    if (/^\s*(import|export)\s/m.test(code)) throw new Error(`Statische import of export in ${dir}/${s}`);
+    code = code.replace(/await import\("scene3d"\)/g, "await window.__scene3d()");
+    const loader = "window.__scene3d = async function () {\n  const pm = (function () { try { return window.parent.__orionMods; } catch (e) { return null; } })();\n" +
+      "  if (!pm || !pm.three) throw new Error(\"three.js van de schil is er niet\");\n  const __m = { three: pm.three };\n" + scene3dChunk + "\n  return __m[\"scene3d\"];\n};\n";
+    return "<script>\n" + safeScript(loader + "(async function () {\n\"use strict\";\n" + code + "\n})();") + "\n</script>";
+  });
+  if (/href="[^"#:]+\.css"|src="[^":]+\.(js|png)"|import\("/.test(html)) throw new Error(`Niet alles ingebakken in ${dir}`);
+  return { slug, b64: Buffer.from(html, "utf8").toString("base64") };
+});
+js = swap(js, 'Object.keys(OEFEN).forEach(function (id) { OEFEN[id].src = "oefenrondes/" + id + "/index.html"; });',
+  'Object.keys(OEFEN).forEach(function (id) { OEFEN[id].src = "oefenrondes/" + id + "/index.html"; });\n  var OEFEN_B64 = ' + JSON.stringify(Object.fromEntries(oefenHtml.map((o) => [o.slug, o.b64]))) + ';\n  Object.keys(OEFEN_B64).forEach(function (id) { if (OEFEN[id]) OEFEN[id].b64 = OEFEN_B64[id]; });');
 
 let index = read("index.html");
 index = swap(index, '<link rel="stylesheet" href="assets/css/vcsw-brand.css">\n<link rel="stylesheet" href="assets/css/orion.css">',
@@ -91,4 +119,4 @@ if (/href="[^"#:]+\.css"|src="assets\//.test(index)) throw new Error("Niet alles
 const out = path.join(root, "dist", "AVG-game_Ruimtestation_Orion.html");
 fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, index);
-console.log(`Gebundeld: ${path.relative(root, out)} (${Math.round(index.length / 1024)} kB, ${levelHtml.length} levels)`);
+console.log(`Gebundeld: ${path.relative(root, out)} (${Math.round(index.length / 1024)} kB, ${levelHtml.length} levels, ${oefenHtml.length} oefenrondes)`);

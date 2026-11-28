@@ -60,51 +60,136 @@ html.in-orion .game-main { max-width: none; padding-block: 0 8px; gap: 10px; }
 .ox-table thead th { border-top: 0; font-weight: 600; color: #b9cbe3; font-size: 14px; background: #0b2548; }
 .ox-table tbody th { font-weight: 600; }
 
-/* ---------- Luchtsluis: De drie luiken (voorstel B) ---------- */
+/* ---------- Luchtsluis: De drie luiken (voorstel C, één stukje tegelijk) ---------- */
 .h-chef { --luik: #67caff; }
 .h-admin { --luik: #ffb900; }
 .h-arts { --luik: #7bf1a8; }
-.luik { display: flex; flex-direction: column; gap: 10px; }
-.luik-top { display: flex; align-items: baseline; gap: 8px 10px; flex-wrap: wrap; }
-#screen .luik-top h2 { font-size: 1.625rem; line-height: 1.2; margin-right: 4px; }
-.luik-pills { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
-.luik-pil { box-sizing: border-box; display: inline-flex; gap: 8px; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 999px; background: #0b2548; border: 1px solid #1f4f85; font: 600 15px/1.2 var(--vcsw-font-body); color: #fff; white-space: nowrap; }
-.luik-pil > .vcsw-icon { width: 18px; height: 18px; stroke-width: 2; color: var(--luik); }
-.luik-pil b { font: 800 15px/1.2 var(--vcsw-font-heading); font-variant-numeric: tabular-nums; }
-.luik-pil.slot { padding-right: 4px; }
-.luik-open { position: relative; box-sizing: border-box; display: inline-flex; gap: 6px; align-items: center; height: 36px; margin-left: 4px; padding: 0 12px; border-radius: 999px; border: 1px solid #1f4f85; background: #06162f; color: #fff; font: 600 14px/1.2 var(--vcsw-font-body); cursor: pointer; }
-.luik-open::after { content: ""; position: absolute; inset: -4px 0; }
-.luik-open .vcsw-icon { width: 15px; height: 15px; stroke-width: 2; color: #7bf1a8; }
-.luik-open:hover { border-color: #7bf1a8; }
-#screen .luik-rest { font: 400 15px/1.2 var(--vcsw-font-body); color: #b9cbe3; }
-.luik-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.luik-card { box-sizing: border-box; min-width: 0; background: #06162f; border: 1px solid #1f4f85; border-radius: 12px; padding: 8px 12px 10px; display: flex; flex-direction: column; gap: 6px; justify-content: space-between; }
-.luik-card.at { border-color: var(--luik); }
-.luik-card.wrong { border-color: #ffa2a2; box-shadow: inset 0 0 0 1px #ffa2a2; }
-.luik-head { display: flex; gap: 10px; align-items: center; min-height: 38px; }
-.luik-teken { box-sizing: border-box; width: 36px; height: 36px; border-radius: 50%; border: 2px dashed #b9cbe3; flex: none; display: inline-flex; align-items: center; justify-content: center; }
-.luik-teken.on { border: 0; background: var(--luik); color: #04142b; }
-.luik-teken .vcsw-icon { width: 20px; height: 20px; stroke-width: 2; }
-.luik-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.luik-label { font: 700 15px/1.25 var(--vcsw-font-heading); color: #fff; }
-.luik-sub { display: flex; flex-wrap: wrap; gap: 0 10px; font: 400 13px/1.35 var(--vcsw-font-body); color: #b9cbe3; }
-.luik-card.at .luik-sub { color: var(--luik); }
-.luik-sub .st { display: inline-flex; gap: 4px; align-items: center; font-weight: 600; }
-.luik-sub .st .vcsw-icon { width: 14px; height: 14px; stroke-width: 2.25; }
-.luik-sub .st.bad { color: #ffa2a2; }
-.luik-sub .st.good { color: #7bf1a8; }
-.luik-sub .st.tip { color: #ffc978; }
-.luik-btns { display: flex; gap: 6px; }
-.luik-btn { box-sizing: border-box; flex: 1 1 auto; min-width: 0; min-height: 44px; padding: 0 4px; border-radius: 8px; border: 1px solid #1f4f85; background: transparent; color: #fff; display: inline-flex; gap: 4px; align-items: center; justify-content: center; cursor: pointer; font: 700 14px/1.2 var(--vcsw-font-body); white-space: nowrap; transition: background-color 200ms ease, border-color 200ms ease; }
-.luik-btn .vcsw-icon { width: 14px; height: 14px; stroke-width: 2; }
-.luik-btn .ic-on { display: none; }
-.luik-btn[aria-pressed="true"] { background: var(--luik); border: 2px solid var(--luik); color: #04142b; }
-.luik-btn[aria-pressed="true"] .ic-on { display: block; stroke-width: 2.5; }
-.luik-btn[aria-pressed="true"] .ic-luik { display: none; }
-.luik-btn:hover:not([disabled]):not([aria-pressed="true"]) { border-color: var(--luik); background: #0b2548; }
-.luik-btn[disabled] { cursor: default; }
-.luik-acts { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; }
-.aw-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; font: 400 13px/1.35 var(--vcsw-font-body); color: #b9cbe3; }
+.luik { display: flex; flex-direction: column; gap: 12px; }
+.luik-top { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; }
+#screen .luik-top h2 { font-size: 1.625rem; line-height: 1.2; margin: 0 4px 0 0; }
+html.in-orion #schildChip { display: none; }
+
+/* Het huidige stukje, groot in beeld */
+.stukje { display: flex; flex-direction: column; gap: 8px; padding: 12px 20px 14px; background: linear-gradient(180deg, #0b2548, #06162f); }
+.stukje-kop { display: flex; align-items: center; gap: 14px; }
+#screen .stukje-nr { flex: none; font: 600 15px/1.3 var(--vcsw-font-body); color: #b9cbe3; font-variant-numeric: tabular-nums; }
+.stukje-balk { flex: 1; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; list-style: none; margin: 0; padding: 0; }
+.stukje-balk li { height: 8px; margin: 0; border-radius: 999px; background: #16335c; }
+.stukje-balk li.at { background: var(--luik); }
+.stukje-balk li.nu { background: #fff; box-shadow: 0 0 0 2px rgb(255 255 255 / .25); }
+.stukje-balk li.fout { background: #ffa2a2; }
+.stukje-body { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; min-height: 76px; justify-content: center; }
+#screen .stukje-naam { margin: 0; font: 700 28px/1.2 var(--vcsw-font-heading); color: #fff; max-width: 34ch; text-wrap: balance; }
+#screen .stukje-naam.klaar { font-size: 24px; }
+#screen .stukje-naam.fout { color: #ffa2a2; display: inline-flex; gap: 8px; align-items: center; }
+.stukje-naam.fout .vcsw-icon { width: 24px; height: 24px; stroke-width: 2.25; flex: none; }
+#screen .stukje-naam.fout + .stukje-vraag { color: #fff; max-width: 60ch; }
+#screen .stukje-vraag { margin: 0; font: 400 15px/1.4 var(--vcsw-font-body); color: #b9cbe3; }
+#screen .stukje-tip { margin: 4px 0 0; display: inline-flex; gap: 6px; align-items: flex-start; max-width: 62ch; font: 600 15px/1.4 var(--vcsw-font-body); color: #ffc978; text-align: left; }
+.stukje-tip .vcsw-icon { width: 16px; height: 16px; stroke-width: 2; flex: none; margin-top: 3px; }
+.stukje-tip .ox-chip { margin-left: 4px; font-size: 14px; padding: 1px 10px; vertical-align: 1px; }
+.stukje-body .ox-btn { margin-top: 8px; }
+
+/* Het kaartje: een los stukje dat je kunt oppakken en naar een luik slepen */
+.kaartje { box-sizing: border-box; position: relative; display: inline-flex; align-items: center; gap: 10px; max-width: 100%; padding: 9px 22px 9px 10px; border-radius: 10px; background: linear-gradient(180deg, #f4f7fb, #d9e3ef); border: 1px solid #ffffff; box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 -3px 0 #b7c6da inset, 0 6px 14px -4px rgb(0 0 0 / .55); color: #04142b; cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; transition: transform 160ms ease, box-shadow 160ms ease, opacity 120ms ease; }
+.kaartje:hover { transform: translateY(-2px) rotate(-.6deg); box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 -3px 0 #b7c6da inset, 0 10px 18px -6px rgb(0 0 0 / .6); }
+.kaartje.vast { cursor: grabbing; }
+.kaart-greep { flex: none; width: 22px; height: 22px; padding: 4px 2px; border-radius: 6px; background: rgb(4 20 43 / .08); color: #4a6283; stroke-width: 3; }
+.kaart-tekst { display: block; min-width: 0; font: 700 24px/1.2 var(--vcsw-font-heading); color: #04142b; text-wrap: balance; text-align: left; }
+/* Tijdens het slepen blijft een lege plek achter waar het kaartje lag */
+.kaartje.weg, .kaartje.landt { background: transparent; border: 2px dashed #2f5f97; box-shadow: none; transform: none; }
+.kaartje.weg > *, .kaartje.landt > * { visibility: hidden; }
+/* Het kaartje dat beweegt: aan de muis, naar een luik of terug uit een luik */
+.vlieg-kaart { position: fixed; z-index: 60; margin: 0; pointer-events: none; transform-origin: 50% 50%; }
+.vlieg-kaart.opgepakt { cursor: grabbing; transform: rotate(-3deg) scale(1.04); box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 -3px 0 #b7c6da inset, 0 18px 30px -8px rgb(0 0 0 / .7); }
+.vlieg-kaart.richting { border-left: 6px solid var(--luik); }
+.vlieg-kaart.fout { background: linear-gradient(180deg, #ffe9e9, #ffc9c9); border-color: #ff6b6b; border-left-color: #ff6b6b; }
+
+/* De drie luiken als deuren in de stijl van het station */
+.luiken { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.luik-deur { box-sizing: border-box; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 10px 10px 10px; border-radius: 12px; background: #06162f; border: 1px solid #1f4f85; border-top: 3px solid var(--luik); transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease; }
+.luik-deur.actief { cursor: pointer; }
+.luik-deur.actief:hover, .luik-deur.doel { border-color: var(--luik); background: #0a2246; }
+.luik-deur.doel { box-shadow: 0 0 0 2px var(--luik); }
+.sleept .luik-deur.actief:not(.doel) { border-style: dashed; border-top-style: solid; }
+.deur-kop { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 0 2px; }
+.deur-ic { flex: none; display: inline-flex; color: var(--luik); }
+.deur-ic .vcsw-icon { width: 20px; height: 20px; stroke-width: 2; }
+#screen .deur-kop h3 { margin: 0; flex: 1; min-width: 0; font: 700 16px/1.25 var(--vcsw-font-heading); color: #fff; overflow-wrap: anywhere; }
+.deur-tel.leeg { background: #16335c; color: #b9cbe3; }
+.deur-tel { flex: none; min-width: 32px; padding: 2px 8px; box-sizing: border-box; text-align: center; border-radius: 999px; background: var(--luik); color: #04142b; font: 800 15px/1.4 var(--vcsw-font-heading); font-variant-numeric: tabular-nums; }
+#screen .deur-rol { margin: -2px 0 2px; padding: 0 2px; font: 400 15px/1.35 var(--vcsw-font-body); color: #b9cbe3; }
+
+/* Het getekende luik is één knop */
+.luik-knop { display: block; width: 100%; padding: 0; margin: 0; border: 0; background: none; cursor: inherit; border-radius: 12px; font: inherit; color: inherit; }
+.luik-knop[aria-disabled="true"] { cursor: default; }
+.luik-kast { position: relative; display: block; height: 128px; border-radius: 12px; border: 1px solid #3a6aa3;
+  background:
+    radial-gradient(circle at 9px 9px, #8fa9cc 0 2.5px, #2a4a75 3px, transparent 3.5px),
+    radial-gradient(circle at calc(100% - 9px) 9px, #8fa9cc 0 2.5px, #2a4a75 3px, transparent 3.5px),
+    radial-gradient(circle at 9px calc(100% - 9px), #8fa9cc 0 2.5px, #2a4a75 3px, transparent 3.5px),
+    radial-gradient(circle at calc(100% - 9px) calc(100% - 9px), #8fa9cc 0 2.5px, #2a4a75 3px, transparent 3.5px),
+    linear-gradient(180deg, #24466f, #142f55 55%, #0f2547);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .14), inset 0 -2px 0 rgb(0 0 0 / .35), 0 4px 10px -4px rgb(0 0 0 / .6); }
+/* Statuslampje bovenaan de kast, in de kleur van het luik */
+.luik-lamp { position: absolute; top: 5px; left: 50%; width: 34px; height: 4px; margin-left: -17px; border-radius: 3px; background: var(--luik); opacity: .55; }
+.luik-deur.actief .luik-lamp { opacity: .9; }
+.luik-deur.fout .luik-lamp { background: #ff6b6b; opacity: 1; }
+.luik-deur.slikt .luik-lamp { animation: lamp 520ms ease-out; }
+@keyframes lamp { 0%, 40% { background: #fff; opacity: 1; } 100% { opacity: .9; } }
+/* Twee amberkleurige lichtjes onderaan, zoals bij de poort van het station */
+.luik-kast::before, .luik-kast::after { content: ""; position: absolute; bottom: 5px; width: 14px; height: 4px; border-radius: 2px; background: #ffb900; opacity: .7; }
+.luik-kast::before { left: 22px; }
+.luik-kast::after { right: 22px; }
+/* De opening achter het deurblad, met licht in de kleur van het luik */
+.luik-gat { position: absolute; inset: 14px 20px 16px; border-radius: 8px; perspective: 380px; background: #020a18; box-shadow: inset 0 0 0 2px #071630, inset 0 6px 10px rgb(0 0 0 / .8); }
+.luik-binnen { position: absolute; inset: 0; border-radius: 8px; background: radial-gradient(70% 80% at 50% 70%, color-mix(in srgb, var(--luik) 60%, transparent), transparent 75%); }
+/* Het deurblad hangt aan twee scharnieren bovenaan en klapt naar binnen */
+.luik-blad { position: absolute; inset: 0; display: block; box-sizing: border-box; border-radius: 7px; overflow: hidden; transform-origin: 50% 0; transform: rotateX(0deg); transition: transform 190ms cubic-bezier(.3, .7, .4, 1), filter 190ms ease;
+  background: linear-gradient(180deg, #34639b, #24507f 40%, #1b4270);
+  border: 1px solid #5a88c0; box-shadow: inset 0 1px 0 rgb(255 255 255 / .22), inset 0 -1px 0 rgb(0 0 0 / .4); }
+.blad-naad { position: absolute; left: 0; right: 0; top: 50%; height: 0; border-top: 1px solid rgb(4 20 43 / .55); border-bottom: 1px solid rgb(255 255 255 / .12); }
+.luik-sleuf { position: absolute; left: 14%; right: 14%; top: 20px; height: 12px; border-radius: 6px; background: #020a18; box-shadow: inset 0 0 0 1.5px var(--luik), inset 0 3px 4px rgb(0 0 0 / .9), 0 1px 0 rgb(255 255 255 / .18); }
+.blad-plaat { position: absolute; left: 0; right: 0; bottom: 17px; display: flex; align-items: center; justify-content: center; gap: 8px; font: 600 15px/1 var(--vcsw-font-body); color: #e8eef6; text-shadow: 0 1px 0 rgb(0 0 0 / .45); white-space: nowrap; }
+.blad-plaat kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 4px; box-sizing: border-box; border-radius: 5px; background: var(--luik); color: #04142b; font: 800 15px/1 var(--vcsw-font-heading); box-shadow: 0 2px 0 rgb(0 0 0 / .35); text-shadow: none; }
+.blad-streep { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: repeating-linear-gradient(-45deg, #ffb900 0 6px, #1b2430 6px 12px); opacity: .85; }
+/* Scharnieren aan de bovenrand van de opening */
+.luik-scharnier { position: absolute; top: 10px; width: 22px; height: 8px; border-radius: 3px; background: linear-gradient(180deg, #a9bdd8, #5e7ea8); box-shadow: 0 1px 0 rgb(0 0 0 / .5); }
+.luik-scharnier.l { left: 26%; }
+.luik-scharnier.r { right: 26%; }
+/* Bewegen: wijzen zet het luik op een kier, slepen erboven nog verder, inschuiven klapt het open */
+.luik-deur.actief:hover .luik-blad { transform: rotateX(-14deg); filter: brightness(1.08); }
+.luik-deur.doel .luik-blad { transform: rotateX(-30deg); filter: brightness(1.12); }
+.luik-deur.open .luik-knop .luik-blad { transform: rotateX(-78deg); filter: brightness(.8); }
+.luik-deur:not(.actief):not(.open) .luik-sleuf { box-shadow: inset 0 0 0 1.5px #2f5f97, inset 0 3px 4px rgb(0 0 0 / .9); }
+#screen .luik-knop:focus-visible { outline: 2px solid #67caff; outline-offset: 3px; }
+#screen .luik-knop:focus-visible .luik-blad { filter: brightness(1.12); }
+
+/* Ligt er veel in één luik, dan scrolt alleen die lijst, zodat het scherm op 1440 bij 900 past. */
+.deur-lijst { position: relative; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 170px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #2f5f97 transparent; }
+.deur-lijst:empty { display: none; }
+.deur-lijst li { margin: 0; padding: 0; }
+.deur-lijst li.nieuw { animation: erin 260ms 360ms both ease-out; }
+@keyframes erin { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.deur-item { position: relative; box-sizing: border-box; width: 100%; display: flex; gap: 7px; align-items: flex-start; text-align: left; padding: 4px 8px; border-radius: 8px; border: 1px solid transparent; background: #0b2548; color: #fff; font: 400 15px/1.3 var(--vcsw-font-body); cursor: pointer; transition: border-color 200ms ease; }
+.deur-item > .vcsw-icon { flex: none; width: 16px; height: 16px; stroke-width: 2.5; margin-top: 2px; color: var(--luik); }
+.deur-item > span { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.deur-item small { display: inline-flex; gap: 4px; align-items: center; font: 600 14px/1.3 var(--vcsw-font-body); color: #ffc978; }
+.deur-item small .vcsw-icon { width: 14px; height: 14px; stroke-width: 2; }
+.deur-item:hover:not([disabled]) { border-color: var(--luik); }
+/* Na de controle: een fout stukje is rood en springt terug als je erop klikt */
+.deur-item.fout { border-color: #ff6b6b; background: #4a1420; font-weight: 600; }
+.deur-item.fout > .vcsw-icon { color: #ffa2a2; }
+.deur-item.fout:hover:not([disabled]) { border-color: #ffa2a2; background: #5c1828; }
+.deur-item > .terug { margin-left: auto; flex: none; display: inline-flex; padding-top: 1px; color: #ffa2a2; }
+.deur-item > .terug .vcsw-icon { width: 16px; height: 16px; stroke-width: 2.25; }
+.deur-item[disabled] { cursor: default; }
+#screen .deur-item:focus-visible { outline-offset: -2px; }
+
+/* Knoppen onder de luiken */
+.luik-acts { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.luik-acts .aw-meta { margin-left: auto; align-items: flex-end; text-align: right; }
+.aw-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; font: 400 14px/1.35 var(--vcsw-font-body); color: #b9cbe3; }
 .aw-gems { display: inline-flex; gap: 4px; align-items: center; }
 .aw-gems .gem { display: inline-flex; color: #ffb900; }
 .aw-gems .gem.used { color: #8a6a1a; }
@@ -116,27 +201,32 @@ html.in-orion .game-main { max-width: none; padding-block: 0 8px; gap: 10px; }
 .aw-cost.paid { color: #ffc978; }
 .aw-list { display: flex; flex-direction: column; gap: 8px; scroll-margin-bottom: 8px; }
 .aw-list:empty { display: none; }
+.aw-list .vcsw-alert { margin: 0; }
 .aw-bubble { padding: 10px 14px; }
 .aw-bubble .ox-face { width: 40px; height: 40px; }
 #screen .aw-bubble .ox-say-text { font-size: 16px; }
+
+/* Startkaart van de luchtsluis */
 .intro-demo { display: flex; flex-direction: column; gap: 12px; padding: 14px 18px; }
-.intro-demo .luik-pil { min-height: 36px; font-size: 14px; }
-.intro-demo .luik-pills { padding-left: 58px; }
+.luik-pills { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; padding-left: 58px; }
+.luik-pil { box-sizing: border-box; display: inline-flex; gap: 8px; align-items: center; min-height: 36px; padding: 0 14px 0 10px; border-radius: 10px; background: #0b2548; border: 1px solid #1f4f85; border-left: 4px solid var(--luik); font: 600 15px/1.2 var(--vcsw-font-body); color: #fff; white-space: nowrap; }
+.luik-pil > .vcsw-icon { width: 18px; height: 18px; stroke-width: 2; color: var(--luik); }
+
+/* De sluis is open */
 .luik-kolommen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .luik-kolom { padding: 14px; display: flex; flex-direction: column; gap: 10px; border-color: var(--luik); }
 .kolom-kop { display: flex; gap: 10px; align-items: center; }
-.kolom-kop .luik-teken { width: 32px; height: 32px; }
-.kolom-kop .luik-teken .vcsw-icon { width: 18px; height: 18px; }
+.luik-teken { box-sizing: border-box; width: 32px; height: 32px; border-radius: 50%; flex: none; display: inline-flex; align-items: center; justify-content: center; background: var(--luik); color: #04142b; }
+.luik-teken .vcsw-icon { width: 18px; height: 18px; stroke-width: 2; }
 .kolom-kop > div { flex: 1; min-width: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 #screen .kolom-kop h3 { margin: 0; font-size: 15px; }
 .kolom-code { font: 800 28px/1 var(--vcsw-font-heading); color: #fff; font-variant-numeric: tabular-nums; }
-#screen .kolom-why { font-size: 14px; line-height: 1.45; color: #b9cbe3; }
+#screen .kolom-why { font-size: 15px; line-height: 1.45; color: #b9cbe3; }
 .luik-kolom ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 #screen .luik-kolom li { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 0; font: 400 15px/1.4 var(--vcsw-font-body); color: #fff; }
 .luik-kolom li .vcsw-icon { width: 16px; height: 16px; stroke-width: 2.25; margin-top: 2px; color: var(--luik); }
-@media (max-width: 790px) { .luik-btn .ic-luik { display: none; } }
-@media (max-width: 560px) { .luik-grid, .luik-kolommen { grid-template-columns: minmax(0, 1fr); } .intro-demo .luik-pills { padding-left: 0; } }
-@media (prefers-reduced-motion: reduce) { .choice, .luik-btn { transition: none; } }
+@media (max-width: 620px) { .luiken, .luik-kolommen { grid-template-columns: minmax(0, 1fr); } .luik-pills { padding-left: 0; } #screen .stukje-naam, .kaart-tekst { font-size: 20px; } }
+@media (prefers-reduced-motion: reduce) { .choice, .deur-item, .kaartje, .luik-deur, .luik-blad { transition: none; } .kaartje:hover { transform: none; } .vlieg-kaart.opgepakt { transform: none; } .luik-deur.actief:hover .luik-blad, .luik-deur.doel .luik-blad, .luik-deur.open .luik-knop .luik-blad { transform: none; } .luik-deur.slikt .luik-lamp, .deur-lijst li.nieuw { animation: none; } }
 
 /* ---------- Orion kit (ox): donkere kaarten, chips, knoppen, meters en de tekstballon van ARIA ---------- */
 .ox-stack { display: flex; flex-direction: column; gap: 16px; }
@@ -239,63 +329,41 @@ html.orion-level .ox-clock.timer.low { color: #ffc978 !important; }
 @media (max-height: 720px) { .aarde .ox-lead { display: none; } }
 @media (prefers-reduced-motion: reduce) { .ox-btn, .track .fill { transition: none; } }
 
-/* Ronde 24: de drie luiken als luikpanelen in plaats van labels. Het schild staat al in de statusbalk van de schil. */
-html.in-orion #schildChip { display: none; }
-.luik-pills { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1.75fr); gap: 10px; }
-.luik-pil { border-radius: 10px; min-height: 54px; padding: 6px 14px 6px 12px; border: 1px solid #1f4f85; border-left: 6px solid var(--luik); background: linear-gradient(180deg, #0f2c57, #081b38); box-shadow: inset 0 1px 0 rgb(255 255 255 / .08); justify-content: flex-start; min-width: 0; }
-.luik-pil > .vcsw-icon { width: 22px; height: 22px; padding: 6px; box-sizing: content-box; border-radius: 50%; background: #04122a; border: 1px solid #1f4f85; flex: none; }
-.luik-pil > span:not(.vcsw-sr-only) { overflow: hidden; text-overflow: ellipsis; }
-.luik-pil b { margin-left: auto; font-size: 20px; padding-left: 6px; }
-.luik-pil.slot b { margin-left: 6px; }
-.luik-pil.slot { padding-right: 8px; }
-.luik-open { margin-left: auto; border-radius: 8px; height: 38px; flex: none; }
-#screen .luik-rest { grid-column: 1 / -1; }
-.luik-card { background: linear-gradient(180deg, #081d3d, #06162f); }
-@media (max-width: 700px) { .luik-pills { grid-template-columns: minmax(0, 1fr); } }
-.luik-pills { grid-template-columns: minmax(0, .9fr) minmax(0, 1.3fr) minmax(0, 1.95fr); }
-.luik-pil { padding: 6px 10px 6px 10px; gap: 7px; }
-.luik-pil > .vcsw-icon { width: 20px; height: 20px; padding: 4px; }
-.luik-pil > span:not(.vcsw-sr-only) { overflow: visible; }
-.luik-open { padding: 0 9px; font-size: 13px; gap: 5px; }
-
-/* Ronde 24: labels staan onder de kop, niet erboven. */
-.screen-head:not(.rij) { flex-direction: column-reverse; }
-
-/* Ronde 25: compactere kaarten, zodat de knoppen onderaan in beeld blijven. */
-.luik-grid { gap: 8px; }
-.luik-card { padding: 6px 10px 8px; gap: 5px; }
-.luik-btn { min-height: 40px; }
-
-/* Ronde 26: elk luik als rond luikje met een gekleurde ring en een tellamp. */
-.luik-pil { min-height: 60px; }
-.luik-pil > .vcsw-icon { width: 22px; height: 22px; padding: 8px; border: 3px solid var(--luik); background: radial-gradient(circle at 35% 30%, #173a6c, #04122a 70%); box-shadow: 0 0 0 2px #04122a, 0 2px 6px rgb(0 0 0 / .5); color: #fff; }
-.luik-pil b { min-width: 34px; text-align: center; padding: 4px 8px; border-radius: 8px; background: #04122a; border: 1px solid #1f4f85; color: var(--luik); box-shadow: inset 0 1px 3px rgb(0 0 0 / .6); }
-
-/* Ronde 27: drie gelijke luiken als ronde luikdeuren, de extra knop staat bij de acties. */
-.luik-pills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.luik-pil { min-height: 72px; padding: 8px 14px 8px 10px; gap: 12px; }
-.luik-pil > .vcsw-icon { width: 26px; height: 26px; padding: 11px; border: 4px solid var(--luik);
-  background: radial-gradient(circle at 50% 50%, transparent 0 60%, #04122a 61%), radial-gradient(circle at 35% 30%, #1d4680, #04122a 72%);
-  box-shadow: 0 0 0 3px #04122a, 0 0 0 4px #37577f, 0 3px 8px rgb(0 0 0 / .55); }
-.luik-pil > span:not(.vcsw-sr-only) { font: 700 1rem/1.2 var(--vcsw-font-heading); }
-.luik-pil b { margin-left: auto; font-size: 22px; min-width: 40px; }
-.luik-acts .luik-open { margin-left: 0; height: 44px; padding: 0 14px; font-size: 14px; border-radius: 8px; background: transparent; }
-.luik-pil { white-space: normal; gap: 10px; padding-right: 10px; }
-.luik-pil > span:not(.vcsw-sr-only) { font-size: 0.9375rem; overflow-wrap: anywhere; hyphens: auto; min-width: 0; }
-.luik-pil > .vcsw-icon { padding: 9px; }
-.luik-pil b { min-width: 36px; flex: none; }
-
-/* Ronde 27: ARIA spreekt in hetzelfde kader als in de andere levels. */
-.title-screen .ox-say:has(> .ox-face), .ox-stack > .ox-say:has(> .ox-face) { padding: 12px 16px; border-radius: 12px; background: linear-gradient(180deg, #0b2548, #081b38); border: 1px solid #1f4f85; border-left: 3px solid var(--vcsw-blue-400); }
-
-/* Ronde 28: het teken in de kleur van het luik, acties op één lijn. */
-.luik-btns { gap: 5px; }
-.luik-btn { font-size: 13.5px; padding: 0 3px; gap: 3px; border-bottom: 3px solid var(--luik); }
-.luik-btn .ic-luik { color: var(--luik); width: 13px; height: 13px; }
-.luik-acts { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; }
-.luik-acts .ox-btn { min-height: 46px; }
-.luik-acts .aw-meta { margin-left: auto; }
-.luik-grid { gap: 6px; } .luik-card { padding: 5px 10px 7px; } .luik-pil { min-height: 64px; padding-top: 5px; padding-bottom: 5px; }
-/* Alleen omkeren als de kop het laatste kind is, dus als er labels voor staan. Een zin onder de kop blijft eronder. */
+/* Labels staan onder de kop, niet erboven. Alleen omkeren als de kop het laatste kind is, dus als er labels voor staan. Een zin onder de kop blijft eronder. */
 .screen-head:not(.rij) { flex-direction: column; }
 .screen-head:not(.rij):has(> h1:last-child), .screen-head:not(.rij):has(> h2:last-child) { flex-direction: column-reverse; }
+
+/* ARIA spreekt in hetzelfde kader als in de andere levels. */
+.title-screen .ox-say:has(> .ox-face), .ox-stack > .ox-say:has(> .ox-face) { padding: 12px 16px; border-radius: 12px; background: linear-gradient(180deg, #0b2548, #081b38); border: 1px solid #1f4f85; border-left: 3px solid var(--vcsw-blue-400); }
+
+/* ---------- Integratieronde: stukje als zwaarste element, compacte chips onder de luiken ---------- */
+/* Het stukje dat je verdeelt is groter en lichter dan alles eromheen; de luiken zijn wat lager. */
+.stukje-body { min-height: 96px; gap: 8px; }
+.kaartje { gap: 14px; padding: 14px 30px 14px 14px; border-radius: 12px; border: 2px solid #ffffff; box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 -4px 0 #b7c6da inset, 0 10px 24px -6px rgb(0 0 0 / .7), 0 0 0 4px rgb(255 255 255 / .08); }
+.kaart-greep { width: 26px; height: 26px; }
+.kaart-tekst { font-size: 32px; line-height: 1.15; }
+.vlieg-kaart .kaart-tekst { font-size: 24px; }
+.luik-kast { height: 108px; }
+.luik-gat { inset: 12px 18px 14px; }
+.luik-sleuf { top: 16px; }
+.blad-plaat { bottom: 14px; }
+
+/* Geplaatste stukjes: chips van één regel in een vak met vaste hoogte (drie plekken). */
+.deur-lijst, .deur-lijst:empty { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; height: 102px; max-height: none; overflow: hidden; }
+.deur-lijst.open { overflow-y: auto; }
+.deur-lijst li { max-width: 100%; }
+.deur-item { width: auto; max-width: 100%; align-items: center; gap: 6px; height: 30px; padding: 0 10px 0 8px; border-radius: 999px; border: 1px solid #1f4f85; line-height: 20px; }
+.deur-item > .vcsw-icon { margin-top: 0; }
+.deur-item > span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.deur-item > .terug { padding-top: 0; }
+.deur-item.tip { border-color: #ffc978; }
+.deur-item.tip > .vcsw-icon { color: #ffc978; }
+.deur-meer { height: 30px; padding: 0 12px; border-radius: 999px; border: 1px dashed #3a6aa3; background: transparent; color: #b9cbe3; font: 600 15px/1 var(--vcsw-font-body); cursor: pointer; }
+.deur-meer:hover { border-color: var(--luik); color: #fff; }
+#screen .deur-meer:focus-visible { outline: 2px solid #67caff; outline-offset: 2px; }
+.deur-leeg { align-self: stretch; display: flex; align-items: center; justify-content: center; height: 30px; border-radius: 999px; border: 1px dashed #1f4f85; color: #8fa9cc; font: 400 15px/1 var(--vcsw-font-body); }
+
+/* Ronde 5: een geplaatst stukje mag over twee regels, zodat niets meer wordt afgekapt. */
+.deur-lijst, .deur-lijst:empty { height: 132px; }
+.deur-item { height: auto; min-height: 30px; padding: 4px 10px 4px 8px; border-radius: 15px; }
+.deur-item > span { white-space: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 19px; }

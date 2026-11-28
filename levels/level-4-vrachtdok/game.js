@@ -59,15 +59,15 @@
       speaker: "Vega",
       line: "Hier is het crewbestand voor de kostencontrole. Ik heb het even snel via het open kanaal gestuurd, dan kun je meteen aan de slag.",
       options: [
-        { text: "Doorsturen naar de collega die de controle doet.", grade: "bad",
+        { text: "Het bestand doorsturen naar de collega die de kostencontrole doet, met het verzoek het daarna in de beveiligde databank te zetten.", grade: "bad",
           react: { who: "Vega", say: "Prima, als het maar snel gaat." },
-          why: "Elke extra kopie is een extra risico. Het bestand staat nu op twee plekken onbeveiligd." },
-        { text: "Het bestand opslaan in de beveiligde databank, het bericht wissen en Kapitein Vega vriendelijk wijzen op het beveiligde kanaal voor de volgende keer.", grade: "good",
+          why: "Elke extra kopie is een extra risico. Het bestand staat nu op twee plekken onbeveiligd, en het origineel staat nog in je berichten." },
+        { text: "Het bestand opslaan in de beveiligde databank, het bericht wissen en Kapitein Vega vriendelijk wijzen op het beveiligde kanaal.", grade: "good",
           react: { who: "Vega", say: "Het beveiligde kanaal, genoteerd. Dat gebruik ik voortaan." },
           why: "Het bestand staat nu op één beveiligde plek en de onbeveiligde kopie is weg. Vega weet hoe het de volgende keer moet." },
-        { text: "Terugsturen dat ze dit niet meer moet doen, en het bericht laten staan.", grade: "half",
+        { text: "Het bestand opslaan in de beveiligde databank en Kapitein Vega vriendelijk wijzen op het beveiligde kanaal voor de volgende keer.", grade: "half",
           react: { who: "Vega", say: "Begrepen, volgende keer anders." },
-          why: "De boodschap klopt, maar het bestand staat nog onbeveiligd in je berichten." }
+          why: "Opslaan en Vega wijzen op het beveiligde kanaal klopt. Maar je wist het bericht niet, dus de onbeveiligde kopie staat nog in je berichten." }
       ],
       crystal: { name: "Veilig ontvangen", text: "Persoonsgegevens ontvang je via de beveiligde weg. Een losse bijlage sla je veilig op en wis je daarna uit je berichten." },
       clue: "Kijk naar het kanaal. Een bekende afzender via een ander kanaal dan normaal is een waarschuwing."
@@ -93,31 +93,34 @@
         ]
       },
       items: {
-        cnt:    { text: "312 crewleden", r1: false, r2: false, why1: "Een totaal aantal is niet herleidbaar tot één persoon." },
-        sav:    { text: "18.000 credits per jaar", r1: false, r2: false, why1: "Een bedrag voor de hele kolonie is een gegeven over een organisatie." },
-        gem:    { text: "het gemiddelde ziekteverzuim van de kolonie is 4,1 procent", r1: false, r2: false, why1: "Klinkt als gezondheid, maar het is een gemiddelde over 312 crewleden en dus niet herleidbaar tot één persoon." },
-        verz:   { text: "draait sinds 3 maart halve diensten, in overleg met de scheepsarts", r1: true, r2: false, why1: "Halve diensten in overleg met de scheepsarts verraden dat Joran ziek is geweest en weer opbouwt. Dat is verzuiminformatie en gaat niet via een gewone mail." },
-        reg2:   { text: "in het register voor aangepast werk staat", r1: true, r2: false, why1: "Zo'n registratie zegt iets over iemands arbeidsvermogen en gaat niet via een gewone mail." },
-        vangnet:{ text: "onder de vangnetregeling valt", r1: true, r2: false, why1: "De vangnetregeling zegt indirect iets over iemands gezondheid of arbeidsvermogen. Niet via een gewone mail." },
-        id:     { text: "identiteitsnummer 7731 0094 2", r1: true, r2: false, why1: "Een identiteitsnummer is extra beschermd en gaat nooit via een gewone mail." },
-        diag:   { text: "herstelt van een hernia", r1: true, r2: true, why1: "Een diagnose is een medisch gegeven en gaat nooit via een gewone mail.",
+        cnt:    { text: "312 crewleden", name: "Aantal crewleden", s1: "Een totaal is niet herleidbaar tot één persoon.", r1: false, r2: false, why1: "Een totaal aantal is niet herleidbaar tot één persoon." },
+        sav:    { text: "18.000 credits per jaar", name: "Besparing", s1: "Een bedrag over de kolonie, niet over een persoon.", r1: false, r2: false, why1: "Een bedrag voor de hele kolonie is een gegeven over een organisatie." },
+        gem:    { text: "het gemiddelde ziekteverzuim van de kolonie is 4,1 procent", name: "Gemiddeld ziekteverzuim", s1: "Een gemiddelde over 312 crewleden wijst niemand aan.", r1: false, r2: false, why1: "Klinkt als gezondheid, maar het is een gemiddelde over 312 crewleden en dus niet herleidbaar tot één persoon." },
+        verz:   { text: "draait sinds 3 maart halve diensten, in overleg met de scheepsarts", name: "Halve diensten", s1: "Verraadt verzuim, dus niet via een gewone mail.", r1: true, r2: false, why1: "Halve diensten in overleg met de scheepsarts verraden dat Joran ziek is geweest en weer opbouwt. Dat is verzuiminformatie en gaat niet via een gewone mail." },
+        reg2:   { text: "in het register voor aangepast werk staat", name: "Register aangepast werk", s1: "Zegt iets over arbeidsvermogen. Niet via een gewone mail.", r1: true, r2: false, why1: "Zo'n registratie zegt iets over iemands arbeidsvermogen en gaat niet via een gewone mail." },
+        vangnet:{ text: "onder de vangnetregeling valt", name: "Vangnetregeling", s1: "Zegt indirect iets over gezondheid. Niet via een gewone mail.", r1: true, r2: false, why1: "De vangnetregeling zegt indirect iets over iemands gezondheid of arbeidsvermogen. Niet via een gewone mail." },
+        id:     { text: "identiteitsnummer 7731 0094 2", name: "Identiteitsnummer", s1: "Extra beschermd, dus nooit via een gewone mail.", r1: true, r2: false, why1: "Een identiteitsnummer is extra beschermd en gaat nooit via een gewone mail." },
+        diag:   { text: "herstelt van een hernia", name: "Diagnose", s1: "Een medisch gegeven, nooit via een gewone mail.", s2: "Medisch, dus alleen voor de scheepsarts. Ook via Kluispost.", r1: true, r2: true, why1: "Een diagnose is een medisch gegeven en gaat nooit via een gewone mail.",
                   why2: "Een veilig kanaal maakt het kanaal veilig, niet de inhoud passend. Medische details zijn alleen voor de scheepsarts, ook via Kluispost." },
-        roddel: { text: "collega's zeggen dat hij thuis een zware tijd heeft door zijn scheiding", r1: true, r2: true, why1: "Informatie over iemands privéleven hoort niet in een gewone mail.",
+        roddel: { text: "collega's zeggen dat hij thuis een zware tijd heeft door zijn scheiding", name: "Opmerking over zijn scheiding", s1: "Zijn privéleven hoort niet in een gewone mail.", s2: "Geruchten over iemands privéleven horen in geen enkele mail.", r1: true, r2: true, why1: "Informatie over iemands privéleven hoort niet in een gewone mail.",
                   why2: "Geruchten over iemands privéleven horen in geen enkele mail, ook niet via Kluispost. Vega heeft dit niet nodig." },
-        date:   { text: "donderdag om 10.00 uur", r1: false, r2: false, why1: "Een afspraak is geen gevoelig gegeven." },
-        mail:   { text: "bram@orion.space", r1: false, r2: false, why1: "Het zakelijke adres van een collega mag gewoon in een mail." },
-        reg:    { text: "Nova Terra, registratienummer NT 0042", r1: false, r2: false, why1: "Gegevens over een organisatie. Die mogen in een gewone mail." },
-        premie: { text: "klasse 3", r1: false, r2: false, why1: "Een premieklasse hoort bij de kolonie als organisatie, niet bij een persoon." },
-        id2:    { text: "7731 0094 2", r1: true, r2: false, why1: "Ook in een bijlage gaat een identiteitsnummer nooit via een gewone mail." },
-        diag2:  { text: "rugklachten na een hernia, volgens de scheepsarts", r1: true, r2: true, why1: "Een diagnose blijft een medisch gegeven, ook in een bijlage. Nooit via een gewone mail.",
+        date:   { text: "donderdag om 10.00 uur", name: "Afspraak", s1: "Een afspraak is geen gevoelig gegeven.", r1: false, r2: false, why1: "Een afspraak is geen gevoelig gegeven." },
+        mail:   { text: "bram@orion.space", name: "Mailadres van Bram", s1: "Het zakelijke adres van een collega mag.", r1: false, r2: false, why1: "Het zakelijke adres van een collega mag gewoon in een mail." },
+        reg:    { text: "Nova Terra, registratienummer NT 0042", name: "Kolonie en registratienummer", s1: "Gegevens over een organisatie mogen.", r1: false, r2: false, why1: "Gegevens over een organisatie. Die mogen in een gewone mail." },
+        premie: { text: "klasse 3", name: "Premieklasse", s1: "Hoort bij de kolonie, niet bij een persoon.", r1: false, r2: false, why1: "Een premieklasse hoort bij de kolonie als organisatie, niet bij een persoon." },
+        id2:    { text: "7731 0094 2", name: "Identiteitsnummer in de bijlage", s1: "Ook in een bijlage nooit via een gewone mail.", r1: true, r2: false, why1: "Ook in een bijlage gaat een identiteitsnummer nooit via een gewone mail." },
+        diag2:  { text: "rugklachten na een hernia, volgens de scheepsarts", name: "Diagnose in de bijlage", s1: "Ook in een bijlage een medisch gegeven.", s2: "Medisch, dus alleen voor de scheepsarts. Ook via Kluispost.", r1: true, r2: true, why1: "Een diagnose blijft een medisch gegeven, ook in een bijlage. Nooit via een gewone mail.",
                   why2: "Ook via Kluispost hoort een diagnose niet bij Vega. Medische details zijn alleen voor de scheepsarts." },
-        sol:    { text: "4.200 credits", r1: true, r2: false, why1: "Het loon van één crewlid is een gevoelig financieel gegeven en gaat niet via een gewone mail." },
-        iban:   { text: "OR77 STB 0041 2290 18", r1: true, r2: true, why1: "Een persoonlijk rekeningnummer is een gevoelig financieel gegeven en gaat niet via een gewone mail.",
+        sol:    { text: "4.200 credits", name: "Loon", s1: "Het loon van één crewlid is gevoelig.", r1: true, r2: false, why1: "Het loon van één crewlid is een gevoelig financieel gegeven en gaat niet via een gewone mail." },
+        iban:   { text: "OR77 STB 0041 2290 18", name: "Rekeningnummer", s1: "Een persoonlijk rekeningnummer is gevoelig.", s2: "Vega heeft het rekeningnummer niet nodig.", r1: true, r2: true, why1: "Een persoonlijk rekeningnummer is een gevoelig financieel gegeven en gaat niet via een gewone mail.",
                   why2: "Een veilig kanaal maakt het kanaal veilig, maar niet elk gegeven nodig. Voor de kostencontrole heeft Vega Jorans rekeningnummer niet nodig." },
-        beslag: { text: "beslag op loon, 650 credits per maand", r1: true, r2: true, why1: "Beslag op loon zegt iets over iemands financiële situatie. Gevoelig, dus niet via een gewone mail.",
+        beslag: { text: "beslag op loon, 650 credits per maand", name: "Beslag op loon", s1: "Zegt iets over zijn financiële situatie.", s2: "Het beslag is niet nodig voor de kostencontrole.", r1: true, r2: true, why1: "Beslag op loon zegt iets over iemands financiële situatie. Gevoelig, dus niet via een gewone mail.",
                   why2: "Voor de kostencontrole is het beslag niet nodig. Deel alleen wat de ontvanger echt nodig heeft." }
       },
       why2ok: "Via Kluispost of aangetekend verzenden mag dit, omdat Kapitein Vega het nodig heeft voor de kostencontrole.",
+      /* One-line reasons for a wrong click in step 2 */
+      s2ok: "Vega heeft dit nodig. Via Kluispost mag het.",
+      s2free: "Mocht al via de gewone mail, dus hier ook.",
       react: {
         good: { who: "Bram", say: "Oké, dan gaat hij via Kluispost. En de diagnose, het rekeningnummer, het beslag en die opmerking over zijn scheiding haal ik eruit." },
         half: { who: "Bram", say: "Bijna goed dus. Ik loop de mail en de bijlage nog een keer na voordat hij de deur uit gaat." },
@@ -134,15 +137,15 @@
       speaker: "Bram",
       line: "Vraag gewoon alle crewgegevens op, dan hebben we alles.",
       options: [
-        { text: "Alles opvragen.", grade: "bad",
+        { text: "Alle crewgegevens opvragen en afspraken over de verwerking vastleggen, dan hoeven we later niets meer na te vragen.", grade: "bad",
           react: { who: "Bram", say: "Zie je, nu hebben we alles. Handig toch?" },
-          why: "Je verzamelt meer dan nodig. Alles wat je niet nodig hebt, moet je wel beschermen en is een extra risico." },
+          why: "Afspraken vastleggen is goed, maar je verzamelt meer dan nodig. Alles wat je niet nodig hebt, moet je wel beschermen en is een extra risico." },
         { text: "Alleen de gegevens opvragen die nodig zijn voor de scan, en afspraken over de verwerking vastleggen.", grade: "good",
           react: { who: "Bram", say: "Hm. Scheelt mij ook weer werk eigenlijk." },
           why: "Je vraagt alleen op wat de scan nodig heeft en legt vast wat ermee gebeurt. Zo gebruik je gegevens alleen voor het doel waarvoor je ze kreeg." },
-        { text: "Als voorbeeld laten zien wat we bij Nova Terra hebben gevonden, met namen erin.", grade: "bad",
-          react: { who: "Bram", say: "Mooi voorbeeld toch? Dan zien ze meteen wat we kunnen." },
-          why: "Gegevens van de ene kolonie zijn nooit voorbeeldmateriaal voor de andere." }
+        { text: "Alleen de gegevens opvragen die nodig zijn voor de scan, en ze meteen in de beveiligde databank zetten.", grade: "half",
+          react: { who: "Bram", say: "Minder werk, en het staat veilig. Maar wat mogen we er straks eigenlijk mee?" },
+          why: "Alleen opvragen wat nodig is klopt. Maar je legt geen afspraken over de verwerking vast, dus niemand weet waarvoor de gegevens gebruikt mogen worden." }
       ],
       crystal: { name: "Doelbinding", text: "Vraag alleen op wat nodig is voor het doel, en gebruik het alleen daarvoor." },
       clue: "Een verzoek dat je niet verwacht, zoals een reset of een pakket, is een signaal om op te letten."
@@ -153,15 +156,15 @@
       speaker: "Bram",
       line: "Een langsvliegend handelsschip biedt gratis een slimme scanner aan die databestanden in seconden analyseert. Gooi het crewbestand er even in.",
       options: [
-        { text: "Uploaden naar de scanner, het scheelt veel tijd.", grade: "bad",
-          react: { who: "Bram", say: "Klaar in drie seconden. Waar staat die scanner eigenlijk?" },
-          why: "Het systeem is niet goedgekeurd en je weet niet waar de gegevens terechtkomen." },
-        { text: "Alleen de goedgekeurde systemen van het station gebruiken, met alleen organisatiegegevens of gegevens die volgens de regels geanonimiseerd of gepseudonimiseerd zijn.", grade: "good",
+        { text: "Het bestand uploaden naar de scanner van het handelsschip, maar eerst vragen waar de gegevens worden opgeslagen en hoe lang.", grade: "bad",
+          react: { who: "Bram", say: "Ze zeggen dat het veilig is. Klaar in drie seconden." },
+          why: "Het systeem is niet goedgekeurd. Een geruststellend antwoord van de handelaar verandert dat niet, en je weet nog steeds niet waar de gegevens terechtkomen." },
+        { text: "Alleen goedgekeurde systemen gebruiken, met organisatiegegevens of gegevens die volgens de regels geanonimiseerd of gepseudonimiseerd zijn.", grade: "good",
           react: { who: "ARIA", say: "Dank je. Ik werk graag mee, zolang er geen persoonsgegevens in mij belanden die er niet in horen." },
           why: "Je gebruikt alleen goedgekeurde systemen en alleen gegevens die daarin mogen." },
-        { text: "Het volledige bestand met namen in ARIA zetten, want die is goedgekeurd.", grade: "bad",
-          react: { who: "ARIA", say: "Ik ben goedgekeurd. Dat betekent nog niet dat alles in mij mag." },
-          why: "Een goedgekeurd systeem betekent niet dat persoonsgegevens erin mogen." }
+        { text: "Het bestand in ARIA zetten, want die is goedgekeurd, en vooraf de namen van alle crewleden uit het bestand weghalen.", grade: "half",
+          react: { who: "ARIA", say: "Ik ben goedgekeurd. Maar zonder namen kan ik nog steeds zien over wie het gaat." },
+          why: "ARIA is goedgekeurd, dus het systeem klopt. Maar alleen namen weghalen maakt een bestand nog niet anoniem. Er mogen alleen gegevens in die volgens de regels geanonimiseerd of gepseudonimiseerd zijn." }
       ],
       crystal: { name: "Goedgekeurde AI", text: "Alleen goedgekeurde systemen, en daarin geen persoonsgegevens behalve wat volgens de regels mag. Alleen namen weghalen maakt een bestand nog niet anoniem." },
       clue: "Bekijk het adres van de afzender goed. Een adres dat op dat van het station lijkt, is nog niet van het station."
@@ -172,15 +175,15 @@
       speaker: "Gilde",
       line: "Ze hebben zich toch aangemeld? Dan vinden ze ons aanbod vast interessant.",
       options: [
-        { text: "Doen.", grade: "bad",
-          react: { who: "Gilde", say: "Uitstekend, het bericht gaat vandaag nog uit." },
-          why: "Een aanmelding is geen toestemming voor reclame." },
-        { text: "Alleen mensen berichten die daar toestemming voor gaven.", grade: "good",
+        { text: "Alleen mensen berichten die bij hun aanmelding toestemming gaven voor nieuws over Nova Terra.", grade: "half",
+          react: { who: "Gilde", say: "Toestemming is toestemming, toch?" },
+          why: "Je kijkt terecht naar toestemming. Maar die moet over deze reclame van het Handelsgilde gaan. Toestemming voor nieuws over Nova Terra telt daar niet voor." },
+        { text: "Alleen mensen berichten die apart toestemming gaven om reclame van het Handelsgilde te ontvangen.", grade: "good",
           react: { who: "Gilde", say: "Een kleinere lijst dan gehoopt, maar goed." },
           why: "Gegevens uit een aanmelding zijn voor de selectie. Voor reclame is aparte toestemming nodig." },
-        { text: "Alleen mensen berichten van wie de aanmelding lang geleden is.", grade: "bad",
+        { text: "Alleen mensen berichten van wie de aanmelding al lang geleden is, want die gegevens worden toch niet meer gebruikt.", grade: "bad",
           react: { who: "Gilde", say: "Die oude aanmeldingen liggen toch maar stof te vangen." },
-          why: "Die gegevens horen er vaak niet eens meer te zijn. Denk aan de bewaartermijn uit de passagiersmodule." }
+          why: "Een aanmelding is geen toestemming voor reclame. En die oude gegevens horen er vaak niet eens meer te zijn. Denk aan de bewaartermijn uit de passagiersmodule." }
       ],
       crystal: null,
       clue: "Geheimhouding, geld of spoed? Stop en controleer via een andere weg."
@@ -346,10 +349,59 @@
     if (stage.getBoundingClientRect().top < 0) stage.scrollIntoView();
   }
 
-  function speech(whoKey, text) {
+  function speech(whoKey, text, extra) {
     var p = PEOPLE[whoKey];
-    return '<div class="speech"><span class="who ' + (p.cls || "") + '" aria-hidden="true">' + p.initials + '</span>' +
+    return '<div class="speech' + (extra ? " " + extra : "") + '"><span class="who ' + (p.cls || "") + '" aria-hidden="true">' + p.initials + '</span>' +
       '<div class="bubble"><p class="name">' + esc(p.name) + '</p><p>' + esc(text) + "</p></div></div>";
+  }
+
+  /* Feedback pieces shared by the mail and the other situations: title with the chips beside it, one calm verdict line,
+     and the rewards as a short list. The verdict text carries vcsw-alert-text, so the bridge finds the explanation for Nalezen. */
+  function fbHead(title, list) {
+    return '<div class="fb-head"><h2>' + esc(title) + "</h2>" + chips(list) + "</div>";
+  }
+  function verdictLine(cls, ic, word, pts, text) {
+    return '<div class="verdict-line ' + cls + '"><p class="verdict-title"><span class="verdict-word">' + icon(ic) + esc(word) + "</span>" +
+      '<span class="verdict-pts">' + esc(pts) + "</span></p>" + '<p class="verdict-text vcsw-alert-text">' + esc(text) + "</p></div>";
+  }
+  function afterList(lines) {
+    return '<ul class="fb-after">' + lines.map(function (l) { return "<li>" + icon(l[0], "sm") + "<span>" + l[1] + "</span></li>"; }).join("") + "</ul>";
+  }
+  /* In the game panel (about 717 px high at 1440x900) the mail review gets a fixed budget, so the button stays in view.
+     The budget comes from a constant and the content above the review, never from the height of the frame: the shell sizes
+     the frame from the content, so a link between the two would make the panel creep. Only a part that still overflows scrolls. */
+  var PANEL_H = 717;
+  function fitReview() {
+    var rv = stage.querySelector(".fit-review");
+    if (!rv) return;
+    var parts = rv.querySelectorAll(".review-scroll");
+    function overflow() { var o = 0; parts.forEach(function (el) { o += Math.max(0, el.scrollHeight - el.clientHeight); }); return o; }
+    if (document.documentElement.classList.contains("in-orion")) {
+      var top = rv.getBoundingClientRect().top + window.pageYOffset;
+      rv.style.setProperty("--rv-h", Math.max(320, PANEL_H - top - 14) + "px");
+      /* Side by side: give the mail more width while the notes still have room, and keep the split with the least overflow */
+      if (getComputedStyle(rv).gridTemplateColumns.split(" ").length > 1) {
+        var best = null, pick = rv.classList.contains("mail-pick"), mb = rv.querySelector(".mailbox");
+        /* After checking, the mail fragment itself never scrolls: only the list of notes may. So the narrowest mail
+           without overflow wins, which leaves the notes the most width. Before checking: the least overflow overall. */
+        var fs = pick ? [1.3, 1.15, 1, 1.6, 1.9] : [1, 1.15, 1.3, 1.45, 1.6, 1.75, 1.9];
+        fs.forEach(function (f) {
+          rv.style.gridTemplateColumns = "minmax(0, " + f + "fr) minmax(0, 1fr)";
+          var o = pick ? overflow() : Math.max(0, mb.scrollHeight - mb.clientHeight);
+          if (!best || o < best.o - 2) best = { f: f, o: o };
+        });
+        rv.style.gridTemplateColumns = "minmax(0, " + best.f + "fr) minmax(0, 1fr)";
+      }
+    }
+    parts.forEach(function (el) {
+      var over = el.scrollHeight > el.clientHeight + 2;
+      el.classList.toggle("is-over", over);
+      var atEnd = function () { el.classList.toggle("at-end", el.scrollTop + el.clientHeight >= el.scrollHeight - 4); };
+      if (!el.dataset.watch) { el.dataset.watch = "1"; el.addEventListener("scroll", atEnd, { passive: true }); }
+      atEnd();
+      if (over) { el.setAttribute("tabindex", "0"); el.setAttribute("role", "region"); }
+      else { el.removeAttribute("tabindex"); el.removeAttribute("role"); }
+    });
   }
 
   function alertBox(kind, title, text) {
@@ -390,18 +442,6 @@
     );
   }
 
-  /* What a situation leaves you with: the crystal, and what to remember for the airlock */
-  function rewards(s, good) {
-    var out = "";
-    if (good) {
-      if (s.crystal) out += '<div class="reward">' + icon("gem") + "<div><strong>Datakristal: " + esc(s.crystal.name) + "</strong><br>" + esc(s.crystal.text) + "</div></div>";
-      out += '<div class="reward">' + icon("eye") + "<div><strong>Onthoud dit voor de luchtsluis</strong><br>" + esc(s.clue) + "</div></div>";
-    } else if (s.crystal) {
-      out += '<div class="reward">' + icon("info") + "<div><strong>Geen kristal deze keer</strong><br>Elk kristal is in de luchtsluis één aanwijzing van ARIA zonder kosten. Zonder kristal kost een aanwijzing " + CLUE_COST + " procent schild.</div></div>";
-    }
-    return out;
-  }
-
   function startSit() { S.screen = "sit"; S.chosen = null; S.mail = { round: 1, sel: {}, checked: false, e1: 0, e2: 0, grade: null }; renderSit(); }
 
   function mailErrors(s, round) {
@@ -414,23 +454,80 @@
     var s = SITUATIONS[S.sit], M = S.mail, r = M.round;
     var badKey = r === 1 ? "r1" : "r2";
     var nSel = Object.keys(M.sel).filter(function (k) { return M.sel[k]; }).length;
-    function tokens(str) {
-      return esc(str).replace(/\n/g, "<br>").replace(/\{(\w+)\}/g, function (_, k) {
-        var it = s.items[k], on = !!M.sel[k], cls = "token", mark = "";
-        if (M.checked) {
-          var right = on === it[badKey];
-          cls += right ? " right" : " wrong";
-          mark = (right ? icon("check") : icon("half")) + '<span class="vcsw-sr-only">' + (it[badKey] ? " mag niet via deze weg" : " mag wel") + (right ? ", goed beoordeeld" : ", niet goed beoordeeld") + "</span>";
-        }
-        return '<span role="button" tabindex="' + (M.checked ? "-1" : "0") + '" class="' + cls + '" data-tok="' + k + '" aria-pressed="' + on + '"' + (M.checked ? ' aria-disabled="true"' : "") + ">" + (function () { var i = it.text.lastIndexOf(" "); return esc(it.text.slice(0, i + 1)) + '<span style="white-space:nowrap">' + esc(it.text.slice(i + 1)) + mark + "</span>"; })() + "</span>";
+
+    /* What went wrong per step: "miss" (should have been clicked) or "extra" (clicked, but it may go this way).
+       In step 2 the mistakes of step 1 count for the verdict too, so they are marked and explained as well. */
+    function err(k, round) {
+      var sel = round === r ? M.sel : (M.sel1 || {}), bad = s.items[k]["r" + round];
+      return !!sel[k] === bad ? null : bad ? "miss" : "extra";
+    }
+    function errNow(k) { return err(k, r); }
+    function errOne(k) { return r === 2 ? err(k, 1) : null; }
+    function state(k) { return errNow(k) || errOne(k) || "ok"; }
+    /* After checking: every item that is discussed gets a number, in reading order (mail first, then the attachment).
+       Discussed means: it may not go this way, or the player judged it wrongly in this step or in step 1. */
+    var marks = {}, order = [];
+    if (M.checked) {
+      var seq = [];
+      s.body.replace(/\{(\w+)\}/g, function (_, k) { seq.push(k); return _; });
+      if (s.attach) s.attach.rows.forEach(function (row) { row[1].replace(/\{(\w+)\}/g, function (_, k) { seq.push(k); return _; }); });
+      seq.forEach(function (k) {
+        if (marks[k] || !(s.items[k][badKey] || errNow(k) || errOne(k))) return;
+        order.push(k); marks[k] = order.length;
       });
     }
-    var body = s.body.split("\n\n").map(function (para) { return "<p>" + tokens(para) + "</p>"; }).join("");
+    function judged(k) { return state(k) === "ok"; }
+    function hasMark(str) { var f = false; str.replace(/\{(\w+)\}/g, function (_, k) { if (marks[k]) f = true; return _; }); return f; }
+    function gap(inline, label) {
+      label = label || "Tekst zonder markering, weggelaten";
+      var inner = '<span aria-hidden="true">…</span><span class="vcsw-sr-only">' + label + "</span>";
+      return inline ? '<span class="mail-cut" title="' + label + '">' + inner + "</span>" : '<p class="mail-gap" title="' + label + '">' + inner + "</p>";
+    }
+
+    function tokens(str) {
+      return esc(str).replace(/\n/g, "<br>").replace(/\{(\w+)\}/g, function (_, k) {
+        var it = s.items[k], on = !!M.sel[k];
+        if (M.checked) {
+          /* Feedback: plain text, or a tinted mark that follows the text, with its number in front */
+          if (!marks[k]) return esc(it.text);
+          var i = it.text.indexOf(" "), first = i < 0 ? it.text : it.text.slice(0, i), rest = i < 0 ? "" : it.text.slice(i);
+          var st = state(k), word = st === "miss" ? "gemist" : st === "extra" ? "onterecht aangeklikt" : "goed";
+          return '<mark class="mk is-' + st + '"><span class="mk-lead"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" + esc(first) + "</span>" + esc(rest) +
+            '<span class="vcsw-sr-only"> (' + word + ", toelichting " + marks[k] + ")</span></mark>";
+        }
+        return '<span role="button" tabindex="0" class="token" data-tok="' + k + '" aria-pressed="' + on + '">' + esc(it.text) + "</span>";
+      });
+    }
+    /* After checking, the mail is cut down to the sentences and attachment rows with a mark, so the review fits the panel.
+       Every piece that is left out shows as one ellipsis, inline where it was left out, so it costs no line of its own. */
+    var body = "";
+    if (!M.checked) {
+      body = s.body.split("\n\n").map(function (para) { return "<p>" + tokens(para) + "</p>"; }).join("");
+    } else {
+      var cur = null, line = [], pend = false;
+      var flush = function () { if (line.length) body += "<p>" + line.join(" ") + "</p>"; line = []; };
+      s.body.split("\n\n").forEach(function (para, pi) {
+        para.split(/(?<=\.)\s+(?=[A-Z])/).forEach(function (sen) {
+          if (!hasMark(sen)) { pend = true; return; }
+          if (cur !== pi) { flush(); cur = pi; }
+          if (pend) line.push(gap(true));
+          pend = false; line.push(tokens(sen));
+        });
+      });
+      if (pend) line.push(gap(true));
+      flush();
+    }
+    /* Before checking, the attachment gets its own column beside the mail, so the selection fits the panel. After checking it stays under the mail. */
+    var attachHtml = "";
     if (s.attach) {
-      body += '<div class="mail-attach"><p class="attach-name">' + icon("file", "sm") + "Bijlage: " + esc(s.attach.name) + "</p>" +
-        '<div class="vcsw-table-wrap"><table class="vcsw-table"><tbody>' +
-        s.attach.rows.map(function (row) { return "<tr><th scope=\"row\">" + esc(row[0]) + "</th><td>" + tokens(row[1]) + "</td></tr>"; }).join("") +
-        "</tbody></table></div></div>";
+      var rows = M.checked ? s.attach.rows.filter(function (row) { return hasMark(row[1]); }) : s.attach.rows;
+      var hid = s.attach.rows.length - rows.length;
+      attachHtml = '<div class="mail-attach"><p class="attach-name">' + icon("file", "sm") + "Bijlage: " + esc(s.attach.name) +
+        (hid ? " " + gap(true, hid === 1 ? "Eén rij zonder markering, weggelaten" : hid + " rijen zonder markering, weggelaten") : "") + "</p>" +
+        (rows.length ? '<div class="vcsw-table-wrap"><table class="vcsw-table"><tbody>' +
+          rows.map(function (row) { return "<tr><th scope=\"row\">" + esc(row[0]) + "</th><td>" + tokens(row[1]) + "</td></tr>"; }).join("") +
+          "</tbody></table></div>" : "") + "</div>";
+      if (M.checked) body += attachHtml;
     }
 
     var via = r === 1
@@ -439,41 +536,101 @@
     var task = r === 1
       ? "<p><strong>Stap 1 van 2.</strong> De mail gaat via de gewone stationsmail. Klik in de mail en de bijlage alle gegevens aan die zo niet verstuurd mogen worden. Klik nog een keer om een keuze ongedaan te maken.</p>"
       : "<p><strong>Stap 2 van 2.</strong> Bram verstuurt de mail nu via Kluispost, het beveiligde kanaal van Orion. Aangetekend verzenden kan ook. Klik aan wat er zelfs via dit kanaal niet in hoort.</p>";
+    var mailbox = M.checked
+      /* The channel is in the chip above, so the fragment starts with the mail itself */
+      ? '<div class="mailbox review-scroll" aria-label="De mail aan Kapitein Vega via ' + (r === 1 ? "de gewone stationsmail" : "Kluispost") + ', ingekort tot de markeringen">' +
+        '<div class="mail-body">' + body + "</div></div>"
+      : '<div class="mailbox review-scroll" aria-label="De mail"><div class="msg-head">' +
+        '<div class="row"><span class="k">Aan</span><span class="v">Kapitein Vega &lt;vega@novaterra.space&gt;</span></div>' +
+        '<div class="row"><span class="k">Onderwerp</span><span class="v">Uitkomst kostencontrole Nova Terra</span></div>' +
+        '<div class="row"><span class="k">Via</span><span class="v">' + via + "</span></div></div>" +
+        '<div class="mail-body">' + body + "</div></div>";
 
-    var fb = "";
-    if (M.checked) {
-      var list = Object.keys(s.items).filter(function (k) { return s.items[k][badKey] || !!M.sel[k] !== s.items[k][badKey]; }).map(function (k) {
-        var it = s.items[k], right = !!M.sel[k] === it[badKey];
-        var why = r === 1 ? it.why1 : (it.r2 ? it.why2 : (it.r1 ? s.why2ok : "Mocht al via de gewone mail, en mag hier dus ook."));
-        return "<li>" + (right ? icon("check", "ok") : icon("x", "no")) + "<span><strong>" + esc(it.text) + "</strong>: " +
-          (it[badKey] ? "mag niet via deze weg" : "mag wel") + (right ? "" : " (jij koos anders)") + ". " + esc(why) + "</span></li>";
-      }).join("");
-      var e = r === 1 ? M.e1 : M.e2;
-      fb = '<div class="feedback">' + alertBox(e === 0 ? "success" : "warning", e === 0 ? "Alles goed beoordeeld" : e + (e === 1 ? " gegeven" : " gegevens") + " niet goed beoordeeld", r === 1 ? "Gevoelige gegevens horen niet in een gewone mail." : "Een beveiligd kanaal is nodig, maar niet genoeg.") +
-        '<ul class="result-list">' + list + "</ul>";
-      if (r === 1) {
-        fb += "</div>" + '<div class="actions">' + btn("Verstuur via Kluispost", "mail2", "", "arrowR") + "</div>";
-      } else {
-        var g = M.grade, o = s.react[g];
-        var title = g === "good" ? "Goed, +10 punten" : g === "half" ? "Half goed, +5 punten, schild −5%" : "Fout, 0 punten, schild −10%";
-        fb += speech(o.who, o.say) + alertBox(g === "good" ? "success" : g === "half" ? "warning" : "error", title, s.goodWhy);
-        fb += rewards(s, g === "good");
-        fb += "</div>" + '<div class="actions">' + btn("Volgende situatie", "nextsit", "", "arrowR") + "</div>";
-      }
+    if (!M.checked) {
+      /* In the game panel: title and chips on one row, then the mail on the left over the full height. On the right the intro,
+         Bram's line and the task, the attachment and the button. The source order stays intro, mail, attachment, button,
+         so reading and tabbing follow the task. Same budget as the review after checking; only a part that still overflows scrolls. */
+      show(
+        fbHead(s.title, ["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) +
+        '<div class="mail-review mail-pick fit-review"><div class="mail-brief"><p class="sit-intro">' + esc(s.intro) + "</p>" +
+        (r === 1 ? speech(s.speaker, s.line, "slim") : "") + task + "</div>" + mailbox +
+        '<div class="mail-att review-scroll" aria-label="De bijlage">' + attachHtml + "</div>" +
+        '<div class="mail-foot"><p class="sel-count" aria-live="polite">' + nSel + " gegevens aangeklikt</p>" + '<div class="actions">' + btn("Controleer", "mailcheck", "", "check") + "</div></div></div>",
+        "h2"
+      );
+      fitReview();
+      return;
+    }
+
+    /* Step 1 gets an interim verdict without points; step 2 gets the verdict for both steps together (the same grade as the score) */
+    var e = r === 1 ? M.e1 : M.e1 + M.e2, nAll = Object.keys(s.items).length, g = M.grade;
+    var where = e === 0 ? "" : " Ze staan rood of amber gemarkeerd.";
+    var verdict = r === 1
+      ? verdictLine("mid in-mail", "info", "Tussenoordeel", "Nog geen punten, die volgen na stap 2",
+          (e === 0 ? "Je beoordeelde alle " + nAll + " gegevens goed." : "Je beoordeelde " + e + " van de " + nAll + " gegevens niet goed.") + where +
+          " Gevoelige gegevens horen niet in een gewone mail, ook niet in een bijlage.")
+      : verdictLine(g + " in-mail", g === "good" ? "check" : g === "half" ? "half" : "x", g === "good" ? "Goed" : g === "half" ? "Half goed" : "Niet goed",
+          g === "good" ? "+10 punten" : g === "half" ? "+5 punten, schild −5%" : "0 punten, schild −10%",
+          (e === 0 ? "Je beoordeelde in beide stappen alle gegevens goed."
+            : "Je beoordeelde " + plural(e, "gegeven", "gegevens") + " niet goed, " +
+              (M.e1 && M.e2 ? M.e1 + " in stap 1 en " + M.e2 + " in stap 2." : M.e1 ? "allemaal in stap 1." : "allemaal in stap 2.")) + where +
+          " Ook via Kluispost deel je alleen wat de ontvanger echt nodig heeft, en medische details blijven bij de scheepsarts.");
+
+    /* Notes: what went wrong is open at once, with the item and a one-line reason. What went well folds away behind one line. */
+    function reason(k, round, kind) {
+      var it = s.items[k];
+      if (round === 1) return it.s1;
+      return kind === "miss" ? it.s2 : it.r1 ? s.s2ok : s.s2free;
+    }
+    function note(k) {
+      var it = s.items[k];
+      return '<li class="is-ok"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" +
+        '<div class="note-body"><p class="note-text"><span class="vcsw-sr-only">Toelichting ' + marks[k] + ", " + esc(it.text) + ". </span>" +
+        '<strong class="note-you">Goed gezien.</strong> ' + esc(r === 1 ? it.why1 : it.why2) + "</p></div></li>";
+    }
+    function wrongNote(round) {
+      return function (k) {
+        var it = s.items[k], kind = err(k, round);
+        return '<li class="is-' + kind + '"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" +
+          '<div class="note-body"><span class="vcsw-sr-only">Toelichting ' + marks[k] + ", " + esc(it.text) + ". </span>" +
+          '<p class="note-head"><strong class="note-what">' + esc(it.name) + '</strong><span class="note-kind is-' + kind + '">' +
+          (kind === "miss" ? "Gemist" : "Onterecht aangeklikt") + "</span></p>" +
+          '<p class="note-why">' + esc(reason(k, round, kind)) + "</p></div></li>";
+      };
+    }
+    /* In step 2 the mistakes of step 1 get their own group, because they count for this verdict too */
+    var wrongNow = order.filter(errNow), wrongOne = order.filter(errOne), right = order.filter(judged);
+    var notes = (wrongNow.length ? (wrongOne.length ? '<p class="notes-sub">In stap 2, via Kluispost</p>' : "") +
+        '<ol class="notes notes-wrong">' + wrongNow.map(wrongNote(r)).join("") + "</ol>" : "") +
+      (wrongOne.length ? '<p class="notes-sub">Uit stap 1, via de gewone mail</p>' +
+        '<ol class="notes notes-wrong">' + wrongOne.map(wrongNote(1)).join("") + "</ol>" : "") +
+      (right.length ? '<details class="notes-ok"><summary>' + icon("check", "sm") + "<span>" + right.length + " goed beoordeeld</span>" +
+        '<span class="sum-more"><span class="when-closed">Toon uitleg</span><span class="when-open">Verberg</span></span></summary>' +
+        '<ol class="notes">' + right.map(note).join("") + "</ol></details>" : "");
+
+    var after;
+    if (r === 1) {
+      after = '<div class="actions">' + btn("Verstuur via Kluispost", "mail2", "", "arrowR") + "</div>";
+    } else {
+      var lines = g === "good"
+        ? [["gem", "<strong>Datakristal: " + esc(s.crystal.name) + ".</strong> " + esc(s.crystal.text)], ["eye", "<strong>Onthoud voor de luchtsluis.</strong> " + esc(s.clue)]]
+        : [["info", "<strong>Geen kristal deze keer.</strong> Zonder kristal kost een aanwijzing in de luchtsluis " + CLUE_COST + " procent schild."]];
+      after = speech(s.react[g].who, s.react[g].say, "slim") + afterList(lines) +
+        '<div class="actions">' + btn("Volgende situatie", "nextsit", "", "arrowR") + "</div>";
     }
 
     show(
-      chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) +
-      "<h2>" + esc(s.title) + "</h2><p>" + esc(s.intro) + "</p>" +
-      (r === 1 ? speech(s.speaker, s.line) : "") + task +
-      '<div class="mailbox"><div class="msg-head">' +
-      '<div class="row"><span class="k">Aan</span><span class="v">Kapitein Vega &lt;vega@novaterra.space&gt;</span></div>' +
-      '<div class="row"><span class="k">Onderwerp</span><span class="v">Uitkomst kostencontrole Nova Terra</span></div>' +
-      '<div class="row"><span class="k">Via</span><span class="v">' + via + "</span></div></div>" +
-      '<div class="mail-body">' + body + "</div></div>" +
-      (M.checked ? fb : '<p class="sel-count" aria-live="polite">' + nSel + " gegevens aangeklikt</p>" + '<div class="actions">' + btn("Controleer", "mailcheck", "", "check") + "</div>"),
-      M.checked ? ".feedback .vcsw-alert-title" : "h2"
+      fbHead(s.title, ["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length, r === 1 ? "Stap 1 van 2, gewone mail" : "Stap 2 van 2, Kluispost"]) + verdict +
+      '<div class="mail-review fit-review">' + mailbox +
+      '<section class="mail-notes" aria-labelledby="notes-h"><div class="notes-top"><h3 id="notes-h">Toelichting</h3>' +
+      '<p class="notes-key"><span><span class="key-sw is-ok" aria-hidden="true"></span>Goed</span>' +
+      (order.some(function (k) { return state(k) === "miss"; }) ? '<span><span class="key-sw is-miss" aria-hidden="true"></span>Gemist</span>' : "") +
+      (order.some(function (k) { return state(k) === "extra"; }) ? '<span><span class="key-sw is-extra" aria-hidden="true"></span>Onterecht aangeklikt</span>' : "") + "</p></div>" +
+      '<div class="notes-scroll review-scroll" aria-labelledby="notes-h">' + notes + "</div>" +
+      '<div class="notes-foot">' + after + "</div></section></div>",
+      ".verdict-title"
     );
+    fitReview();
   }
 
   function checkMail() {
@@ -514,27 +671,27 @@
         '<span class="letter" aria-hidden="true">' + letters[k] + "</span><span>" + esc(o.text) + "</span>" + verdict + "</button></li>";
     }).join("");
 
-    var fb = "";
-    if (S.chosen !== null) {
-      var o = s.options[S.chosen];
-      var title = o.grade === "good" ? "Goed, +10 punten" : o.grade === "half" ? "Half goed, +5 punten, schild −5%" : "Fout, 0 punten, schild −10%";
-      fb = '<div class="feedback">' +
-        speech(o.react.who, o.react.say) +
-        alertBox(o.grade === "good" ? "success" : o.grade === "half" ? "warning" : "error", title, o.why);
-      fb += rewards(s, o.grade === "good");
-      fb += "</div>";
+    var fb = "", done = S.chosen !== null;
+    if (done) {
+      var o = s.options[S.chosen], good = o.grade === "good";
+      var lines = good
+        ? (s.crystal ? [["gem", "<strong>Datakristal: " + esc(s.crystal.name) + ".</strong> " + esc(s.crystal.text)]] : []).concat([["eye", "<strong>Onthoud voor de luchtsluis.</strong> " + esc(s.clue)]])
+        : s.crystal ? [["info", "<strong>Geen kristal deze keer.</strong> Zonder kristal kost een aanwijzing in de luchtsluis " + CLUE_COST + " procent schild."]] : [];
+      fb = verdictLine(o.grade, good ? "check" : o.grade === "half" ? "half" : "x", good ? "Goed" : o.grade === "half" ? "Half goed" : "Fout",
+          good ? "+10 punten" : o.grade === "half" ? "+5 punten, schild −5%" : "0 punten, schild −10%", o.why) +
+        '<div class="fb-react">' + speech(o.react.who, o.react.say, "slim") + (lines.length ? afterList(lines) : "") + "</div>";
       var last = S.sit === SITUATIONS.length - 1;
       fb += '<div class="actions">' + btn(last ? "Naar de luchtsluis" : "Volgende situatie", last ? "prelock" : "nextsit", "", "arrowR") + "</div>";
     }
 
     show(
-      chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) +
-      "<h2>" + esc(s.title) + "</h2>" +
-      "<p>" + esc(s.intro) + "</p>" +
-      speech(s.speaker, s.line) +
+      (done ? fbHead(s.title, ["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length])
+            : chips(["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length]) + "<h2>" + esc(s.title) + "</h2>") +
+      '<p class="sit-intro">' + esc(s.intro) + "</p>" +
+      speech(s.speaker, s.line, done ? "slim" : "") +
       '<p class="vcsw-sr-only">Kies een van de drie opties.</p>' +
-      '<ul class="options">' + opts + "</ul>" + fb,
-      S.chosen !== null ? ".feedback .vcsw-alert-title" : "h2"
+      '<ul class="options' + (done ? " answered" : "") + '">' + opts + "</ul>" + fb,
+      done ? ".verdict-title" : "h2"
     );
   }
 
@@ -550,8 +707,6 @@
       S.clues[S.sit] = true;
     }
     renderSit();
-    var t = stage.querySelector(".feedback .vcsw-alert-title");
-    if (t) { t.setAttribute("tabindex", "-1"); t.focus(); }
   }
 
   /* Start card of the airlock: the goal in one sentence, how you score, what a mistake costs, one start button */
@@ -564,7 +719,7 @@
         : '<li class="missed">' + icon("lock", "sm") + "<span>Gemist bij “" + esc(s.title) + "”.</span></li>";
     }).join("");
     show(
-      '<div class="head">' +
+      '<div class="prelock"><div class="head">' +
       chips(["Luchtsluis", icon("timer") + "5 minuten", icon("gem") + plural(n, "kristal", "kristallen") + " uit dit level"]) +
       "<h2>De berichtenstroom</h2>" +
       '<p class="lead">Beslis bij tien binnenkomende berichten of ze echt zijn of een aanval van de Zwarte Nevel.</p></div>' +
@@ -582,7 +737,7 @@
         ["shield", "Daarna kost een aanwijzing " + CLUE_COST + " procent schild", "bad"]
       ]) + "</section></div>" +
       '<section class="acard tips"><h3>Hier let je op</h3><ul class="clues">' + tips + "</ul></section>" +
-      '<div class="actions">' + btn("Open de berichtenstroom", "lock", "", "arrowR") + "</div>"
+      '<div class="actions">' + btn("Open de berichtenstroom", "lock", "", "arrowR") + "</div></div>"
     );
   }
 
@@ -650,7 +805,7 @@
       controls =
         '<div class="swipe-actions">' +
         '<button type="button" class="vcsw-button destructive" data-action="attack">' + icon("arrowL") + "Aanval</button>" +
-        '<button type="button" class="vcsw-button" data-action="real">Echt' + icon("arrowR") + "</button></div>" +
+        '<button type="button" class="vcsw-button outline" data-action="real">Echt' + icon("arrowR") + "</button></div>" +
         '<p class="swipe-help">Schuif de kaart, gebruik de knoppen of druk op pijltje links of rechts.</p>' + ask;
     } else {
       var correct = res === "ok";
@@ -674,7 +829,8 @@
       (S.paused
         ? alertBox("info", "Gepauzeerd", "De klok staat stil. Kies Hervat om verder te gaan.")
         : '<div class="deck"><article class="msg" id="msgcard" aria-label="Binnenkomend bericht ' + (S.msgIdx + 1) + '">' +
-          '<span class="stamp left" aria-hidden="true">Aanval</span><span class="stamp right" aria-hidden="true">Echt</span>' +
+          /* The swipe stamps sit on the top edge of the card, outside the text. After a choice there is nothing to swipe, so no stamps. */
+          (S.answered ? "" : '<span class="stamp left" aria-hidden="true">Aanval</span><span class="stamp right" aria-hidden="true">Echt</span>') +
           head + body + "</article></div>" + controls),
       S.answered ? ".lock-feedback .vcsw-alert-title" : "h2"
     );
@@ -779,13 +935,34 @@
     var pct = Math.round((S.score / MAX_SCORE) * 100);
     var passed = S.score / MAX_SCORE >= PASS;
     if (passed) document.getElementById("hud-rank").textContent = "Kapitein";
-    var sitLines = SITUATIONS.map(function (s, i) {
-      var g = S.sitResults[i];
+    /* Each situation: the title with the verdict, then the explanation. Half goed: say what the half answer missed, before the full answer. */
+    function sitText(s, g) {
       var good = s.type === "mail" ? { text: s.goodText, why: s.goodWhy } : s.options.filter(function (o) { return o.grade === "good"; })[0];
+      var half = s.type === "mail" ? null : s.options.filter(function (o) { return o.grade === "half"; })[0];
+      var missed = g !== "half" ? "" : s.type === "mail"
+        ? "Je beoordeelde een of twee gegevens in de mail of de bijlage niet goed. "
+        : esc(half.why) + " ";
+      return missed + (g === "good" ? "" : "Beter was: " + esc(good.text) + " ") + esc(good.why);
+    }
+    function sitHead(s, g) {
       var ic = g === "good" ? icon("check", "ok") : g === "half" ? icon("half", "mid") : icon("x", "no");
       var lbl = g === "good" ? "Goed" : g === "half" ? "Half goed" : "Fout";
-      return "<li>" + ic + "<span><strong>" + esc(s.title) + "</strong> (" + lbl + "). " + (g === "good" ? "" : "Beter was: " + esc(good.text) + " ") + esc(good.why) + "</span></li>";
+      return ic + "<span><strong>" + esc(s.title) + "</strong> (" + lbl + ")</span>";
+    }
+    var more = '<span class="sum-more"><span class="when-closed">Toon uitleg</span><span class="when-open">Verberg</span></span>';
+    /* What did not go well stays open (as far as the panel allows), what went well folds away behind one line, as in the mail review */
+    var notGood = [], goodIdx = [];
+    SITUATIONS.forEach(function (s, i) { if (S.sitResults[i] === "good") goodIdx.push(i); else notGood.push(i); });
+    var sitLines = notGood.map(function (i) {
+      var s = SITUATIONS[i], g = S.sitResults[i];
+      return '<li><details class="sit-fb" open><summary>' + sitHead(s, g) + more + '</summary><p class="sit-why">' + sitText(s, g) + "</p></details></li>";
     }).join("");
+    if (goodIdx.length) {
+      var names = goodIdx.map(function (i) { return esc(SITUATIONS[i].title); });
+      var list = names.length > 1 ? names.slice(0, -1).join(", ") + " en " + names[names.length - 1] : names[0];
+      sitLines += '<li><details class="sit-ok"><summary>' + icon("check", "ok") + "<span><strong>" + plural(goodIdx.length, "situatie", "situaties") + " goed.</strong> " + list + "</span>" + more + "</summary>" +
+        '<ul class="sit-ok-list">' + goodIdx.map(function (i) { var s = SITUATIONS[i]; return "<li><strong>" + esc(s.title) + ".</strong> " + sitText(s, "good") + "</li>"; }).join("") + "</ul></details></li>";
+    }
     var okMsgs = S.msgResults.filter(function (r) { return r === "ok"; }).length;
     var crystals = S.crystals.length
       ? '<ul class="crystal-list">' + S.crystals.map(function (c) { return '<li><span class="vcsw-badge">' + icon("gem") + esc(c) + "</span></li>"; }).join("") + "</ul>"
@@ -797,15 +974,40 @@
       ? "Sterk werk. De sluis staat open en de Zwarte Nevel blijft buiten. Hier is wat goed ging en waarom."
       : "De sluis is open, maar het vertrouwen aan boord is nog niet groot genoeg. Je speelt de dienst opnieuw. Hier is waarom.";
     show(
+      '<div class="debrief">' +
       "<h2>" + (passed ? "Level gehaald. Je bent nu Kapitein" : "Nog niet gehaald") + "</h2>" +
-      speech("ARIA", summary) +
+      speech("ARIA", summary, "slim") +
       chips(["Score " + pct + "%, " + S.score + " van " + MAX_SCORE + " punten, 70% nodig", icon("shield") + "Schildsterkte " + S.shield + "%", okMsgs + " van " + MESSAGES.length + " berichten goed beoordeeld"]) +
-      "<h3>Je dienst</h3><ul class=\"result-list\">" + sitLines + "</ul>" +
-      "<h3>Datakristallen</h3>" + crystals +
-      '<div class="mt">' + carry + "</div>" +
-      "<h3>Drie kernregels</h3><ol class=\"rules\">" + RULES.map(function (r) { return "<li><span>" + esc(r) + "</span></li>"; }).join("") + "</ol>" +
-      '<div class="actions">' + btn("Terug op aarde", "earth", "", "arrowR") + "</div>"
+      "<h3>Je dienst</h3><ul class=\"result-list sit-list\">" + sitLines + "</ul>" +
+      '<div class="two debrief-two"><div><h3>Datakristallen</h3>' + crystals + '<div class="carry">' + carry + "</div></div>" +
+      "<div><h3>Drie kernregels</h3><ol class=\"rules\">" + RULES.map(function (r) { return "<li><span>" + esc(r) + "</span></li>"; }).join("") + "</ol></div></div>" +
+      '<div class="actions">' + btn("Terug op aarde", "earth", "", "arrowR") + "</div></div>"
     );
+    fitDebrief();
+  }
+
+  /* The debriefing gets the same fixed budget as the mail review: explanations that do not fit fold, from the last one up,
+     so the button stays in view. The budget comes from the constant, never from the height of the frame. */
+  function fitDebrief() {
+    if (!document.documentElement.classList.contains("in-orion")) return;
+    var open = [].slice.call(stage.querySelectorAll(".sit-fb[open]")), act = stage.querySelector(".debrief > .actions");
+    function bottom() { return act.getBoundingClientRect().bottom + window.pageYOffset + 14; }
+    while (open.length && bottom() > PANEL_H) open.pop().removeAttribute("open");
+    fitSitList();
+  }
+  /* When the player opens an explanation that does not fit even on its own, only the list scrolls, as in the mail review */
+  function fitSitList() {
+    var list = stage.querySelector(".sit-list"), act = stage.querySelector(".debrief > .actions");
+    if (!list || !act || !document.documentElement.classList.contains("in-orion")) return;
+    list.style.maxHeight = "";
+    var extra = act.getBoundingClientRect().bottom + window.pageYOffset + 14 - PANEL_H, over = false;
+    if (extra > 0) { list.style.maxHeight = Math.max(140, list.getBoundingClientRect().height - extra) + "px"; over = list.scrollHeight > list.clientHeight + 2; }
+    list.classList.toggle("is-over", over);
+    if (over) { list.setAttribute("tabindex", "0"); list.setAttribute("role", "region"); list.setAttribute("aria-label", "Je dienst"); }
+    else { list.removeAttribute("tabindex"); list.removeAttribute("role"); list.removeAttribute("aria-label"); }
+    var atEnd = function () { list.classList.toggle("at-end", list.scrollTop + list.clientHeight >= list.scrollHeight - 4); };
+    if (!list.dataset.watch) { list.dataset.watch = "1"; list.addEventListener("scroll", atEnd, { passive: true }); }
+    atEnd();
   }
 
   /* Terug op aarde, in two steps so each fits the panel: first the two lists, then the report route and the result */
@@ -845,7 +1047,7 @@
     show(
       '<div class="aarde"><div class="head">' + chips(["Stap 2 van 2"]) +
       "<h2>Melden en je resultaat</h2></div>" +
-      '<section class="acard meld"><div class="meld-text"><h3>Meldroute</h3><p>Twijfel of een incident? Meld het direct bij Tarik, Dagmar of via het meldpunt.</p></div>' +
+      '<section class="acard meld"><div class="meld-text"><h3>Meldroute</h3><p>Twijfel of een incident? Meld het direct bij de security officer, de privacy officer of via het meldpunt.</p></div>' +
       '<div class="meld-act"><code id="mailaddr">jz@vcsw.nl</code>' +
       '<button type="button" class="vcsw-button outline" data-action="copy">Kopieer adres' + icon("copy") + "</button></div>" +
       '<p class="vcsw-sr-only" id="copy-status" aria-live="polite"></p></section>' +
@@ -938,7 +1140,7 @@
     else if (a === "sit") { S.sit = 0; startSit(); }
     else if (a === "nextsit") { S.sit++; startSit(); }
     else if (a === "mailcheck") checkMail();
-    else if (a === "mail2") { S.mail.round = 2; S.mail.sel = {}; S.mail.checked = false; renderMail(); }
+    else if (a === "mail2") { S.mail.round = 2; S.mail.sel1 = S.mail.sel; S.mail.sel = {}; S.mail.checked = false; renderMail(); }
     else if (a === "prelock") renderPreLock();
     else if (a === "lock") startLock();
     else if (a === "attack") classify(false);
@@ -957,6 +1159,19 @@
     var tk = e.target.closest && e.target.closest("[data-tok]");
     if (tk && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); tk.click(); }
   });
+  /* Opening the folded notes can make the list overflow: then it becomes a scroll region that the keyboard can reach */
+  stage.addEventListener("toggle", function (e) {
+    fitReview();
+    /* Debriefing: opening one explanation folds the others again when the panel would otherwise scroll */
+    var d = e.target;
+    if (d.open && d.closest && d.closest(".debrief") && document.documentElement.classList.contains("in-orion")) {
+      var act = stage.querySelector(".debrief > .actions");
+      var others = [].slice.call(stage.querySelectorAll(".sit-fb[open], .sit-ok[open]")).filter(function (x) { return x !== d; });
+      var list = stage.querySelector(".sit-list"); if (list) list.style.maxHeight = "";
+      while (others.length && act.getBoundingClientRect().bottom + window.pageYOffset + 14 > PANEL_H) others.pop().removeAttribute("open");
+    }
+    if (d.closest && d.closest(".debrief")) fitSitList();
+  }, true);
   stage.addEventListener("submit", function (e) {
     if (e.target.id === "codeform") { e.preventDefault(); checkCode(document.getElementById("codein").value); }
   });

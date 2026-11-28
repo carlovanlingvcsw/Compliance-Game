@@ -1,0 +1,307 @@
+.pp { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(380px, 1fr); gap: 20px; flex: 1; }
+.pp-left { display: flex; flex-direction: column; gap: 14px; }
+
+/* Het crewbord: een fysiek bord aan de wand van de aankomsthal */
+.pp-board {
+  flex: 1; position: relative; border-radius: 18px; padding: 0 16px 16px; display: flex; flex-direction: column;
+  background: linear-gradient(180deg, #0c2a55, #071a3a); border: 2px solid #2a6bb0;
+  box-shadow: inset 0 0 0 6px #06183a, inset 0 0 0 7px rgba(103, 202, 255, .25), 0 24px 40px -24px #000;
+}
+.pp-board-top { display: flex; align-items: center; gap: 10px; padding: 14px 18px 12px 18px; margin: 0 -16px 14px; border-bottom: 1px solid rgba(103, 202, 255, .2); background: rgba(6, 34, 76, .7); border-radius: 16px 16px 0 0; }
+.pp-board-top b { color: var(--b100); font: 700 1rem/1 var(--font-h); }
+.pp-board-top .grow { flex: 1; }
+.pp-board-top .lamp { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); margin-left: 4px; }
+.pp-count { display: inline-flex; align-items: baseline; gap: 8px; padding: 6px 14px; border-radius: 10px; background: #041330; border: 1px solid rgba(103, 202, 255, .3); }
+.pp-count b { font: 800 1.75rem/1 var(--font-h); color: #fff; font-variant-numeric: tabular-nums; }
+.pp-count span { color: var(--g300); font-size: .9375rem; }
+.pp-count.single { border-color: var(--warn); background: #2a1a02; }
+.pp-count.single b { color: var(--warn); }
+
+.pp-grid { flex: 1; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-content: center; gap: 14px 10px; position: relative; }
+.pp-grid::after { content: ""; position: absolute; left: -16px; right: -16px; height: 70px; top: -70px; pointer-events: none; opacity: 0; background: linear-gradient(180deg, transparent, rgba(103, 202, 255, .22) 70%, rgba(161, 222, 255, .85) 97%, transparent); }
+.pp-grid.sweep::after { animation: sweep .75s ease-in-out; }
+@keyframes sweep { 0% { top: -70px; opacity: 1; } 100% { top: 100%; opacity: 1; } }
+.pp-face { border-radius: 12px; background: #0c2f5f; border: 1px solid rgba(103, 202, 255, .3); overflow: hidden; transition: opacity .4s, transform .4s, filter .4s, border-color .3s, box-shadow .3s; }
+.pp-pic { aspect-ratio: 1; }
+.pp-pic svg { width: 100%; height: 100%; display: block; }
+.pp-face span { display: block; font: 600 .9375rem/1 var(--font-b); color: var(--b100); padding: 6px 4px 7px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: rgba(6, 34, 76, .95); }
+.pp-face.off { opacity: .34; filter: grayscale(.9) brightness(.8); transform: scale(.9); }
+.pp-face.one { border-color: var(--warn); box-shadow: 0 0 0 3px var(--warn), 0 0 30px -2px rgba(255, 185, 0, .8); transform: scale(1.06); position: relative; z-index: 1; }
+.pp-face.one span { background: var(--warn); color: #2a1600; }
+
+/* Het bericht: een uitgaand bericht op een terminal */
+.pp-side { display: flex; flex-direction: column; gap: 14px; }
+.pp-msg { border-radius: 16px; overflow: hidden; background: #e9eef5; color: #0f172b; box-shadow: 0 20px 40px -24px #000, 0 0 0 1px rgba(103, 202, 255, .35); }
+.pp-msg-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #0c2f5f; color: #fff; font: 600 .9375rem/1 var(--font-b); }
+.pp-msg-bar .grow { flex: 1; }
+.pp-stamp { padding: 5px 10px; border-radius: 6px; font: 700 .8125rem/1 var(--font-b); background: rgba(255, 255, 255, .12); color: var(--b100); }
+.pp-stamp.warn { background: var(--warn); color: #2a1600; }
+.pp-stamp.ok { background: var(--ok); color: #032e15; }
+.pp-msg-meta { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0; padding: 12px 18px 10px; border-bottom: 1px solid #cad5e2; font-size: .9375rem; }
+.pp-msg-meta dt { color: #62748e; }
+.pp-msg-meta dd { margin: 0; color: #0f172b; font-weight: 600; }
+.pp-msg-body { padding: 12px 18px 4px; font-size: 1.0625rem; line-height: 2.05; color: #1d293d; }
+.pp-field { display: inline-flex; align-items: baseline; gap: 6px; padding: 1px 10px 2px; border-radius: 8px; cursor: pointer; border: 2px solid #0a6dbe; background: #d3efff; color: #06224c; font: 700 1.0625rem/1.4 var(--font-b); vertical-align: baseline; transition: background .2s, transform .1s; }
+.pp-field .lbl { font: 600 .75rem/1 var(--font-b); color: #13559b; }
+.pp-field:hover:not(:disabled) { background: #a1deff; }
+.pp-field:active:not(:disabled) { transform: translateY(1px); }
+.pp-field:not(:disabled) { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 4px rgba(21, 170, 255, .25); } }
+.pp-field.done { border-color: #00a63e; background: #dcfce7; color: #032e15; cursor: default; animation: none; }
+.pp-field.done .lbl { color: #008236; }
+.pp-msg-foot { display: flex; align-items: center; gap: 8px; padding: 4px 18px 12px; color: #45556c; font-size: .9375rem; }
+
+/* De vraag en daarna de feedback */
+.pp-q { border-radius: 16px; border: 1px solid var(--edge); background: var(--panel); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.pp-q h3 { font-size: 1.25rem; }
+.pp-dare { display: flex; align-items: center; gap: 8px; color: var(--warn-soft); font-size: .9375rem; }
+.pp-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pp-choice { display: flex; align-items: center; gap: 12px; text-align: left; padding: 14px; border-radius: 14px; border: 1px solid rgba(103, 202, 255, .45); background: var(--card); cursor: pointer; transition: border-color .2s, background .2s, transform .1s, opacity .3s; }
+.pp-choice svg { color: var(--b300); }
+.pp-choice b { display: block; color: #fff; font: 700 1.0625rem/1.2 var(--font-h); }
+.pp-choice small { color: var(--g300); font-size: .875rem; }
+.pp-choice:hover:not(:disabled) { border-color: var(--b300); background: rgba(19, 85, 155, .75); }
+.pp-choice:disabled { cursor: default; opacity: .45; }
+.pp-choice.picked { opacity: 1; border-color: var(--b300); }
+.pp-fb { gap: 10px; }
+.pp-fb.ok { border-color: rgba(5, 223, 114, .55); background: linear-gradient(180deg, rgba(13, 84, 43, .6), rgba(3, 46, 21, .55)); }
+.pp-fb.bad { border-color: rgba(255, 100, 103, .55); background: linear-gradient(180deg, rgba(130, 24, 26, .55), rgba(70, 8, 9, .55)); }
+.pp-fb-head { display: flex; align-items: center; gap: 14px; }
+.pp-fb-head .grow { flex: 1; }
+.pp-fb-ic { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.pp-fb.ok .pp-fb-ic { background: rgba(5, 223, 114, .2); color: var(--ok); }
+.pp-fb.bad .pp-fb-ic { background: rgba(255, 100, 103, .2); color: var(--bad); }
+.pp-fb-head b { display: block; color: #fff; font: 800 1.375rem/1.2 var(--font-h); }
+.pp-fb-head span { color: var(--g200); }
+.pp-fb-face { width: 60px; height: 60px; border-radius: 12px; overflow: hidden; border: 3px solid var(--warn); flex: none; }
+.pp-fb-face svg { width: 100%; height: 100%; display: block; }
+.pp-fb-group { text-align: center; padding: 6px 12px; border-radius: 12px; background: rgba(255, 255, 255, .08); }
+.pp-fb-group b { font-size: 1.75rem; }
+.pp-fb-group span { font-size: .8125rem; }
+.pp-fb p { color: #fff; font-size: 1.0625rem; line-height: 1.5; }
+
+@media (max-width: 940px) { .pp { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .pp-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; } .pp-choices { grid-template-columns: 1fr; } .pp-board-top b { display: none; } }
+
+.pp-trail { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: -4px 4px 10px; color: var(--g300); font-size: .9375rem; min-height: 26px; }
+.pp-trail b { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; padding: 2px 8px; border-radius: 8px; background: rgba(103, 202, 255, .14); color: #fff; font: 700 .9375rem/1.3 var(--font-h); }
+.pp-trail b.one { background: var(--warn); color: #2a1600; }
+.pp-trail i { font-style: normal; color: var(--g300); font-size: .9375rem; }
+.pp-legend2 { display: flex; gap: 14px; margin-left: auto; font-size: .9375rem; color: #45556c; }
+.pp-legend2 span { display: inline-flex; align-items: center; gap: 5px; }
+.pp-legend2 i { width: 14px; height: 12px; border-radius: 4px; border: 2px solid #0a6dbe; background: #d3efff; }
+.pp-legend2 i.d { border-color: #00a63e; background: #dcfce7; }
+
+.pp-face.fixed { border-color: var(--ok); box-shadow: 0 0 0 2px var(--ok); }
+.pp-trail b.fixed { background: var(--ok); color: #032e15; }
+.pp-fix { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .14); }
+.pp-fix h4 { font: 700 1.0625rem/1.3 var(--font-h); color: #fff; margin: 0 0 2px; }
+.pp-fixopt { text-align: left; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(103, 202, 255, .5); background: rgba(6, 34, 76, .75); color: #fff; font: 600 1rem/1.35 var(--font-b); cursor: pointer; transition: border-color .2s, background .2s; }
+.pp-fixopt:hover:not(:disabled) { border-color: var(--b300); background: rgba(19, 85, 155, .8); }
+.pp-fixopt:disabled { cursor: default; opacity: .55; }
+.pp-fixopt.ok { opacity: 1; border-color: var(--ok); background: rgba(13, 84, 43, .7); }
+.pp-fixopt.bad { opacity: 1; border-color: var(--bad); background: rgba(130, 24, 26, .6); }
+.pp-fixwhy { display: flex; gap: 8px; align-items: flex-start; font-size: 1rem; color: #fff; }
+.pp-fixwhy.ok svg { color: var(--ok); } .pp-fixwhy.bad svg { color: var(--bad); }
+
+.pp-side.after .pp-msg-meta, .pp-side.after .pp-msg-foot { display: none; }
+.pp-side.after .pp-msg-body { padding-bottom: 12px; }
+.pp-fb p { font-size: 1rem; }
+.pp-fb-face { width: 50px; height: 50px; }
+.pp-fixopt { padding: 9px 14px; }
+.pp-board-top { padding: 10px 18px; margin-bottom: 10px; }
+.pp-trail { margin-bottom: 6px; }
+.pp-fix { gap: 6px; padding-top: 8px; }
+.pp-fb { gap: 8px; padding: 14px 16px; }
+
+.pp-field.fixable { animation: pulse 1.6s ease-in-out infinite; border-color: var(--warn); background: #fef3c6; color: #2a1600; cursor: pointer; }
+.pp-field.fixable .lbl { color: #7b3306; }
+.pp-field.wrongfix { border-color: var(--bad); background: #ffe2e2; color: #82181a; }
+.pp-field.fixedtok { border-color: #00a63e; background: #dcfce7; color: #032e15; }
+.pp-field s { color: #82181a; text-decoration-thickness: 2px; }
+.pp-fix h4 { display: flex; gap: 8px; align-items: center; }
+.pp-fixhint { color: var(--warn-soft); font-size: .9375rem; }
+.pp-face span { font-size: .875rem; padding: 6px 2px 7px; text-overflow: clip; }
+.pp-face.off { opacity: .42; }
+
+/* Ronde 6: geen weggever tijdens het spelen, leesbare afval-stand, inzet onder de keuzes */
+.pp { grid-template-columns: minmax(0, 1.42fr) minmax(420px, 1fr); }
+.pp-grid { gap: 12px 8px; }
+.pp-face { position: relative; }
+.pp-face span { font: 600 .9375rem/1 var(--font-b); padding: 7px 1px 8px; letter-spacing: -.01em; color: #fff; }
+.pp-face.off { opacity: .5; filter: grayscale(.7); transform: scale(.94); }
+.pp-face.off span { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: #ff8a8c; color: var(--g200); }
+.pp-pips { position: absolute; top: 5px; left: 5px; display: flex; gap: 4px; z-index: 2; }
+.pp-pips i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #041330; animation: pipin .3s ease-out; }
+@keyframes pipin { from { transform: scale(0); } }
+.pp-pips i.c0, .pp-field.done.c0 .lbl::before { background: #67caff; }
+.pp-pips i.c1, .pp-field.done.c1 .lbl::before { background: #ff8fd0; }
+.pp-pips i.c2, .pp-field.done.c2 .lbl::before { background: #b5f05a; }
+.pp-field.done .lbl::before { content: ""; display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 5px; border: 1.5px solid #041330; vertical-align: -1px; }
+.pp-trail span { color: var(--g200); }
+
+.pp-q { gap: 10px; }
+.pp-choice { padding: 16px 16px; min-height: 84px; }
+.pp-choice b { font-size: 1.25rem; }
+.pp-choice small { font-size: .9375rem; }
+
+.pp-stakes { border-radius: 16px; border: 1px dashed rgba(103, 202, 255, .35); background: rgba(4, 19, 48, .55); padding: 14px 16px; display: grid; gap: 10px; }
+.pp-stakes h4 { font: 700 1.0625rem/1.2 var(--font-h); color: #fff; margin: 0; }
+.pp-stake-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pp-stake-list li { display: flex; align-items: center; gap: 10px; color: var(--g200); font-size: .9375rem; }
+.pp-stake-list li svg { color: var(--ok); flex: none; }
+.pp-stake-list li.sh svg { color: var(--bad); } .pp-stake-list li.gm svg { color: var(--warn); }
+.pp-stake-list b { color: #fff; }
+.pp-rounds { display: flex; align-items: center; gap: 12px; color: var(--g300); font-size: .9375rem; }
+.pp-rounds ol { list-style: none; display: flex; gap: 6px; margin: 0; padding: 0; }
+.pp-rounds li { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font: 700 .9375rem/1 var(--font-h); color: var(--g300); border: 1px solid rgba(103, 202, 255, .3); }
+.pp-rounds li.now { border: 2px solid var(--b300); color: #fff; }
+.pp-rounds li.ok { background: var(--ok); color: #032e15; border-color: var(--ok); }
+.pp-rounds li.bad { background: var(--bad); color: #46080a; border-color: var(--bad); }
+.pp-side.after .pp-stake-list { display: none; }
+.pp-stake-list { grid-template-columns: 1fr; gap: 4px; }
+.pp-stakes { gap: 8px; padding: 12px 16px; }
+.pp-side .pp-msg-meta { padding: 10px 18px 8px; }
+.pp-msg-body { line-height: 1.95; }
+.pp-face span { font-size: .9375rem; }
+.pp-stakes-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.pp-board-top { min-height: 66px; }
+.pp-side { gap: 12px; }
+.pp-choice { min-height: 78px; }
+.pp-grid { gap: 8px 8px; padding: 0 6px; }
+
+/* Ronde 7: grote scanpillen onderaan elke tegel, smalle inzetregel, dominante oordeelknoppen, uitkomst in één zin */
+.pp-pips { top: auto; left: 6px; right: 6px; bottom: 36px; gap: 4px; }
+.pp-pips i { flex: 1; height: 14px; width: auto; border-radius: 999px; border: 2px solid rgba(103, 202, 255, .35); background: rgba(4, 19, 48, .7); animation: none; }
+.pp-pips i.on { border-color: #041330; animation: pipin .3s ease-out; }
+.pp-pips i.c0:not(.on), .pp-pips i.c1:not(.on), .pp-pips i.c2:not(.on) { background: rgba(4, 19, 48, .7); }
+.pp-face.one .pp-pips { bottom: 38px; }
+.pp-stakes { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; border-style: solid; }
+.pp-stake-line { display: flex; align-items: center; gap: 8px; color: var(--g200); font-size: .9375rem; margin: 0; }
+.pp-stake-line svg { color: var(--b300); flex: none; }
+.pp-rounds2 { list-style: none; display: flex; gap: 5px; margin: 0; padding: 0; flex: none; }
+.pp-rounds2 li { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; font: 700 .9375rem/1 var(--font-h); color: var(--g300); border: 1px solid rgba(103, 202, 255, .3); }
+.pp-rounds2 li.now { border: 2px solid var(--b300); color: #fff; }
+.pp-rounds2 li.ok { background: var(--ok); color: #032e15; border-color: var(--ok); }
+.pp-rounds2 li.bad { background: var(--bad); color: #46080a; border-color: var(--bad); }
+.pp-q:not(.pp-fb) { flex: 1; }
+.pp-q:not(.pp-fb) .pp-choices { flex: 1; }
+.pp-choice { flex-direction: column; justify-content: center; align-items: flex-start; gap: 10px; min-height: 130px; padding: 18px 20px; border-width: 2px; }
+.pp-choice b { font-size: 1.5rem; }
+.pp-choice small { font-size: 1rem; }
+.pp-q h3 { font-size: 1.375rem; }
+.pp-dare { font-size: 1rem; }
+.pp-outcome { margin: 0; padding: 6px 12px; border-radius: 10px; background: rgba(103, 202, 255, .14); color: #fff; font: 700 1.0625rem/1.35 var(--font-b); }
+.pp-outcome.one { background: var(--warn); color: #2a1600; }
+.pp-outcome.fixed { background: var(--ok); color: #032e15; }
+@media (max-width: 600px) { .pp-choice { min-height: 96px; } .pp-stakes { flex-wrap: wrap; } }
+@media (max-width: 940px) { .pp { grid-template-columns: minmax(0, 1fr); } }
+
+/* Ronde 8: scanbalkjes groter en op afstand leesbaar, compacte debrieflijst met alle zes berichten */
+.pp-pips { left: 4px; right: 4px; bottom: 33px; gap: 3px; }
+.pp-pips i { height: 18px; border-width: 2px; border-radius: 6px; }
+.pp-pips i.on { border-color: #fff; box-shadow: 0 0 8px -1px currentColor; }
+.pp-face.one .pp-pips { bottom: 35px; }
+.result .review-list { gap: 8px; }
+.result .rv { gap: 10px; padding: 8px 12px; align-items: center; }
+.result .rv .ic { width: 26px; height: 26px; }
+.result .rv b { display: inline; }
+.result .rv .a { display: inline; margin-left: 10px; }
+.result .rv .why { margin-top: 2px; }
+.result .rv { padding: 6px 12px; line-height: 1.3; }
+.result .takeaway { padding: 10px 14px; }
+
+/* In het missiepaneel van Ruimtestation Orion (ongeveer 1130 pixels breed): het crewbord krijgt de breedte. */
+@media (min-width: 941px) and (max-width: 1260px) {
+  .pp { grid-template-columns: minmax(0, 1fr) 340px; gap: 14px; }
+  /* Ronde 31: elk afdelingslabel past heel op zijn tegel, ook Communicatie. Minder rand rond het raster, smallere tussenruimte. */
+  .pp-board { padding: 0 10px 12px; }
+  .pp-board-top { margin: 0 -10px 10px; }
+  .pp-grid { gap: 10px 5px; padding: 0; }
+  .pp-face span { padding-left: 0; padding-right: 0; letter-spacing: -.015em; overflow: visible; text-overflow: clip; }
+  /* De twee oordeelknoppen onder elkaar, over de volle breedte: elk woord past heel, zonder afbreking. */
+  .pp-choices { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .pp-choice { flex-direction: row; align-items: center; justify-content: flex-start; min-height: 0; padding: 14px 16px; gap: 14px; }
+  .pp-choice > span { min-width: 0; }
+  .pp-choice b { font-size: 1.25rem; hyphens: none; overflow-wrap: normal; word-break: keep-all; }
+  .pp-choice small { display: block; margin-top: 4px; font-size: .9375rem; hyphens: none; }
+  .pp-q:not(.pp-fb) { gap: 8px; padding: 14px 16px; }
+  .pp-q h3 { font-size: 1.125rem; letter-spacing: -.005em; }
+  .pp-dare { font-size: .9375rem; }
+  .pp-choice { padding: 12px 16px; }
+  /* De stempel breekt niet over twee regels: past hij niet naast de titel, dan staat hij er heel onder. */
+  .pp-msg-bar { flex-wrap: wrap; row-gap: 8px; }
+  .pp-msg-bar > span:not(.grow):not(.pp-stamp) { white-space: nowrap; }
+  .pp-stamp { white-space: nowrap; font-size: .9375rem; }
+  .pp-legend2 { display: none !important; }
+  .pp-stake-line { display: none !important; }
+  .pp-stakes { justify-content: center; }
+}
+
+/* Nergens woordafbreking in dit spel: een woord breekt nooit midden in. */
+.pp, .pp * { hyphens: none; -webkit-hyphens: none; }
+
+/* Ronde 32: grote live teller boven het bord, wie niet meer past wordt gedimd, grotere labels en balkjes, voortgang als strook */
+.pp-count { margin: 0; display: inline-flex; align-items: baseline; gap: 8px; padding: 6px 16px 8px; border-radius: 12px; background: #041330; border: 2px solid rgba(103, 202, 255, .45); color: #fff; font: 700 1.25rem/1 var(--font-h); }
+.pp-count b { font: 800 2.5rem/1 var(--font-h); color: #fff; font-variant-numeric: tabular-nums; min-width: 1.2ch; text-align: center; }
+.pp-count span { color: #fff; font: 700 1.25rem/1 var(--font-h); }
+.pp-count.single { border-color: var(--warn); background: #2a1a02; }
+.pp-count.single b, .pp-count.single span { color: var(--warn); }
+.pp-count.bump { animation: ppbump .45s ease-out; }
+@keyframes ppbump { 40% { transform: scale(1.08); } }
+.pp-board-top { min-height: 72px; padding-top: 8px; padding-bottom: 8px; }
+.pp-face.off { opacity: .38; filter: grayscale(1) brightness(.8); transform: scale(.92); }
+.pp-face span { font: 700 1rem/1 var(--font-b); padding: 7px 0 8px; }
+.pp-pips { bottom: 35px; gap: 3px; }
+.pp-pips i { height: 24px; border-radius: 6px; border-width: 2px; }
+.pp-face.one .pp-pips { bottom: 37px; }
+.pp-field.done .lbl::before { width: 14px; height: 14px; }
+.pp-field .lbl { font-size: .9375rem; }
+
+.pp-prog { flex: 1; display: flex; align-items: center; gap: 14px; min-width: 0; }
+.pp-prog-lbl { flex: none; color: #fff; font: 700 1rem/1.2 var(--font-h); white-space: nowrap; }
+.pp-prog-bar { list-style: none; margin: 0; padding: 0; flex: 1; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.pp-prog-bar li { height: 8px; border-radius: 99px; background: rgba(103, 202, 255, .18); }
+.pp-prog-bar li.now { background: var(--b300); }
+.pp-prog-bar li.ok { background: var(--ok); }
+.pp-prog-bar li.bad { background: var(--bad); }
+.pp-stakes { border-style: solid; border-color: rgba(103, 202, 255, .2); background: rgba(4, 19, 48, .4); }
+@media (prefers-reduced-motion: reduce) { .pp-count.bump { animation: none; } .pp-face { transition: none; } }
+
+@media (min-width: 941px) and (max-width: 1260px) {
+  .pp { grid-template-columns: minmax(0, 1fr) 330px; }
+  .pp-board { padding: 0 5px 10px; }
+  .pp-board-top { margin: 0 -5px 8px; }
+  .pp-grid { gap: 10px 3px; }
+  .pp-face span { font-size: 1rem; letter-spacing: -.03em; }
+  .pp-stakes { justify-content: stretch; }
+  /* Bij een reparatieronde is de feedback lang: dan wijkt de voortgangsstrook, de kop toont het berichtnummer al */
+  .pp-side.after:has(.pp-fix) .pp-stakes { display: none; }
+  .pp-fb { padding: 12px 14px; gap: 6px; }
+  .pp-fb-face { width: 46px; height: 46px; }
+}
+
+/* Ronde 33: gedimde tegels blijven zichtbaar (portret op de helft), labels leesbaar; het bericht krijgt meer ruimte en grotere markeringen. */
+.pp-face.off { opacity: 1; filter: none; transform: scale(.94); background: #0a254b; border-color: rgba(103, 202, 255, .16); }
+.pp-face.off .pp-pic { opacity: .5; filter: grayscale(1); }
+.pp-face.off .pp-pips { opacity: .55; }
+.pp-face.off span { opacity: 1; color: #cad5e2; text-decoration: none; background: rgba(4, 19, 48, .95); }
+.pp-field { display: inline-block; max-width: 100%; text-align: left; font-size: 1.125rem; line-height: 1.35; padding: 2px 10px 3px; }
+.pp-field .lbl { margin-right: 6px; }
+.pp-field .lbl { font: 700 1rem/1 var(--font-b); color: #0c4a8a; }
+.pp-msg-body { padding: 12px 18px 8px; line-height: 1.95; font-size: 1.0625rem; }
+.pp-msg-meta { font-size: .9375rem; }
+@media (min-width: 941px) and (max-width: 1260px) {
+  /* De voortgangsstrook herhaalt "Bericht N van 6" uit de kop: weg, zodat het bericht de hoogte krijgt. */
+  .pp-stakes { display: none !important; }
+  .pp { grid-template-columns: minmax(0, 1fr) 340px; gap: 12px; }
+  .pp-msg-meta { grid-template-columns: auto 1fr; padding: 10px 16px 8px; }
+  .pp-msg-body { padding: 12px 16px 8px; }
+  .pp-msg-foot { padding: 4px 16px 12px; font-size: .9375rem; }
+}
+
+/* Ronde 7: legenda bij de vakjes onder de portretten, in dezelfde kleuren als de gegevens in het bericht. */
+.pp-key { display: inline-flex; gap: 12px; margin-left: 18px; color: var(--g200); font-size: .9375rem; }
+.pp-key span { display: inline-flex; align-items: center; gap: 6px; }
+.pp-key i { width: 18px; height: 10px; border-radius: 999px; }
+.pp-key i.c0 { background: #67caff; } .pp-key i.c1 { background: #ff8fd0; } .pp-key i.c2 { background: #b5f05a; }
