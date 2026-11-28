@@ -488,3 +488,6 @@ html.kbd .hs:focus-visible { outline: 3px solid #0a6dbe; outline-offset: 2px; }
 .hs:not(.phrase)::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: -5px; border-bottom: 2px dotted rgba(10, 109, 190, .6); pointer-events: none; }
 .hs:not(.phrase).found::after, .hs:not(.phrase).judged::after, .hs:not(.phrase).lensed::after { display: none; }
 .pk-paper.done .hs::after { display: none; }
+
+/* Ronde 7: het onderwerp in het postvak mag over twee regels, zodat je het kunt lezen voordat je kiest. */
+.pk-it .t .sub { white-space: normal; text-overflow: clip; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
