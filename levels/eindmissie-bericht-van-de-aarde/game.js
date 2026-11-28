@@ -70,36 +70,37 @@
 
   /* Fase 3: de stationsscan. Zeven modules op de plattegrond. flag = doorwerking uit eerdere levels; zonder flag is de module leeg.
      Elke regel van een vondst gaat over Lyra ("l") of over iemand anders ("a"). want = de juiste goot: pakket, meld of weg.
-     x en y = plek van de module op de plattegrond (360 bij 470), side = aan welke kant van de gang. */
+     x en y = plek van de module op de plattegrond (400 bij 410), side = aan welke kant van de gang.
+     De modules zijn zo breed dat elke naam heel past, zonder afbreken midden in een woord. */
   var MODS = [
-    { id: "aanmeld", name: "Aanmeld\u00adsysteem", always: true, x: 6, y: 52, side: "l", doc: "Aanmelding van Lyra Jansen", want: "pakket",
+    { id: "aanmeld", name: "Aanmeldsysteem", always: true, x: 4, y: 48, side: "l", doc: "Aanmelding van Lyra Jansen", want: "pakket",
       lines: [["Lyra Jansen, van de aarde", "l"], ["Aangemeld als kolonist voor Nova Terra, niet geselecteerd", "l"], ["Toestemming om haar dossier een jaar te bewaren", "l"]],
       why: "Haar aanmelding hoort bij de inzage. Het dossier staat er terecht, want ze gaf toestemming om het een jaar te bewaren.",
       tip: "Staat hier iets wat er niet had mogen zijn? Kijk naar de toestemming." },
-    { id: "selectie", name: "Selectie\u00adkamer", always: true, x: 204, y: 102, side: "r", doc: "Selectielijst van Nova Terra", want: "pakket",
+    { id: "selectie", name: "Selectiekamer", always: true, x: 220, y: 94, side: "r", doc: "Selectielijst van Nova Terra", want: "pakket",
       lines: [["Lyra Jansen: beoordeling 6, niet geselecteerd", "l"], ["Kai Morrow: beoordeling 8, geselecteerd", "a"], ["Ilse Varga: beoordeling 7, reservelijst", "a"], ["Tomas Quill: beoordeling 5, niet geselecteerd", "a"]],
       why: "Haar eigen beoordeling hoort bij de inzage. De beoordelingen van andere kandidaten zijn gegevens van anderen. Die maak je eerst zwart.",
       tip: "Lees elke regel. Over wie gaat hij?" },
-    { id: "databank", name: "Gedeelde databank", flag: "kopie", x: 6, y: 152, side: "l", doc: "Extra kopie van haar dossier", want: "meld",
+    { id: "databank", name: "Gedeelde databank", flag: "kopie", x: 4, y: 140, side: "l", doc: "Extra kopie van haar dossier", want: "meld",
       lines: [["Volledige kopie van het dossier van Lyra Jansen", "l"], ["Open voor iedereen aan boord", "l"]],
       why: "Deze kopie had er niet mogen zijn. Ze hoort toch in het pakket, en je meldt haar.",
       tip: "Mocht deze kopie hier staan? Wat doe je met iets wat er niet had mogen zijn?",
       empty: "Niets over Lyra. Je bewaarde in level 2 geen aanmeldingen in de gedeelde databank." },
-    { id: "verzonden", name: "Berichten\u00adarchief", flag: "vega", x: 204, y: 202, side: "r", doc: "Verzonden bericht aan Kapitein Vega", want: "meld",
+    { id: "verzonden", name: "Berichtenarchief", flag: "vega", x: 220, y: 186, side: "r", doc: "Verzonden bericht aan Kapitein Vega", want: "meld",
       lines: [["Aan Kapitein Vega van Nova Terra", "l"], ["Bijlage: dossier van Lyra Jansen", "l"], ["Met haar leeftijd en planeet van herkomst erbij", "l"]],
       why: "Nova Terra had dit nooit mogen krijgen. Het hoort in het pakket, want ze mag weten met wie we haar gegevens deelden. En je meldt het.",
       tip: "Lyra mag weten met wie haar gegevens zijn gedeeld. Mocht dit wel gedeeld worden?",
       empty: "Niets over Lyra. Je stuurde in level 2 alleen de dossiers van geselecteerde kandidaten." },
-    { id: "chat", name: "Crewchat", always: true, x: 6, y: 252, side: "l", doc: "Bericht in de crewchat", want: "pakket",
+    { id: "chat", name: "Crewchat", always: true, x: 4, y: 232, side: "l", doc: "Bericht in de crewchat", want: "pakket",
       lines: [["Bram over haar aanmelding: “Die van Aarde? Te braaf voor Nova Terra.”", "l"]],
       why: "Ook een opmerking in een chat is een persoonsgegeven over haar. Die hoort bij de inzage, ook al is dat ongemakkelijk.",
       tip: "Is een opmerking over iemand in een chat ook een gegeven over die persoon?" },
-    { id: "holonet", name: "Holonet-opslag", flag: "holonet", x: 204, y: 302, side: "r", doc: "Opnames van haar holonet-profiel", want: "meld",
+    { id: "holonet", name: "Holonet-opslag", flag: "holonet", x: 220, y: 278, side: "r", doc: "Opnames van haar holonet-profiel", want: "meld",
       lines: [["Beelden van het privéprofiel van Lyra Jansen", "l"], ["Opgeslagen tijdens de selectie", "l"]],
       why: "Privéinformatie die niets met de selectie te maken had. Ze hoort in het pakket, en je meldt het.",
       tip: "Had deze informatie iets met de selectie te maken?",
       empty: "Niets over Lyra. Je sloeg in level 2 geen holonet-opnames op." },
-    { id: "register", name: "Passagiers\u00adregister", always: true, x: 6, y: 352, side: "l", doc: "Aanmelding van Lyra Janssens", want: "weg",
+    { id: "register", name: "Passagiersregister", always: true, x: 4, y: 324, side: "l", doc: "Aanmelding van Lyra Janssens", want: "weg",
       lines: [["Lyra Janssens, van Mars", "a"], ["Aangemeld voor de mijnbouwploeg op Nova Terra", "a"]],
       why: "De scanner zocht op haar naam, maar dit is iemand anders, met een andere achternaam en een andere planeet. Gegevens van een ander horen niet in haar pakket.",
       tip: "Lees de naam en de planeet goed. Is dit dezelfde persoon?" }
@@ -110,7 +111,7 @@
     { id: "weg", label: "Niet meenemen", short: "Weggelaten", ic: "x" }
   ];
   var F3_SECONDS = 300;
-  var MAP_W = 360, MAP_H = 470, MOD_W = 150, MOD_H = 84, SPINE_X = 180;
+  var MAP_W = 400, MAP_H = 410, MOD_W = 176, MOD_H = 72, SPINE_X = 200;
 
   var BLOCKS = [
     { t: "Welke gegevens we van haar hebben", in: true },
@@ -317,11 +318,18 @@
   }
 
   /* ---------- Keuzesituaties ---------- */
+  /* Twee zinnen van dezelfde spreker in één ballon. De laatste .speech-text is de uitleg, die leest orion-bridge.js als 'why'. */
+  function speech2(who, first, second) {
+    var w = WHO[who];
+    return '<div class="speech"><span class="vcsw-avatar ' + w.cls + '" aria-hidden="true">' + w.av + '</span><div><div class="speech-who">' + w.name + ' <span class="speech-role">' + w.role + '</span></div><p class="speech-text speech-reactie">' + esc(first) + '</p><p class="speech-text">' + esc(second) + "</p></div></div>";
+  }
+  /* Na het antwoord klappen de niet gekozen antwoorden in, zodat het scherm in het paneel past. Een knop klapt ze weer uit. */
+  var showOthers = {};
   function renderChoice(s, over, nextScreen) {
-    var pick = S.picks[s.id];
+    var pick = S.picks[s.id], open = !!showOthers[s.id];
     var html = head(over, s.title);
     if (s.intro) html += '<p class="muted">' + esc(s.intro) + "</p>";
-    html += speech(s.who, s.say) + '<div class="options" role="group" aria-label="Kies je antwoord">';
+    html += speech(s.who, s.say) + '<div class="options' + (pick && !open ? " is-ingeklapt" : "") + '" role="group" aria-label="Kies je antwoord" id="opts-' + s.id + '">';
     ordered(s.title, s.opts).forEach(function (o, n) {
       var cls = "option" + (pick ? (pick === o.k ? " picked" : " dim") : "");
       html += '<button class="' + cls + '" data-k="' + o.k + '"' + (pick ? " disabled" : "") + '><span class="key" aria-hidden="true">' + "ABC"[n] + '</span><span><span class="vcsw-sr-only">Optie ' + "ABC"[n] + ". </span>" + esc(o.t) +
@@ -330,12 +338,16 @@
     html += "</div>";
     if (pick) {
       var o = s.opts.filter(function (x) { return x.k === pick; })[0];
-      html += '<div class="feedback">' + speech(s.who === "aria" ? "aria" : s.who, o.reactie) + speech("aria", (o.r === "goed" ? "Goed. " : o.r === "half" ? "Half goed. " : "Fout. ") + o.uitleg);
+      var oordeel = (o.r === "goed" ? "Goed. " : o.r === "half" ? "Half goed. " : "Fout. ") + o.uitleg;
+      html += '<div class="feedback">' + (s.who === "aria" ? speech2("aria", o.reactie, oordeel) : speech(s.who, o.reactie) + speech("aria", oordeel));
       if (s.crystal && s.crystal.on === pick) html += '<div class="reward">' + icon("gem") + "<div><strong>Datakristal " + esc(s.crystal.name) + "</strong><br><span>" + esc(s.crystal.desc) + "</span></div></div>";
       else if (s.crystal) html += '<p class="muted">Geen datakristal ' + esc(s.crystal.name) + ". Daardoor heb je bij de aanval van de Zwarte Nevel een joker minder.</p>";
-      html += '</div><div class="actions"><button class="vcsw-button lg" id="next">Verder' + icon("next") + "</button></div>";
+      html += '</div><div class="actions"><button type="button" class="vcsw-button outline lg andere-knop" id="andere" aria-expanded="' + open + '" aria-controls="opts-' + s.id + '">' +
+        (open ? "Verberg de andere antwoorden" : "Toon de andere antwoorden") + '</button><button class="vcsw-button lg" id="next">Verder' + icon("next") + "</button></div>";
     }
     show(html);
+    var tg = document.getElementById("andere");
+    if (tg) tg.onclick = function () { showOthers[s.id] = !showOthers[s.id]; render(); var b = document.getElementById("andere"); if (b) b.focus({ preventScroll: true }); };
     if (!pick) stage.querySelectorAll(".option").forEach(function (b) {
       b.onclick = function () {
         var k = b.getAttribute("data-k"), o = s.opts.filter(function (x) { return x.k === k; })[0];
@@ -364,6 +376,8 @@
     var y = !id || id === "dock" ? 22 : modById(id).y + MOD_H / 2;
     return "left:" + (SPINE_X / MAP_W * 100).toFixed(2) + "%;top:" + (y / MAP_H * 100).toFixed(2) + "%";
   }
+  /* Het begin van de zoektocht: nog niets gescand en de scanner staat stil. Dan wijst de eerste module de weg. */
+  function isStart() { var F = S.f3; return !F.done && !F.phase && !MODS.some(function (m) { return F.scanned[m.id]; }); }
   function allScanned() { return MODS.every(function (m) { return S.f3.scanned[m.id]; }); }
   function allDecided() { return foundMods().every(function (m) { return S.f3.dec[m.id]; }); }
 
@@ -397,7 +411,7 @@
     var F = S.f3, m = modById(id);
     if (!m || F.done || F.phase === "scan" || F.phase === "kies" || F.scanned[id]) return;
     var from = F.pos, still = stillMotion(), fly = still || from === id ? 0 : 650, dur = still ? 250 : 1300;
-    F.cur = id; F.phase = "scan"; F.red = {}; F.pos = id; F.fly = fly; F.dur = dur;
+    F.cur = id; F.phase = "scan"; F.red = {}; F.s1 = false; F.pos = id; F.fly = fly; F.dur = dur;
     renderF3(from);
     stopScan();
     scanT = setTimeout(function () {
@@ -411,7 +425,7 @@
   }
   function decide(ch) {
     var F = S.f3, m = modById(F.cur);
-    if (!m || F.phase !== "kies") return;
+    if (!m || F.phase !== "kies" || !F.s1) return;
     var red = {};
     Object.keys(F.red).forEach(function (k) { if (F.red[k]) red[k] = true; });
     var g = grade(m, ch, red);
@@ -439,6 +453,7 @@
     if (F.cur === m.id && F.phase === "kies") return ["is-kies", "file", "In de scanner"];
     if (d) return ["is-" + d.r, d.r === "goed" ? "check" : d.r === "half" ? "warn" : "x", chuteById(d.ch).short];
     if (F.scanned[m.id]) return ["is-leeg", "x", "Niets over Lyra"];
+    if (isStart() && m === MODS[0]) return ["is-nog is-start", "next", "Begin hier"];
     return ["is-nog", "search", "Niet gescand"];
   }
   function mapHTML(from) {
@@ -462,15 +477,25 @@
     s += '<div class="zk-drone' + (cur ? " is-scan kant-" + cur.side : "") + '" id="drone" style="' + dronePos(from || F.pos) + '" aria-hidden="true"><span class="zk-straal"></span><span class="zk-drone-lijf"></span></div>';
     return s + "</div>";
   }
+  /* De vondst in twee stappen. Stap 1: regels zwartmaken, of bevestigen dat er niets zwart hoeft. Stap 2: de bestemming kiezen.
+     Stap 2 gaat pas open als stap 1 is bevestigd, zodat de volgorde zichtbaar is. Dat er niets zwart hoeft, verraadt het spel niet: de speler bevestigt het zelf. */
   function docHTML(m) {
-    var F = S.f3, red = F.red;
-    var h = '<div class="zk-doc"><p class="zk-doc-bron">' + icon("search") + "Gevonden in " + esc(plain(m.name)) + "</p><h3>" + esc(m.doc) + "</h3>" +
-      '<p class="zk-doc-hulp">Tik op een regel om hem zwart te maken.</p><div class="zk-regels" role="group" aria-label="Regels van de vondst">';
+    var F = S.f3, red = F.red, klaar = !!F.s1, nRed = Object.keys(red).filter(function (k) { return red[k]; }).length;
+    var hint = !F.hinted[m.id] && S.hints > 0 ? '<button type="button" class="vcsw-button outline zk-hint" id="hint">' + icon("bulb") + "Aanwijzing</button>" : "";
+    var h = '<div class="zk-doc"><div class="zk-doc-kop"><p class="zk-doc-bron">' + icon("search") + "Gevonden in " + esc(plain(m.name)) + "</p><h3>" + esc(m.doc) + "</h3></div>" +
+      (F.hinted[m.id] ? '<p class="zk-tip">' + icon("bulb") + "<span>" + esc(m.tip) + "</span></p>" : "") +
+      '<div class="zk-stap' + (klaar ? " is-klaar" : " is-nu") + '" role="group" aria-labelledby="stap1"><p class="zk-stap-kop" id="stap1"><span class="zk-stap-nr">Stap 1</span><span class="zk-stap-titel">Maak gegevens van anderen zwart</span>' +
+      (klaar ? '<span class="zk-stap-stand">' + icon("check") + (nRed ? (nRed === 1 ? "Eén regel zwart" : nRed + " regels zwart") : "Niets zwart") + "</span>" : "") + "</p>" +
+      (klaar ? "" : '<p class="zk-doc-hulp">Tik op een regel om hem zwart te maken.</p>') +
+      '<div class="zk-regels" role="group" aria-label="Regels van de vondst">';
     m.lines.forEach(function (l, i) {
       var on = !!red[i];
-      h += '<button type="button" class="zk-regel' + (on ? " is-zwart" : "") + '" data-l="' + i + '" aria-pressed="' + on + '"><span class="zk-regel-tekst">' + esc(l[0]) + "</span>" +
-        (on ? '<span class="zk-regel-balk">Zwartgemaakt</span>' : "") + '<span class="vcsw-sr-only">' + (on ? ". Zwartgemaakt, tik om terug te zetten." : ". Tik om zwart te maken.") + "</span></button>";
+      h += '<button type="button" class="zk-regel' + (on ? " is-zwart" : "") + '" data-l="' + i + '" aria-pressed="' + on + '"' + (klaar ? " disabled" : "") + '><span class="zk-regel-tekst">' + esc(l[0]) + "</span>" +
+        (on ? '<span class="zk-regel-balk">Zwartgemaakt</span>' : "") + '<span class="vcsw-sr-only">' + (on ? ". Zwartgemaakt" + (klaar ? "." : ", tik om terug te zetten.") : klaar ? "." : ". Tik om zwart te maken.") + "</span></button>";
     });
+    h += "</div>" + (klaar
+      ? '<div class="zk-stap-actie">' + hint + '<button type="button" class="vcsw-button outline zk-terug" id="stap1terug">' + icon("back") + "Zwartmaken aanpassen</button></div>"
+      : '<div class="zk-stap-actie">' + hint + '<button type="button" class="vcsw-button zk-verder1" id="stap1klaar">' + (nRed ? "Klaar met zwartmaken" : "Niets zwart te maken") + icon("next") + "</button></div>");
     return h + "</div></div>";
   }
   /* Na het oordeel: alleen de regels die anders hadden gemoeten. */
@@ -488,11 +513,10 @@
     if (F.phase === "scan") {
       h = '<div class="zk-scan"><p class="zk-scan-kop">' + icon("search") + "Scanner bij " + esc(plain(m.name)) + '</p><div class="zk-scan-balk" style="--scan:' + F.dur + "ms;--fly:" + F.fly + 'ms"><span></span></div><p class="zk-scan-tekst">De scanner zoekt op de naam Lyra Jansen.</p></div>';
     } else if (F.phase === "kies") {
-      h = docHTML(m) + '<div class="zk-vraagrij"><p class="zk-vraag" id="gootVraag">Waar gaat deze vondst heen?</p>' +
-        (!F.hinted[m.id] && S.hints > 0 ? '<button type="button" class="vcsw-button outline zk-hint" id="hint">' + icon("bulb") + "Aanwijzing</button>" : "") + "</div>" +
-        (F.hinted[m.id] ? '<p class="zk-tip">' + icon("bulb") + "<span>" + esc(m.tip) + "</span></p>" : "") +
-        '<div class="zk-goten" role="group" aria-labelledby="gootVraag">' +
-        CHUTES.map(function (c) { return '<button type="button" class="zk-goot goot-' + c.id + '" data-ch="' + c.id + '">' + icon(c.ic) + "<span>" + c.label + "</span></button>"; }).join("") + "</div>";
+      var open2 = !!F.s1;
+      h = docHTML(m) + '<div class="zk-stap zk-stap2' + (open2 ? " is-nu" : " is-wacht") + '" role="group" aria-labelledby="gootVraag"><p class="zk-stap-kop" id="gootVraag"><span class="zk-stap-nr">Stap 2</span><span class="zk-stap-titel">Waar gaat deze vondst heen?</span>' +
+        '</p><div class="zk-goten">' +
+        CHUTES.map(function (c) { return '<button type="button" class="zk-goot goot-' + c.id + '" data-ch="' + c.id + '"' + (open2 ? "" : " disabled") + ">" + icon(c.ic) + "<span>" + c.label + "</span></button>"; }).join("") + "</div></div>";
     } else if (F.phase === "oordeel") {
       var d = F.dec[m.id], c = chuteById(d.ch);
       nRed = Object.keys(d.red).length;
@@ -504,11 +528,12 @@
       h = '<div class="zk-leeg"><p class="zk-leeg-kop">' + icon("check") + "Niets over Lyra in " + esc(plain(m.name)) + "</p><p>" + esc(m.empty) + "</p></div>" +
         (allScanned() ? '<div class="actions"><button class="vcsw-button lg" id="verder">' + icon("check") + "Pakket afronden</button></div>" : '<p class="zk-hulp">Kies de volgende module op de plattegrond.</p>');
     } else {
-      h = speech("aria", "Lyra wil weten welke gegevens we van haar hebben. Stuur de scanner langs de modules. Beslis bij elke vondst wat ermee moet. Wat er niet had mogen zijn, neem je mee en meld je. Dat kost schild, maar verzwijgen kost meer.") +
+      h = (isStart() ? '<p class="zk-begin">' + icon("search") + "<span><strong>Kies een module om te scannen.</strong> Begin bij " + esc(MODS[0].name) + ", links bovenaan op de plattegrond.</span></p>" : "") +
+        speech("aria", "Lyra wil weten welke gegevens we van haar hebben. Stuur de scanner langs de modules. Beslis bij elke vondst wat ermee moet. Wat er niet had mogen zijn, neem je mee en meld je. Dat kost schild, maar verzwijgen kost meer.") +
         '<ul class="zk-legenda">' + CHUTES.map(function (c) {
           return "<li>" + icon(c.ic) + "<span><strong>" + c.label + "</strong> " + (c.id === "pakket" ? "Het gaat over haar en staat er terecht." : c.id === "meld" ? "Het gaat over haar, maar had er niet mogen zijn." : "Het gaat niet over haar.") + "</span></li>";
         }).join("") + "<li>" + icon("lock") + "<span><strong>Zwartmaken</strong> Gegevens van anderen op een vondst over haar.</span></li></ul>" +
-        '<p class="zk-hulp">' + icon("search") + "Kies een module op de plattegrond om te beginnen.</p>";
+        (isStart() ? "" : '<p class="zk-hulp">' + icon("search") + "Kies de volgende module op de plattegrond.</p>");
     }
     return h;
   }
@@ -545,6 +570,10 @@
       };
     });
     stage.querySelectorAll("[data-ch]").forEach(function (b) { b.onclick = function () { decide(b.getAttribute("data-ch")); }; });
+    var s1 = document.getElementById("stap1klaar");
+    if (s1) s1.onclick = function () { F.s1 = true; renderF3(); var g = stage.querySelector(".zk-goot:not([disabled])"); if (g) g.focus({ preventScroll: true }); };
+    var s1t = document.getElementById("stap1terug");
+    if (s1t) s1t.onclick = function () { F.s1 = false; renderF3(); var r = stage.querySelector(".zk-regel"); if (r) r.focus({ preventScroll: true }); };
     var h = document.getElementById("hint");
     if (h) h.onclick = function () { if (S.hints > 0 && F.cur) { F.hinted[F.cur] = true; S.hints--; renderF3(); var t = stage.querySelector(".zk-tip"); if (t) t.setAttribute("tabindex", "-1"), t.focus({ preventScroll: true }); } };
     var v = document.getElementById("verder");
@@ -1007,7 +1036,7 @@
     document.getElementById("again").onclick = restart;
   }
 
-  function restart() { stopTimer(); stopBoss(); stopScan(); var fl = S.flags; S = fresh(fl); render(); window.scrollTo(0, 0); }
+  function restart() { stopTimer(); stopBoss(); stopScan(); showOthers = {}; var fl = S.flags; S = fresh(fl); render(); window.scrollTo(0, 0); }
 
   function render() {
     var s = S.screen;

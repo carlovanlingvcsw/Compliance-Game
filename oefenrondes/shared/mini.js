@@ -305,7 +305,7 @@
       const stars = o.stars != null ? o.stars : pct >= 95 ? 3 : pct >= 85 ? 2 : pct >= 70 ? 1 : 0;
       G.head(o.title || "Debriefing", `<span class="chip ${pass ? "ok" : "warn"}">${icon(pass ? "check" : "refresh", "sm")}${pass ? "Missie geslaagd" : "Nog niet geslaagd"}</span>`);
       const C = 2 * Math.PI * 80, wrong = G.log.filter((x) => x.result !== "goed");
-      const all = o.review || G.log, rows = (x) => `<div class="rv ${x.result}"><span class="ic">${icon(x.result === "goed" ? "check" : x.result === "half" ? "half" : "x", "sm")}</span><div><b>${esc(x.q)}</b>${x.a ? `<div class="a">Jouw keuze: ${esc(x.a)}</div>` : ""}${x.why ? `<div class="why">${esc(x.why)}</div>` : ""}</div></div>`;
+      const all = o.review || G.log, rows = (x, i) => `<details class="rv ${x.result}"${i === 0 && x.result !== "goed" ? " open" : ""}><summary><span class="ic">${icon(x.result === "goed" ? "check" : x.result === "half" ? "half" : "x", "sm")}</span><b>${esc(x.q)}</b></summary><div class="rv-body">${x.a ? `<div class="a">Jouw keuze: ${esc(x.a)}</div>` : ""}${x.why ? `<div class="why">${esc(x.why)}</div>` : ""}</div></details>`;
       const bad = all.filter((x) => x.result !== "goed"), good = all.filter((x) => x.result === "goed");
       const half = bad.filter((x) => x.result === "half").length, fout = bad.length - half;
       const kz = (n) => n === 1 ? "de goede keuze" : `de ${n} goede keuzes`, openGood = true;
@@ -332,7 +332,7 @@
       G.stage.appendChild(n);
       const rl = $("[data-rl]", n), more = $("[data-more]", n);
       const cue = () => { const over = rl.scrollHeight - rl.clientHeight > 4; rl.classList.toggle("fade", over && rl.scrollTop + rl.clientHeight < rl.scrollHeight - 4); more.hidden = !over || rl.scrollTop > 8; };
-      rl.addEventListener("scroll", cue); window.addEventListener("resize", cue);
+      rl.addEventListener("scroll", cue); rl.addEventListener("toggle", () => setTimeout(cue, 30), true); window.addEventListener("resize", cue);
       setTimeout(() => { const g = $("[data-rvg]", n), t = $("[data-rvt]", n); if (g && t && rl.scrollHeight - rl.clientHeight > 4) { g.hidden = true; t.setAttribute("aria-expanded", "false"); t.innerHTML = tlabel(false); } cue(); }, 40);
       const rvt = $("[data-rvt]", n); if (rvt) rvt.addEventListener("click", () => { const g = $("[data-rvg]", n), open = g.hidden; g.hidden = !open; rvt.setAttribute("aria-expanded", open); rvt.innerHTML = tlabel(open); setTimeout(cue, 30); });
       requestAnimationFrame(() => requestAnimationFrame(() => { $("[data-arc]", n).style.strokeDashoffset = C * (1 - Math.min(1, pct / 100)); }));

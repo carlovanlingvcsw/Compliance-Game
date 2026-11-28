@@ -23,7 +23,9 @@
     lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
     target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
-    dot: '<circle cx="12" cy="12" r="3"/>'
+    dot: '<circle cx="12" cy="12" r="3"/>',
+    grip: '<circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>'
   };
   function icon(name, cls) { return '<svg class="vcsw-icon' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + P[name] + '</svg>'; }
   var ARIA_FACE = '<svg class="ox-face" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="48" fill="#0c2f5f"/><ellipse cx="48" cy="50" rx="30" ry="24" fill="#e8eef6"/><ellipse cx="48" cy="50" rx="30" ry="24" fill="none" stroke="#8fa0b8" stroke-width="2"/><circle cx="48" cy="50" r="13" fill="#04142b"/><circle cx="48" cy="50" r="8" fill="#15aaff"/><circle cx="45" cy="47" r="2.5" fill="#fff"/><rect x="10" y="44" width="10" height="12" rx="4" fill="#8fa0b8"/><rect x="76" y="44" width="10" height="12" rx="4" fill="#8fa0b8"/><path d="M48 26v-9" stroke="#8fa0b8" stroke-width="3" stroke-linecap="round"/><circle cx="48" cy="15" r="3" fill="#ffb900"/></svg>';
@@ -380,7 +382,7 @@
       head("De drie luiken", chip("Luchtsluis") + chip(Math.floor(LOCK_SECONDS / 60) + " minuten", "", "clock") + chip("Hoort bij level 3", "neutral")) +
       '<p class="ox-lead">Schuif elk stukje informatie over een ziek crewlid door het juiste luik.</p>' +
       '<div class="ox-card intro-demo">' +
-      say("aria", "Einde dienst. Op je console ligt nog informatie over een ziek crewlid die daar deels niet thuishoort. Je krijgt de stukjes één voor één. Schuif elk stukje door het luik van de sectorchef, de crewadministratie of de scheepsarts. Elk luik krijgt alleen wat die rol nodig heeft.") +
+      say("aria", "Einde dienst. Op je console ligt nog informatie over een ziek crewlid die daar deels niet thuishoort. Je krijgt de stukjes één voor één. Sleep elk stukje naar het luik van de sectorchef, de crewadministratie of de scheepsarts, of klik op het luik. Elk luik krijgt alleen wat die rol nodig heeft.") +
       '<div class="luik-pills" aria-hidden="true">' + pills() + '</div></div>' +
       '<div class="ox-two">' +
       '<div class="ox-card"><h3>Zo scoor je</h3><ul class="ox-rows">' +
@@ -401,14 +403,20 @@
   var timerId = null;
   function fmt(n) { return Math.floor(n / 60) + ":" + (n % 60 < 10 ? "0" : "") + (n % 60); }
 
-  /* Een getekend luik: deur met afgeronde hoeken, binnenpaneel, een sleuf in de kleur van het luik en vier klinknagels. */
-  var DOOR_SVG = '<svg class="deur-svg" viewBox="0 0 200 80" aria-hidden="true" focusable="false">' +
-    '<rect class="deur-rand" x="2" y="2" width="196" height="76" rx="14"/>' +
-    '<rect class="deur-paneel" x="18" y="12" width="164" height="56" rx="9"/>' +
-    '<rect class="sleuf" x="46" y="33" width="108" height="14" rx="7"/>' +
-    '<rect class="sleuf-diep" x="52" y="37" width="96" height="6" rx="3"/>' +
-    '<circle class="nagel" cx="10" cy="10" r="3.5"/><circle class="nagel" cx="190" cy="10" r="3.5"/>' +
-    '<circle class="nagel" cx="10" cy="70" r="3.5"/><circle class="nagel" cx="190" cy="70" r="3.5"/></svg>';
+  /* Een getekend luik in de stijl van het station: een kast met klinknagels en een statuslampje,
+     een donkere opening en een deurblad met naad, sleuf, plaatje en waarschuwingsstreep, opgehangen aan twee scharnieren bovenaan.
+     Het hele luik is één knop. Bij inschuiven klapt het deurblad naar binnen open en weer dicht. */
+  function hatchButton(h, k) {
+    return '<button type="button" class="deur-btn luik-knop" data-hatch="' + h.id + '" aria-keyshortcuts="' + (k + 1) + '">' +
+      '<span class="vcsw-sr-only">Schuif hierin bij ' + h.name + ', toets ' + (k + 1) + '</span>' +
+      '<span class="luik-kast" aria-hidden="true">' +
+      '<span class="luik-lamp"></span>' +
+      '<span class="luik-gat"><span class="luik-binnen"></span>' +
+      '<span class="luik-blad"><span class="blad-naad"></span><span class="luik-sleuf"></span>' +
+      '<span class="blad-plaat">Schuif hierin<kbd>' + (k + 1) + '</kbd></span><span class="blad-streep"></span></span></span>' +
+      '<span class="luik-scharnier l"></span><span class="luik-scharnier r"></span>' +
+      '</span></button>';
+  }
 
   /* Het eerstvolgende stukje na i dat nog niet in een luik ligt, of -1 als alles ligt. */
   function nextOpen(i) {
@@ -421,11 +429,10 @@
     S.lock = { place: {}, verdict: {}, checks: 0, firstScored: false, used: 0, remaining: LOCK_SECONDS, revealed: {}, done: false, cur: 0 };
     var segs = LOCK_ITEMS.map(function (it, i) { return '<li id="seg' + i + '"></li>'; }).join("");
     var doors = HATCHES.map(function (h, k) {
-      return '<section class="luik-deur h-' + h.id + '" id="deur-' + h.id + '" aria-labelledby="ln-' + h.id + '">' +
+      return '<section class="luik-deur h-' + h.id + '" id="deur-' + h.id + '" data-deur="' + h.id + '" aria-labelledby="ln-' + h.id + '">' +
         '<div class="deur-kop"><span class="deur-ic" aria-hidden="true">' + icon(h.icon) + '</span><h3 id="ln-' + h.id + '">' + h.name + '</h3>' +
         '<b class="deur-tel" id="cnt-' + h.id + '">0</b><span class="vcsw-sr-only" id="cnts-' + h.id + '"></span></div>' +
-        '<p class="deur-rol">' + h.role + '</p>' + DOOR_SVG +
-        '<button type="button" class="ox-btn deur-btn" data-hatch="' + h.id + '" aria-keyshortcuts="' + (k + 1) + '">Schuif hierin<span class="vcsw-sr-only"> bij ' + h.name + '</span></button>' +
+        '<p class="deur-rol">' + h.role + '</p>' + hatchButton(h, k) +
         '<ul class="deur-lijst" id="lijst-' + h.id + '" aria-label="Stukjes bij ' + h.name + '"></ul></section>';
     }).join("");
     show("luchtsluis",
@@ -445,8 +452,12 @@
       '<div class="aw-list" id="msg"></div>' +
       '</div>'
     );
-    screenEl.querySelectorAll(".deur-btn").forEach(function (b) {
-      b.addEventListener("click", function () { shove(b.getAttribute("data-hatch")); });
+    /* Het hele luik is klikbaar: de kop, de rol en het getekende luik. Een stukje in de lijst eronder haalt terug. */
+    screenEl.querySelectorAll(".luik-deur").forEach(function (d) {
+      d.addEventListener("click", function (e) {
+        if (e.target.closest("[data-take]") || e.target.closest(".deur-lijst")) return;
+        shove(d.getAttribute("data-deur"));
+      });
     });
     document.getElementById("prev").onclick = previous;
     document.getElementById("hint").onclick = useHint;
@@ -464,50 +475,169 @@
 
   function calmMotion() { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
 
-  /* Het stukje glijdt naar de sleuf van het gekozen luik. Alleen beeld: de stand is al bijgewerkt. */
-  function slide(fromEl, id) {
-    if (!fromEl || calmMotion() || !fromEl.animate) return;
-    var slot = document.querySelector("#deur-" + id + " .sleuf");
-    if (!slot) return;
-    var a = fromEl.getBoundingClientRect(), b = slot.getBoundingClientRect();
+  /* Een los kaartje dat over het scherm beweegt: bij slepen, bij inschuiven en bij terugspringen. Alleen beeld. */
+  function makeGhost(text, rect, extra) {
     var g = document.createElement("div");
-    g.className = "vlieg h-" + id;
+    g.className = "kaartje vlieg-kaart" + (extra ? " " + extra : "");
     g.setAttribute("aria-hidden", "true");
-    g.textContent = fromEl.textContent;
-    g.style.left = a.left + "px"; g.style.top = a.top + "px"; g.style.width = a.width + "px";
+    g.innerHTML = icon("grip", "kaart-greep") + '<span class="kaart-tekst"></span>';
+    g.querySelector(".kaart-tekst").textContent = text;
+    g.style.left = rect.left + "px"; g.style.top = rect.top + "px"; g.style.width = rect.width + "px";
     document.body.appendChild(g);
-    var dx = (b.left + b.width / 2) - (a.left + a.width / 2), dy = (b.top + b.height / 2) - (a.top + a.height / 2);
-    var anim = g.animate([
-      { transform: "translate(0, 0) scale(1)", opacity: 1 },
-      { transform: "translate(" + dx * 0.85 + "px, " + dy * 0.85 + "px) scale(.45)", opacity: 1, offset: 0.75 },
-      { transform: "translate(" + dx + "px, " + dy + "px) scale(.15)", opacity: 0 }
-    ], { duration: 460, easing: "cubic-bezier(.45, 0, .55, 1)" });
-    anim.onfinish = anim.oncancel = function () { if (g.parentNode) g.parentNode.removeChild(g); };
+    return g;
+  }
+  function doorOpen(id, ms) {
     var door = document.getElementById("deur-" + id);
-    setTimeout(function () { if (!door) return; door.classList.remove("slikt"); void door.offsetWidth; door.classList.add("slikt"); }, 340);
+    if (!door) return;
+    clearTimeout(door._dicht);
+    door.classList.add("open");
+    door._dicht = setTimeout(function () {
+      door.classList.remove("open");
+      door.classList.remove("slikt"); void door.offsetWidth; door.classList.add("slikt");
+    }, ms);
+  }
+  /* Het midden van de sleuf: daar gaat een stukje in en komt het uit. */
+  function slotPoint(id) {
+    var gat = document.querySelector("#deur-" + id + " .luik-gat");
+    if (!gat) return null;
+    var b = gat.getBoundingClientRect();
+    return { x: b.left + b.width / 2, y: b.top + b.height * 0.36, w: b.width };
   }
 
-  function shove(id) {
+  /* Het stukje vliegt naar het gekozen luik, het deurblad klapt open, het stukje verdwijnt erin en het luik sluit.
+     Met een sleepkaartje vliegt dat kaartje vanaf de plek waar je het losliet. */
+  function flyIn(id, ghost) {
+    var p = slotPoint(id);
+    if (calmMotion() || !document.body.animate || !p) { if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost); return; }
+    var start = ghost ? "rotate(-3deg) scale(1.04)" : "none";
+    var g = ghost;
+    if (!g) {
+      var src = document.getElementById("kaartje");
+      if (!src) return;
+      g = makeGhost(src.textContent, src.getBoundingClientRect());
+    }
+    g.classList.add("h-" + id, "richting");
+    var w = g.offsetWidth, h = g.offsetHeight, left = parseFloat(g.style.left), top = parseFloat(g.style.top);
+    var dx = p.x - (left + w / 2), dy = p.y - (top + h / 2), fit = Math.min(1, (p.w * 0.86) / w);
+    doorOpen(id, 500);
+    var anim = g.animate([
+      { transform: start, opacity: 1 },
+      { transform: "translate(" + dx + "px, " + dy + "px) rotate(0deg) scale(" + fit + ")", opacity: 1, offset: 0.62 },
+      { transform: "translate(" + dx + "px, " + (dy + 10) + "px) rotate(0deg) scale(" + (fit * 0.5) + ", " + (fit * 0.2) + ")", opacity: 0 }
+    ], { duration: 560, easing: "cubic-bezier(.4, 0, .3, 1)", fill: "forwards" });
+    anim.onfinish = anim.oncancel = function () { if (g.parentNode) g.parentNode.removeChild(g); };
+  }
+
+  /* Het stukje springt terug uit het luik naar de kaart bovenaan. */
+  function flyOut(i, id, wasWrong) {
+    var p = slotPoint(id), dest = document.getElementById("kaartje");
+    if (calmMotion() || !document.body.animate || !p || !dest) return;
+    var r = dest.getBoundingClientRect();
+    var g = makeGhost(LOCK_ITEMS[i].t, r, "h-" + id + " richting" + (wasWrong ? " fout" : ""));
+    var w = g.offsetWidth, h = g.offsetHeight;
+    var dx = p.x - (r.left + w / 2), dy = p.y - (r.top + h / 2), fit = Math.min(1, (p.w * 0.86) / w);
+    dest.classList.add("landt");
+    doorOpen(id, 360);
+    var anim = g.animate([
+      { transform: "translate(" + dx + "px, " + (dy + 10) + "px) scale(" + (fit * 0.5) + ", " + (fit * 0.2) + ")", opacity: 0 },
+      { transform: "translate(" + dx + "px, " + (dy - 14) + "px) scale(" + fit + ")", opacity: 1, offset: 0.3 },
+      { transform: "translate(" + (dx * 0.4) + "px, " + (dy * 0.4 - 40) + "px) rotate(-3deg) scale(1)", opacity: 1, offset: 0.7 },
+      { transform: "translate(0, 0) rotate(0deg) scale(1)", opacity: 1 }
+    ], { duration: 620, easing: "cubic-bezier(.3, 0, .3, 1)", fill: "forwards" });
+    anim.onfinish = anim.oncancel = function () {
+      if (g.parentNode) g.parentNode.removeChild(g);
+      var k = document.getElementById("kaartje");
+      if (k) k.classList.remove("landt");
+    };
+  }
+
+  /* Slepen: pak het kaartje op en laat het los boven een luik. Muis, pen en aanraken via pointer events. */
+  var drag = null;
+  function doorAt(x, y) {
+    var el = document.elementFromPoint(x, y);
+    var d = el && el.closest ? el.closest(".luik-deur") : null;
+    return d && screenEl.contains(d) ? d : null;
+  }
+  function markTarget(d) {
+    screenEl.querySelectorAll(".luik-deur.doel").forEach(function (x) { if (x !== d) x.classList.remove("doel"); });
+    if (d) d.classList.add("doel");
+  }
+  function endDrag(dropOn) {
+    var D = drag;
+    drag = null;
+    screenEl.classList.remove("sleept");
+    markTarget(null);
+    if (!D) return;
+    D.el.classList.remove("vast");
+    if (!D.ghost) return;
+    if (dropOn && S.lock && !S.lock.done && S.lock.cur !== -1) { shove(dropOn, D.ghost); return; }
+    /* Losgelaten naast een luik: het kaartje gaat terug naar zijn plek. */
+    D.el.classList.remove("weg");
+    var g = D.ghost;
+    if (calmMotion() || !g.animate) { g.parentNode.removeChild(g); return; }
+    var r = D.el.getBoundingClientRect();
+    var dx = r.left - parseFloat(g.style.left), dy = r.top - parseFloat(g.style.top);
+    D.el.classList.add("landt");
+    var a = g.animate([{ transform: "rotate(-3deg) scale(1.04)" }, { transform: "translate(" + dx + "px, " + dy + "px) rotate(0deg) scale(1)" }],
+      { duration: 240, easing: "cubic-bezier(.3, 0, .3, 1)", fill: "forwards" });
+    a.onfinish = a.oncancel = function () { if (g.parentNode) g.parentNode.removeChild(g); D.el.classList.remove("landt"); };
+  }
+  function bindDrag(el) {
+    el.addEventListener("pointerdown", function (e) {
+      if ((e.pointerType === "mouse" && e.button !== 0) || !S.lock || S.lock.done || drag) return;
+      e.preventDefault();
+      drag = { el: el, x0: e.clientX, y0: e.clientY, ghost: null, over: null };
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
+      el.classList.add("vast");
+    });
+    el.addEventListener("pointermove", function (e) {
+      var D = drag;
+      if (!D || D.el !== el) return;
+      if (!D.ghost) {
+        if (Math.abs(e.clientX - D.x0) + Math.abs(e.clientY - D.y0) < 6) return;
+        var r = el.getBoundingClientRect();
+        D.offX = D.x0 - r.left; D.offY = D.y0 - r.top;
+        D.ghost = makeGhost(el.textContent, r, "opgepakt");
+        el.classList.add("weg");
+        screenEl.classList.add("sleept");
+      }
+      D.ghost.style.left = (e.clientX - D.offX) + "px";
+      D.ghost.style.top = (e.clientY - D.offY) + "px";
+      var d = doorAt(e.clientX, e.clientY);
+      D.over = d ? d.getAttribute("data-deur") : null;
+      markTarget(d);
+    });
+    el.addEventListener("pointerup", function (e) {
+      if (!drag || drag.el !== el) return;
+      var d = drag.ghost ? doorAt(e.clientX, e.clientY) : null;
+      endDrag(d ? d.getAttribute("data-deur") : null);
+    });
+    el.addEventListener("pointercancel", function () { if (drag && drag.el === el) endDrag(null); });
+  }
+
+  function shove(id, ghost) {
     var L = S.lock;
-    if (!L || L.done || L.cur === -1) return;
+    if (!L || L.done || L.cur === -1) { if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost); return; }
     var i = L.cur, it = LOCK_ITEMS[i], h = hatch(id);
-    slide(document.getElementById("stukNaam"), id);
+    flyIn(id, ghost);
     L.place[i] = id;
     delete L.verdict[i];
+    L.justIn = i;
     L.cur = nextOpen(i);
     paintLock();
     announce(it.t + " ligt nu bij " + h.name + ". " + (L.cur === -1 ? "Alle stukjes liggen in een luik. Controleer de verdeling." : "Volgende stukje: " + LOCK_ITEMS[L.cur].t + "."));
   }
 
-  /* Een stukje terughalen uit een luik: het wordt weer het huidige stukje. */
+  /* Een stukje terughalen uit een luik: het springt eruit en wordt weer het huidige stukje. */
   function takeBack(i, focusId) {
     var L = S.lock;
     if (!L || L.done) return;
-    var from = L.place[i];
+    var from = L.place[i], wasWrong = L.verdict[i] === false;
     delete L.place[i];
     delete L.verdict[i];
     L.cur = i;
     paintLock();
+    if (from) flyOut(i, from, wasWrong);
     var f = document.querySelector('#deur-' + (focusId || from) + ' .deur-btn');
     if (f) f.focus({ preventScroll: true });
     announce(LOCK_ITEMS[i].t + " is teruggehaald. Kies opnieuw een luik.");
@@ -542,10 +672,12 @@
     if (L.cur !== -1) {
       var it = LOCK_ITEMS[L.cur];
       nr.textContent = "Stukje " + (L.cur + 1) + " van " + total;
-      body.innerHTML = '<p class="stukje-naam" id="stukNaam">' + it.t + '</p>' +
+      body.innerHTML = '<div class="kaartje" id="kaartje" title="Sleep naar een luik">' + icon("grip", "kaart-greep") +
+        '<span class="kaart-tekst" id="stukNaam">' + it.t + '</span></div>' +
         (L.revealed[L.cur] ? '<p class="stukje-tip">' + icon("bulb") + '<span>ARIA: dit hoort bij ' + hatch(it.a).name + '. ' + LOCK_WHY[it.a] +
           (L.hintChip && L.hintChip.i === L.cur ? ' ' + L.hintChip.html : '') + '</span></p>'
-          : '<p class="stukje-vraag">Door welk luik mag dit?</p>');
+          : '<p class="stukje-vraag">Door welk luik mag dit? Sleep het naar een luik, klik op een luik of druk 1, 2 of 3.</p>');
+      bindDrag(document.getElementById("kaartje"));
     } else {
       nr.textContent = n + " van " + total + " in een luik";
       var title = wrongNow ? wrongNow + (wrongNow === 1 ? " stukje ligt" : " stukjes liggen") + " in het verkeerde luik" : "Alle stukjes liggen in een luik";
@@ -570,15 +702,21 @@
       cnt.textContent = items.length;
       cnt.className = "deur-tel" + (items.length ? "" : " leeg");
       document.getElementById("cnts-" + h.id).textContent = items.length === 1 ? " stukje" : " stukjes";
+      var hasWrong = items.some(function (i) { return L.verdict[i] === false; });
+      var door = document.getElementById("deur-" + h.id);
+      door.classList.toggle("actief", L.cur !== -1 && !L.done);
+      door.classList.toggle("fout", hasWrong);
       document.getElementById("lijst-" + h.id).innerHTML = items.map(function (i) {
         var v = L.verdict[i], tip = L.revealed[i] && LOCK_ITEMS[i].a !== h.id;
-        return '<li><button type="button" class="deur-item' + (v === false ? " fout" : "") + '" data-take="' + i + '"' + (L.done ? " disabled" : "") +
+        return '<li' + (L.justIn === i ? ' class="nieuw"' : '') + '><button type="button" class="deur-item' + (v === false ? " fout" : "") + '" data-take="' + i + '"' + (L.done ? " disabled" : "") +
           ' title="Klik om terug te halen">' + icon(v === false ? "cross" : "tick") +
           '<span>' + LOCK_ITEMS[i].t + (v === false ? '<span class="vcsw-sr-only">. Ligt in het verkeerde luik</span>' : '') +
           (L.done ? '' : '<span class="vcsw-sr-only">. Terughalen</span>') +
-          (tip ? '<small>' + icon("bulb") + 'ARIA: hoort bij ' + hatch(LOCK_ITEMS[i].a).name + '</small>' : '') + '</span></button></li>';
+          (tip ? '<small>' + icon("bulb") + 'ARIA: hoort bij ' + hatch(LOCK_ITEMS[i].a).name + '</small>' : '') + '</span>' +
+          (v === false ? '<span class="terug" aria-hidden="true">' + icon("undo") + '</span>' : '') + '</button></li>';
       }).join("");
     });
+    L.justIn = null;
     screenEl.querySelectorAll("[data-take]").forEach(function (b) {
       b.onclick = function () { takeBack(+b.getAttribute("data-take")); };
     });

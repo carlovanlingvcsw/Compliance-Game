@@ -90,42 +90,101 @@ html.in-orion #schildChip { display: none; }
 .stukje-tip .ox-chip { margin-left: 4px; font-size: 14px; padding: 1px 10px; vertical-align: 1px; }
 .stukje-body .ox-btn { margin-top: 8px; }
 
-/* De drie luiken als deuren */
+/* Het kaartje: een los stukje dat je kunt oppakken en naar een luik slepen */
+.kaartje { box-sizing: border-box; position: relative; display: inline-flex; align-items: center; gap: 10px; max-width: 100%; padding: 9px 22px 9px 10px; border-radius: 10px; background: linear-gradient(180deg, #f4f7fb, #d9e3ef); border: 1px solid #ffffff; box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 -3px 0 #b7c6da inset, 0 6px 14px -4px rgb(0 0 0 / .55); color: #04142b; cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; transition: transform 160ms ease, box-shadow 160ms ease, opacity 120ms ease; }
+.kaartje:hover { transform: translateY(-2px) rotate(-.6deg); box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 -3px 0 #b7c6da inset, 0 10px 18px -6px rgb(0 0 0 / .6); }
+.kaartje.vast { cursor: grabbing; }
+.kaart-greep { flex: none; width: 22px; height: 22px; padding: 4px 2px; border-radius: 6px; background: rgb(4 20 43 / .08); color: #4a6283; stroke-width: 3; }
+.kaart-tekst { display: block; min-width: 0; font: 700 24px/1.2 var(--vcsw-font-heading); color: #04142b; text-wrap: balance; text-align: left; }
+/* Tijdens het slepen blijft een lege plek achter waar het kaartje lag */
+.kaartje.weg, .kaartje.landt { background: transparent; border: 2px dashed #2f5f97; box-shadow: none; transform: none; }
+.kaartje.weg > *, .kaartje.landt > * { visibility: hidden; }
+/* Het kaartje dat beweegt: aan de muis, naar een luik of terug uit een luik */
+.vlieg-kaart { position: fixed; z-index: 60; margin: 0; pointer-events: none; transform-origin: 50% 50%; }
+.vlieg-kaart.opgepakt { cursor: grabbing; transform: rotate(-3deg) scale(1.04); box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 -3px 0 #b7c6da inset, 0 18px 30px -8px rgb(0 0 0 / .7); }
+.vlieg-kaart.richting { border-left: 6px solid var(--luik); }
+.vlieg-kaart.fout { background: linear-gradient(180deg, #ffe9e9, #ffc9c9); border-color: #ff6b6b; border-left-color: #ff6b6b; }
+
+/* De drie luiken als deuren in de stijl van het station */
 .luiken { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
-.luik-deur { box-sizing: border-box; min-width: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 12px; border-radius: 12px; background: #06162f; border: 1px solid #1f4f85; border-top: 3px solid var(--luik); }
-.deur-kop { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.luik-deur { box-sizing: border-box; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 10px 10px 10px; border-radius: 12px; background: #06162f; border: 1px solid #1f4f85; border-top: 3px solid var(--luik); transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease; }
+.luik-deur.actief { cursor: pointer; }
+.luik-deur.actief:hover, .luik-deur.doel { border-color: var(--luik); background: #0a2246; }
+.luik-deur.doel { box-shadow: 0 0 0 2px var(--luik); }
+.sleept .luik-deur.actief:not(.doel) { border-style: dashed; border-top-style: solid; }
+.deur-kop { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 0 2px; }
 .deur-ic { flex: none; display: inline-flex; color: var(--luik); }
 .deur-ic .vcsw-icon { width: 20px; height: 20px; stroke-width: 2; }
 #screen .deur-kop h3 { margin: 0; flex: 1; min-width: 0; font: 700 16px/1.25 var(--vcsw-font-heading); color: #fff; overflow-wrap: anywhere; }
 .deur-tel.leeg { background: #16335c; color: #b9cbe3; }
 .deur-tel { flex: none; min-width: 32px; padding: 2px 8px; box-sizing: border-box; text-align: center; border-radius: 999px; background: var(--luik); color: #04142b; font: 800 15px/1.4 var(--vcsw-font-heading); font-variant-numeric: tabular-nums; }
-#screen .deur-rol { margin: -2px 0 0; font: 400 15px/1.35 var(--vcsw-font-body); color: #b9cbe3; }
-.deur-svg { display: block; width: 100%; height: 72px; }
-.deur-rand { fill: #0f2c57; stroke: #2f5f97; stroke-width: 2; }
-.deur-paneel { fill: #071a36; stroke: var(--luik); stroke-opacity: .45; stroke-width: 2; }
-.sleuf { fill: var(--luik); }
-.sleuf-diep { fill: #04122a; opacity: .6; }
-.nagel { fill: #6f8fb8; }
-.luik-deur.slikt .sleuf { animation: slikt 420ms ease-out; }
-@keyframes slikt { 0% { fill: #fff; } 100% { fill: var(--luik); } }
-.luik-deur .deur-btn { width: 100%; background: transparent; border-color: var(--luik); color: #fff; }
-#screen .deur-btn:hover:not([aria-disabled="true"]) { background: var(--luik); border-color: var(--luik); color: #04142b; }
+#screen .deur-rol { margin: -2px 0 2px; padding: 0 2px; font: 400 15px/1.35 var(--vcsw-font-body); color: #b9cbe3; }
+
+/* Het getekende luik is één knop */
+.luik-knop { display: block; width: 100%; padding: 0; margin: 0; border: 0; background: none; cursor: inherit; border-radius: 12px; font: inherit; color: inherit; }
+.luik-knop[aria-disabled="true"] { cursor: default; }
+.luik-kast { position: relative; display: block; height: 128px; border-radius: 12px; border: 1px solid #3a6aa3;
+  background:
+    radial-gradient(circle at 9px 9px, #8fa9cc 0 2.5px, #2a4a75 3px, transparent 3.5px),
+    radial-gradient(circle at calc(100% - 9px) 9px, #8fa9cc 0 2.5px, #2a4a75 3px, transparent 3.5px),
+    radial-gradient(circle at 9px calc(100% - 9px), #8fa9cc 0 2.5px, #2a4a75 3px, transparent 3.5px),
+    radial-gradient(circle at calc(100% - 9px) calc(100% - 9px), #8fa9cc 0 2.5px, #2a4a75 3px, transparent 3.5px),
+    linear-gradient(180deg, #24466f, #142f55 55%, #0f2547);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .14), inset 0 -2px 0 rgb(0 0 0 / .35), 0 4px 10px -4px rgb(0 0 0 / .6); }
+/* Statuslampje bovenaan de kast, in de kleur van het luik */
+.luik-lamp { position: absolute; top: 5px; left: 50%; width: 34px; height: 4px; margin-left: -17px; border-radius: 3px; background: var(--luik); opacity: .55; }
+.luik-deur.actief .luik-lamp { opacity: .9; }
+.luik-deur.fout .luik-lamp { background: #ff6b6b; opacity: 1; }
+.luik-deur.slikt .luik-lamp { animation: lamp 520ms ease-out; }
+@keyframes lamp { 0%, 40% { background: #fff; opacity: 1; } 100% { opacity: .9; } }
+/* Twee amberkleurige lichtjes onderaan, zoals bij de poort van het station */
+.luik-kast::before, .luik-kast::after { content: ""; position: absolute; bottom: 5px; width: 14px; height: 4px; border-radius: 2px; background: #ffb900; opacity: .7; }
+.luik-kast::before { left: 22px; }
+.luik-kast::after { right: 22px; }
+/* De opening achter het deurblad, met licht in de kleur van het luik */
+.luik-gat { position: absolute; inset: 14px 20px 16px; border-radius: 8px; perspective: 380px; background: #020a18; box-shadow: inset 0 0 0 2px #071630, inset 0 6px 10px rgb(0 0 0 / .8); }
+.luik-binnen { position: absolute; inset: 0; border-radius: 8px; background: radial-gradient(70% 80% at 50% 70%, color-mix(in srgb, var(--luik) 60%, transparent), transparent 75%); }
+/* Het deurblad hangt aan twee scharnieren bovenaan en klapt naar binnen */
+.luik-blad { position: absolute; inset: 0; display: block; box-sizing: border-box; border-radius: 7px; overflow: hidden; transform-origin: 50% 0; transform: rotateX(0deg); transition: transform 190ms cubic-bezier(.3, .7, .4, 1), filter 190ms ease;
+  background: linear-gradient(180deg, #34639b, #24507f 40%, #1b4270);
+  border: 1px solid #5a88c0; box-shadow: inset 0 1px 0 rgb(255 255 255 / .22), inset 0 -1px 0 rgb(0 0 0 / .4); }
+.blad-naad { position: absolute; left: 0; right: 0; top: 50%; height: 0; border-top: 1px solid rgb(4 20 43 / .55); border-bottom: 1px solid rgb(255 255 255 / .12); }
+.luik-sleuf { position: absolute; left: 14%; right: 14%; top: 20px; height: 12px; border-radius: 6px; background: #020a18; box-shadow: inset 0 0 0 1.5px var(--luik), inset 0 3px 4px rgb(0 0 0 / .9), 0 1px 0 rgb(255 255 255 / .18); }
+.blad-plaat { position: absolute; left: 0; right: 0; bottom: 17px; display: flex; align-items: center; justify-content: center; gap: 8px; font: 600 15px/1 var(--vcsw-font-body); color: #e8eef6; text-shadow: 0 1px 0 rgb(0 0 0 / .45); white-space: nowrap; }
+.blad-plaat kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 4px; box-sizing: border-box; border-radius: 5px; background: var(--luik); color: #04142b; font: 800 15px/1 var(--vcsw-font-heading); box-shadow: 0 2px 0 rgb(0 0 0 / .35); text-shadow: none; }
+.blad-streep { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: repeating-linear-gradient(-45deg, #ffb900 0 6px, #1b2430 6px 12px); opacity: .85; }
+/* Scharnieren aan de bovenrand van de opening */
+.luik-scharnier { position: absolute; top: 10px; width: 22px; height: 8px; border-radius: 3px; background: linear-gradient(180deg, #a9bdd8, #5e7ea8); box-shadow: 0 1px 0 rgb(0 0 0 / .5); }
+.luik-scharnier.l { left: 26%; }
+.luik-scharnier.r { right: 26%; }
+/* Bewegen: wijzen zet het luik op een kier, slepen erboven nog verder, inschuiven klapt het open */
+.luik-deur.actief:hover .luik-blad { transform: rotateX(-14deg); filter: brightness(1.08); }
+.luik-deur.doel .luik-blad { transform: rotateX(-30deg); filter: brightness(1.12); }
+.luik-deur.open .luik-knop .luik-blad { transform: rotateX(-78deg); filter: brightness(.8); }
+.luik-deur:not(.actief):not(.open) .luik-sleuf { box-shadow: inset 0 0 0 1.5px #2f5f97, inset 0 3px 4px rgb(0 0 0 / .9); }
+#screen .luik-knop:focus-visible { outline: 2px solid #67caff; outline-offset: 3px; }
+#screen .luik-knop:focus-visible .luik-blad { filter: brightness(1.12); }
+
 /* Ligt er veel in één luik, dan scrolt alleen die lijst, zodat het scherm op 1440 bij 900 past. */
 .deur-lijst { position: relative; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 170px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #2f5f97 transparent; }
 .deur-lijst:empty { display: none; }
 .deur-lijst li { margin: 0; padding: 0; }
+.deur-lijst li.nieuw { animation: erin 260ms 360ms both ease-out; }
+@keyframes erin { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .deur-item { position: relative; box-sizing: border-box; width: 100%; display: flex; gap: 7px; align-items: flex-start; text-align: left; padding: 4px 8px; border-radius: 8px; border: 1px solid transparent; background: #0b2548; color: #fff; font: 400 15px/1.3 var(--vcsw-font-body); cursor: pointer; transition: border-color 200ms ease; }
 .deur-item > .vcsw-icon { flex: none; width: 16px; height: 16px; stroke-width: 2.5; margin-top: 2px; color: var(--luik); }
 .deur-item > span { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .deur-item small { display: inline-flex; gap: 4px; align-items: center; font: 600 14px/1.3 var(--vcsw-font-body); color: #ffc978; }
 .deur-item small .vcsw-icon { width: 14px; height: 14px; stroke-width: 2; }
 .deur-item:hover:not([disabled]) { border-color: var(--luik); }
-.deur-item.fout { border-color: #ffa2a2; background: rgba(255, 162, 162, .1); }
+/* Na de controle: een fout stukje is rood en springt terug als je erop klikt */
+.deur-item.fout { border-color: #ff6b6b; background: #4a1420; font-weight: 600; }
 .deur-item.fout > .vcsw-icon { color: #ffa2a2; }
+.deur-item.fout:hover:not([disabled]) { border-color: #ffa2a2; background: #5c1828; }
+.deur-item > .terug { margin-left: auto; flex: none; display: inline-flex; padding-top: 1px; color: #ffa2a2; }
+.deur-item > .terug .vcsw-icon { width: 16px; height: 16px; stroke-width: 2.25; }
 .deur-item[disabled] { cursor: default; }
 #screen .deur-item:focus-visible { outline-offset: -2px; }
-/* Het stukje dat naar de sleuf glijdt */
-.vlieg { position: fixed; z-index: 50; box-sizing: border-box; padding: 4px 10px; border-radius: 10px; text-align: center; pointer-events: none; font: 700 28px/1.2 var(--vcsw-font-heading); color: #04142b; background: var(--luik); transform-origin: 50% 50%; }
 
 /* Knoppen onder de luiken */
 .luik-acts { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
@@ -166,8 +225,8 @@ html.in-orion #schildChip { display: none; }
 .luik-kolom ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 #screen .luik-kolom li { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 0; font: 400 15px/1.4 var(--vcsw-font-body); color: #fff; }
 .luik-kolom li .vcsw-icon { width: 16px; height: 16px; stroke-width: 2.25; margin-top: 2px; color: var(--luik); }
-@media (max-width: 620px) { .luiken, .luik-kolommen { grid-template-columns: minmax(0, 1fr); } .luik-pills { padding-left: 0; } #screen .stukje-naam { font-size: 22px; } }
-@media (prefers-reduced-motion: reduce) { .choice, .deur-item { transition: none; } .luik-deur.slikt .sleuf { animation: none; } }
+@media (max-width: 620px) { .luiken, .luik-kolommen { grid-template-columns: minmax(0, 1fr); } .luik-pills { padding-left: 0; } #screen .stukje-naam, .kaart-tekst { font-size: 20px; } }
+@media (prefers-reduced-motion: reduce) { .choice, .deur-item, .kaartje, .luik-deur, .luik-blad { transition: none; } .kaartje:hover { transform: none; } .vlieg-kaart.opgepakt { transform: none; } .luik-deur.actief:hover .luik-blad, .luik-deur.doel .luik-blad, .luik-deur.open .luik-knop .luik-blad { transform: none; } .luik-deur.slikt .luik-lamp, .deur-lijst li.nieuw { animation: none; } }
 
 /* ---------- Orion kit (ox): donkere kaarten, chips, knoppen, meters en de tekstballon van ARIA ---------- */
 .ox-stack { display: flex; flex-direction: column; gap: 16px; }

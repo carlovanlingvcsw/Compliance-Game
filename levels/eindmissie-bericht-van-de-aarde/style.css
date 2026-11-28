@@ -551,3 +551,60 @@ button.zk-regel:hover:not(.is-zwart) { border-style: solid; border-color: var(--
   .zk-scan-balk span { animation-duration: 1ms !important; animation-delay: 0ms !important; }
 }
 .zk-oordeel .vcsw-badge, .zk .badges .vcsw-badge { font-size: 0.9375rem; padding: 3px 10px; }
+
+/* Ronde 27: de stationsscan na de kritiek.
+   1. Bredere plattegrond (400 bij 410): elke modulenaam past heel, nergens afbreken midden in een woord.
+   2. Rechts twee zichtbare stappen: eerst zwartmaken, dan de bestemming. Stap 2 wacht tot stap 1 is bevestigd.
+   3. Aan het begin wijst de eerste module de weg. */
+.zk-grid { grid-template-columns: 380px minmax(0, 1fr); gap: 14px; }
+.zk-kaart { aspect-ratio: 400 / 410; }
+.zk-mod { hyphens: none; -webkit-hyphens: none; word-break: normal; justify-content: center; gap: 3px; }
+.zk-mod-naam { overflow-wrap: normal; word-break: normal; hyphens: none; }
+.zk-dok-naam { left: 56%; top: 1.6%; }
+.zk-mod.is-start { border: 2px solid var(--vcsw-blue-300); padding: 7px 9px; background: var(--vcsw-blue-800); }
+.zk-mod.is-start .zk-mod-stand { color: #ffffff; font-weight: 600; }
+@media (prefers-reduced-motion: no-preference) {
+  .zk-mod.is-start { animation: zk-wijs 1.8s ease-in-out infinite; }
+  @keyframes zk-wijs { 0%, 100% { box-shadow: 0 0 0 0 rgb(103 202 255 / 0.7); } 60% { box-shadow: 0 0 0 5px rgb(103 202 255 / 0); } }
+}
+#stage .zk-begin { display: flex; gap: 10px; align-items: flex-start; margin: 0; padding: 10px 14px; border: 2px solid var(--vcsw-blue-300); border-radius: 10px; background: #0b2548; font-size: 1rem; line-height: 1.4; color: #d5e0ef; }
+#stage .zk-begin strong { color: #ffffff; margin-right: 4px; }
+.zk-begin .vcsw-icon { width: 18px; height: 18px; flex: none; margin-top: 2px; color: var(--vcsw-blue-300); }
+
+.zk-doc { gap: 10px; }
+.zk-doc-kop { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.zk-stap { display: flex; flex-direction: column; gap: 8px; }
+.zk-doc .zk-stap { padding-top: 10px; border-top: 1px solid #1f4f85; }
+#stage .zk-stap-kop { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; margin: 0; }
+.zk-stap-nr { flex: none; padding: 1px 9px; border-radius: 999px; font: 700 0.9375rem/1.4 var(--vcsw-font-heading); color: #04142b; background: var(--vcsw-blue-300); }
+.zk-stap-titel { font: 700 1rem/1.3 var(--vcsw-font-heading); color: #ffffff; }
+.zk-stap-stand { display: inline-flex; gap: 5px; align-items: center; margin-left: auto; font-size: 0.9375rem; color: #b9cbe3; }
+.zk-stap-stand .vcsw-icon { width: 15px; height: 15px; }
+.zk-stap.is-klaar .zk-stap-nr { background: var(--vcsw-green-300); }
+.zk-stap.is-klaar .zk-stap-stand { color: var(--vcsw-green-300); }
+.zk-stap.is-wacht .zk-stap-nr { background: #16335c; color: #b9cbe3; }
+.zk-stap.is-wacht .zk-stap-titel { color: #b9cbe3; }
+.zk-stap-actie { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.zk-stap-actie .zk-hint { margin-right: auto; }
+.zk-stap-actie .vcsw-button { min-height: 44px; padding-inline: 14px; }
+.zk-regel[disabled] { cursor: default; border-style: solid; border-color: #16335c; }
+.zk-regel.is-zwart[disabled] { border-color: #000000; }
+.zk-goot[disabled] { cursor: default; opacity: 0.45; border-style: dashed; }
+.zk-goot[disabled]:hover { background: transparent; border-color: color-mix(in srgb, var(--vcsw-blue-300) 55%, transparent); }
+.zk-goot { min-height: 56px; }
+@media (max-width: 720px) { .zk-kaart { max-width: 380px; } }
+@media (prefers-reduced-motion: reduce) { .zk-mod.is-start { animation: none; } }
+
+/* Ronde 27: fase 1, fase 2 en de klacht van Joran passen na het antwoord in het paneel.
+   De niet gekozen antwoorden klappen in, een knop klapt ze weer uit. Twee zinnen van ARIA staan in één ballon. */
+.options.is-ingeklapt .option.dim { display: none; }
+.actions .andere-knop { margin-right: auto; }
+.speech-reactie + .speech-text { margin-top: 6px; }
+
+/* Ronde 27: de melding over fictieve gegevens. In de schil staat ze alleen op de briefing, daar op 15 px.
+   Los staat ze bovenaan, ook op 15 px. */
+.vcsw-stack > .vcsw-alert[role="note"] .vcsw-alert-title, .vcsw-stack > .vcsw-alert[role="note"] .vcsw-alert-text { font-size: 0.9375rem !important; }
+html.in-orion:not([data-screen="brief"]) main > .vcsw-alert[role="note"] { display: none !important; }
+#stage .muted { font-size: 0.9375rem; }
+/* Los geopend is de kaart om de zoektocht breder, zodat de scannerbak naast de bredere plattegrond genoeg ruimte houdt. */
+html:not(.in-orion)[data-screen="f3"] .game { max-width: 940px; }

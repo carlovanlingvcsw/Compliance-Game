@@ -344,3 +344,39 @@
 .tf-log > :first-child:not([hidden]), .tf-log > [hidden] + :not([hidden]) { margin-top: auto; }
 .tf-b { max-width: 94%; }
 .tf-b > div { padding: 6px 12px 7px; }
+
+/* ---------- Ronde 9 (integratie, PO-feedback) ---------- */
+/* Accountadres op de telefoon op één regel. */
+.tf-acc span { white-space: nowrap; }
+/* Druk: meter en wachtbalk naast elkaar, de vier drukmiddelen op één rij eronder. Geen gloed. */
+.tf-meter { display: grid !important; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "g p" "t t"; align-items: center; gap: 8px 16px; padding: 8px 16px 10px !important; }
+.tf-mright { display: contents; }
+.tf-gauge { grid-area: g; gap: 8px; }
+.tf-gauge svg { width: 84px !important; height: 49px !important; }
+.tf-gauge b { font-size: 1.0625rem; }
+.tf-push { grid-area: p; gap: 5px; }
+.tf-push .bar { height: 12px; }
+.tf-tactics { grid-area: t; flex-wrap: nowrap; gap: 6px; }
+.tf-tactics li { padding: 4px 10px; white-space: nowrap; }
+.tf-tactics li.now { animation: chipon .5s ease-out; }
+@keyframes chipon { 0% { transform: scale(1.08); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .tf-tactics li.now { animation: none; } }
+/* Wat er nu gezegd wordt krijgt de ruimte; Eerder in het gesprek is een smalle strook. */
+.tf-subt { flex: 1 1 auto; min-height: 96px; display: flex; flex-direction: column; justify-content: center; }
+.tf-loghead { padding: 6px 18px 4px; font: 600 .9375rem/1.2 var(--font-b); color: var(--g300); }
+.tf-log { flex: 0 0 auto !important; max-height: 176px; padding: 2px 18px 10px !important; }
+.tf-log > :first-child:not([hidden]), .tf-log > [hidden] + :not([hidden]) { margin-top: 0; }
+.tf-loghead:has(+ .tf-log:empty) { display: none; }
+.tf-subt p { font-size: 1.375rem; line-height: 1.45; }
+/* Bij een lange zin en de rode codebalk geeft het logboek ruimte terug; fitLog klapt dan oudere regels in. */
+.tf-log { flex: 0 1 auto !important; min-height: 0; }
+.tf-subt { flex: 1 0 auto; min-height: 0; }
+.tf-subt p { font-size: 1.3125rem; line-height: 1.4; }
+.tf-subt.long p { font-size: 1.125rem; }
+.tf-fb { gap: 8px; }
+.tf-fb .tf-gevbox { padding: 10px 12px; gap: 4px; }
+.tf-gevbox .tf-gev { font-size: 1.125rem; line-height: 1.35; }
+.tf-fb .tf-why { font-size: 1rem; line-height: 1.45; padding-top: 8px; }
+.tf-best { padding: 8px 12px; }
+.tf-used span { margin-bottom: 4px; }
+.tf-caller { padding: 10px 18px; }

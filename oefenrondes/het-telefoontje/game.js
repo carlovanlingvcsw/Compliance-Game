@@ -9,8 +9,8 @@
   const CODE = "482913", NUM_BAD = "0247\u00a04409", NUM_OK = "0247\u00a04400";
   const JEROEN = crewFace(7711, { hairStyle: "short", hair: "#5b3a1e", skin: "#e8c2a0", suit: "#0c2f5f", accent: "#ffb900", glasses: true });
   /* Korte houding per antwoord, zonder te verraden wat goed is. */
-  const STANCE = { nummer: "verifiëren", half: "deels", weiger: "weigeren", waarom: "verifiëren", mail: "verifiëren", ophangen: "weigeren", laatste: "deels", alles: "meegaan",
-    bram: "collega vragen", terugbeller: "terugbellen", intranet: "terugbellen", niemand: "niets doen", reset: "deels", eerlijk: "melden", zwijg: "niets zeggen", jeroen: "verifiëren", melden: "melden" };
+  const STANCE = { nummer: "verifiëren", zijnnummer: "verifiëren", half: "deels", weiger: "weigeren", waarom: "verifiëren", mail: "verifiëren", ophangen: "weigeren", laatste: "deels", alles: "meegaan",
+    bram: "collega vragen", terugbeller: "terugbellen", intranet: "terugbellen", niemand: "wachten", reset: "deels", eerlijk: "melden", zwijg: "niets zeggen", jeroen: "verifiëren", melden: "melden" };
   const FEMKE = crewFace(4400, { hairStyle: "bob", hair: "#3b2414", skin: "#d7a782", suit: "#0a6dbe", accent: "#7bf1a8", glasses: false });
   const TACTICS = { gezag: "Gezag", kennis: "Hij kent je", haast: "Haast", dreiging: "Dreiging" };
 
@@ -22,7 +22,7 @@
       aria: () => G.calm ? "Hij wil je code. Neem de tijd, aarzelen kost hier niets." : "Hij wil dat je snel antwoordt. Snel is niet hetzelfde als goed.",
       opts: () => [
         { id: "nummer", t: "Wat is je personeelsnummer eigenlijk, Jeroen?", r: "fout", p: 0, sh: 10, say: "Natuurlijk. P-20417. [[haast|Lees je nu de code voor? Hij verloopt zo.]]", gev: "Hij noemt zonder aarzelen een nummer en dringt verder aan.", why: "Een beller kan elk nummer noemen, dus dit controleert niets. Je blijft in zijn gesprek en hij voelt zich bevestigd. Echt controleren doe je via een kanaal dat jij zelf kiest, zoals het nummer van de servicedesk op het intranet." },
-        { id: "half", t: "Oké, alleen de eerste helft dan. 4\u00a08\u00a02.", r: "fout", p: 0, sh: 20, leak: [0, 1, 2], say: "Top. [[haast|En de laatste drie? Hij verloopt zo.]]", gev: "Hij noteert ze en wil meteen de rest.", why: "Ook een deel van je code is te veel. De servicedesk of een beheerder vraagt nooit om je inlogcode, ook niet om een stukje." },
+        { id: "half", t: "Eerst drie cijfers, dan zie je dat ik het echt ben.", r: "fout", p: 0, sh: 20, leak: [0, 1, 2], say: "Top. [[haast|En de laatste drie? Hij verloopt zo.]]", gev: "Hij noteert ze en wil meteen de rest.", why: "Ook drie cijfers zijn te veel. De servicedesk of een beheerder vraagt nooit om je inlogcode, ook niet om een stukje." },
         { id: "weiger", t: "Geen codes via de telefoon, ik hang nu op.", r: "goed", p: 25, sh: 0, say: "[[dreiging|Wacht even, niet ophangen! Dan gaat je account echt dicht.]]", gev: "Hij schrikt en probeert je aan de lijn te houden. Jij gaf niets.", why: "De servicedesk en beheerders vragen nooit om je wachtwoord of je inlogcode. Wie dat wel doet, is niet te vertrouwen." },
         { id: "waarom", t: "Waarom heb je mijn code eigenlijk nodig?", r: "half", p: 10, sh: 5, say: "Het systeem staat in noodstand. [[haast|Ik heb die code echt nu nodig.]]", gev: "Hij heeft meteen een verhaal klaar en dringt verder aan.", why: "Half goed. Je wantrouwt de vraag, maar je mist het belangrijkste. Wie om je inlogcode vraagt, is niet te vertrouwen, en dan hang je op. Met een vraag blijf je in zijn gesprek en hij heeft altijd een antwoord klaar." }
       ] },
@@ -31,12 +31,12 @@
       hint: "Kijk naar de drukmeter. Hoe meer druk iemand zet, hoe meer reden om op te hangen.",
       aria: () => "De meter slaat uit. Luister wat hij allemaal inzet.",
       opts: () => [
-        { id: "mail", t: "Mail het eerst, dan lees ik hem voor.", r: "half", p: 10, sh: 10, say: "Komt eraan. Ik bel je zo terug.", gev: "Hij belooft een mail en hangt op. Zo'n mail kan hij zelf vervalsen.", why: "Half goed. Je houdt hem op afstand, maar je mist het belangrijkste. Een inlogcode geef je aan niemand, ook niet na een mail. En zo'n mail kan hij net zo goed vervalsen." },
-        { id: "ophangen", t: "Nee, ik geef je niets. Ik hang nu op.", r: "goed", p: 25, sh: 0, hang: true, gev: "De lijn is dood en de druk is weg. Nu kun je rustig zelf controleren.", why: "Hoe harder iemand aandringt, hoe meer reden om op te hangen. Ophangen is niet onbeleefd, het is veilig." },
+        { id: "mail", t: "Nee, nu niet. Mail me eerst vanaf je stationsadres.", r: "half", p: 10, sh: 10, say: "Komt eraan. Ik bel je zo terug.", gev: "Hij belooft een mail en hangt op. Zo'n mail kan hij zelf vervalsen.", why: "Half goed. Je geeft nu niets, maar je mist het belangrijkste. Een inlogcode geef je aan niemand, ook niet na een mail. En zo'n mail kan hij net zo goed vervalsen." },
+        { id: "ophangen", t: "Nee, ik geef je geen enkel cijfer. Ik hang nu op.", r: "goed", p: 25, sh: 0, hang: true, gev: "De lijn is dood en de druk is weg. Nu kun je rustig zelf controleren.", why: "Hoe harder iemand aandringt, hoe meer reden om op te hangen. Ophangen is niet onbeleefd, het is veilig." },
+        { id: "zijnnummer", t: "Ik hang op en bel je zo terug op dit nummer.", r: "fout", p: 0, sh: 10, hang: true, gev: "Bel je straks dit nummer, dan praat je gewoon weer met hem.", why: "Ophangen is goed, maar terugbellen op zijn nummer controleert niets. Kies zelf het bekende nummer van de servicedesk." },
         S.leak.length
-          ? { id: "laatste", t: "Oké, de laatste drie dan. 9\u00a01\u00a03.", r: "fout", p: 0, sh: 20, leak: [3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Nu kan hij als jou inloggen.", why: "Hij zette alles tegelijk in. De kapitein, haast, een dreiging en de naam van je collega. Dat iemand Bram kent, bewijst niets. Met je code kan hij proberen als jou in te loggen." }
-          : { id: "laatste", t: "Alleen de laatste drie dan. 9\u00a01\u00a03.", r: "fout", p: 0, sh: 20, leak: [3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Hij probeert de rest te raden.", why: "Ook een deel van je code is te veel. Dat hij Bram kent, bewijst niets. Met je code kan hij proberen als jou in te loggen." },
-        { id: "alles", t: "Goed dan, ik lees de hele code voor.", r: "fout", p: 0, sh: 25, leak: [0, 1, 2, 3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Nu kan hij als jou inloggen.", why: "Precies waar hij op rekende. De angst voor een blokkade moest je laten handelen voordat je nadacht. Met je code kan hij proberen als jou in te loggen." }
+          ? { id: "laatste", t: "Goed, de laatste drie, en daarna meld ik het meteen.", r: "fout", p: 0, sh: 20, leak: [3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Nu kan hij als jou inloggen.", why: "Melden achteraf is goed, maar dan heeft hij je code al. Dat iemand Bram kent, bewijst niets." }
+          : { id: "alles", t: "Goed, ik lees hem voor en meld het daarna meteen.", r: "fout", p: 0, sh: 25, leak: [0, 1, 2, 3, 4, 5], say: "Top, dank je wel. Ik regel het verder.", gev: "Hij bedankt je en hangt op. Nu kan hij als jou inloggen.", why: "Melden achteraf is goed, maar dan heeft hij je code al. Een inlogcode geef je aan niemand, ook niet aan IT-beheer." }
       ] },
     { key: "terug", step: "Terugbellen", who: null, ask: "Wie bel je nu?",
       line: () => "Het gesprek is voorbij. Op je telefoon staan zijn nummer en het nummer van de servicedesk dat je op het intranet opzocht.",
@@ -46,9 +46,9 @@
         { id: "bram", t: "Bram bellen, hij kent iedereen op het dok.", r: "half", p: 10, sh: 5, say: "Jeroen? Geen idee. Bel de servicedesk even.", gev: "Bram kent geen Jeroen en weet het ook niet. Je bent tijd kwijt.", why: "Half goed. Navragen is slim, maar je mist het belangrijkste. Bram kan niet zien wie er belde en kan niets blokkeren. De servicedesk wel, via het nummer dat je zelf opzocht." },
         { id: "terugbeller", t: `Terugbellen via de nummerweergave, ${NUM_BAD}.`, r: "fout", p: 0, sh: 10, say: "Met Jeroen, IT-beheer. [[kennis|Ah, daar ben je weer.]]", gev: "Jeroen neemt op. Je praat weer met de beller zelf.", why: "Dat is het nummer van de beller. Terugbellen via de nummerweergave bewijst niets. Kies zelf het bekende nummer." },
         { id: "intranet", t: `De servicedesk via het intranet, ${NUM_OK}.`, r: "goed", p: 25, sh: 0, gev: "Je belt het nummer dat je zelf opzocht. Femke van de servicedesk neemt op.", why: "Je controleert via een kanaal dat je zelf kiest, niet via het nummer van de beller." },
-        { id: "niemand", t: "Niemand bellen. Het gesprek is toch voorbij.", r: "fout", p: 0, sh: 10,
+        { id: "niemand", t: "Nog niemand. Ik schrijf eerst op wat hij zei.", r: "fout", p: 0, sh: 10,
           gev: S.leak.length ? "Niemand weet dat je code weg is. De beller heeft vrij spel." : "Niemand weet van het telefoontje. Hij kan rustig een collega bellen.",
-          why: S.leak.length ? "Je code is weg. Wachten maakt het erger. Meld het direct en wijzig je wachtwoord via het portaal dat je kent." : "Melden is altijd nodig, ook als je niets gaf. Misschien belt hij straks een collega die minder alert is." }
+          why: S.leak.length ? "Opschrijven is nuttig, maar je code is weg en wachten maakt het erger. Meld het direct via het bekende nummer en wijzig je wachtwoord via het portaal dat je kent." : "Opschrijven is nuttig, maar melden gaat voor, ook als je niets gaf. Misschien belt hij nu al een collega die minder alert is." }
       ] },
     { key: "meld", step: "Melden", who: "Femke", ask: "Wat zeg je tegen de servicedesk?",
       line: () => "Servicedesk Orion, met Femke. Waarmee kan ik je helpen?",
@@ -149,7 +149,7 @@
     const bar = `<div class="tf-pbar"><span>09.41</span><span>${icon("lock", "sm")}</span></div>`;
     if (mode === "lock") el.innerHTML = `${bar}<div class="tf-lock"><b>09.41</b><span>donderdag</span><p>Geen meldingen</p></div>`;
     if (mode === "code") el.innerHTML = `${bar}<div class="tf-app slide-up"><div class="tf-apphead">${icon("shield")}Orion Authenticator</div>
-      <div class="tf-acc">Stationsaccount<br><span>cadet.datawacht@<wbr>orion.space</span></div>
+      <div class="tf-acc">Stationsaccount<br><span>cadet@orion.space</span></div>
       <div class="tf-codelbl">Inlogcode</div>
       <div class="tf-code" data-code>${CODE.split("").map((d, i) => `<button type="button" data-d="${i}" disabled aria-label="Cijfer ${d} voorlezen">${d}</button>`).join("")}</div>
       <button type="button" class="tf-tapbtn" data-tap hidden>${icon("hand", "sm")}<span>Code voorlezen</span></button>
@@ -257,6 +257,7 @@
   async function speak(who, text) {
     flushSub(); subLine = { who, text };
     const box = $("[data-subt]", G.stage); box.classList.remove("old", "mine");
+    box.classList.toggle("long", plain(text).length > 110);
     const segs = parse(text);
     box.innerHTML = `<span class="who"><span class="nu">Nu</span><span class="av">${faceOf(who)}</span>${esc(who)}</span><p>${segs.map((x, i) => `<span data-seg="${i}" class="${x.t ? "tac t-" + x.t : ""}">${esc(x.s)}</span>`).join("")}</p>`;
     requestAnimationFrame(fitLog);

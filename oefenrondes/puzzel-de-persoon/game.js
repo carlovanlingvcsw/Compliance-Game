@@ -85,7 +85,7 @@
     lead: "Zes berichten verlaten vandaag het station. Er staat geen naam in, alleen losse gegevens. Jij scant ze en kijkt wie er op het crewbord overblijft.",
     who: "ARIA",
     line: "Een naam is niet nodig om iemand aan te wijzen. Blijft er na de gegevens één crewlid over, dan gaat het bericht over een persoon.",
-    rules: [["search", "Klik op een gemarkeerd gegeven om het te scannen. Het crewbord kleurt een balkje bij iedereen die bij dat ene gegeven past. Combineren doe je zelf."], ["user", "Eén crewlid over? Dan is het een <b>persoonsgegeven</b>. Een groep blijft een groep."], ["gem", "Durf je te kiezen voordat alles gescand is? Klopt het, dan krijg je een kristal. Een fout kost schild."]],
+    rules: [["search", "Klik op een gemarkeerd gegeven om het te scannen. Het crewbord dimt iedereen die niet meer past en telt hoeveel crewleden overblijven."], ["user", "Eén crewlid over? Dan is het een <b>persoonsgegeven</b>. Een groep blijft een groep."], ["gem", "Durf je te kiezen voordat alles gescand is? Klopt het, dan krijg je een kristal. Een fout kost schild."]],
     art, note: "Zes berichten, ongeveer 4 minuten"
   });
 
@@ -107,8 +107,8 @@
     const n = h(`<div class="pp fade-in">
       <div class="pp-left">
         <section class="pp-board" aria-label="Crewbord van de aankomsthal">
-          <div class="pp-board-top"><span class="lamp"></span><b>Crewbord aankomsthal</b><span class="grow"></span><span class="pp-count" data-countbox hidden><b data-count>${crew.length}</b><span data-countlbl>crewleden passen</span></span></div>
-          <div class="pp-trail" data-trail><span>Elk gescand gegeven kleurt een balkje. Wie heeft ze allemaal?</span></div>
+          <div class="pp-board-top"><span class="lamp"></span><b>Crewbord aankomsthal</b><span class="grow"></span><p class="pp-count" data-countbox><span data-countpre>Alle</span> <b data-count>${crew.length}</b> <span data-countlbl>passen</span></p></div>
+          <div class="pp-trail" data-trail><span>Scan een gegeven. Wie er niet bij past, wordt gedimd.</span></div>
           <div class="pp-grid" data-grid>${order.map((c) => `<div class="pp-face" data-id="${c.id}"><div class="pp-pips">${R.cards.map((_, j) => `<i class="c${j}"></i>`).join("")}</div><div class="pp-pic">${crewFace(1000 + c.id, c.cap ? { cap: true, hairStyle: "short" } : undefined)}</div><span>${esc(c.dept)}</span></div>`).join("")}</div>
         </section>
         <div data-say>${G.sayHTML("ARIA", "Klik op een gemarkeerd gegeven om het te scannen.", { side: hintBtn() })}</div>
@@ -138,10 +138,11 @@
     update(false);
   }
 
+  /* Voortgang als strook, zonder cijfers in de vakjes: leest niet als een rij antwoordknoppen. */
   function stakes() {
-    const st = ROUNDS.map((x, k) => `<li class="${done[k] || (k === idx ? "now" : "")}" title="Bericht ${k + 1}">${k + 1}</li>`).join("");
+    const st = ROUNDS.map((x, k) => `<li class="${done[k] || (k === idx ? "now" : "")}"></li>`).join("");
     const line = R.fix ? "Goed is 6 punten, repareren nog 4." : "Goed is 10 punten. Fout kost schild.";
-    return `<p class="pp-stake-line">${icon("shield", "sm")}<span>${line}</span></p><ol class="pp-rounds2" aria-label="Berichten">${st}</ol>`;
+    return `<p class="pp-stake-line">${icon("shield", "sm")}<span>${line}</span></p><div class="pp-prog"><span class="pp-prog-lbl">Bericht ${idx + 1} van ${ROUNDS.length}</span><ol class="pp-prog-bar" aria-hidden="true">${st}</ol></div>`;
   }
   function mark(j) {
     $$(".pp-face", G.stage).forEach((f) => { if (R.cards[j][2](crew[+f.dataset.id])) $(`.pp-pips i.c${j}`, f).classList.add("on"); });
@@ -156,23 +157,26 @@
       f.style.transitionDelay = animate && was && !on ? (k++ * 35) + "ms" : "0ms";
       f.classList.toggle("off", !on); f.classList.toggle("one", on && left.length === 1);
     });
-    const cnt = $("[data-count]", G.stage), lbl = $("[data-countlbl]", G.stage), box = $("[data-countbox]", G.stage);
+    const cnt = $("[data-count]", G.stage), lbl = $("[data-countlbl]", G.stage), box = $("[data-countbox]", G.stage), pre = $("[data-countpre]", G.stage);
     const from = +cnt.textContent, to = left.length;
-    lbl.textContent = to === 1 ? "crewlid past" : "crewleden passen";
-    box.classList.toggle("single", to === 1);
-    if (!animate || Mini.reduce) { cnt.textContent = to; return; }
-    const t0 = performance.now(); const step = (now) => { const q = Math.min(1, (now - t0) / 600); cnt.textContent = Math.round(from + (to - from) * q); if (q < 1) requestAnimationFrame(step); }; requestAnimationFrame(step);
+    pre.textContent = scanned.size ? "Nog" : "Alle";
+    // getal en werkwoord lopen samen: "Nog 1 past", "Nog 7 passen"
+    const show = (v) => { cnt.textContent = v; lbl.textContent = v === 1 ? "past" : "passen"; box.classList.toggle("single", v === 1); };
+    if (to < from && animate && !Mini.reduce) { box.classList.remove("bump"); void box.offsetWidth; box.classList.add("bump"); }
+    if (!animate || Mini.reduce) { show(to); return; }
+    const t0 = performance.now(); const step = (now) => { const q = Math.min(1, (now - t0) / 600); show(Math.round(from + (to - from) * q)); if (q < 1) requestAnimationFrame(step); }; requestAnimationFrame(step);
   }
   async function scan(j) {
     if (scanned.has(j) || answered) return;
     scanned.add(j); Mini.sound.play("tap");
     const b = $(`[data-k="${j}"]`, G.stage); b.classList.add("done"); b.disabled = true;
     const grid = $("[data-grid]", G.stage); grid.classList.remove("sweep"); void grid.offsetWidth; grid.classList.add("sweep");
-    await wait(320); mark(j);
+    await wait(320); mark(j); update(true);
     const rest = R.cards.length - scanned.size;
     $("[data-scanstate]", G.stage).textContent = rest ? `Nog ${rest} te scannen` : "Alles gescand";
     if (!rest) $("[data-dare]", G.stage).innerHTML = `${icon("check", "sm")}<span>Alles is gescand. Wat is je oordeel?</span>`;
-    sayLine(`Gescand. Dit balkje staat bij iedereen met ${R.cards[j][0].toLowerCase()} ${R.cards[j][1]}.`);
+    const n = matches().length;
+    sayLine(`${R.cards[j][0]} ${R.cards[j][1]} is gescand. ${n === 1 ? "Nog één crewlid past." : `Nog ${n} crewleden passen.`} Gaat het bericht over één persoon?`);
   }
   function sayLine(t, mood) { $("[data-say]", G.stage).innerHTML = G.sayHTML("ARIA", t, { mood, side: answered ? "" : hintBtn() }); const hb = $("[data-hint]", G.stage); if (hb) hb.addEventListener("click", hint); }
   function hint() { const cost = G.hint(); sayLine(R.hint + (cost ? " Dat kostte 10 procent schild." : "")); }
@@ -182,12 +186,8 @@
     const dared = scanned.size < R.cards.length, ok = a === R.answer;
     $$("[data-a]", G.stage).forEach((b) => { b.disabled = true; b.classList.toggle("picked", b.dataset.a === a); });
     // de rest van de gegevens alsnog scannen, zodat je ziet waarom
-    for (let j = 0; j < R.cards.length; j++) if (!scanned.has(j)) { await wait(220); scanned.add(j); const b = $(`[data-k="${j}"]`, G.stage); b.classList.add("done", "auto"); b.disabled = true; mark(j); }
-    // Onthulling: nu pas valt het bord gestaffeld af, gegeven na gegeven
+    for (let j = 0; j < R.cards.length; j++) if (!scanned.has(j)) { await wait(220); scanned.add(j); const b = $(`[data-k="${j}"]`, G.stage); b.classList.add("done", "auto"); b.disabled = true; mark(j); update(true); await wait(Mini.reduce ? 100 : 650); }
     const trail = $("[data-trail]", G.stage);
-    $("[data-countbox]", G.stage).hidden = false; $("[data-count]", G.stage).textContent = crew.length;
-    const seen = new Set(scanned); scanned = new Set();
-    for (const j of [...Array(R.cards.length).keys()].filter((x) => seen.has(x))) { scanned.add(j); await wait(260); update(true); await wait(Mini.reduce ? 100 : 700); }
     trail.innerHTML = `<p class="pp-outcome ${R.left === 1 ? "one" : ""}">${esc(R.outcome(R.left))}</p>`;
     done[idx] = ok ? "ok" : "bad"; $("[data-stakes]", G.stage).innerHTML = stakes();
     $("[data-scanstate]", G.stage).textContent = "Alles gescand";
@@ -231,7 +231,7 @@
     right.innerHTML = `<span class="lbl">${esc(R.cards[F.field][0])}</span><s>${esc(R.cards[F.field][1])}</s>${F.newText === "geschrapt" ? "" : " " + esc(F.newText)}`;
     const left = crew.filter(F.pred), ids = new Set(left.map((c) => c.id));
     $$(".pp-face", G.stage).forEach((f) => { const on = ids.has(+f.dataset.id); f.style.transitionDelay = "0ms"; f.classList.toggle("off", !on); f.classList.remove("one"); f.classList.toggle("fixed", on); });
-    $("[data-count]", G.stage).textContent = left.length; $("[data-countlbl]", G.stage).textContent = "crewleden passen"; $("[data-countbox]", G.stage).classList.remove("single");
+    $("[data-count]", G.stage).textContent = left.length; $("[data-countpre]", G.stage).textContent = "Nu"; $("[data-countlbl]", G.stage).textContent = "passen"; $("[data-countbox]", G.stage).classList.remove("single");
     $("[data-trail]", G.stage).innerHTML = `<p class="pp-outcome fixed">Na de reparatie blijft een groep van ${left.length} over. Niemand is aan te wijzen.</p>`;
     const stamp = $(".pp-stamp", G.stage); stamp.textContent = "Gerepareerd, kan weg"; stamp.className = "pp-stamp ok";
     $("[data-fix]", q).insertAdjacentHTML("beforeend", `<p class="pp-fixwhy ${ok ? "ok" : "bad"}">${icon(ok ? "check" : "x", "sm")}<span>${esc(ok ? F.okWhy : F.wrong[j] + " Het bord toont de goede reparatie.")}</span></p>`);

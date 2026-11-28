@@ -296,3 +296,13 @@ html, body, body * { -webkit-hyphens: none !important; hyphens: none !important;
 /* Focusring alleen bij toetsenbordgebruik (mini.js zet de klasse kbd). Zo lijkt geen knop of optie voorgeselecteerd. */
 html:not(.kbd) :focus-visible, html:not(.kbd) :focus { outline: none !important; }
 [tabindex="-1"]:focus { outline: none; }
+
+/* Nalezen: rows fold open per item, so a long list never cuts a sentence in half. */
+details.rv { display: block; padding: 0; }
+details.rv > summary { display: grid; grid-template-columns: 30px minmax(0, 1fr) 18px; gap: 12px; align-items: center; padding: 12px 14px; cursor: pointer; list-style: none; }
+details.rv > summary::-webkit-details-marker { display: none; }
+details.rv > summary::after { content: ""; width: 9px; height: 9px; border-right: 2px solid var(--g300); border-bottom: 2px solid var(--g300); transform: rotate(45deg); justify-self: end; margin-top: -4px; }
+details.rv[open] > summary::after { transform: rotate(225deg); margin-top: 4px; }
+details.rv > summary:focus-visible { outline: 2px solid var(--b200, #67caff); outline-offset: 2px; border-radius: var(--r); }
+details.rv .rv-body { padding: 0 14px 12px 56px; }
+.result { height: max(440px, calc(100vh - 180px)); }

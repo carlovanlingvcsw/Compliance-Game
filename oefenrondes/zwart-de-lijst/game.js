@@ -154,7 +154,7 @@
     <rect x="312" y="60" width="56" height="70" rx="8" fill="url(#zslot)" stroke="#15aaff" stroke-width="1.5"/>
     <rect x="318" y="88" width="44" height="6" rx="3" fill="#020a1c"/>
     <path d="M330 110l10 8 10-8" fill="none" stroke="#67caff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(-90 340 114)"/>
-    <text x="340" y="50" text-anchor="middle" font-family="Figtree,sans-serif" font-weight="700" font-size="11" fill="#a1deff">Verzendsluis</text>
+    <text x="340" y="50" text-anchor="middle" font-family="Figtree,sans-serif" font-weight="700" font-size="11" fill="#a1deff">Verstuur</text>
     <rect x="322" y="146" width="36" height="8" rx="4" fill="#05df72" opacity=".85"/>
     <path d="M0 190 L400 172 L400 300 L0 300 Z" fill="url(#zdesk)"/>
     <path d="M0 190 L400 172" stroke="#90a1b9" stroke-width="2"/>
@@ -183,11 +183,11 @@
     <path d="M150 232c30 4 60 2 90-6" fill="none" stroke="#0b0c10" stroke-width="7" stroke-linecap="round" opacity=".0"/>
   </svg>`;
   G.intro({
-    lead: "Drie documenten verlaten vandaag het station. Voordat ze door de verzendsluis gaan, zet jij met de stift door wat niet mee mag.",
+    lead: "Drie documenten verlaten vandaag het station. Voordat ze verstuurd worden, zet jij met de stift door wat niet mee mag.",
     who: "ARIA",
     line: "Kijk eerst naar wie het document krijgt en waarvoor. Zwart wat iemand aanwijst, ook als er geen naam staat. Laat staan wat de ontvanger echt nodig heeft.",
     rules: [["pen", "Klik op een woord om het zwart te maken, of sleep met de stift over een stuk tekst. Nog een keer klikken haalt het zwart weg."],
-      ["send", "Klaar? Sleep het document <b>de verzendsluis in</b>, of klik op de sluis. Een gemist gegeven lekt naar buiten en kost schild. Te veel zwart en de ontvanger mist wat hij nodig heeft."],
+      ["send", "Klaar? Klik op <b>Verstuur</b> onder de meter Leesbaar. Een gemist gegeven lekt naar buiten en kost schild. Te veel zwart en de ontvanger mist wat hij nodig heeft."],
       ["gem", "Een document helemaal goed zonder aanwijzing levert een kristal op."]],
     art, note: "Drie documenten, ongeveer 4 minuten"
   });
@@ -203,31 +203,23 @@
     G.head(D.kind, `<span class="chip">${icon("send", "sm")}Naar ${esc(D.to)}</span><span class="chip">Document ${i + 1} van ${DOCS.length}</span>`);
     G.stage.innerHTML = "";
     const n = h(`<div class="zl fade-in">
-      <section class="zl-desk" aria-label="Verzendconsole">
-        <div class="zl-sheet">
+      <div class="zl-main">
         <div class="zl-need" data-need>${icon("target", "sm")}<span><b>${esc(D.short)} heeft nodig</b> ${esc(D.need1)}</span></div>
-        <article class="zl-paper ly-lek ly-over" data-paper>
-          <header class="zl-letter">
-            <div class="zl-logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="none" stroke="#0a6dbe" stroke-width="4"/><circle cx="20" cy="20" r="5" fill="#0a6dbe"/><path d="M2 26 L38 14" stroke="#15aaff" stroke-width="2.5"/></svg><div><b>Station Orion</b><span>${esc(D.dept)}</span></div></div>
-            <div class="zl-meta"><span>Nummer <b>${esc(D.nr)}</b></span><span>Datum <b>${esc(D.date)}</b></span></div>
-          </header>
-          <div class="zl-addr"><div><span class="lbl">Aan:</span> <b>${esc(D.toLong)}</b></div><div><span class="lbl">Doel:</span> <b>${esc(D.purpose)}</b></div></div>
-          <h3 class="zl-title">${esc(D.title)}</h3>
-          <div class="zl-body" data-body tabindex="0" role="application" aria-roledescription="document" aria-label="Documenttekst. Pijltjes kiezen een woord, spatie of Enter maakt het zwart of haalt het zwart weg. Shift met pijltje zet een hele reeks zwart." aria-describedby="zl-kbd-tip">${D.html}</div>
-          <div class="zl-stamp" data-stamp aria-hidden="true">Verzonden<small>${esc(D.to)}</small></div>
-        </article>
-        </div>
-        <div class="zl-lock" data-slot role="button" tabindex="0" aria-label="Verzendsluis. Steek het document in de sluis en verstuur het.">
-          <div class="zl-lock-top"><b>Verzendsluis</b><span class="zl-lock-arrow" aria-hidden="true">${icon("arrow", "lg")}</span><span data-lockhint>Sleep hierheen of klik om te versturen</span></div>
-          <div class="zl-lamps" aria-hidden="true"><i></i><i></i><i></i></div>
-          <div class="zl-door" aria-hidden="true">
-            <div class="zl-door-in"><span class="zl-sheet-in"></span><span class="zl-beam"></span></div>
-            <div class="zl-half top"><span class="zl-window"></span></div>
-            <div class="zl-half bot"><span class="zl-grip"></span></div>
-            <div class="zl-drop">${icon("arrow")}<span>Laat los</span></div>
+        <section class="zl-desk" aria-label="Verzendconsole">
+          <div class="zl-sheet">
+          <article class="zl-paper ly-lek ly-over" data-paper>
+            <header class="zl-letter">
+              <div class="zl-logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="none" stroke="#0a6dbe" stroke-width="4"/><circle cx="20" cy="20" r="5" fill="#0a6dbe"/><path d="M2 26 L38 14" stroke="#15aaff" stroke-width="2.5"/></svg><div><b>Station Orion</b><span>${esc(D.dept)}</span></div></div>
+              <div class="zl-meta"><span>Nummer <b>${esc(D.nr)}</b></span><span>Datum <b>${esc(D.date)}</b></span></div>
+            </header>
+            <div class="zl-addr"><div><span class="lbl">Aan:</span> <b>${esc(D.toLong)}</b></div><div><span class="lbl">Doel:</span> <b>${esc(D.purpose)}</b></div></div>
+            <h3 class="zl-title">${esc(D.title)}</h3>
+            <div class="zl-body" data-body tabindex="0" role="application" aria-roledescription="document" aria-label="Documenttekst. Pijltjes kiezen een woord, spatie of Enter maakt het zwart of haalt het zwart weg. Shift met pijltje zet een hele reeks zwart." aria-describedby="zl-kbd-tip">${D.html}</div>
+            <div class="zl-stamp" data-stamp aria-hidden="true">Verzonden<small>${esc(D.to)}</small></div>
+          </article>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
       <aside class="zl-side" data-side></aside>
     </div>`);
     G.stage.appendChild(n);
@@ -240,7 +232,8 @@
     const side = $("[data-side]", G.stage);
     side.innerHTML = `
       <div data-say></div>
-      <div class="zl-meter"><div class="zl-meter-top"><span class="lbl">Leesbaar voor ${esc(D.short)}</span><b data-read>100%</b></div><div class="zl-track" style="--goal:${goalPct()}%"><div class="bar"><i data-readbar></i></div><span class="zl-goal" aria-hidden="true"></span></div><div class="zl-meter-foot"><span class="zl-gauge-sub" data-count></span><span class="zl-goal-lbl">Doel ${goalPct()}%</span></div></div>
+      <div class="zl-meter"><div class="zl-meter-top"><span class="lbl">Leesbaar voor ${esc(D.short)}</span><b data-read>100%</b></div><div class="zl-track" style="--goal:${goalPct()}%"><div class="bar"><i data-readbar></i></div><span class="zl-goal" aria-hidden="true"></span></div><div class="zl-meter-foot"><span class="zl-gauge-sub" data-count></span><span class="zl-goal-lbl">Doel ${goalPct()}%</span></div>
+        <button class="btn zl-send" type="button" data-send>${icon("send")}Verstuur naar ${esc(D.short)}</button></div>
       <div class="zl-card zl-pen">
         <div class="zl-rule">
           <div>${icon("eyeoff", "sm")}<span><b>Zwart</b> wat één persoon aanwijst, ook zonder naam.</span></div>
@@ -250,14 +243,11 @@
           <button class="btn ghost" type="button" data-undo disabled>${icon("undo")}Terug</button>
           <button class="btn ghost" type="button" data-clear disabled>${icon("refresh")}Wissen</button>
           <span class="zl-kbd"><button class="btn ghost zl-kbd-btn" type="button" aria-describedby="zl-kbd-tip">Toetsenbord</button><span class="zl-tip" role="tooltip" id="zl-kbd-tip">Toetsenbord: Tab naar het document, pijltjes om een woord te kiezen, spatie om te zwarten, Shift met pijltje voor een reeks.</span></span></div>
-      </div>
-      <div class="zl-send-alt zl-send-small"><button class="btn" type="button" data-send>${icon("send", "sm")}Verstuur</button></div>`;
+      </div>`;
     $("[data-undo]", side).addEventListener("click", undo);
-    // Alleen op een smal scherm, waar de verzendsluis niet past
     $("[data-send]", side).addEventListener("click", () => send());
     $("[data-clear]", side).addEventListener("click", () => { if (!on.some(Boolean)) return; push(); on.fill(0); paintMarks(); Mini.sound.play("close"); });
     sayLine("Zwart alleen wat één persoon aanwijst. De rest moet leesbaar blijven.");
-    bindSlot();
   }
   /* Doel van de meter: wat leesbaar blijft als precies alle persoonsgegevens zwart zijn en de rest blijft staan. */
   function goalPct() {
@@ -344,36 +334,6 @@
     });
     body.addEventListener("keyup", (e) => { if (e.key === "Shift") { delete body.dataset.shift; anchor = null; dragBase = null; } });
   }
-  function bindSlot() {
-    const lock = $("[data-slot]", G.stage), paper = $("[data-paper]", G.stage);
-    lock.addEventListener("click", () => send());
-    lock.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); send(); } });
-    let x0 = null, dx = 0;
-    const need = () => Math.min(160, paper.offsetWidth * 0.22);
-    paper.addEventListener("pointerdown", (e) => {
-      if (sent || e.button > 0 || e.target.closest(".zl-body")) return;
-      e.preventDefault(); x0 = e.clientX; dx = 0; paper.classList.add("dragging");
-      try { paper.setPointerCapture(e.pointerId); } catch (er) {}
-    });
-    paper.addEventListener("pointermove", (e) => {
-      if (x0 === null) return;
-      dx = Math.max(0, e.clientX - x0);
-      paper.style.setProperty("--dx", dx + "px"); paper.style.setProperty("--clip", clipFor(dx) + "px");
-      const ready = dx > need();
-      lock.classList.toggle("armed", dx > 16 && !ready);
-      if (ready && !lock.classList.contains("ready")) Mini.sound.play("tap");
-      lock.classList.toggle("ready", ready);
-    });
-    const up = () => {
-      if (x0 === null) return; x0 = null; lock.classList.remove("armed");
-      if (dx > need()) { send(); return; }
-      lock.classList.remove("ready");
-      paper.classList.remove("dragging"); paper.style.setProperty("--dx", "0px"); paper.style.setProperty("--clip", "0px");
-    };
-    paper.addEventListener("pointerup", up); paper.addEventListener("pointercancel", up);
-  }
-  // het papier verdwijnt halverwege onder de sluis
-  function clipFor(dx) { const lock = $("[data-slot]", G.stage); const off = 12 + (lock ? lock.offsetWidth * 0.45 : 40); return Math.max(0, dx - off); }
   function lineJump(dir) {
     const cur = tokEl(caret).getBoundingClientRect(); let best = null, bd = 1e9;
     D.toks.forEach((t) => { const r = tokEl(t.i).getBoundingClientRect(); const dy = (r.top - cur.top) * dir; if (dy < 6) return; const d = dy * 4 + Math.abs(r.left + r.width / 2 - (cur.left + cur.width / 2)); if (d < bd) { bd = d; best = t.i; } });
@@ -447,19 +407,14 @@
     sum.shield = items.reduce((n, x) => n + x.shield, 0);
     results[idx] = { found: sum.weg, total: sum.weg + sum.lek, leaks: sum.lek, overs: sum.over };
     $$("[data-send],[data-undo],[data-clear],[data-hint]", G.stage).forEach((b) => (b.disabled = true));
-    const paper = $("[data-paper]", G.stage), body = $("[data-body]", G.stage), lock = $("[data-slot]", G.stage);
-    lock.setAttribute("aria-disabled", "true"); lock.tabIndex = -1; lock.classList.remove("armed");
+    const paper = $("[data-paper]", G.stage), body = $("[data-body]", G.stage);
     body.removeAttribute("tabindex"); body.classList.remove("kbd"); $$(".w.cur", G.stage).forEach((w) => w.classList.remove("cur"));
-    $("[data-lockhint]", G.stage).textContent = "Bezig met controleren";
     const fast = !!G.shot || Mini.reduce;
     sidePlaceholder(auto);
     if (!fast) {
-      // deur open, papier erin, deur dicht, scannen, deur open, papier terug
-      lock.classList.add("ready", "busy"); Mini.sound.play("open"); await wait(260);
-      const w = paper.offsetWidth; paper.classList.remove("dragging"); paper.classList.add("sending");
-      paper.style.setProperty("--dx", w * 0.96 + "px"); paper.style.setProperty("--clip", clipFor(w * 0.96) + "px");
-      lock.classList.add("fed"); await wait(640);
-      lock.classList.remove("ready"); Mini.sound.play("close"); lock.classList.add("cycle"); await wait(900);
+      // een scanlijn gaat over het papier: de console controleert wat de ontvanger krijgt
+      Mini.sound.play("open"); paper.classList.add("scanning"); await wait(1100);
+      paper.classList.remove("scanning"); Mini.sound.play("close");
     }
     paper.classList.add("review");
     for (const x of items) {
@@ -467,15 +422,8 @@
       if (segEl) { segEl.dataset.res = x.res; segEl.dataset.cat = x.cat; }
       else x.s.toks.forEach((i) => tokEl(i).classList.add("loose"));
     }
-    if (!fast) {
-      lock.classList.remove("cycle"); lock.classList.add("ready"); Mini.sound.play("open"); lock.classList.remove("fed");
-      paper.style.setProperty("--dx", "0px"); paper.style.setProperty("--clip", "0px"); await wait(580);
-      paper.classList.remove("sending"); lock.classList.remove("ready");
-    }
-    lock.classList.remove("busy"); lock.classList.add(sum.lek ? "bad" : "ok");
     numberItems(items); placeBadges(items);
     $("[data-need]", G.stage).innerHTML = `${icon("pen", "sm")}<span><b>Nagekeken.</b> Rood lekte naar buiten, geel was onnodig zwart.</span>`;
-    $("[data-lockhint]", G.stage).textContent = sum.lek ? "Er is iets gelekt" : "Veilig verzonden";
     // eerst wat goed ging en te veel zwart, dan springen de lekken eruit
     for (const x of items.filter((y) => y.cat !== "lek")) { record(x); if (!fast) await wait(60); }
     for (const x of items.filter((y) => y.cat === "lek")) {
@@ -492,7 +440,7 @@
     requestAnimationFrame(() => { placeBadges(); placeStamp(); }); setTimeout(() => { if (sent) { placeBadges(); placeStamp(); } }, 700);
   }
   function sidePlaceholder(auto) {
-    $("[data-side]", G.stage).innerHTML = `<div class="zl-card zl-checking">${icon("search")}<span>${auto ? "De tijd is op. ARIA verstuurt het document zoals het nu is." : `De sluis controleert wat ${esc(D.to)} ontvangt.`}</span></div>`;
+    $("[data-side]", G.stage).innerHTML = `<div class="zl-card zl-checking">${icon("search")}<span>${auto ? "De tijd is op. ARIA verstuurt het document zoals het nu is." : `De console controleert wat ${esc(D.to)} ontvangt.`}</span></div>`;
   }
 
   /* Genummerde kantlijnlabels: lekken eerst, dan te veel zwart, in leesvolgorde. */

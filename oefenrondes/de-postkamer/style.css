@@ -419,3 +419,53 @@ html.kbd .hs:focus-visible { outline: 3px solid #0a6dbe; outline-offset: 2px; }
 @media (min-width: 941px) and (max-width: 1260px) {
   .pk-it .t .s small { display: none; }
 }
+
+/* ---------- Ronde 9 (integratie, PO-feedback) ---------- */
+/* De loep bedekt nooit tekst: een klein vergrootglas naast de wijzer, de onthulling staat in de strook onder de mail. */
+.pk-lens { display: none !important; }
+.pk-mag { position: absolute; left: 0; top: 0; z-index: 5; width: 36px; height: 36px; color: #62748e; pointer-events: none; opacity: 0; transition: opacity .15s, color .15s; filter: drop-shadow(0 3px 4px rgba(6, 34, 76, .35)); }
+.pk-mag svg { width: 100%; height: 100%; display: block; }
+.pk-mag.show { opacity: 1; }
+.pk-mag.on { color: #e17100; }
+.pk-mag.away { opacity: 0 !important; }
+
+.hs.lensed { outline: 2px dashed #e17100; outline-offset: 2px; }
+.hs.phrase.lensed { outline: 0; background: rgba(255, 185, 0, .28); text-decoration: underline 2px #e17100; text-underline-offset: 4px; }
+.pk-read { min-height: 52px; padding: 6px 16px; }
+.pk-read.on { font: 700 1.125rem/1.3 var(--font-b); overflow-wrap: anywhere; }
+.pk-read b { font-size: .9375rem; }
+
+/* Postvak: naam en onderwerp lopen door op een tweede regel, zonder puntjes. */
+@media (min-width: 941px) and (max-width: 1260px) { .pk-screen { grid-template-columns: 226px minmax(0, 1fr); } }
+.pk-it { align-items: start; padding: 6px 8px; }
+.pk-it .pk-av { margin-top: 2px; }
+.pk-it .t b { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.25; }
+.pk-it .t .sub { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.25; margin-top: 1px; }
+.pk-ticker { white-space: normal; align-items: flex-start; }
+.pk-ticker svg { margin-top: 3px; }
+.pk-ticker span { white-space: normal; overflow: visible; }
+.pk-rail ul { gap: 3px; }
+
+/* Beslissen: de vraag staat erboven, drie grote knoppen. */
+.pk-dec { padding: 10px 14px 12px; gap: 8px !important; }
+.pk-dec-q { margin: 0; color: #fff; font: 700 1.125rem/1.2 var(--font-h); }
+.pk-choices { gap: 10px !important; }
+.pk-choice { min-height: 64px !important; padding: 8px 14px !important; gap: 12px !important; border-width: 2px; }
+.pk-choice svg { width: 28px !important; height: 28px !important; }
+.pk-choice b { font-size: 1.375rem !important; }
+.pk-choice small { font-size: .9375rem; }
+
+/* Bewijslijst: een vaste plek per onderdeel, zodat je ziet hoeveel er nog te bekijken is. */
+.pk-slot { display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 8px 12px; border-radius: 12px; border: 1px dashed rgba(103, 202, 255, .35); color: var(--g300); font: 500 1rem/1.3 var(--font-b); }
+.pk-slot svg { flex: none; color: var(--b400); }
+.pk-ev-list { gap: 8px !important; }
+/* De hele mail past in het vlak, ook met een onderwerp van twee regels. */
+.pk-subjbar .pk-subj { font-size: 1.1875rem; }
+.pk-doc { padding: 10px 22px 4px; }
+.pk-from { padding-bottom: 6px; margin-bottom: 6px; }
+.pk-banner { padding: 5px 12px; margin-bottom: 6px; }
+.pk-body p { margin-bottom: 4px; }
+.pk-btnrow { margin: 4px 0 0; }
+.pk-attrow { margin: 6px 0 2px; }
+.pk-sign { margin-top: 2px; }
+.pk-read { min-height: 48px; }

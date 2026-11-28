@@ -162,7 +162,7 @@
     lead: "Op de postterminal van het Vrachtdok staan vijf nieuwe berichten. Sommige zijn echt, sommige zijn phishing. Een mailprogramma laat niet alles zien. Jouw loep wel.",
     who: "ARIA",
     line: "Een bericht kan er netjes uitzien en toch nep zijn. En een streng bericht kan gewoon kloppen. Kijk eerst, beslis dan.",
-    rules: [["search", "Beweeg de <b>loep</b> over afzender, knop, bijlage en tekst. Met Tab spring je naar elk onderdeel. Wat je vindt komt in de bewijslijst."],
+    rules: [["search", "Wijs met de <b>loep</b> afzender, knop, bijlage en tekst aan. Wat erachter zit, staat in de strook onder de mail. Met Tab spring je naar elk onderdeel. Wat je vindt komt in de bewijslijst."],
       ["flag", "Beslis per bericht: <b>echt</b> en afhandelen, <b>nep</b> en melden, of bij <b>twijfel</b> navragen via een kanaal dat je zelf kiest."],
       ["gem", "Vind je in een nepbericht alle signalen voordat je beslist? Dan krijg je een kristal. Een verkeerde keuze kost schild."]],
     art, note: "Vijf berichten, geen tijdsdruk, ongeveer 4 minuten"
@@ -217,15 +217,16 @@
           <div class="pk-pane"><div class="pk-subjbar" data-grab title="Sleep de mail naar een bak"><span class="pk-grip" aria-hidden="true">${icon("move", "sm")}</span><h3 class="pk-subj">${esc(M.subject)}</h3><span class="pk-stamp" data-stamp hidden></span><span class="pk-draghint" data-draghint>Sleep naar een knop hieronder</span></div>
           <div class="pk-paper" data-paper tabindex="-1">${docHTML(M)}</div>
           <div class="pk-read" data-read aria-live="polite">${icon("search")}<span><b>Onder de loep</b>Beweeg de loep over de mail. Hier zie je wat erachter zit.</span></div>
-          <div class="pk-dec" data-dec role="group" aria-label="Wat doe je met dit bericht?">
+          <div class="pk-dec" data-dec role="group" aria-labelledby="pk-q">
+            <p class="pk-dec-q" id="pk-q">Wat doe je met dit bericht?</p>
             <div class="pk-choices">${Object.keys(CHOICE).map((k) => `<button class="pk-choice ${k}" type="button" data-c="${k}" data-tray="${k}" aria-label="${CHOICE[k][1]}, ${CHOICE[k][2]}">${icon(CHOICE[k][0])}<span><b>${CHOICE[k][1]}</b><small>${k === "twijfel" ? "navragen" : CHOICE[k][2]}</small></span></button>`).join("")}</div>
           </div></div>
         </div>
       </section>
       <section class="pk-side"><div class="pk-side-in">
         <div class="pk-ev">
-          <div class="pk-ev-head"><h3>${icon("search")}Bewijslijst</h3><span data-evcount>0 gevonden</span></div>
-          <ul class="pk-ev-list" data-ev aria-live="polite"><li class="pk-empty">${icon("search")}<span>Nog leeg. Wat de loep onthult, komt hier.</span></li></ul>
+          <div class="pk-ev-head"><h3>${icon("search")}Bewijslijst</h3><span data-evcount>0 van ${parts} bekeken</span></div>
+          <ul class="pk-ev-list" data-ev aria-live="polite">${Array.from({ length: parts }, (_, k) => `<li class="pk-slot">${icon("search", "sm")}<span>${k ? "Nog niet bekeken" : "Nog niet bekeken. Wijs een onderdeel van de mail aan."}</span></li>`).join("")}</ul>
           <div class="pk-stake" data-stake><b>${icon("alert", "sm")}Wat er op het spel staat</b>
             <p class="who">${icon("user", "sm")}<span>${esc(M.stake[0])}</span></p>
             <p class="sh">${icon("shield", "sm")}<span>${esc(M.stake[1])}</span></p></div>
@@ -247,39 +248,51 @@
     const hb = $("[data-hint]", G.stage); if (hb) hb.addEventListener("click", () => { const c = G.hint(); sayLine(M.hint + (c ? " (min 10 procent schild)" : "")); });
   }
 
-  /* ---------- De loep ---------- */
+  /* ---------- De loep ----------
+     De loep bedekt nooit tekst. Ze verschijnt als klein vergrootglas naast de wijzer of naast het onderdeel
+     waar je met Tab op staat. Wat erachter zit, het echte adres, de echte link of de echte bestandsnaam,
+     staat in de vaste strook Onder de loep, direct onder de mail. Het onderdeel zelf krijgt een rand. */
+  const MAG = `<svg viewBox="0 0 40 40"><circle cx="16" cy="16" r="11" fill="rgba(161,222,255,.35)" stroke="currentColor" stroke-width="4"/><path d="M24.5 24.5 35 35" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg>`;
   function makeLens(paper) {
-    const Z = 1.45; let R = 100;
-    const el = h(`<div class="pk-lens" aria-hidden="true"><div class="glass"><div class="view"></div></div><span class="rim"></span><span class="grip"></span><span class="tip">Beweeg mij</span></div>`);
+    const S = 36, el = h(`<div class="pk-mag" aria-hidden="true">${MAG}</div>`);
     paper.appendChild(el);
-    const view = $(".view", el);
-    let x = 0, y = 0, px = 0, py = 0, moved = false, start = [0, 0], hoverK = null, dwellT = null;
-    function build() {
-      view.innerHTML = ""; const clone = docEl.cloneNode(true); clone.classList.add("magnified");
-      $$("[tabindex]", clone).forEach((e) => e.removeAttribute("tabindex"));
-      clone.style.width = docEl.offsetWidth + "px"; view.appendChild(clone);
-    }
-    build();
+    let px = 0, py = 0, hoverK = null, dwellT = null;
     function rel(e) { const r = paper.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
-    // De loep blijft altijd helemaal binnen het mailvlak.
-    function place(nx, ny, instant) {
-      R = el.offsetWidth / 2 || 95;
-      const W = paper.clientWidth, H = paper.clientHeight;
-      el.classList.remove("parked");
-      px = Math.max(0, Math.min(W, nx)); py = Math.max(0, Math.min(H, ny));
-      x = px; y = py;
-      el.style.transform = `translate(${x - R}px, ${y - R}px)`;
-      // Het glas toont altijd wat onder de wijzer ligt, ook als het glas zelf aan de rand blijft.
-      view.style.transform = `translate(${R - px * Z}px, ${R - py * Z}px) scale(${Z})`;
-      if (!moved && (Math.abs(nx - start[0]) > 4 || Math.abs(ny - start[1]) > 4)) { moved = true; el.classList.add("used"); }
-      check(instant);
+    // Rechthoeken van alle tekst in de mail, in coördinaten van het mailvlak.
+    function textRects() {
+      const pr = paper.getBoundingClientRect(), out = [], w = document.createTreeWalker(docEl, NodeFilter.SHOW_TEXT);
+      while (w.nextNode()) {
+        const t = w.currentNode; if (!t.textContent.trim()) continue;
+        const rg = document.createRange(); rg.selectNodeContents(t);
+        for (const q of rg.getClientRects()) out.push([q.left - pr.left, q.top - pr.top, q.right - pr.left, q.bottom - pr.top]);
+      }
+      return out;
     }
-    // Een onderdeel ligt onder de loep als het binnen de binnenste helft van het glas valt.
-    /* Een signaal telt pas als gevonden als de loep er even op blijft rusten. Zo vult de bewijslijst zich niet
+    // Zet het glas op de eerste plek waar het geen tekst raakt. Is er geen vrije plek, dan blijft het weg.
+    function put(cands) {
+      const W = paper.clientWidth, H = paper.clientHeight, rs = textRects();
+      const ok = ([x, y]) => x >= 0 && y >= 0 && x + S <= W && y + S <= H && !rs.some((r) => r[2] > x + 2 && r[0] < x + S - 2 && r[3] > y + 2 && r[1] < y + S - 2);
+      const c = cands.find(ok);
+      if (!c) { el.classList.remove("show"); return; }
+      el.style.transform = `translate(${c[0]}px, ${c[1]}px)`; el.classList.add("show");
+    }
+    // Naast de wijzer: rechtsonder, rechtsboven, linksonder of linksboven.
+    const glyph = (x, y) => put([[x + 14, y + 12], [x + 14, y - 12 - S], [x - 14 - S, y + 12], [x - 14 - S, y - 12 - S]]);
+    // Naast een onderdeel: rechts of links ervan, eronder, erboven of in de rechterkantlijn.
+    function beside(s) {
+      const pr = paper.getBoundingClientRect(), rs = s.getClientRects(), a = rs[0], z = rs[rs.length - 1];
+      const L = (r) => r.left - pr.left, T = (r) => r.top - pr.top, R = (r) => r.right - pr.left, B = (r) => r.bottom - pr.top;
+      put([[R(z) + 10, T(z) + z.height / 2 - S / 2], [L(a) - 10 - S, T(a) + a.height / 2 - S / 2], [R(z) - S, B(z) + 4], [L(a), T(a) - 4 - S], [paper.clientWidth - S - 2, T(z) + z.height / 2 - S / 2]]);
+    }
+    function place(nx, ny, instant, s) {
+      px = Math.max(0, Math.min(paper.clientWidth, nx)); py = Math.max(0, Math.min(paper.clientHeight, ny));
+      const over = check(instant), hs = s || (over && $(`[data-hs="${over}"]`, docEl));
+      if (hs) beside(hs); else glyph(px, py);
+    }
+    /* Een signaal telt pas als gevonden als de wijzer er even op blijft rusten. Zo vult de bewijslijst zich niet
        vanzelf als je de muis alleen over de mail naar de knoppen beweegt. Met het toetsenbord telt het direct. */
     function check(instant) {
-      // Het punt waar je naar wijst telt; het glas zelf blijft binnen de mail.
-      const pr = paper.getBoundingClientRect(), rr = 26; let over = null, best = Infinity;
+      const pr = paper.getBoundingClientRect(), rr = 14; let over = null, best = Infinity;
       $$(".hs", docEl).forEach((s) => {
         Array.from(s.getClientRects()).forEach((r) => {
           const cx = Math.max(r.left - pr.left, Math.min(px, r.right - pr.left)), cy = Math.max(r.top - pr.top, Math.min(py, r.bottom - pr.top));
@@ -288,37 +301,34 @@
         });
       });
       el.classList.toggle("on", !!over);
+      $$(".hs.lensed", docEl).forEach((s) => s.dataset.hs !== over && s.classList.remove("lensed"));
       if (over) {
+        $(`[data-hs="${over}"]`, docEl).classList.add("lensed");
         const xr = $(`[data-hs="${over}"] .xr`, docEl), rd = $("[data-read]", G.stage);
         rd.className = "pk-read on"; rd.innerHTML = `${icon(KIND_ICON[over])}<span><b>${LABEL[over]}</b>${xr ? xr.innerHTML.replace(/<br>/g, " ") : esc(ASK[over])}</span>`;
       }
       if (over !== hoverK) { clearTimeout(dwellT); hoverK = over; if (over && !instant) dwellT = setTimeout(() => { if (hoverK === over) reveal(over); }, 380); }
       if (over && instant) reveal(over);
+      return over;
     }
-    // In rust staat de loep klein geparkeerd in de hoek, zodat de mail helemaal leesbaar blijft.
+    // Buiten de mail verdwijnt het glas. De strook houdt het laatste onderdeel vast, zodat je het rustig kunt lezen.
     function park() {
       clearTimeout(dwellT); hoverK = null;
-      el.classList.add("parked"); el.classList.remove("on");
-      el.style.transform = `translate(${paper.clientWidth - 64}px, ${paper.clientHeight - 64}px) scale(.26)`;
+      el.classList.remove("show", "on");
+      $$(".hs.lensed", docEl).forEach((s) => s.classList.remove("lensed"));
     }
-    start = [paper.clientWidth - 120, paper.clientHeight - 110];
-    px = start[0]; py = start[1]; park();
-    paper.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" || e.buttons) { el.classList.remove("parked"); const p = rel(e); place(p[0], p[1]); } });
+    park();
+    paper.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" || e.buttons) { const p = rel(e); place(p[0], p[1]); } });
     paper.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") park(); });
-    paper.addEventListener("pointerdown", (e) => { el.classList.remove("parked"); const p = rel(e); place(p[0], p[1]); });
+    paper.addEventListener("pointerdown", (e) => { const p = rel(e); place(p[0], p[1]); });
     const center = (s) => { const pr = paper.getBoundingClientRect(), r = s.getClientRects()[0]; return [r.left - pr.left + r.width / 2, r.top - pr.top + r.height / 2]; };
     $$(".hs", docEl).forEach((s) => {
-      const go = () => { el.classList.remove("parked"); const c = center(s); place(c[0], c[1], true); };
+      const go = () => { const c = center(s); place(c[0], c[1], true, s); };
       s.addEventListener("focus", go);
       s.addEventListener("blur", () => setTimeout(() => { if (!paper.contains(document.activeElement)) park(); }, 0));
       s.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
     });
-    docEl.addEventListener("keydown", (e) => {
-      const d = { ArrowLeft: [-24, 0], ArrowRight: [24, 0], ArrowUp: [0, -24], ArrowDown: [0, 24] }[e.key];
-      if (d) { e.preventDefault(); el.classList.remove("parked"); place(px + d[0], py + d[1]); }
-    });
-    const ro = new ResizeObserver(() => { build(); if (el.classList.contains("parked")) park(); else place(px, py); }); ro.observe(docEl);
-    return { place, park, at: (k) => { const c = center($(`[data-hs="${k}"]`, docEl)); place(c[0], c[1], true); } };
+    return { place, park, at: (k) => { const s = $(`[data-hs="${k}"]`, docEl), c = center(s); place(c[0], c[1], true, s); } };
   }
 
   /* ---------- Bewijs ---------- */
@@ -326,11 +336,10 @@
     if (found.includes(k) || decided) return;
     found.push(k); Mini.sound.play("tap");
     const s = $(`[data-hs="${k}"]`, docEl); s.classList.add("found", "glow"); setTimeout(() => s.classList.remove("glow"), 1200);
-    const list = $("[data-ev]", G.stage); const empty = $(".pk-empty", list); if (empty) empty.remove();
-    list.appendChild(h(cardHTML(k, false)));
-    list.lastElementChild.classList.add("slide-in");
-    list.scrollTop = list.scrollHeight;
-    $("[data-evcount]", G.stage).textContent = `${found.length} gevonden`;
+    const list = $("[data-ev]", G.stage), slot = $(".pk-slot", list), card = h(cardHTML(k, false));
+    if (slot) slot.replaceWith(card); else list.appendChild(card);
+    card.classList.add("slide-in");
+    $("[data-evcount]", G.stage).textContent = `${found.length} van ${Object.keys(M.hs).length} bekeken`;
     if (found.length === Object.keys(M.hs).length) sayLine("Je hebt alles bekeken. Wat doe je met dit bericht?");
   }
   function cardHTML(k, after, missed) {
@@ -354,7 +363,7 @@
     const missedTxt = M.kind !== "nep" ? "" : allClues ? "Alle signalen gevonden. Dat leverde een kristal op." : `Gemist: ${missedK.map((k) => LABEL[k].toLowerCase()).join(" en ")}. Daardoor geen kristal.`;
     stopMailflow();
     $$("[data-c]", G.stage).forEach((b) => { b.disabled = true; b.classList.toggle("picked", b.dataset.c === c); });
-    $(".pk-lens", G.stage).classList.add("away");
+    lens.park(); $(".pk-mag", G.stage).classList.add("away");
     Mini.sound.play("close");
     results[idx] = res; unread = Math.max(0, unread - 1);
     G.record({ result: res, points: pts, shield: sh, q: M.subject, a: `${CHOICE[c][1]}, ${CHOICE[c][2]}`, why: M.why, title, short: line });

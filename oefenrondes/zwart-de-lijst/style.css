@@ -382,3 +382,46 @@
 /* De verzendsluis is de enige verstuurplek. Alleen op een smal scherm, waar de sluis wegvalt, staat er een knop. */
 .zl-send-small { display: none; }
 @media (max-width: 600px) { .zl-send-small { display: flex; } .zl-send-small .btn { flex: 1; } }
+
+/* Ronde 32: opdrachtbalk in een eigen rij boven het document, geen verzendsluis meer maar één knop onder de meter,
+   grotere documenttekst en een stift die bij hover laat zien welk woord zwart wordt. */
+.zl-main { display: flex; flex-direction: column; gap: 10px; min-width: 0; min-height: 0; }
+.zl-main > .zl-need { flex: none; margin: 0; font-size: 1.0625rem; padding: 10px 14px; }
+.zl-desk { grid-template-columns: minmax(0, 1fr) !important; flex: 1; min-height: 0; padding: 14px 16px; }
+.zl-sheet { padding-bottom: 0; }
+.zl-paper:not(.review) .zl-letter::before { display: none; }
+.zl-paper:not(.review) .zl-letter, .zl-paper:not(.review) .zl-addr, .zl-paper:not(.review) .zl-title { cursor: default; }
+.zl-body { font-size: 1.125rem !important; line-height: 1.5 !important; }
+.zl-table dt { font-size: 1rem; }
+.zl-addr { font-size: 1.0625rem; }
+.zl-logo span, .zl-meta, .zl-role, .zl-greet { font-size: 1rem; }
+.zl-title { font-size: 1.375rem; }
+.zl-h { font-size: 1.125rem; }
+.zl-table > div { grid-template-columns: 120px minmax(0, 1fr); }
+
+/* De verstuurknop hoort bij de meter: eerst zien hoeveel leesbaar blijft, dan versturen */
+.zl-send { width: 100%; min-height: 54px; margin-top: 6px; justify-content: center; font-size: 1.125rem; }
+.zl-send svg { flex: none; }
+
+/* Stift bij hover: een lichte inktvlek op precies het woord dat je zwart maakt, of een lichtere vlek als je het zwart weghaalt */
+.zl-paper:not(.review) .w:hover { background: none; }
+.zl-paper:not(.review) .w:not(.on):hover .k::after { transform: scaleX(1); opacity: .4; transition: none; }
+.zl-paper:not(.review) .w.on:hover .k::after { opacity: .45; }
+.zl-paper:not(.review) .w:not(.on):hover { box-shadow: 0 2px 0 #0b0c10; }
+
+/* Controle na versturen: een scanlijn over het papier */
+.zl-paper::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 60px; pointer-events: none; opacity: 0; z-index: 4; background: linear-gradient(180deg, transparent, rgba(21, 170, 255, .18) 70%, rgba(21, 170, 255, .7) 96%, transparent); }
+.zl-paper.scanning::after { opacity: 1; animation: zlscan 1.1s ease-in-out; }
+@keyframes zlscan { from { transform: translateY(-60px); } to { transform: translateY(calc(var(--ph, 700px))); } }
+.zl-paper { transform: none; clip-path: none; }
+@media (prefers-reduced-motion: reduce) { .zl-paper.scanning::after { animation: none; opacity: 0; } }
+
+@media (min-width: 941px) and (max-width: 1260px) {
+  .zl:not(:has(.zl-rv)) { grid-template-columns: minmax(0, 1fr) 330px; }
+  .zl-desk { padding: 12px 14px; }
+  .zl-body { font-size: 1.125rem !important; line-height: 1.4 !important; }
+  .zl-body p { margin-bottom: 5px; }
+  .zl-paper { padding: 10px 20px 8px; }
+  .zl-addr { margin: 8px 0 4px; padding: 6px 12px; }
+  .zl-meter .zl-send { min-height: 50px; }
+}

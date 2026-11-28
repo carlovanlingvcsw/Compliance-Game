@@ -47,7 +47,7 @@
       hint: "Een datalek gaat altijd over persoonsgegevens. Staan die in een menu?" },
     { title: "Versleutelde laptop kwijt", short: "Laptop", art: "laptop", zone: 1,
       text: "Bram verliest zijn laptop in het vrachtdok. De schijf is goed versleuteld en het wachtwoord zat er niet bij.",
-      facts: [["lock", "Goed versleuteld"], ["users", "Crewlijst van 60"], ["search", "Vinder onbekend"]], key: [0],
+      facts: [["lock", "Crewlijst, goed versleuteld"], ["users", "60 crewleden"], ["search", "Vinder onbekend"]], key: [0],
       why: "Zonder wachtwoord kan een vinder niets met de versleutelde schijf. Het risico is laag. Toch meldt Bram het direct bij de Privacy Officer, die het intern vastlegt.",
       hint: "Wat kan iemand die de laptop vindt eigenlijk zien zonder wachtwoord?" },
     { title: "Alle adressen zichtbaar in CC", short: "Mail in CC", art: "cc", zone: 2,
@@ -129,7 +129,7 @@
           ${ZONES.map((z, i) => `<div class="lk-drop ${z.cls}" data-drop="${i}" style="grid-column:${i + 2};grid-row:3"></div>`).join("")}
           ${LADDER.map(([lbl, v], r) => `<div class="lk-rowlbl lk-lad" data-row="${r}" style="grid-row:${r + 4}">${esc(lbl)}</div>` + v.map((x, i) => `<div class="lk-cell ${ZONES[i].cls} ${x}" data-col="${i}" style="grid-column:${i + 2};grid-row:${r + 4}">${x === "y" ? `<span class="yes">${icon("check")}</span><span class="cw">Ja</span>` : x === "t" ? `<span class="tw">${icon("half", "sm")}Alleen bij twijfel</span>` : `<span class="no">${icon("x", "sm")}</span><span class="cw">Nee</span>`}</div>`).join("")).join("")}
           ${ZONES.map((z, i) => `<div class="lk-colhl" data-hl="${i}" style="grid-column:${i + 2};grid-row:2 / span 6"></div>`).join("")}
-          <p class="lk-ladhint" style="grid-column:2 / span 4;grid-row:4 / span 4">${icon("hand", "sm")}<span>Wijs een zone aan of leg de kaart erop. Dan zie je hier wat er moet gebeuren.</span></p>
+          <p class="lk-ladhint" style="grid-column:1 / span 5;grid-row:4 / span 4">${icon("hand", "sm")}<span>Leg de kaart op een zone. Dan zie je hier wat er bij die zone moet gebeuren.</span></p>
         </div>
         <span class="screw a"></span><span class="screw b"></span><span class="screw c"></span><span class="screw d"></span>
       </section>
@@ -153,8 +153,7 @@
     slot.innerHTML = `<article class="lk-card enter" data-card tabindex="-1" aria-label="Melding ${i + 1}: ${esc(C.title)}">
       <span class="clip" aria-hidden="true"></span>
       <div class="lk-card-art">${ART[C.art]}</div>
-      <div class="lk-card-tx"><span class="no">Melding ${i + 1}</span><h3>${esc(C.title)}</h3><p>${esc(C.text)}</p>
-        <ul>${C.facts.map((f, k) => `<li data-fact="${k}">${icon(f[0], "sm")}${esc(f[1])}</li>`).join("")}</ul></div>
+      <div class="lk-card-tx"><span class="no">Melding ${i + 1}</span><h3>${esc(C.title)}</h3><p>${esc(C.text)}</p></div>
       <div class="lk-cardfoot" data-foot>${pickFoot()}</div>
     </article>`;
     bindWeigh(slot);
@@ -163,9 +162,9 @@
     $$(".lk-zv", G.stage).forEach((x) => x.remove());
     setBet(false);
     $$(".lk-ghosttok, .lk-arrow", G.stage).forEach((x) => x.remove());
-    $(".lk-meter", G.stage).classList.remove("alarm", "decided"); preview(null);
+    $(".lk-meter", G.stage).classList.remove("alarm", "decided", "placed"); preview(null);
     $$(".lk-colhl", G.stage).forEach((x) => x.className = "lk-colhl");
-    $$(".lk-cell", G.stage).forEach((x) => x.classList.remove("hl", "pend"));
+    $$(".lk-cell", G.stage).forEach((x) => x.classList.remove("hl", "pend", "mine"));
     $("[data-needle]", G.stage).style.left = "50%"; $("[data-needle]", G.stage).classList.remove("set", "swing");
     side("pick");
   }
@@ -174,8 +173,10 @@
     const s = $("[data-side]", G.stage);
     if (mode === "pick") {
       s.className = "lk-side";
-      s.innerHTML = `${G.sayHTML("Noor", idx === 0 ? "Weeg de drie feiten op de kaart, leg hem op de meter en zeg hoe zeker je bent." : "Volgende melding. Weeg de feiten en leg hem op de meter.", { side: `<button class="btn sm ghost" type="button" data-hint>${icon("bulb", "sm")}Aanwijzing</button><span class="hintcost">${esc(G.hintLabel())}</span>` })}
-        <div data-hintline></div>`;
+      const C = CASES[idx], WEIGH = ["Welke gegevens", "Hoeveel mensen", "Bij wie"];
+      s.innerHTML = `<div class="lk-facts"><div class="lk-facts-head"><h3>Feiten van de melding</h3><button class="btn sm ghost" type="button" data-hint>${icon("bulb", "sm")}Aanwijzing</button><span class="hintcost">${esc(G.hintLabel())}</span></div>
+        <ul>${C.facts.map((f, k) => `<li data-fact="${k}"><span class="ic">${icon(f[0])}</span><span><small>${WEIGH[k]}</small><b>${esc(f[1])}</b></span></li>`).join("")}</ul>
+        <div data-hintline></div></div>`;
       $("[data-hint]", s).addEventListener("click", hint);
       return;
     }
@@ -185,7 +186,7 @@
     s.className = "lk-side lk-fb " + res + (under ? " alarm" : "");
     s.innerHTML = `<div class="lk-fb-in">
       <div class="lk-fb-head"><span class="dot">${icon(res === "goed" ? "check" : res === "half" ? "half" : "x", "lg")}</span><h3>${res === "goed" ? "Goed" : res === "half" ? "Half goed" : under ? "Zwaar onderschat" : "Niet goed"} <span class="pts">+${pts}</span></h3></div>
-      <p class="lk-fb-zone">${res === "goed" ? "Precies de goede zone" : res === "half" ? "Eén zone ernaast" : `${dist} zones ernaast`}. Deze melding hoort bij <b>${esc(ZONES[C.zone].name.toLowerCase())}</b>.</p>
+      <p class="lk-fb-zone">${res === "goed" ? "" : res === "half" ? "Eén zone ernaast. " : `${dist} zones ernaast. `}Doorslaggevend: ${C.key.map((k) => `<i class="lk-key">${esc(C.facts[k][1])}</i>`).join(" ")}</p>
       ${G.sayHTML("Noor", (res === "goed" ? (o.sure ? "Klopt, en je durfde. " : "Klopt. ") : res === "half" ? "Bijna. " : under ? "Dit lek mag je nooit onderschatten. " : "Nee, dit zit anders. ") + C.why, { mood: res === "goed" ? "ok" : res === "half" ? "half" : "bad" })}
       <div class="lk-fb-foot"><p class="lk-fb-rule">${icon("phone", "sm")}<span>${C.zone >= 1 ? "Meld het direct bij de Privacy Officer." : "Bij twijfel meld je het toch."}</span></p>
         <button class="btn lk-fb-next" type="button" data-next>${last ? "Naar de debriefing" : "Volgende melding"}${icon("arrow")}</button></div></div>`;
@@ -260,10 +261,8 @@
   function preview(z) {
     if (phase !== "pick" && phase !== "confirm" && z != null) return;
     $$(".lk-cell, .lk-zone, .lk-drop", G.stage).forEach((c) => c.classList.remove("pv"));
-    $$("[data-row]", G.stage).forEach((r) => r.classList.remove("on", "off"));
     if (z == null) return;
-    $$("[data-row]", G.stage).forEach((r) => r.classList.add(LADDER[+r.dataset.row][1][z] === "n" ? "off" : "on"));
-    $$(`[data-col="${z}"], [data-zone="${z}"], [data-drop="${z}"]`, G.stage).forEach((c) => c.classList.add("pv"));
+    $$(`[data-zone="${z}"], [data-drop="${z}"]`, G.stage).forEach((c) => c.classList.add("pv"));
     moveNeedle(z);
   }
 
@@ -278,6 +277,7 @@
     const foot = $("[data-foot]", G.stage);
     foot.classList.add("confirm");
     $$(".lk-cell", G.stage).forEach((c) => c.classList.toggle("pend", +c.dataset.col === z));
+    $(".lk-meter", G.stage).classList.add("placed");
     foot.setAttribute("tabindex", "-1"); foot.setAttribute("role", "group"); foot.setAttribute("aria-label", "Hoe zeker ben je?");
     foot.innerHTML = `<p class="lk-confq"><span class="lk-step">3</span><span class="lk-step2">Op <b>${esc(ZONES[z].name)}</b>. Hoe zeker ben je?</span></p>
       <div class="lk-confrow">
@@ -295,7 +295,7 @@
     const pts = res === "goed" ? 10 : res === "half" ? 5 : 0;
     $$("[data-zone]", G.stage).forEach((b) => { b.disabled = true; });
     $(`[data-zone="${z}"]`, G.stage).classList.remove("pending");
-    $$(".lk-cell", G.stage).forEach((c) => c.classList.remove("pend"));
+    $$(".lk-cell", G.stage).forEach((c) => { c.classList.remove("pend"); c.classList.toggle("mine", +c.dataset.col === z && z !== C.zone); });
     $(`[data-zone="${z}"]`, G.stage).classList.add("chosen");
     $$("[data-hint],[data-bet]", G.stage).forEach((b) => b.disabled = true);
     $(".lk-meter", G.stage).classList.add("decided");

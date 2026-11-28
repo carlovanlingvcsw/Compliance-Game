@@ -467,3 +467,59 @@ html.kbd .lk-conf:focus-visible { outline: 3px solid #e17100; outline-offset: 2p
 /* Gelegde meldingen blijven leesbaar, ook als je een andere zone aanwijst. */
 .lk-meter:not(.decided) .lk-grid:has(.pv) .lk-drop:not(.pv) { opacity: 1; }
 .lk-meter:not(.decided) .lk-grid:has(.pv) .lk-zone:not(.pv) { opacity: .7; }
+
+/* ---------- Ronde 9 (integratie, PO-feedback) ---------- */
+/* De feiten van de melding staan groot in de rechterkolom, Noor eronder. */
+.lk-facts { border-radius: 16px; border: 1px solid var(--edge); background: var(--panel); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.lk-facts h3 { margin: 0; font-size: 1.125rem; color: #fff; }
+.lk-facts ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.lk-facts li { display: flex; align-items: center; gap: 12px; padding: 6px 10px; border-radius: 10px; background: rgba(3, 14, 36, .45); border: 1px solid rgba(103, 202, 255, .2); transition: background .2s, border-color .2s; }
+.lk-facts li .ic { width: 34px; height: 34px; flex: none; border-radius: 9px; display: grid; place-items: center; background: rgba(21, 170, 255, .16); color: var(--b200); }
+.lk-facts li small { display: block; color: var(--g300); font: 500 .9375rem/1.2 var(--font-b); }
+.lk-facts li b { display: block; color: #fff; font: 700 1.1875rem/1.25 var(--font-h); }
+.lk-facts li.look { background: rgba(21, 170, 255, .22); border-color: var(--b300); }
+.lk-side > .say { padding: 8px 12px; }
+.lk-side > .say .txt { font-size: 1rem; }
+.lk-fb-key { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0; }
+.lk-fb-key > span { color: var(--g200); font: 600 .9375rem/1.2 var(--font-b); }
+.lk-fb-key i { display: inline-flex; align-items: center; gap: 6px; font-style: normal; padding: 3px 10px; border-radius: 999px; background: #ffd230; color: #2a1600; font: 700 .9375rem/1.2 var(--font-b); }
+
+/* Risicometer: de gevolgrijen verschijnen pas als je de kaart hebt gelegd, alleen voor jouw kolom en daarna de goede. */
+.lk-meter .lk-lad, .lk-meter .lk-cell { visibility: hidden; }
+.lk-meter.placed .lk-lad, .lk-meter.decided .lk-lad { visibility: visible; }
+.lk-meter .lk-cell.pend, .lk-meter .lk-cell.mine, .lk-meter .lk-cell.hl { visibility: visible; opacity: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.lk-cell.pend .cw, .lk-cell.mine .cw { display: inline; color: #fff; font: 700 1.0625rem/1 var(--font-h); }
+.lk-cell.pend .no + .cw, .lk-cell.mine .no + .cw { color: var(--g300); }
+.lk-cell.pend .yes, .lk-cell.mine .yes { width: 28px; height: 28px; }
+.lk-cell.pend { background: rgba(255, 255, 255, .08); }
+.lk-cell.mine { opacity: .6 !important; background: rgba(255, 255, 255, .04); }
+.lk-rowlbl, .lk-lad { font-size: 1rem !important; }
+.lk-meter.placed .lk-ladhint, .lk-meter.decided .lk-ladhint { display: none; }
+.lk-ladhint { visibility: visible; }
+.lk-meter .lk-cell.pv { visibility: hidden; }
+.lk-meter .lk-cell.pv.pend, .lk-meter .lk-cell.pv.hl, .lk-meter .lk-cell.pv.mine { visibility: visible; }
+.lk-facts { padding: 10px 12px; gap: 6px; }
+.lk-facts-head { display: flex; align-items: center; gap: 10px; }
+.lk-facts-head h3 { flex: 1; }
+.lk-facts-head { flex-wrap: wrap; row-gap: 2px; }
+.lk-facts-head .hintcost { flex-basis: 100%; text-align: right; margin-top: -2px; }
+.lk-facts li { padding: 4px 10px; gap: 10px; }
+.lk-facts li .ic { width: 30px; height: 30px; }
+.lk-facts li b { font-size: 1.125rem; }
+.lk-facts .lk-hint { margin-top: 2px; padding: 8px 12px; }
+.lk-cell.mine:not(.pv):not(.hl):not(.pend) > * { visibility: visible; }
+.lk-cell.mine { background: rgba(11, 20, 36, .55); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); }
+.lk-cell.mine .no { width: 26px; height: 26px; }
+.lk-fb-zone .lk-key { display: inline-block; font-style: normal; padding: 1px 9px; border-radius: 999px; background: #ffd230; color: #2a1600; font: 700 .9375rem/1.35 var(--font-b); margin: 1px 0; }
+/* Compacter, zodat ook de laatste melding met volle zones op 1440 bij 900 past. */
+.lk-drop { gap: 4px; padding: 5px 5px 7px !important; }
+.lk-token { padding: 2px 8px 2px 2px; font-size: .9375rem; line-height: 1.1; }
+.lk-token .ta { width: 22px; height: 22px; }
+.lk-token .ta svg { width: 20px; height: 20px; }
+.lk-zv { padding: 1px 8px; }
+.lk-lad { padding-top: 2px !important; padding-bottom: 2px !important; }
+.lk-cell { min-height: 0 !important; padding: 1px 6px !important; }
+.lk-cell .yes, .lk-cell.pend .yes, .lk-cell.mine .yes, .lk-cell.hl .yes { width: 24px !important; height: 24px !important; }
+.lk-cell .no, .lk-cell.pend .no, .lk-cell.mine .no, .lk-cell.hl .no { width: 22px !important; height: 22px !important; }
+.lk-fb .say .txt { font-size: .9375rem; line-height: 1.45; }
+.lk-fb-zone .lk-key { padding: 0 8px; }
