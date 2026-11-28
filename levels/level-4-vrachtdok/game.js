@@ -93,31 +93,34 @@
         ]
       },
       items: {
-        cnt:    { text: "312 crewleden", r1: false, r2: false, why1: "Een totaal aantal is niet herleidbaar tot één persoon." },
-        sav:    { text: "18.000 credits per jaar", r1: false, r2: false, why1: "Een bedrag voor de hele kolonie is een gegeven over een organisatie." },
-        gem:    { text: "het gemiddelde ziekteverzuim van de kolonie is 4,1 procent", r1: false, r2: false, why1: "Klinkt als gezondheid, maar het is een gemiddelde over 312 crewleden en dus niet herleidbaar tot één persoon." },
-        verz:   { text: "draait sinds 3 maart halve diensten, in overleg met de scheepsarts", r1: true, r2: false, why1: "Halve diensten in overleg met de scheepsarts verraden dat Joran ziek is geweest en weer opbouwt. Dat is verzuiminformatie en gaat niet via een gewone mail." },
-        reg2:   { text: "in het register voor aangepast werk staat", r1: true, r2: false, why1: "Zo'n registratie zegt iets over iemands arbeidsvermogen en gaat niet via een gewone mail." },
-        vangnet:{ text: "onder de vangnetregeling valt", r1: true, r2: false, why1: "De vangnetregeling zegt indirect iets over iemands gezondheid of arbeidsvermogen. Niet via een gewone mail." },
-        id:     { text: "identiteitsnummer 7731 0094 2", r1: true, r2: false, why1: "Een identiteitsnummer is extra beschermd en gaat nooit via een gewone mail." },
-        diag:   { text: "herstelt van een hernia", r1: true, r2: true, why1: "Een diagnose is een medisch gegeven en gaat nooit via een gewone mail.",
+        cnt:    { text: "312 crewleden", name: "Aantal crewleden", s1: "Een totaal is niet herleidbaar tot één persoon.", r1: false, r2: false, why1: "Een totaal aantal is niet herleidbaar tot één persoon." },
+        sav:    { text: "18.000 credits per jaar", name: "Besparing", s1: "Een bedrag over de kolonie, niet over een persoon.", r1: false, r2: false, why1: "Een bedrag voor de hele kolonie is een gegeven over een organisatie." },
+        gem:    { text: "het gemiddelde ziekteverzuim van de kolonie is 4,1 procent", name: "Gemiddeld ziekteverzuim", s1: "Een gemiddelde over 312 crewleden wijst niemand aan.", r1: false, r2: false, why1: "Klinkt als gezondheid, maar het is een gemiddelde over 312 crewleden en dus niet herleidbaar tot één persoon." },
+        verz:   { text: "draait sinds 3 maart halve diensten, in overleg met de scheepsarts", name: "Halve diensten", s1: "Verraadt verzuim, dus niet via een gewone mail.", r1: true, r2: false, why1: "Halve diensten in overleg met de scheepsarts verraden dat Joran ziek is geweest en weer opbouwt. Dat is verzuiminformatie en gaat niet via een gewone mail." },
+        reg2:   { text: "in het register voor aangepast werk staat", name: "Register aangepast werk", s1: "Zegt iets over arbeidsvermogen. Niet via een gewone mail.", r1: true, r2: false, why1: "Zo'n registratie zegt iets over iemands arbeidsvermogen en gaat niet via een gewone mail." },
+        vangnet:{ text: "onder de vangnetregeling valt", name: "Vangnetregeling", s1: "Zegt indirect iets over gezondheid. Niet via een gewone mail.", r1: true, r2: false, why1: "De vangnetregeling zegt indirect iets over iemands gezondheid of arbeidsvermogen. Niet via een gewone mail." },
+        id:     { text: "identiteitsnummer 7731 0094 2", name: "Identiteitsnummer", s1: "Extra beschermd, dus nooit via een gewone mail.", r1: true, r2: false, why1: "Een identiteitsnummer is extra beschermd en gaat nooit via een gewone mail." },
+        diag:   { text: "herstelt van een hernia", name: "Diagnose", s1: "Een medisch gegeven, nooit via een gewone mail.", s2: "Medisch, dus alleen voor de scheepsarts. Ook via Kluispost.", r1: true, r2: true, why1: "Een diagnose is een medisch gegeven en gaat nooit via een gewone mail.",
                   why2: "Een veilig kanaal maakt het kanaal veilig, niet de inhoud passend. Medische details zijn alleen voor de scheepsarts, ook via Kluispost." },
-        roddel: { text: "collega's zeggen dat hij thuis een zware tijd heeft door zijn scheiding", r1: true, r2: true, why1: "Informatie over iemands privéleven hoort niet in een gewone mail.",
+        roddel: { text: "collega's zeggen dat hij thuis een zware tijd heeft door zijn scheiding", name: "Opmerking over zijn scheiding", s1: "Zijn privéleven hoort niet in een gewone mail.", s2: "Geruchten over iemands privéleven horen in geen enkele mail.", r1: true, r2: true, why1: "Informatie over iemands privéleven hoort niet in een gewone mail.",
                   why2: "Geruchten over iemands privéleven horen in geen enkele mail, ook niet via Kluispost. Vega heeft dit niet nodig." },
-        date:   { text: "donderdag om 10.00 uur", r1: false, r2: false, why1: "Een afspraak is geen gevoelig gegeven." },
-        mail:   { text: "bram@orion.space", r1: false, r2: false, why1: "Het zakelijke adres van een collega mag gewoon in een mail." },
-        reg:    { text: "Nova Terra, registratienummer NT 0042", r1: false, r2: false, why1: "Gegevens over een organisatie. Die mogen in een gewone mail." },
-        premie: { text: "klasse 3", r1: false, r2: false, why1: "Een premieklasse hoort bij de kolonie als organisatie, niet bij een persoon." },
-        id2:    { text: "7731 0094 2", r1: true, r2: false, why1: "Ook in een bijlage gaat een identiteitsnummer nooit via een gewone mail." },
-        diag2:  { text: "rugklachten na een hernia, volgens de scheepsarts", r1: true, r2: true, why1: "Een diagnose blijft een medisch gegeven, ook in een bijlage. Nooit via een gewone mail.",
+        date:   { text: "donderdag om 10.00 uur", name: "Afspraak", s1: "Een afspraak is geen gevoelig gegeven.", r1: false, r2: false, why1: "Een afspraak is geen gevoelig gegeven." },
+        mail:   { text: "bram@orion.space", name: "Mailadres van Bram", s1: "Het zakelijke adres van een collega mag.", r1: false, r2: false, why1: "Het zakelijke adres van een collega mag gewoon in een mail." },
+        reg:    { text: "Nova Terra, registratienummer NT 0042", name: "Kolonie en registratienummer", s1: "Gegevens over een organisatie mogen.", r1: false, r2: false, why1: "Gegevens over een organisatie. Die mogen in een gewone mail." },
+        premie: { text: "klasse 3", name: "Premieklasse", s1: "Hoort bij de kolonie, niet bij een persoon.", r1: false, r2: false, why1: "Een premieklasse hoort bij de kolonie als organisatie, niet bij een persoon." },
+        id2:    { text: "7731 0094 2", name: "Identiteitsnummer in de bijlage", s1: "Ook in een bijlage nooit via een gewone mail.", r1: true, r2: false, why1: "Ook in een bijlage gaat een identiteitsnummer nooit via een gewone mail." },
+        diag2:  { text: "rugklachten na een hernia, volgens de scheepsarts", name: "Diagnose in de bijlage", s1: "Ook in een bijlage een medisch gegeven.", s2: "Medisch, dus alleen voor de scheepsarts. Ook via Kluispost.", r1: true, r2: true, why1: "Een diagnose blijft een medisch gegeven, ook in een bijlage. Nooit via een gewone mail.",
                   why2: "Ook via Kluispost hoort een diagnose niet bij Vega. Medische details zijn alleen voor de scheepsarts." },
-        sol:    { text: "4.200 credits", r1: true, r2: false, why1: "Het loon van één crewlid is een gevoelig financieel gegeven en gaat niet via een gewone mail." },
-        iban:   { text: "OR77 STB 0041 2290 18", r1: true, r2: true, why1: "Een persoonlijk rekeningnummer is een gevoelig financieel gegeven en gaat niet via een gewone mail.",
+        sol:    { text: "4.200 credits", name: "Loon", s1: "Het loon van één crewlid is gevoelig.", r1: true, r2: false, why1: "Het loon van één crewlid is een gevoelig financieel gegeven en gaat niet via een gewone mail." },
+        iban:   { text: "OR77 STB 0041 2290 18", name: "Rekeningnummer", s1: "Een persoonlijk rekeningnummer is gevoelig.", s2: "Vega heeft het rekeningnummer niet nodig.", r1: true, r2: true, why1: "Een persoonlijk rekeningnummer is een gevoelig financieel gegeven en gaat niet via een gewone mail.",
                   why2: "Een veilig kanaal maakt het kanaal veilig, maar niet elk gegeven nodig. Voor de kostencontrole heeft Vega Jorans rekeningnummer niet nodig." },
-        beslag: { text: "beslag op loon, 650 credits per maand", r1: true, r2: true, why1: "Beslag op loon zegt iets over iemands financiële situatie. Gevoelig, dus niet via een gewone mail.",
+        beslag: { text: "beslag op loon, 650 credits per maand", name: "Beslag op loon", s1: "Zegt iets over zijn financiële situatie.", s2: "Het beslag is niet nodig voor de kostencontrole.", r1: true, r2: true, why1: "Beslag op loon zegt iets over iemands financiële situatie. Gevoelig, dus niet via een gewone mail.",
                   why2: "Voor de kostencontrole is het beslag niet nodig. Deel alleen wat de ontvanger echt nodig heeft." }
       },
       why2ok: "Via Kluispost of aangetekend verzenden mag dit, omdat Kapitein Vega het nodig heeft voor de kostencontrole.",
+      /* One-line reasons for a wrong click in step 2 */
+      s2ok: "Vega heeft dit nodig. Via Kluispost mag het.",
+      s2free: "Mocht al via de gewone mail, dus hier ook.",
       react: {
         good: { who: "Bram", say: "Oké, dan gaat hij via Kluispost. En de diagnose, het rekeningnummer, het beslag en die opmerking over zijn scheiding haal ik eruit." },
         half: { who: "Bram", say: "Bijna goed dus. Ik loop de mail en de bijlage nog een keer na voordat hij de deur uit gaat." },
@@ -378,10 +381,13 @@
       rv.style.setProperty("--rv-h", Math.max(320, PANEL_H - top - 14) + "px");
       /* Side by side: give the mail more width while the notes still have room, and keep the split with the least overflow */
       if (getComputedStyle(rv).gridTemplateColumns.split(" ").length > 1) {
-        var best = null;
-        [1.3, 1.15, 1, 1.6, 1.9].forEach(function (f) {
+        var best = null, pick = rv.classList.contains("mail-pick"), mb = rv.querySelector(".mailbox");
+        /* After checking, the mail fragment itself never scrolls: only the list of notes may. So the narrowest mail
+           without overflow wins, which leaves the notes the most width. Before checking: the least overflow overall. */
+        var fs = pick ? [1.3, 1.15, 1, 1.6, 1.9] : [1, 1.15, 1.3, 1.45, 1.6, 1.75, 1.9];
+        fs.forEach(function (f) {
           rv.style.gridTemplateColumns = "minmax(0, " + f + "fr) minmax(0, 1fr)";
-          var o = overflow();
+          var o = pick ? overflow() : Math.max(0, mb.scrollHeight - mb.clientHeight);
           if (!best || o < best.o - 2) best = { f: f, o: o };
         });
         rv.style.gridTemplateColumns = "minmax(0, " + best.f + "fr) minmax(0, 1fr)";
@@ -449,20 +455,28 @@
     var badKey = r === 1 ? "r1" : "r2";
     var nSel = Object.keys(M.sel).filter(function (k) { return M.sel[k]; }).length;
 
+    /* What went wrong per step: "miss" (should have been clicked) or "extra" (clicked, but it may go this way).
+       In step 2 the mistakes of step 1 count for the verdict too, so they are marked and explained as well. */
+    function err(k, round) {
+      var sel = round === r ? M.sel : (M.sel1 || {}), bad = s.items[k]["r" + round];
+      return !!sel[k] === bad ? null : bad ? "miss" : "extra";
+    }
+    function errNow(k) { return err(k, r); }
+    function errOne(k) { return r === 2 ? err(k, 1) : null; }
+    function state(k) { return errNow(k) || errOne(k) || "ok"; }
     /* After checking: every item that is discussed gets a number, in reading order (mail first, then the attachment).
-       Discussed means: it may not go this way, or the player judged it wrongly. */
+       Discussed means: it may not go this way, or the player judged it wrongly in this step or in step 1. */
     var marks = {}, order = [];
     if (M.checked) {
       var seq = [];
       s.body.replace(/\{(\w+)\}/g, function (_, k) { seq.push(k); return _; });
       if (s.attach) s.attach.rows.forEach(function (row) { row[1].replace(/\{(\w+)\}/g, function (_, k) { seq.push(k); return _; }); });
       seq.forEach(function (k) {
-        var it = s.items[k];
-        if (marks[k] || !(it[badKey] || !!M.sel[k] !== it[badKey])) return;
+        if (marks[k] || !(s.items[k][badKey] || errNow(k) || errOne(k))) return;
         order.push(k); marks[k] = order.length;
       });
     }
-    function judged(k) { return !!M.sel[k] === s.items[k][badKey]; }
+    function judged(k) { return state(k) === "ok"; }
     function hasMark(str) { var f = false; str.replace(/\{(\w+)\}/g, function (_, k) { if (marks[k]) f = true; return _; }); return f; }
     function gap(inline, label) {
       label = label || "Tekst zonder markering, weggelaten";
@@ -477,14 +491,15 @@
           /* Feedback: plain text, or a tinted mark that follows the text, with its number in front */
           if (!marks[k]) return esc(it.text);
           var i = it.text.indexOf(" "), first = i < 0 ? it.text : it.text.slice(0, i), rest = i < 0 ? "" : it.text.slice(i);
-          return '<mark class="mk ' + (judged(k) ? "is-ok" : "is-no") + '"><span class="mk-lead"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" + esc(first) + "</span>" + esc(rest) +
-            '<span class="vcsw-sr-only"> (toelichting ' + marks[k] + ")</span></mark>";
+          var st = state(k), word = st === "miss" ? "gemist" : st === "extra" ? "onterecht aangeklikt" : "goed";
+          return '<mark class="mk is-' + st + '"><span class="mk-lead"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" + esc(first) + "</span>" + esc(rest) +
+            '<span class="vcsw-sr-only"> (' + word + ", toelichting " + marks[k] + ")</span></mark>";
         }
         return '<span role="button" tabindex="0" class="token" data-tok="' + k + '" aria-pressed="' + on + '">' + esc(it.text) + "</span>";
       });
     }
     /* After checking, the mail is cut down to the sentences and attachment rows with a mark, so the review fits the panel.
-       Every piece that is left out shows as one ellipsis: a line of its own between paragraphs, inline within one. */
+       Every piece that is left out shows as one ellipsis, inline where it was left out, so it costs no line of its own. */
     var body = "";
     if (!M.checked) {
       body = s.body.split("\n\n").map(function (para) { return "<p>" + tokens(para) + "</p>"; }).join("");
@@ -494,23 +509,24 @@
       s.body.split("\n\n").forEach(function (para, pi) {
         para.split(/(?<=\.)\s+(?=[A-Z])/).forEach(function (sen) {
           if (!hasMark(sen)) { pend = true; return; }
-          if (cur !== pi) { flush(); if (pend) body += gap(); cur = pi; }
-          else if (pend) line.push(gap(true));
+          if (cur !== pi) { flush(); cur = pi; }
+          if (pend) line.push(gap(true));
           pend = false; line.push(tokens(sen));
         });
       });
-      flush(); if (pend) body += gap();
+      if (pend) line.push(gap(true));
+      flush();
     }
     /* Before checking, the attachment gets its own column beside the mail, so the selection fits the panel. After checking it stays under the mail. */
     var attachHtml = "";
     if (s.attach) {
       var rows = M.checked ? s.attach.rows.filter(function (row) { return hasMark(row[1]); }) : s.attach.rows;
       var hid = s.attach.rows.length - rows.length;
-      attachHtml = '<div class="mail-attach"><p class="attach-name">' + icon("file", "sm") + "Bijlage: " + esc(s.attach.name) + "</p>" +
+      attachHtml = '<div class="mail-attach"><p class="attach-name">' + icon("file", "sm") + "Bijlage: " + esc(s.attach.name) +
+        (hid ? " " + gap(true, hid === 1 ? "Eén rij zonder markering, weggelaten" : hid + " rijen zonder markering, weggelaten") : "") + "</p>" +
         (rows.length ? '<div class="vcsw-table-wrap"><table class="vcsw-table"><tbody>' +
           rows.map(function (row) { return "<tr><th scope=\"row\">" + esc(row[0]) + "</th><td>" + tokens(row[1]) + "</td></tr>"; }).join("") +
-          "</tbody></table></div>" : "") +
-        (hid ? gap(false, hid === 1 ? "Eén rij zonder markering, weggelaten" : hid + " rijen zonder markering, weggelaten") : "") + "</div>";
+          "</tbody></table></div>" : "") + "</div>";
       if (M.checked) body += attachHtml;
     }
 
@@ -521,8 +537,8 @@
       ? "<p><strong>Stap 1 van 2.</strong> De mail gaat via de gewone stationsmail. Klik in de mail en de bijlage alle gegevens aan die zo niet verstuurd mogen worden. Klik nog een keer om een keuze ongedaan te maken.</p>"
       : "<p><strong>Stap 2 van 2.</strong> Bram verstuurt de mail nu via Kluispost, het beveiligde kanaal van Orion. Aangetekend verzenden kan ook. Klik aan wat er zelfs via dit kanaal niet in hoort.</p>";
     var mailbox = M.checked
-      ? '<div class="mailbox review-scroll" aria-label="De mail, ingekort tot de markeringen"><div class="msg-head slim">' +
-        '<span class="v">Aan Kapitein Vega</span><span class="v">' + via + "</span></div>" +
+      /* The channel is in the chip above, so the fragment starts with the mail itself */
+      ? '<div class="mailbox review-scroll" aria-label="De mail aan Kapitein Vega via ' + (r === 1 ? "de gewone stationsmail" : "Kluispost") + ', ingekort tot de markeringen">' +
         '<div class="mail-body">' + body + "</div></div>"
       : '<div class="mailbox review-scroll" aria-label="De mail"><div class="msg-head">' +
         '<div class="row"><span class="k">Aan</span><span class="v">Kapitein Vega &lt;vega@novaterra.space&gt;</span></div>' +
@@ -548,27 +564,46 @@
 
     /* Step 1 gets an interim verdict without points; step 2 gets the verdict for both steps together (the same grade as the score) */
     var e = r === 1 ? M.e1 : M.e1 + M.e2, nAll = Object.keys(s.items).length, g = M.grade;
+    var where = e === 0 ? "" : " Ze staan rood of amber gemarkeerd.";
     var verdict = r === 1
-      ? verdictLine("mid", "info", "Tussenoordeel", "Nog geen punten, die volgen na stap 2",
-          (e === 0 ? "Je beoordeelde alle " + nAll + " gegevens goed." : "Je beoordeelde " + e + " van de " + nAll + " gegevens niet goed.") +
+      ? verdictLine("mid in-mail", "info", "Tussenoordeel", "Nog geen punten, die volgen na stap 2",
+          (e === 0 ? "Je beoordeelde alle " + nAll + " gegevens goed." : "Je beoordeelde " + e + " van de " + nAll + " gegevens niet goed.") + where +
           " Gevoelige gegevens horen niet in een gewone mail, ook niet in een bijlage.")
-      : verdictLine(g, g === "good" ? "check" : g === "half" ? "half" : "x", g === "good" ? "Goed" : g === "half" ? "Half goed" : "Niet goed",
+      : verdictLine(g + " in-mail", g === "good" ? "check" : g === "half" ? "half" : "x", g === "good" ? "Goed" : g === "half" ? "Half goed" : "Niet goed",
           g === "good" ? "+10 punten" : g === "half" ? "+5 punten, schild −5%" : "0 punten, schild −10%",
-          (e === 0 ? "Je beoordeelde in beide stappen alle gegevens goed." : "In stap 1 en 2 samen beoordeelde je " + plural(e, "gegeven", "gegevens") + " niet goed.") +
+          (e === 0 ? "Je beoordeelde in beide stappen alle gegevens goed."
+            : "Je beoordeelde " + plural(e, "gegeven", "gegevens") + " niet goed, " +
+              (M.e1 && M.e2 ? M.e1 + " in stap 1 en " + M.e2 + " in stap 2." : M.e1 ? "allemaal in stap 1." : "allemaal in stap 2.")) + where +
           " Ook via Kluispost deel je alleen wat de ontvanger echt nodig heeft, en medische details blijven bij de scheepsarts.");
 
-    /* Notes: what went wrong stays open, what went well folds away behind one line */
-    function note(k) {
-      var it = s.items[k], ok = judged(k), txt;
-      if (ok) txt = '<strong class="note-you">Goed gezien.</strong> ' + esc(r === 1 ? it.why1 : it.why2);
-      else if (it[badKey]) txt = '<strong class="note-you">Gemist.</strong> ' + esc(r === 1 ? it.why1 : it.why2);
-      else txt = '<strong class="note-you">Onterecht aangeklikt.</strong> ' +
-        esc(r === 1 ? "Mag wel via de gewone mail. " + it.why1 : (it.r1 ? s.why2ok : "Mocht al via de gewone mail, en mag hier dus ook."));
-      return '<li class="' + (ok ? "is-ok" : "is-no") + '"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" +
-        '<p class="note-text"><span class="vcsw-sr-only">Toelichting ' + marks[k] + ", " + esc(it.text) + ". </span>" + txt + "</p></li>";
+    /* Notes: what went wrong is open at once, with the item and a one-line reason. What went well folds away behind one line. */
+    function reason(k, round, kind) {
+      var it = s.items[k];
+      if (round === 1) return it.s1;
+      return kind === "miss" ? it.s2 : it.r1 ? s.s2ok : s.s2free;
     }
-    var wrong = order.filter(function (k) { return !judged(k); }), right = order.filter(judged);
-    var notes = (wrong.length ? '<ol class="notes">' + wrong.map(note).join("") + "</ol>" : "") +
+    function note(k) {
+      var it = s.items[k];
+      return '<li class="is-ok"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" +
+        '<div class="note-body"><p class="note-text"><span class="vcsw-sr-only">Toelichting ' + marks[k] + ", " + esc(it.text) + ". </span>" +
+        '<strong class="note-you">Goed gezien.</strong> ' + esc(r === 1 ? it.why1 : it.why2) + "</p></div></li>";
+    }
+    function wrongNote(round) {
+      return function (k) {
+        var it = s.items[k], kind = err(k, round);
+        return '<li class="is-' + kind + '"><span class="mk-n" aria-hidden="true">' + marks[k] + "</span>" +
+          '<div class="note-body"><span class="vcsw-sr-only">Toelichting ' + marks[k] + ", " + esc(it.text) + ". </span>" +
+          '<p class="note-head"><strong class="note-what">' + esc(it.name) + '</strong><span class="note-kind is-' + kind + '">' +
+          (kind === "miss" ? "Gemist" : "Onterecht aangeklikt") + "</span></p>" +
+          '<p class="note-why">' + esc(reason(k, round, kind)) + "</p></div></li>";
+      };
+    }
+    /* In step 2 the mistakes of step 1 get their own group, because they count for this verdict too */
+    var wrongNow = order.filter(errNow), wrongOne = order.filter(errOne), right = order.filter(judged);
+    var notes = (wrongNow.length ? (wrongOne.length ? '<p class="notes-sub">In stap 2, via Kluispost</p>' : "") +
+        '<ol class="notes notes-wrong">' + wrongNow.map(wrongNote(r)).join("") + "</ol>" : "") +
+      (wrongOne.length ? '<p class="notes-sub">Uit stap 1, via de gewone mail</p>' +
+        '<ol class="notes notes-wrong">' + wrongOne.map(wrongNote(1)).join("") + "</ol>" : "") +
       (right.length ? '<details class="notes-ok"><summary>' + icon("check", "sm") + "<span>" + right.length + " goed beoordeeld</span>" +
         '<span class="sum-more"><span class="when-closed">Toon uitleg</span><span class="when-open">Verberg</span></span></summary>' +
         '<ol class="notes">' + right.map(note).join("") + "</ol></details>" : "");
@@ -588,7 +623,9 @@
       fbHead(s.title, ["Situatie " + (S.sit + 1) + " van " + SITUATIONS.length, r === 1 ? "Stap 1 van 2, gewone mail" : "Stap 2 van 2, Kluispost"]) + verdict +
       '<div class="mail-review fit-review">' + mailbox +
       '<section class="mail-notes" aria-labelledby="notes-h"><div class="notes-top"><h3 id="notes-h">Toelichting</h3>' +
-      '<p class="notes-key"><span class="key-sw is-ok" aria-hidden="true"></span>Goed<span class="key-sw is-no" aria-hidden="true"></span>Niet goed</p></div>' +
+      '<p class="notes-key"><span><span class="key-sw is-ok" aria-hidden="true"></span>Goed</span>' +
+      (order.some(function (k) { return state(k) === "miss"; }) ? '<span><span class="key-sw is-miss" aria-hidden="true"></span>Gemist</span>' : "") +
+      (order.some(function (k) { return state(k) === "extra"; }) ? '<span><span class="key-sw is-extra" aria-hidden="true"></span>Onterecht aangeklikt</span>' : "") + "</p></div>" +
       '<div class="notes-scroll review-scroll" aria-labelledby="notes-h">' + notes + "</div>" +
       '<div class="notes-foot">' + after + "</div></section></div>",
       ".verdict-title"
@@ -903,7 +940,7 @@
       var good = s.type === "mail" ? { text: s.goodText, why: s.goodWhy } : s.options.filter(function (o) { return o.grade === "good"; })[0];
       var half = s.type === "mail" ? null : s.options.filter(function (o) { return o.grade === "half"; })[0];
       var missed = g !== "half" ? "" : s.type === "mail"
-        ? "Je zag een of twee gegevens over het hoofd. "
+        ? "Je beoordeelde een of twee gegevens in de mail of de bijlage niet goed. "
         : esc(half.why) + " ";
       return missed + (g === "good" ? "" : "Beter was: " + esc(good.text) + " ") + esc(good.why);
     }
@@ -1103,7 +1140,7 @@
     else if (a === "sit") { S.sit = 0; startSit(); }
     else if (a === "nextsit") { S.sit++; startSit(); }
     else if (a === "mailcheck") checkMail();
-    else if (a === "mail2") { S.mail.round = 2; S.mail.sel = {}; S.mail.checked = false; renderMail(); }
+    else if (a === "mail2") { S.mail.round = 2; S.mail.sel1 = S.mail.sel; S.mail.sel = {}; S.mail.checked = false; renderMail(); }
     else if (a === "prelock") renderPreLock();
     else if (a === "lock") startLock();
     else if (a === "attack") classify(false);

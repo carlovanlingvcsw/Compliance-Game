@@ -194,43 +194,57 @@ html.in-orion .fit-review .mail-notes { max-height: var(--rv-h, none); }
 .mail-review .review-scroll.is-over { scrollbar-width: thin; scrollbar-color: rgba(103, 202, 255, .75) rgba(255, 255, 255, .06); }
 .mail-review .review-scroll.is-over:not(.at-end) { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 56px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 56px), transparent); }
 .mail-review .review-scroll:focus-visible { outline: 2px solid var(--vcsw-focus); outline-offset: 2px; }
-.mailbox .msg-head.slim { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; padding: 8px 16px; font-size: 0.9375rem; }
-.mail-review .mail-body { padding: 8px 16px 10px; font-size: 0.9375rem; }
-.stage .mail-review .mail-body p { margin: 0 0 4px; line-height: 1.55; font-size: 0.9375rem; }
+.mailbox .msg-head.slim { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; padding: 8px 16px; font-size: 1rem; }
+/* After checking, all text in the mail fragment and in the notes is at least 16px */
+.mail-review .mail-body { padding: 8px 16px 10px; font-size: 1rem; }
+.stage .mail-review .mail-body p { margin: 0 0 3px; line-height: 1.5; font-size: 1rem; }
 .mail-cut { color: var(--o-soft); letter-spacing: 0.1em; }
-#stage .mail-review .mail-gap { margin: 0 0 2px; font-size: 0.9375rem; line-height: 1; letter-spacing: 0.2em; color: var(--o-soft); }
+#stage .mail-review .mail-gap { margin: 0 0 2px; font-size: 1rem; line-height: 1; letter-spacing: 0.2em; color: var(--o-soft); }
 .mail-review .mail-attach { margin-top: 6px; padding-top: 8px; }
-.stage .mail-review .mail-attach .attach-name { margin: 0 0 4px; font-size: 0.9375rem; }
-.mail-review .mail-attach .vcsw-table th, .mail-review .mail-attach .vcsw-table td { padding: 2px 10px 2px 0; line-height: 1.5; vertical-align: top; }
+.stage .mail-review .mail-attach .attach-name { margin: 0 0 4px; font-size: 1rem; }
+.mail-review .mail-attach .vcsw-table th, .mail-review .mail-attach .vcsw-table td { padding: 2px 10px 2px 0; line-height: 1.5; vertical-align: top; font-size: 1rem; }
 .mail-review .mail-attach th { width: 1%; white-space: nowrap; }
 .mail-review .mail-attach .vcsw-table-wrap { margin-bottom: 2px; }
 #stage mark.mk { color: #fff; border-radius: 3px; padding: 1px 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+/* Green: judged well. Red: missed, so it would have gone out. Amber: clicked, but it may go this way. */
 mark.mk.is-ok { background: rgba(123, 241, 168, .16); }
-mark.mk.is-no { background: rgba(255, 162, 162, .24); }
+mark.mk.is-miss { background: rgba(255, 162, 162, .26); box-shadow: inset 0 -2px 0 var(--o-red); }
+mark.mk.is-extra { background: rgba(255, 201, 120, .22); box-shadow: inset 0 -2px 0 #ffc978; }
 .mk-lead { white-space: nowrap; }
-.mk-n { display: inline-grid; place-items: center; flex: none; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px;
-  font: 700 0.8125rem/1 var(--vcsw-font-heading); color: #04142b; background: var(--o-green); }
-mark .mk-n { margin-right: 4px; vertical-align: 1px; }
-.mk.is-no .mk-n, .notes li.is-no .mk-n { background: var(--o-red); }
+.mk-n { display: inline-grid; place-items: center; flex: none; min-width: 22px; height: 22px; padding: 0 5px; box-sizing: border-box; border-radius: 11px;
+  font: 700 0.9375rem/1 var(--vcsw-font-heading); color: #04142b; background: var(--o-green); }
+mark .mk-n { margin-right: 4px; vertical-align: 0; }
+.mk.is-miss .mk-n, .notes li.is-miss .mk-n { background: var(--o-red); }
+.mk.is-extra .mk-n, .notes li.is-extra .mk-n { background: #ffc978; }
 
 .mail-notes { display: flex; flex-direction: column; min-height: 0; }
 .notes-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; margin: 0 0 6px; }
 #stage .notes-top h3 { margin: 0; }
-#stage .notes-key { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin: 0; font-size: 0.9375rem; color: var(--o-soft); }
+#stage .notes-key { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; margin: 0; font-size: 0.9375rem; color: var(--o-soft); }
+#stage .notes-key > span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .key-sw { width: 12px; height: 12px; border-radius: 3px; background: rgba(123, 241, 168, .35); }
-.key-sw.is-no { background: rgba(255, 162, 162, .5); margin-left: 8px; }
+.key-sw.is-miss { background: var(--o-red); }
+.key-sw.is-extra { background: #ffc978; }
 .notes-scroll { flex: 0 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; padding-right: 2px; }
 .notes-scroll.is-over { padding-right: 8px; }
 .notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .notes li { display: flex; gap: 8px; align-items: flex-start; }
-.notes li .mk-n { margin-top: 2px; }
-#stage .notes .note-text { margin: 0; font-size: 0.9375rem; line-height: 1.45; }
+.notes li .mk-n { margin-top: 1px; }
+.note-body { min-width: 0; position: relative; }
+#stage .notes .note-text { margin: 0; font-size: 1rem; line-height: 1.45; }
 .note-you { font-weight: 600; color: var(--o-green); }
-.notes li.is-no .note-you { color: var(--o-red); }
+/* A wrong item: its name and what went wrong on one line, the reason on the next */
+#stage .notes .note-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; margin: 0; font-size: 1rem; line-height: 1.4; }
+#stage .notes .note-what { color: #fff; font-weight: 600; }
+.note-kind { font-weight: 600; }
+.note-kind.is-miss { color: var(--o-red); }
+.note-kind.is-extra { color: #ffc978; }
+#stage .notes .note-why { margin: 0; font-size: 1rem; line-height: 1.4; color: var(--vcsw-gray-200); }
+.notes-wrong { gap: 10px; }
 .notes-ok { margin-top: 8px; }
 .notes > li + .notes-ok, .notes + .notes-ok { margin-top: 10px; }
 .notes-ok summary { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 10px; border-radius: 8px; cursor: pointer; list-style: none;
-  font-size: 0.9375rem; color: #fff; background: rgba(123, 241, 168, .08); }
+  font-size: 1rem; color: #fff; background: rgba(123, 241, 168, .08); }
 .notes-ok summary::-webkit-details-marker { display: none; }
 .notes-ok summary .vcsw-icon { color: var(--o-green); flex: none; }
 .notes-ok summary:focus-visible { outline: 2px solid var(--vcsw-focus); outline-offset: 2px; }
@@ -242,6 +256,8 @@ mark .mk-n { margin-right: 4px; vertical-align: 1px; }
 .notes-foot { flex: none; }
 .notes-foot .speech.slim { margin: 10px 0 0; }
 #stage .notes-foot .actions { margin-top: 12px; }
+#stage .mail-review .notes-foot .vcsw-button { font-size: 1rem; }
+#stage .mail-review .notes-foot .speech.slim .who { font-size: 0.9375rem; }
 
 /* ================================================================
    Start card of the airlock, clues from ARIA (one button, one price) and Terug op aarde.
@@ -439,3 +455,8 @@ html.in-orion #stage .swipe-help { margin-top: 6px; }
 .sit-list.is-over { padding-right: 8px; scrollbar-width: thin; scrollbar-color: rgba(103, 202, 255, .75) rgba(255, 255, 255, .06); }
 .sit-list.is-over:not(.at-end) { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent); }
 .sit-list:focus-visible { outline: 2px solid var(--vcsw-focus); outline-offset: 2px; }
+/* Step 2: the mistakes of this step and those of step 1 as two short groups */
+#stage .notes-sub { margin: 0 0 6px; font: 600 1rem/1.4 var(--vcsw-font-body); color: var(--o-soft); }
+.notes-wrong + .notes-sub { margin-top: 12px; }
+/* The mail verdict uses the full width of the panel, so it takes one line less above the fragment */
+#stage .verdict-line.in-mail .verdict-text { max-width: none; }
